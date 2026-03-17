@@ -80,7 +80,8 @@ export default async function ItemDetailPage({ params }: { params: { id: string 
           </p>
         </div>
 
-        <div className="overflow-x-auto">
+        {/* Desktop Table View */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-slate-50 dark:bg-slate-800 text-slate-500 text-xs uppercase tracking-wider">
@@ -88,7 +89,7 @@ export default async function ItemDetailPage({ params }: { params: { id: string 
                 <th className="px-6 py-4 font-bold">Denumire Resursă</th>
                 <th className="px-6 py-4 font-bold">U.M.</th>
                 <th className="px-6 py-4 font-bold text-right">Consum</th>
-                <th className="px-6 py-4 font-bold text-right">Preț Unitar (estimat)</th>
+                <th className="px-6 py-4 font-bold text-right">Preț Unitar</th>
                 <th className="px-6 py-4 font-bold text-right">Total</th>
               </tr>
             </thead>
@@ -120,6 +121,34 @@ export default async function ItemDetailPage({ params }: { params: { id: string 
               </tr>
             </tfoot>
           </table>
+        </div>
+
+        {/* Mobile Card View */}
+        <div className="md:hidden divide-y divide-border">
+          {resources?.map((res) => (
+            <div key={res.id} className="p-4 space-y-3">
+              <div className="flex justify-between items-start">
+                <span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-[10px] font-bold uppercase ${getTypeColor(res.type)}`}>
+                  {getTypeIcon(res.type)}
+                  {res.type}
+                </span>
+                <span className="text-sm font-mono font-bold">
+                  {(res.quantity * res.default_price).toFixed(2)} lei
+                </span>
+              </div>
+              <h3 className="font-bold text-slate-900 dark:text-white">{res.name}</h3>
+              <div className="flex justify-between text-xs text-slate-500">
+                <span>Normă: <span className="font-mono text-slate-900 dark:text-slate-200">{res.quantity} {res.um}</span></span>
+                <span>Preț: <span className="font-mono text-slate-900 dark:text-slate-200">{res.default_price} lei</span></span>
+              </div>
+            </div>
+          ))}
+          <div className="p-6 bg-primary/5 text-center">
+            <div className="text-xs text-primary uppercase font-bold tracking-widest mb-1">Total Cost Direct / {item.um}</div>
+            <div className="text-3xl font-black text-primary">
+              {resources?.reduce((acc, res) => acc + (res.quantity * res.default_price), 0).toFixed(2)} lei
+            </div>
+          </div>
         </div>
       </section>
 

@@ -73,28 +73,74 @@ export default function Navigation() {
       </div>
 
       {/* Mobile Menu */}
-      {isOpen && (
-        <div className="md:hidden border-t border-border/40 py-4 space-y-2 animate-in fade-in slide-in-from-top-4">
-          {navItems.map((item) => {
-            const Icon = item.icon
-            const isActive = pathname === item.href
-            return (
-              <Link
-                key={item.name}
-                href={item.href}
-                onClick={() => setIsOpen(false)}
-                className={`
-                  flex items-center gap-3 px-4 py-3 rounded-lg text-base font-medium
-                  ${isActive ? 'bg-primary/10 text-primary' : 'text-slate-600'}
-                `}
-              >
-                <Icon size={20} />
-                {item.name}
-              </Link>
-            )
-          })}
-        </div>
-      )}
+      <AnimatePresence>
+        {isOpen && (
+          <>
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsOpen(false)}
+              className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 md:hidden"
+            />
+            <motion.div 
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              className="fixed top-0 right-0 bottom-0 w-[80%] max-w-xs bg-white dark:bg-slate-900 shadow-2xl z-50 md:hidden p-6 flex flex-col"
+            >
+              <div className="flex items-center justify-between mb-8">
+                <span className="font-bold text-lg text-primary">Navigație</span>
+                <button 
+                  onClick={() => setIsOpen(false)}
+                  className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors"
+                >
+                  <X size={24} className="text-slate-500" />
+                </button>
+              </div>
+
+              <div className="space-y-2 flex-1">
+                {navItems.map((item) => {
+                  const Icon = item.icon
+                  const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href))
+                  return (
+                    <Link
+                      key={item.name}
+                      href={item.href}
+                      onClick={() => setIsOpen(false)}
+                      className={`
+                        flex items-center gap-4 px-4 py-4 rounded-2xl text-lg font-bold transition-all
+                        ${isActive 
+                          ? 'bg-primary/10 text-primary shadow-sm' 
+                          : 'text-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800'
+                        }
+                      `}
+                    >
+                      <Icon size={24} />
+                      {item.name}
+                    </Link>
+                  )
+                })}
+              </div>
+
+              <div className="pt-6 border-t border-border/50">
+                <Link 
+                  href="/projects/new"
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center justify-center gap-2 w-full bg-primary text-white py-4 rounded-2xl font-black shadow-lg shadow-primary/20 hover:shadow-primary/40 active:scale-95 transition-all text-lg"
+                >
+                  <Calculator size={20} />
+                  Proiect Nou
+                </Link>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </nav>
   )
 }
+
+import { motion, AnimatePresence } from 'framer-motion'
+import { X } from 'lucide-react'
