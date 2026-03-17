@@ -123,7 +123,7 @@ CREATE TABLE IF NOT EXISTS projects (
     name VARCHAR(255) NOT NULL,
     location VARCHAR(255),
     -- Coeficienți stocați ca JSONB (profit, regie, tva, taxe_manopera)
-    settings JSONB DEFAULT '{"profit": 5, "regie": 10, "tva": 19, "taxe_manopera": 2.25}'::jsonb,
+    settings JSONB DEFAULT '{"profit": 5, "regie": 10, "tva": 21, "taxe_manopera": 2.25}'::jsonb,
     dimensions JSONB DEFAULT '{}'::jsonb, -- Dimensiunile casei pentru Smart Calculator
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
