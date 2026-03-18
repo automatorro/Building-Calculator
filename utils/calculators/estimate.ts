@@ -4,21 +4,32 @@ export interface EstimateLine {
   custom_prices: Record<string, number>
   excluded_resources: string[]
   metadata?: any
+  stage_name?: string
+  manual_name?: string
+  manual_um?: string
+  manual_price?: number
+  manual_labor_price?: number
+  manual_equipment_price?: number
+  manual_transport_price?: number
+  resources_override?: Resource[]
   items: {
     id: string
     code: string
     name: string
     um: string
     normatives: { code: string } | null
-    resources?: Array<{
-      id: string
-      type: 'material' | 'labor' | 'equipment'
-      name: string
-      um: string
-      consumption: number
-      unit_price: number
-    }>
-  }
+    resources?: Resource[]
+  } | null
+}
+
+export interface Resource {
+  id: string
+  type: 'material' | 'labor' | 'equipment' | 'transport'
+  name: string
+  um: string
+  consumption: number
+  unit_price: number
+  waste_percent?: number
 }
 
 export interface ProjectSettings {
@@ -29,26 +40,40 @@ export interface ProjectSettings {
 }
 
 export function calculateLineCosts(line: EstimateLine, settings: ProjectSettings) {
-  const resources = line.items.resources || []
-  
   let directMaterial = 0
   let directLabor = 0
   let directEquipment = 0
+  let directTransport = 0
 
-  resources.forEach(res => {
-    // Skip if excluded
-    if (line.excluded_resources.includes(res.id)) return
+  // 1. Determine which resources to use (Override vs Catalog)
+  const resourcesToUse = line.resources_override && line.resources_override.length > 0
+    ? line.resources_override
+    : line.items?.resources || []
 
-    // Use custom price if available, otherwise default
-    const price = line.custom_prices[res.id] ?? res.unit_price
-    const cost = res.consumption * price
+  if (resourcesToUse.length > 0) {
+    resourcesToUse.forEach(res => {
+      // Skip if excluded
+      if (line.excluded_resources.includes(res.id)) return
 
-    if (res.type === 'material') directMaterial += cost
-    if (res.type === 'labor') directLabor += cost
-    if (res.type === 'equipment') directEquipment += cost
-  })
+      // Use custom price if available, otherwise default
+      const price = line.custom_prices[res.id] ?? res.unit_price
+      const wasteMultiplier = 1 + ((res.waste_percent || 0) / 100)
+      const cost = res.consumption * price * wasteMultiplier
 
-  const unitDirectCost = directMaterial + directLabor + directEquipment
+      if (res.type === 'material') directMaterial += cost
+      else if (res.type === 'labor') directLabor += cost
+      else if (res.type === 'equipment') directEquipment += cost
+      else if (res.type === 'transport') directTransport += cost
+    })
+  } else {
+    // Manual item calculation with breakdown
+    directMaterial = line.manual_price || 0
+    directLabor = line.manual_labor_price || 0
+    directEquipment = line.manual_equipment_price || 0
+    directTransport = line.manual_transport_price || 0
+  }
+
+  const unitDirectCost = directMaterial + directLabor + directEquipment + directTransport
   const totalDirectCost = unitDirectCost * line.quantity
 
   // Aplicare Coeficienti
@@ -72,7 +97,7 @@ export function calculateLineCosts(line: EstimateLine, settings: ProjectSettings
   }
 }
 
-export function calculateProjectTotal(lines: EstimateLine[], settings: ProjectSettings) {
+export function calculateProjectTotals(lines: EstimateLine[], settings: ProjectSettings) {
   return lines.reduce((acc, line) => {
     const costs = calculateLineCosts(line, settings)
     return {

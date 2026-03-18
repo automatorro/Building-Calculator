@@ -1,24 +1,25 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
-import { Plus, Trash2, Save, Info, ChevronDown, ChevronUp, Settings2, CheckCircle2, Lightbulb } from 'lucide-react'
+import { Plus, Trash2, Save, Info, ChevronDown, ChevronUp, Settings2, CheckCircle2, Lightbulb, Store, Link as LinkIcon } from 'lucide-react'
 import { createClient } from '@/utils/supabase/client'
-import { calculateLineCosts, calculateProjectTotal, EstimateLine, ProjectSettings } from '@/utils/calculators/estimate'
+import { calculateLineCosts, EstimateLine, ProjectSettings, calculateProjectTotals } from '@/utils/calculators/estimate'
 import { motion, AnimatePresence } from 'framer-motion'
+import VendorOfferPicker from './VendorOfferPicker'
 
-export default function EstimateEditor({ 
-  initialLines, 
-  settings,
-  dimensions = {}
-}: { 
-  initialLines: EstimateLine[], 
-  settings: ProjectSettings,
-  dimensions?: any
-}) {
+interface EstimateEditorProps {
+  projectId: string
+  initialLines: EstimateLine[]
+  settings: ProjectSettings
+  dimensions: any
+}
+
+export default function EstimateEditor({ projectId, initialLines, settings, dimensions }: EstimateEditorProps) {
   const [lines, setLines] = useState<EstimateLine[]>(initialLines)
-  const [loading, setLoading] = useState(false)
   const [expandedId, setExpandedId] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
   const [isSaved, setIsSaved] = useState(false)
+  const [activeOfferPicker, setActiveOfferPicker] = useState<{ resourceId: string, resourceName: string, lineId: string } | null>(null)
   const supabase = createClient()
 
   // Calculăm valorile "Smart" disponibile bazate pe dimensiuni
@@ -42,11 +43,93 @@ export default function EstimateEditor({
     }
   }, [dimensions])
 
-  const totals = useMemo(() => calculateProjectTotal(lines, settings), [lines, settings])
+  const totals = useMemo(() => calculateProjectTotals(lines, settings), [lines, settings])
 
   const handleUpdateQuantity = (id: string, val: string) => {
     const num = parseFloat(val) || 0
     setLines(lines.map(l => l.id === id ? { ...l, quantity: num } : l))
+    setIsSaved(false)
+  }
+
+  const handleUpdateManualField = (id: string, field: 'manual_name' | 'manual_um' | 'manual_price' | 'manual_labor_price' | 'manual_equipment_price' | 'manual_transport_price', val: string) => {
+    setLines(lines.map(l => {
+      if (l.id !== id) return l
+      const isNumeric = field !== 'manual_name' && field !== 'manual_um'
+      const newVal = isNumeric ? parseFloat(val) || 0 : val
+      return { ...l, [field]: newVal }
+    }))
+    setIsSaved(false)
+  }
+
+  const handleAddManualLine = (stageName?: string) => {
+    const newLine: EstimateLine = {
+      id: crypto.randomUUID(),
+      quantity: 1,
+      custom_prices: {},
+      excluded_resources: [],
+      metadata: { source: 'manual' },
+      stage_name: stageName || '',
+      manual_name: 'Articol nou',
+      manual_um: 'buc',
+      manual_price: 0,
+      manual_labor_price: 0,
+      manual_equipment_price: 0,
+      manual_transport_price: 0,
+      items: null
+    }
+    setLines([...lines, newLine])
+    setIsSaved(false)
+  }
+
+  const handleDeleteLine = (id: string) => {
+    setLines(lines.filter(l => l.id !== id))
+    setIsSaved(false)
+  }
+
+  const ensureResourcesOverride = (line: EstimateLine) => {
+    if (line.resources_override && line.resources_override.length > 0) return line.resources_override
+    return line.items?.resources ? JSON.parse(JSON.stringify(line.items.resources)) : []
+  }
+
+  const handleUpdateResourceField = (lineId: string, resId: string, field: string, val: any) => {
+    setLines(lines.map(l => {
+      if (l.id !== lineId) return l
+      const currentResources = ensureResourcesOverride(l)
+      const newResources = currentResources.map((r: any) => {
+        if (r.id !== resId) return r
+        const isNumeric = ['consumption', 'unit_price', 'waste_percent'].includes(field)
+        return { ...r, [field]: isNumeric ? parseFloat(val) || 0 : val }
+      })
+      return { ...l, resources_override: newResources }
+    }))
+    setIsSaved(false)
+  }
+
+  const handleAddResource = (lineId: string) => {
+    setLines(lines.map(l => {
+      if (l.id !== lineId) return l
+      const currentResources = ensureResourcesOverride(l)
+      const newRes = {
+        id: crypto.randomUUID(),
+        name: 'Resursă nouă',
+        type: 'material' as const,
+        um: 'buc',
+        consumption: 1,
+        unit_price: 0,
+        waste_percent: 0
+      }
+      return { ...l, resources_override: [...currentResources, newRes] }
+    }))
+    setIsSaved(false)
+  }
+
+  const handleDeleteResource = (lineId: string, resId: string) => {
+    setLines(lines.map(l => {
+      if (l.id !== lineId) return l
+      const currentResources = ensureResourcesOverride(l)
+      const newResources = currentResources.filter((r: any) => r.id !== resId)
+      return { ...l, resources_override: newResources }
+    }))
     setIsSaved(false)
   }
 
@@ -73,15 +156,25 @@ export default function EstimateEditor({
   const handleSave = async () => {
     setLoading(true)
     for (const line of lines) {
-      await supabase
+      const { error } = await supabase
         .from('estimate_lines')
-        .update({
+        .upsert({
+          id: line.id.includes('-') ? line.id : undefined,
+          project_id: projectId,
           quantity: line.quantity,
           custom_prices: line.custom_prices,
           excluded_resources: line.excluded_resources,
-          metadata: line.metadata // Salvăm metadatele (inclusiv smart_link)
+          metadata: line.metadata,
+          stage_name: line.stage_name,
+          manual_name: line.manual_name,
+          manual_um: line.manual_um,
+          manual_price: line.manual_price,
+          manual_labor_price: line.manual_labor_price,
+          manual_equipment_price: line.manual_equipment_price,
+          manual_transport_price: line.manual_transport_price,
+          resources_override: line.resources_override || []
         })
-        .eq('id', line.id)
+      if (error) console.error('Error saving line:', error)
     }
     setLoading(false)
     setIsSaved(true)
@@ -100,7 +193,7 @@ export default function EstimateEditor({
 
   return (
     <div className="flex flex-col lg:grid lg:grid-cols-4 gap-8">
-      {/* Sidebar Info Proiect - Stays on top on mobile, side on desktop */}
+      {/* Sidebar Info Proiect */}
       <div className="space-y-6 order-1 lg:order-1">
         <div className="glass-card p-6 border-primary/10 bg-primary/[0.01]">
           <h3 className="font-bold mb-4 uppercase text-xs tracking-widest text-slate-400">Recapitație Proiect</h3>
@@ -154,66 +247,120 @@ export default function EstimateEditor({
         </div>
       </div>
 
-      {/* Tabel Deviz / Linii Estimate */}
+      {/* Tabel Deviz */}
       <div className="lg:col-span-3 order-2 lg:order-2">
         <div className="glass-card overflow-hidden">
           <div className="p-6 border-b border-border/50 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/20">
-            <h2 className="font-bold text-lg">Articole în Deviz</h2>
-            <span className="text-xs font-bold text-slate-400">{lines.length} poziții</span>
+            <h2 className="font-bold text-lg">Centralizator Lucrări</h2>
+            <button 
+              onClick={() => handleAddManualLine()}
+              className="text-xs font-bold text-primary flex items-center gap-1 hover:underline"
+            >
+              <Plus size={14} /> Adaugă Articol Manual
+            </button>
           </div>
 
           <div className="divide-y divide-border/50">
-            {lines.map((line) => {
-              const lineCosts = calculateLineCosts(line, settings)
-              const isExpanded = expandedId === line.id
+            {Array.from(new Set(lines.map(l => l.stage_name || 'Alte Lucrări'))).map(stage => (
+              <div key={stage} className="bg-slate-50/30 dark:bg-white/[0.02]">
+                <div className="px-6 py-2 bg-slate-100/50 dark:bg-slate-800/40 border-y border-border/30 flex justify-between items-center">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">{stage}</span>
+                  <button onClick={() => handleAddManualLine(stage)} className="text-[9px] font-bold text-primary/70 hover:text-primary uppercase tracking-tighter">
+                    + Adaugă în {stage}
+                  </button>
+                </div>
+                
+                {lines.filter(l => (l.stage_name || 'Alte Lucrări') === stage).map((line) => {
+                  const lineCosts = calculateLineCosts(line, settings)
+                  const isExpanded = expandedId === line.id
+                  const isManual = !line.items
 
-              return (
-                <div key={line.id} className="group">
-                  <div className="p-4 md:p-6 hover:bg-slate-50/30 dark:hover:bg-slate-800/10 transition-colors">
-                    <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
-                      {/* Titlu si Cod */}
-                      <div className="space-y-1 flex-1">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <span className="text-[10px] font-mono font-bold bg-primary/10 text-primary px-1.5 py-0.5 rounded shrink-0">
-                            {line.items.normatives?.code}
-                          </span>
-                          <h4 className="font-bold text-base md:text-lg leading-tight">{line.items.name}</h4>
-                        </div>
-                        <div className="text-[11px] text-slate-400 font-bold uppercase tracking-wider">
-                          {lineCosts.unitDirectCost.toFixed(2)} Lei direct / {line.items.um}
-                        </div>
-                      </div>
-                      
-                      {/* Input si Pret */}
-                      <div className="flex items-center justify-between md:justify-end gap-6 pt-2 md:pt-0 border-t md:border-0 border-border/30">
-                        <div className="text-left md:text-right">
-                          <label className="block text-[10px] text-slate-400 mb-1 uppercase tracking-widest font-black">Cantitate</label>
-                          <div className="flex items-center gap-2 relative">
-                            <input 
-                              type="number" 
-                              disabled={!!line.metadata?.smart_link}
-                              className={`w-20 md:w-24 p-2 text-right rounded-lg font-mono font-bold focus:ring-1 focus:ring-primary/30 outline-none transition-all ${line.metadata?.smart_link ? 'bg-blue-50 text-blue-600 border-blue-200 cursor-not-allowed' : 'bg-slate-100 dark:bg-slate-800 border-transparent'}`}
-                              value={line.quantity.toFixed(2)}
-                              onChange={(e) => handleUpdateQuantity(line.id, e.target.value)}
-                            />
-                            
-                            {/* Smart Link Dropdown / Toggle */}
-                            <div className="relative group/smart">
-                              <button 
-                                className={`p-1.5 rounded-md transition-all ${line.metadata?.smart_link ? 'bg-primary text-white' : 'text-slate-300 hover:text-primary'}`}
-                                title={line.metadata?.smart_link ? `Calculat prin: ${line.metadata.smart_link}` : "Leagă de Smart Calculator"}
-                              >
-                                <Lightbulb size={16} />
-                              </button>
-                              
-                              <div className="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-slate-900 border border-border rounded-xl shadow-xl opacity-0 translate-y-2 pointer-events-none group-hover/smart:opacity-100 group-hover/smart:translate-y-0 group-hover/smart:pointer-events-auto transition-all z-30">
-                                <div className="p-2 border-b border-border text-[10px] font-black text-slate-400 uppercase tracking-widest">Alege Formulă</div>
-                                <div className="p-1 space-y-1">
-                                  {Object.keys(smartValues).map((key) => (
-                                    <button
+                  return (
+                    <div key={line.id} className="group border-b border-border/10 last:border-0">
+                      <div className="p-4 md:p-6 hover:bg-slate-50/30 dark:hover:bg-slate-800/10 transition-colors">
+                        <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
+                          <div className="space-y-1 flex-1">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <span className="text-[10px] font-mono font-bold bg-primary/10 text-primary px-1.5 py-0.5 rounded shrink-0">
+                                {isManual ? 'MANUAL' : line.items!.normatives?.code}
+                              </span>
+                              {isManual ? (
+                                <input 
+                                  className="font-bold text-base md:text-lg leading-tight bg-transparent border-b border-dashed border-transparent hover:border-border/50 focus:border-primary outline-none transition-all w-full max-w-md"
+                                  value={line.manual_name}
+                                  onChange={(e) => handleUpdateManualField(line.id, 'manual_name', e.target.value)}
+                                />
+                              ) : (
+                                <h4 className="font-bold text-base md:text-lg leading-tight">{line.items!.name}</h4>
+                              )}
+                            </div>
+                            <div className="text-[11px] text-slate-400 font-bold uppercase tracking-wider">
+                              {isManual ? (
+                                <div className="flex flex-wrap items-center gap-3 mt-1">
+                                  <div className="flex items-center gap-1">
+                                    <span className="opacity-50 text-[9px]">Mat:</span>
+                                    <input 
+                                      type="number"
+                                      className="w-14 bg-transparent border-b border-border/30 font-mono text-primary outline-none text-[10px]"
+                                      value={line.manual_price}
+                                      onChange={(e) => handleUpdateManualField(line.id, 'manual_price', e.target.value)}
+                                    />
+                                  </div>
+                                  <div className="flex items-center gap-1">
+                                    <span className="opacity-50 text-[9px]">Man:</span>
+                                    <input 
+                                      type="number"
+                                      className="w-14 bg-transparent border-b border-border/30 font-mono text-orange-500 outline-none text-[10px]"
+                                      value={line.manual_labor_price}
+                                      onChange={(e) => handleUpdateManualField(line.id, 'manual_labor_price', e.target.value)}
+                                    />
+                                  </div>
+                                  <div className="flex items-center gap-1">
+                                    <span className="opacity-50 text-[9px]">Util:</span>
+                                    <input 
+                                      type="number"
+                                      className="w-12 bg-transparent border-b border-border/30 font-mono text-blue-500 outline-none text-[10px]"
+                                      value={line.manual_equipment_price}
+                                      onChange={(e) => handleUpdateManualField(line.id, 'manual_equipment_price', e.target.value)}
+                                    />
+                                  </div>
+                                  <div className="flex items-center gap-1">
+                                    <span className="opacity-50 text-[9px]">Trans:</span>
+                                    <input 
+                                      type="number"
+                                      className="w-12 bg-transparent border-b border-border/30 font-mono text-purple-500 outline-none text-[10px]"
+                                      value={line.manual_transport_price}
+                                      onChange={(e) => handleUpdateManualField(line.id, 'manual_transport_price', e.target.value)}
+                                    />
+                                  </div>
+                                  <div className="flex items-center gap-1 border-l pl-2 border-border/30 ml-1">
+                                    <span className="opacity-50 text-[9px]">UM:</span>
+                                    <input 
+                                      className="w-10 bg-transparent border-b border-border/30 outline-none text-[10px]"
+                                      value={line.manual_um}
+                                      onChange={(e) => handleUpdateManualField(line.id, 'manual_um', e.target.value)}
+                                    />
+                                  </div>
+                                </div>
+                              ) : (
+                                `${lineCosts.unitDirectCost.toFixed(2)} Lei direct / ${line.items!.um}`
+                              )}
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-4 md:gap-8 shrink-0">
+                            <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800/50 p-1 rounded-xl border border-border/30">
+                              <div className="relative group/popover">
+                                <button className="p-2 text-slate-400 hover:text-primary transition-colors">
+                                  <LinkIcon size={16} className={line.metadata?.smart_link ? 'text-primary' : ''} />
+                                </button>
+                                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 bg-white dark:bg-slate-900 border border-border shadow-2xl rounded-xl p-2 opacity-0 group-hover/popover:opacity-100 pointer-events-none group-hover/popover:pointer-events-auto transition-all z-30 scale-95 group-hover/popover:scale-100">
+                                  <div className="text-[10px] font-black uppercase text-slate-400 mb-2 px-2 tracking-widest">Legătură Smart</div>
+                                  {Object.keys(smartValues).map(key => (
+                                    <button 
                                       key={key}
                                       onClick={() => handleSmartLink(line.id, key)}
-                                      className={`w-full text-left p-2 text-xs rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 transition-colors ${line.metadata?.smart_link === key ? 'text-primary font-bold' : ''}`}
+                                      className={`w-full text-left p-2 text-xs rounded-lg transition-colors capitalize ${line.metadata?.smart_link === key ? 'bg-primary text-white' : 'hover:bg-slate-100 dark:hover:bg-slate-800'}`}
                                     >
                                       {key.replace('_', ' ')}
                                     </button>
@@ -228,94 +375,182 @@ export default function EstimateEditor({
                                   )}
                                 </div>
                               </div>
+                              <input 
+                                type="number" 
+                                className="w-20 bg-transparent text-center font-black text-lg outline-none text-slate-900 dark:text-white"
+                                value={line.quantity}
+                                onChange={(e) => handleUpdateQuantity(line.id, e.target.value)}
+                              />
+                              <span className="text-xs font-bold text-slate-400 pr-2">{isManual ? line.manual_um : line.items!.um}</span>
                             </div>
 
-                            <span className="text-xs font-bold text-slate-400">{line.items.um}</span>
+                            <div className="text-right min-w-[100px] md:min-w-[120px]">
+                              <label className="block text-[10px] text-slate-400 mb-1 uppercase tracking-widest font-black">Total</label>
+                              <div className="font-mono text-lg md:text-xl font-black text-slate-900 dark:text-white">
+                                {lineCosts.totalOfertatWithoutTVA.toLocaleString('ro-RO', { minimumFractionDigits: 2 })}
+                              </div>
+                            </div>
+
+                            <div className="flex flex-col gap-1">
+                              <button 
+                                onClick={() => setExpandedId(isExpanded ? null : line.id)}
+                                className={`p-2 rounded-lg transition-colors ${isExpanded ? 'bg-primary/10 text-primary' : 'text-slate-400 hover:text-primary'}`}
+                              >
+                                {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                              </button>
+                              <button 
+                                onClick={() => handleDeleteLine(line.id)}
+                                className="p-2 text-slate-300 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
+                              >
+                                <Trash2 size={16} />
+                              </button>
+                            </div>
                           </div>
                         </div>
-
-                        <div className="text-right min-w-[100px] md:min-w-[120px]">
-                          <label className="block text-[10px] text-slate-400 mb-1 uppercase tracking-widest font-black">Total</label>
-                          <div className="font-mono text-lg md:text-xl font-black text-slate-900 dark:text-white">
-                            {lineCosts.totalOfertatWithoutTVA.toLocaleString('ro-RO', { minimumFractionDigits: 2 })}
-                          </div>
-                        </div>
-
-                        <button 
-                          onClick={() => setExpandedId(isExpanded ? null : line.id)}
-                          className={`p-2 rounded-lg transition-colors ${isExpanded ? 'bg-primary/10 text-primary' : 'text-slate-400 hover:text-primary'}`}
-                        >
-                          {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-                        </button>
                       </div>
-                    </div>
-                  </div>
 
-                  <AnimatePresence>
-                    {isExpanded && (
-                      <motion.div 
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        className="overflow-hidden bg-slate-50/50 dark:bg-slate-800/20 border-t border-border/30"
-                      >
-                        <div className="p-4 md:p-6 space-y-4">
-                          <div className="flex items-center gap-2 text-primary mb-2">
-                            <Settings2 size={16} />
-                            <h5 className="text-[11px] font-black uppercase tracking-widest">Resurse Planificate</h5>
-                          </div>
-                          
-                          <div className="grid gap-2">
-                            {line.items.resources?.map((res) => {
-                              const isExcluded = line.excluded_resources.includes(res.id)
-                              const customPrice = line.custom_prices[res.id]
-                              
-                              return (
-                                <div 
-                                  key={res.id} 
-                                  className={`flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded-xl border transition-all gap-3 ${isExcluded ? 'opacity-40 grayscale bg-slate-100 dark:bg-slate-900/50 border-transparent' : 'bg-white dark:bg-slate-900 border-border shadow-sm'}`}
+                      <AnimatePresence>
+                        {isExpanded && (
+                          <motion.div 
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            className="overflow-hidden bg-slate-50/50 dark:bg-slate-800/20 border-t border-border/30"
+                          >
+                            <div className="p-4 md:p-6 space-y-4">
+                              <div className="flex items-center justify-between mb-2">
+                                <div className="flex items-center gap-2 text-primary">
+                                  <Settings2 size={16} />
+                                  <h5 className="text-[11px] font-black uppercase tracking-widest">Rețetă Resurse & Consumuri</h5>
+                                </div>
+                                <button 
+                                  onClick={() => handleAddResource(line.id)}
+                                  className="text-[10px] font-bold text-primary hover:underline flex items-center gap-1"
                                 >
-                                  <div className="flex items-center gap-3">
-                                    <input 
-                                      type="checkbox" 
-                                      checked={!isExcluded}
-                                      onChange={() => handleToggleResource(line.id, res.id)}
-                                      className="w-5 h-5 rounded border-slate-300 text-primary focus:ring-primary shrink-0"
-                                    />
-                                    <div>
-                                      <div className="text-sm font-bold leading-snug">{res.name}</div>
-                                      <div className="text-[10px] text-slate-400 uppercase font-black tracking-tight">{res.type} • {res.consumption} {res.um} / {line.items.um}</div>
-                                    </div>
-                                  </div>
-
-                                  <div className="flex items-center justify-end gap-3 pl-8 sm:pl-0 border-t sm:border-0 pt-2 sm:pt-0 border-slate-100 dark:border-slate-800">
-                                    <div className="text-right">
-                                      <div className="text-[9px] text-slate-400 uppercase font-black">Preț Unitar (Lei)</div>
-                                      <div className="flex items-center gap-2">
+                                  <Plus size={12} /> Adaugă Resursă
+                                </button>
+                              </div>
+                              
+                              <div className="grid gap-3">
+                                {ensureResourcesOverride(line).map((res: any) => {
+                                  const isExcluded = line.excluded_resources.includes(res.id)
+                                  const customPrice = line.custom_prices[res.id]
+                                  
+                                  return (
+                                    <div 
+                                      key={res.id} 
+                                      className={`flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-2xl border transition-all gap-4 ${isExcluded ? 'opacity-40 grayscale bg-slate-100 dark:bg-slate-900/50 border-transparent' : 'bg-white dark:bg-slate-900 border-border shadow-sm group/res'}`}
+                                    >
+                                      <div className="flex items-center gap-4 flex-1">
                                         <input 
-                                          type="number"
-                                          disabled={isExcluded}
-                                          className={`w-24 p-1.5 text-sm text-right bg-slate-50 dark:bg-slate-800 rounded font-mono focus:ring-1 focus:ring-primary/20 outline-none transition-all ${customPrice ? 'text-primary font-bold border-primary/30' : 'border-transparent'}`}
-                                          value={customPrice ?? res.unit_price}
-                                          onChange={(e) => handleUpdatePrice(line.id, res.id, e.target.value)}
+                                          type="checkbox" 
+                                          checked={!isExcluded}
+                                          onChange={() => handleToggleResource(line.id, res.id)}
+                                          className="w-5 h-5 rounded border-slate-300 text-primary focus:ring-primary shrink-0"
                                         />
+                                        <div className="flex-1 space-y-2">
+                                          <div className="flex items-center gap-2">
+                                            <select 
+                                              value={res.type}
+                                              onChange={(e) => handleUpdateResourceField(line.id, res.id, 'type', e.target.value)}
+                                              className="text-[9px] font-black uppercase tracking-tighter bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded border-none outline-none"
+                                            >
+                                              <option value="material">Mat</option>
+                                              <option value="labor">Man</option>
+                                              <option value="equipment">Util</option>
+                                              <option value="transport">Trans</option>
+                                            </select>
+                                            <input 
+                                              className="text-sm font-bold bg-transparent border-b border-border/30 focus:border-primary outline-none flex-1"
+                                              value={res.name}
+                                              onChange={(e) => handleUpdateResourceField(line.id, res.id, 'name', e.target.value)}
+                                            />
+                                          </div>
+                                          <div className="flex flex-wrap items-center gap-4 text-[10px] text-slate-400 font-bold uppercase tracking-tight">
+                                            <div className="flex items-center gap-1">
+                                              Consum: 
+                                              <input 
+                                                type="number"
+                                                className="w-12 bg-transparent border-b border-border/30 text-slate-600 dark:text-slate-300 outline-none"
+                                                value={res.consumption}
+                                                onChange={(e) => handleUpdateResourceField(line.id, res.id, 'consumption', e.target.value)}
+                                              />
+                                              <input 
+                                                className="w-8 bg-transparent border-b border-border/30 outline-none"
+                                                value={res.um}
+                                                onChange={(e) => handleUpdateResourceField(line.id, res.id, 'um', e.target.value)}
+                                              />
+                                            </div>
+                                            {res.type === 'material' && (
+                                              <div className="flex items-center gap-1 text-orange-500">
+                                                Pierderi: 
+                                                <input 
+                                                  type="number"
+                                                  className="w-8 bg-transparent border-b border-orange-500/30 text-orange-500 outline-none font-mono"
+                                                  value={res.waste_percent || 0}
+                                                  onChange={(e) => handleUpdateResourceField(line.id, res.id, 'waste_percent', e.target.value)}
+                                                /> %
+                                              </div>
+                                            )}
+                                          </div>
+                                        </div>
+                                      </div>
+
+                                      <div className="flex items-center justify-end gap-3 pl-8 sm:pl-0 border-t sm:border-0 pt-3 sm:pt-0 border-slate-100 dark:border-slate-800">
+                                        <div className="text-right">
+                                          <div className="text-[9px] text-slate-400 uppercase font-black">Preț Unitar (Lei)</div>
+                                          <div className="flex items-center gap-2">
+                                            <input 
+                                              type="number"
+                                              disabled={isExcluded}
+                                              className={`w-24 p-1.5 text-sm text-right bg-slate-50 dark:bg-slate-800 rounded font-mono focus:ring-1 focus:ring-primary/20 outline-none transition-all ${customPrice ? 'text-primary font-bold border-primary/30' : 'border-transparent'}`}
+                                              value={customPrice ?? res.unit_price}
+                                              onChange={(e) => handleUpdatePrice(line.id, res.id, e.target.value)}
+                                            />
+                                            <button 
+                                              onClick={() => setActiveOfferPicker({ resourceId: res.id, resourceName: res.name, lineId: line.id })}
+                                              className={`p-1.5 rounded bg-slate-100 dark:bg-slate-700 hover:text-primary transition-all ${customPrice ? 'text-primary' : 'text-slate-400'}`}
+                                              title="Compară prețuri magazine"
+                                            >
+                                              <Store size={14} />
+                                            </button>
+                                            <button 
+                                              onClick={() => handleDeleteResource(line.id, res.id)}
+                                              className="p-1.5 rounded bg-slate-100 dark:bg-slate-700 text-slate-300 hover:text-red-500 transition-all opacity-0 group-hover/res:opacity-100"
+                                            >
+                                              <Trash2 size={12} />
+                                            </button>
+                                          </div>
+                                        </div>
                                       </div>
                                     </div>
-                                  </div>
-                                </div>
-                              )
-                            })}
-                          </div>
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              )
-            })}
+                                  )
+                                })}
+                              </div>
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  )
+                })}
+              </div>
+            ))}
           </div>
         </div>
       </div>
+
+      {activeOfferPicker && (
+        <VendorOfferPicker 
+          projectId={projectId}
+          resourceId={activeOfferPicker.resourceId}
+          resourceName={activeOfferPicker.resourceName}
+          onSelect={(price) => {
+            handleUpdatePrice(activeOfferPicker.lineId, activeOfferPicker.resourceId, price.toString())
+          }}
+          onClose={() => setActiveOfferPicker(null)}
+        />
+      )}
     </div>
   )
 }

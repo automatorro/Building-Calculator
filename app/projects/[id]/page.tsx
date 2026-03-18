@@ -48,6 +48,20 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
     `)
     .eq('project_id', id)
 
+  // 3. Mapăm datele pentru a corespunde interfeței EstimateLine
+  const formattedLines = (estimateLines || []).map((line: any) => {
+    const item = Array.isArray(line.items) ? line.items[0] : line.items
+    const norm = item && Array.isArray(item.normatives) ? item.normatives[0] : item?.normatives
+    
+    return {
+      ...line,
+      items: item ? {
+        ...item,
+        normatives: norm || null
+      } : null
+    }
+  })
+
   return (
     <main className="min-h-screen p-8 max-w-7xl mx-auto">
       {/* Header Proiect */}
@@ -70,11 +84,13 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
         <ProjectActions 
           projectId={id} 
           initialDimensions={project.dimensions || {}} 
+          initialStages={project.stages || []}
         />
       </div>
 
       <EstimateEditor 
-        initialLines={estimateLines || []} 
+        projectId={id}
+        initialLines={formattedLines as any} 
         settings={project.settings} 
         dimensions={project.dimensions || {}}
       />

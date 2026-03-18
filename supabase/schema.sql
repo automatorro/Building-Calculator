@@ -125,50 +125,78 @@ CREATE TABLE IF NOT EXISTS projects (
     -- Coeficienți stocați ca JSONB (profit, regie, tva, taxe_manopera)
     settings JSONB DEFAULT '{"profit": 5, "regie": 10, "tva": 21, "taxe_manopera": 2.25}'::jsonb,
     dimensions JSONB DEFAULT '{}'::jsonb, -- Dimensiunile casei pentru Smart Calculator
+    stages JSONB DEFAULT '[]'::jsonb, -- Etapele proiectului (ex: ["Fundație", "Zidărie"])
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- 2. Tabel Linii Deviz (Articolele selectate pentru un proiect)
+-- 2. Tabel Magazine / Furnizori
+CREATE TABLE IF NOT EXISTS shops (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    location VARCHAR(255),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- 3. Tabel Linii Deviz (Articolele selectate pentru un proiect)
 CREATE TABLE IF NOT EXISTS estimate_lines (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     project_id UUID REFERENCES projects(id) ON DELETE CASCADE,
-    item_id UUID REFERENCES items(id) ON DELETE RESTRICT,
+    item_id UUID REFERENCES items(id) ON DELETE SET NULL, -- Facut optional pentru intrari manuale
+    stage_name VARCHAR(255), -- Asocierea cu o etapa din proiect
+    manual_name VARCHAR(255), -- Numele articolului daca este introdus manual
+    manual_um VARCHAR(50),   -- UM daca este introdus manual
     quantity NUMERIC(15, 4) DEFAULT 0,
+    manual_price NUMERIC(15, 4) DEFAULT 0,
+    manual_labor_price NUMERIC(15, 4) DEFAULT 0,
+    manual_equipment_price NUMERIC(15, 4) DEFAULT 0,
+    manual_transport_price NUMERIC(15, 4) DEFAULT 0,
+    resources_override JSONB DEFAULT '[]'::jsonb, -- map de resource_id -> full resource object local copy
     -- Dacă utilizatorul schimbă prețul generic pentru acest proiect specific
     custom_prices JSONB DEFAULT '{}'::jsonb, -- map de resource_id -> price
     -- Resursele dezactivate (opționale)
     excluded_resources UUID[] DEFAULT '{}',
-    metadata JSONB DEFAULT '{}'::jsonb, -- Informații suplimentare (ex: source: 'ocr', 'smart_calc', etc.)
+    metadata JSONB DEFAULT '{}'::jsonb, -- Informații suplimentare (ex: source: 'ocr', 'smart_link', etc.)
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- 3. Enable RLS
-ALTER TABLE projects ENABLE ROW LEVEL SECURITY;
-ALTER TABLE estimate_lines ENABLE ROW LEVEL SECURITY;
+-- 4. Tabel Oferte Furnizori (Preturi comparative per resursa)
+CREATE TABLE IF NOT EXISTS vendor_offers (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    project_id UUID REFERENCES projects(id) ON DELETE CASCADE,
+    shop_id UUID REFERENCES shops(id) ON DELETE CASCADE,
+    resource_id UUID, -- Referinta la o resursa din catalog sau o resursa manuala
+    manual_resource_name VARCHAR(255), -- Daca resursa nu e in catalog
+    unit_price NUMERIC(15, 4) NOT NULL,
+    is_selected BOOLEAN DEFAULT false,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
 
--- 4. RLS Policies (Using DO blocks to avoid "already exists" errors)
+-- 5. Enable RLS
+ALTER TABLE projects ENABLE ROW LEVEL SECURITY;
+ALTER TABLE shops ENABLE ROW LEVEL SECURITY;
+ALTER TABLE estimate_lines ENABLE ROW LEVEL SECURITY;
+ALTER TABLE vendor_offers ENABLE ROW LEVEL SECURITY;
+
+-- 6. RLS Policies
 DO $$ 
 BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Allow public read access to projects') THEN
-        CREATE POLICY "Allow public read access to projects" ON projects FOR SELECT USING (true);
-    END IF;
-    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Allow public insert to projects') THEN
-        CREATE POLICY "Allow public insert to projects" ON projects FOR INSERT WITH CHECK (true);
-    END IF;
-    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Allow public update to projects') THEN
-        CREATE POLICY "Allow public update to projects" ON projects FOR UPDATE USING (true);
+    -- Projects
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Allow public access to projects') THEN
+        CREATE POLICY "Allow public access to projects" ON projects FOR ALL USING (true);
     END IF;
 
-    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Allow public read access to estimate_lines') THEN
-        CREATE POLICY "Allow public read access to estimate_lines" ON estimate_lines FOR SELECT USING (true);
+    -- Shops
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Allow public access to shops') THEN
+        CREATE POLICY "Allow public access to shops" ON shops FOR ALL USING (true);
     END IF;
-    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Allow public insert to estimate_lines') THEN
-        CREATE POLICY "Allow public insert to estimate_lines" ON estimate_lines FOR INSERT WITH CHECK (true);
+
+    -- Estimate Lines
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Allow public access to estimate_lines') THEN
+        CREATE POLICY "Allow public access to estimate_lines" ON estimate_lines FOR ALL USING (true);
     END IF;
-    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Allow public update to estimate_lines') THEN
-        CREATE POLICY "Allow public update to estimate_lines" ON estimate_lines FOR UPDATE USING (true);
-    END IF;
-    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Allow public delete to estimate_lines') THEN
-        CREATE POLICY "Allow public delete to estimate_lines" ON estimate_lines FOR DELETE USING (true);
+
+    -- Vendor Offers
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Allow public access to vendor_offers') THEN
+        CREATE POLICY "Allow public access to vendor_offers" ON vendor_offers FOR ALL USING (true);
     END IF;
 END $$;

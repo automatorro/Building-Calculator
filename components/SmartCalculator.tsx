@@ -22,7 +22,7 @@ interface SmartCalculatorProps {
 }
 
 export default function SmartCalculator({ projectId, initialDimensions, onSave, onClose }: SmartCalculatorProps) {
-  const [dims, setDims] = useState<Dimensions>({
+  const [dims, setDims] = useState<Dimensions>(Object.assign({
     length: 10,
     width: 8,
     height: 3,
@@ -30,8 +30,7 @@ export default function SmartCalculator({ projectId, initialDimensions, onSave, 
     foundation_width: 0.6,
     slab_thickness: 0.15,
     wall_thickness: 0.25,
-    ...initialDimensions
-  })
+  }, initialDimensions))
   const [saving, setSaving] = useState(false)
 
   const handleChange = (key: keyof Dimensions, value: string) => {

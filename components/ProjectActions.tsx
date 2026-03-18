@@ -1,9 +1,11 @@
 'use client'
 
 import { useState } from 'react'
-import { Plus, Settings, Download, Lightbulb, FileSearch } from 'lucide-react'
+import { Plus, Settings, Download, Lightbulb, FileSearch, ClipboardList, Store } from 'lucide-react'
 import Link from 'next/link'
 import SmartCalculator from './SmartCalculator'
+import ProjectStagesManager from './ProjectStagesManager'
+import ShopManager from './ShopManager'
 import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
 import { processReinforcementTable } from '@/utils/ocr'
@@ -11,10 +13,13 @@ import { processReinforcementTable } from '@/utils/ocr'
 interface ProjectActionsProps {
   projectId: string
   initialDimensions: any
+  initialStages: string[]
 }
 
-export default function ProjectActions({ projectId, initialDimensions }: ProjectActionsProps) {
+export default function ProjectActions({ projectId, initialDimensions, initialStages }: ProjectActionsProps) {
   const [showSmartCalc, setShowSmartCalc] = useState(false)
+  const [showStages, setShowStages] = useState(false)
+  const [showShops, setShowShops] = useState(false)
   const router = useRouter()
   const supabase = createClient()
 
@@ -61,6 +66,24 @@ export default function ProjectActions({ projectId, initialDimensions }: Project
           <span className="hidden sm:inline text-sm">Smart Calc</span>
         </button>
 
+        <button 
+          onClick={() => setShowStages(true)}
+          className="flex items-center gap-2 p-3 bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-xl hover:bg-green-100 transition-all font-bold"
+          title="Etape Proiect"
+        >
+          <ClipboardList size={20} />
+          <span className="hidden lg:inline text-sm">Etape Proiect</span>
+        </button>
+
+        <button 
+          onClick={() => setShowShops(true)}
+          className="flex items-center gap-2 p-3 bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-xl hover:bg-orange-100 transition-all font-bold"
+          title="Furnizori / Magazine"
+        >
+          <Store size={20} />
+          <span className="hidden xl:inline text-sm">Furnizori</span>
+        </button>
+
         <label className="flex items-center gap-2 p-3 bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-xl hover:bg-purple-100 transition-all font-bold cursor-pointer" title="Importă Extras Armare (OCR)">
           <FileSearch size={20} />
           <span className="hidden sm:inline text-sm">Importă Extras</span>
@@ -92,6 +115,18 @@ export default function ProjectActions({ projectId, initialDimensions }: Project
           initialDimensions={initialDimensions}
           onSave={handleSaveDimensions}
           onClose={() => setShowSmartCalc(false)}
+        />
+      )}
+      {showStages && (
+        <ProjectStagesManager 
+          projectId={projectId}
+          initialStages={initialStages}
+          onClose={() => setShowStages(false)}
+        />
+      )}
+      {showShops && (
+        <ShopManager 
+          onClose={() => setShowShops(false)}
         />
       )}
     </>
