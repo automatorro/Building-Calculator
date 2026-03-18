@@ -3,6 +3,7 @@ export interface EstimateLine {
   quantity: number
   custom_prices: Record<string, number>
   excluded_resources: string[]
+  metadata?: any
   items: {
     id: string
     code: string

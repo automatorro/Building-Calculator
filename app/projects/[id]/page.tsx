@@ -5,6 +5,7 @@ export const dynamic = 'force-dynamic'
 import { ArrowLeft, Plus, Settings, FileText, Download } from 'lucide-react'
 import { notFound } from 'next/navigation'
 import EstimateEditor from '@/components/EstimateEditor'
+import ProjectActions from '@/components/ProjectActions'
 
 export default async function ProjectDetailPage({ params }: { params: { id: string } }) {
   const supabase = await createClient()
@@ -66,26 +67,16 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
-          <button className="p-3 bg-slate-100 dark:bg-slate-800 rounded-xl hover:text-primary transition-all">
-            <Download size={20} />
-          </button>
-          <button className="p-3 bg-slate-100 dark:bg-slate-800 rounded-xl hover:text-primary transition-all">
-            <Settings size={20} />
-          </button>
-          <Link 
-            href={`/catalog?projectId=${id}`}
-            className="bg-primary text-white px-6 py-3 rounded-2xl font-bold shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all flex items-center gap-2"
-          >
-            <Plus size={20} />
-            Adaugă Articol
-          </Link>
-        </div>
+        <ProjectActions 
+          projectId={id} 
+          initialDimensions={project.dimensions || {}} 
+        />
       </div>
 
       <EstimateEditor 
         initialLines={estimateLines || []} 
         settings={project.settings} 
+        dimensions={project.dimensions || {}}
       />
     </main>
   )

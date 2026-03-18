@@ -138,6 +138,7 @@ CREATE TABLE IF NOT EXISTS estimate_lines (
     custom_prices JSONB DEFAULT '{}'::jsonb, -- map de resource_id -> price
     -- Resursele dezactivate (opționale)
     excluded_resources UUID[] DEFAULT '{}',
+    metadata JSONB DEFAULT '{}'::jsonb, -- Informații suplimentare (ex: source: 'ocr', 'smart_calc', etc.)
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 

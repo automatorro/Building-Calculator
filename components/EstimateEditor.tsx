@@ -1,23 +1,46 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
-import { Plus, Trash2, Save, Info, ChevronDown, ChevronUp, Settings2, CheckCircle2 } from 'lucide-react'
+import { Plus, Trash2, Save, Info, ChevronDown, ChevronUp, Settings2, CheckCircle2, Lightbulb } from 'lucide-react'
 import { createClient } from '@/utils/supabase/client'
 import { calculateLineCosts, calculateProjectTotal, EstimateLine, ProjectSettings } from '@/utils/calculators/estimate'
 import { motion, AnimatePresence } from 'framer-motion'
 
 export default function EstimateEditor({ 
   initialLines, 
-  settings 
+  settings,
+  dimensions = {}
 }: { 
-  initialLines: any[], 
-  settings: ProjectSettings 
+  initialLines: EstimateLine[], 
+  settings: ProjectSettings,
+  dimensions?: any
 }) {
   const [lines, setLines] = useState<EstimateLine[]>(initialLines)
   const [loading, setLoading] = useState(false)
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const [isSaved, setIsSaved] = useState(false)
   const supabase = createClient()
+
+  // Calculăm valorile "Smart" disponibile bazate pe dimensiuni
+  const smartValues = useMemo(() => {
+    const d = {
+      length: 10, width: 8, height: 3, 
+      foundation_depth: 0.8, foundation_width: 0.6, 
+      slab_thickness: 0.15, wall_thickness: 0.25,
+      ...dimensions
+    }
+    const area = d.length * d.width
+    const perimeter = (d.length + d.width) * 2
+    
+    return {
+      'foundation_concrete': perimeter * d.foundation_depth * d.foundation_width,
+      'slab_concrete': area * d.slab_thickness,
+      'wall_volume': perimeter * d.height * d.wall_thickness,
+      'formwork_area': (perimeter * 0.5) + (perimeter * d.height),
+      'excavation_volume': perimeter * d.foundation_depth * d.foundation_width * 1.2,
+      'floor_area': area
+    }
+  }, [dimensions])
 
   const totals = useMemo(() => calculateProjectTotal(lines, settings), [lines, settings])
 
@@ -55,13 +78,24 @@ export default function EstimateEditor({
         .update({
           quantity: line.quantity,
           custom_prices: line.custom_prices,
-          excluded_resources: line.excluded_resources
+          excluded_resources: line.excluded_resources,
+          metadata: line.metadata // Salvăm metadatele (inclusiv smart_link)
         })
         .eq('id', line.id)
     }
     setLoading(false)
     setIsSaved(true)
     setTimeout(() => setIsSaved(false), 2000)
+  }
+
+  const handleSmartLink = (lineId: string, formulaKey: string | null) => {
+    setLines(lines.map(l => {
+      if (l.id !== lineId) return l
+      const newMetadata = { ...l.metadata, smart_link: formulaKey }
+      const newQuantity = formulaKey ? (smartValues as any)[formulaKey] : l.quantity
+      return { ...l, metadata: newMetadata, quantity: newQuantity }
+    }))
+    setIsSaved(false)
   }
 
   return (
@@ -154,13 +188,48 @@ export default function EstimateEditor({
                       <div className="flex items-center justify-between md:justify-end gap-6 pt-2 md:pt-0 border-t md:border-0 border-border/30">
                         <div className="text-left md:text-right">
                           <label className="block text-[10px] text-slate-400 mb-1 uppercase tracking-widest font-black">Cantitate</label>
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2 relative">
                             <input 
                               type="number" 
-                              className="w-20 md:w-24 p-2 text-right bg-slate-100 dark:bg-slate-800 rounded-lg font-mono font-bold focus:ring-1 focus:ring-primary/30 outline-none"
-                              value={line.quantity}
+                              disabled={!!line.metadata?.smart_link}
+                              className={`w-20 md:w-24 p-2 text-right rounded-lg font-mono font-bold focus:ring-1 focus:ring-primary/30 outline-none transition-all ${line.metadata?.smart_link ? 'bg-blue-50 text-blue-600 border-blue-200 cursor-not-allowed' : 'bg-slate-100 dark:bg-slate-800 border-transparent'}`}
+                              value={line.quantity.toFixed(2)}
                               onChange={(e) => handleUpdateQuantity(line.id, e.target.value)}
                             />
+                            
+                            {/* Smart Link Dropdown / Toggle */}
+                            <div className="relative group/smart">
+                              <button 
+                                className={`p-1.5 rounded-md transition-all ${line.metadata?.smart_link ? 'bg-primary text-white' : 'text-slate-300 hover:text-primary'}`}
+                                title={line.metadata?.smart_link ? `Calculat prin: ${line.metadata.smart_link}` : "Leagă de Smart Calculator"}
+                              >
+                                <Lightbulb size={16} />
+                              </button>
+                              
+                              <div className="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-slate-900 border border-border rounded-xl shadow-xl opacity-0 translate-y-2 pointer-events-none group-hover/smart:opacity-100 group-hover/smart:translate-y-0 group-hover/smart:pointer-events-auto transition-all z-30">
+                                <div className="p-2 border-b border-border text-[10px] font-black text-slate-400 uppercase tracking-widest">Alege Formulă</div>
+                                <div className="p-1 space-y-1">
+                                  {Object.keys(smartValues).map((key) => (
+                                    <button
+                                      key={key}
+                                      onClick={() => handleSmartLink(line.id, key)}
+                                      className={`w-full text-left p-2 text-xs rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 transition-colors ${line.metadata?.smart_link === key ? 'text-primary font-bold' : ''}`}
+                                    >
+                                      {key.replace('_', ' ')}
+                                    </button>
+                                  ))}
+                                  {line.metadata?.smart_link && (
+                                    <button
+                                      onClick={() => handleSmartLink(line.id, null)}
+                                      className="w-full text-left p-2 text-xs rounded-lg text-red-500 hover:bg-red-50 transition-colors border-t border-border mt-1"
+                                    >
+                                      Deleagă (Manual)
+                                    </button>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+
                             <span className="text-xs font-bold text-slate-400">{line.items.um}</span>
                           </div>
                         </div>
