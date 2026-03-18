@@ -1,5 +1,7 @@
 import { createClient } from '@/utils/supabase/server'
 import Link from 'next/link'
+
+export const dynamic = 'force-dynamic'
 import { ArrowLeft, Plus, Settings, FileText, Download } from 'lucide-react'
 import { notFound } from 'next/navigation'
 import EstimateEditor from '@/components/EstimateEditor'

@@ -1,5 +1,7 @@
 import { createClient } from '@/utils/supabase/server'
 import Link from 'next/link'
+
+export const dynamic = 'force-dynamic'
 import { Plus, Briefcase, MapPin, Calendar, ArrowRight } from 'lucide-react'
 
 export default async function ProjectsPage() {

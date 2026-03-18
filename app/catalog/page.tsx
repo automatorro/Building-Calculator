@@ -1,6 +1,8 @@
 import { createClient } from '@/utils/supabase/server'
 import CatalogFilter from '@/components/CatalogFilter'
 
+export const dynamic = 'force-dynamic'
+
 export default async function CatalogPage({
   searchParams,
 }: {

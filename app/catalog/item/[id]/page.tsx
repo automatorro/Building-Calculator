@@ -1,5 +1,7 @@
 import { createClient } from '@/utils/supabase/server'
 import { notFound } from 'next/navigation'
+
+export const dynamic = 'force-dynamic'
 import { ArrowLeft, HardHat, Hammer, Truck, Box } from 'lucide-react'
 
 export default async function ItemDetailPage({ params }: { params: { id: string } }) {
