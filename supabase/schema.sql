@@ -126,6 +126,8 @@ CREATE TABLE IF NOT EXISTS projects (
     settings JSONB DEFAULT '{"profit": 5, "regie": 10, "tva": 21, "taxe_manopera": 2.25}'::jsonb,
     dimensions JSONB DEFAULT '{}'::jsonb, -- Dimensiunile casei pentru Smart Calculator
     stages JSONB DEFAULT '[]'::jsonb, -- Etapele proiectului (ex: ["Fundație", "Zidărie"])
+    total_estimated_revenue NUMERIC(15, 4) DEFAULT 0, -- Venit estimat (vânzare)
+    target_completion_date DATE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
@@ -171,11 +173,25 @@ CREATE TABLE IF NOT EXISTS vendor_offers (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
+-- 5. Tabel Achiziții (Input real de costuri)
+CREATE TABLE IF NOT EXISTS purchases (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    project_id UUID REFERENCES projects(id) ON DELETE CASCADE,
+    stage_name VARCHAR(255),
+    name VARCHAR(255) NOT NULL,
+    amount_total NUMERIC(15, 4) NOT NULL,
+    date DATE DEFAULT CURRENT_DATE,
+    category VARCHAR(100), -- Material, Manopera, Utilaj, Transport, Altele
+    supplier_id UUID REFERENCES shops(id) ON DELETE SET NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
 -- 5. Enable RLS
 ALTER TABLE projects ENABLE ROW LEVEL SECURITY;
 ALTER TABLE shops ENABLE ROW LEVEL SECURITY;
 ALTER TABLE estimate_lines ENABLE ROW LEVEL SECURITY;
 ALTER TABLE vendor_offers ENABLE ROW LEVEL SECURITY;
+ALTER TABLE purchases ENABLE ROW LEVEL SECURITY;
 
 -- 6. RLS Policies
 DO $$ 
@@ -198,5 +214,10 @@ BEGIN
     -- Vendor Offers
     IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Allow public access to vendor_offers') THEN
         CREATE POLICY "Allow public access to vendor_offers" ON vendor_offers FOR ALL USING (true);
+    END IF;
+
+    -- Purchases
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Allow public access to purchases') THEN
+        CREATE POLICY "Allow public access to purchases" ON purchases FOR ALL USING (true);
     END IF;
 END $$;

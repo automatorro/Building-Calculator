@@ -20,8 +20,11 @@ export default function NewProjectPage() {
     profit: 5,
     regie: 10,
     tva: 21,
-    taxe_manopera: 2.25
+    taxe_manopera: 2.25,
+    total_estimated_revenue: 0
   })
+
+  const DEFAULT_STAGES = ["Organizare Șantier", "Fundație", "Structură", "Zidărie", "Instalații", "Finisaje Interioare", "Finisaje Exterioare"]
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -39,7 +42,9 @@ export default function NewProjectPage() {
             regie: formData.regie,
             tva: formData.tva,
             taxe_manopera: formData.taxe_manopera
-          }
+          },
+          stages: DEFAULT_STAGES,
+          total_estimated_revenue: formData.total_estimated_revenue
         }
       ])
       .select()
@@ -165,20 +170,21 @@ export default function NewProjectPage() {
               </div>
             </div>
 
-            <div className="p-4 bg-white dark:bg-slate-900 border border-border rounded-xl opacity-60">
-              <label className="block text-[10px] sm:text-xs font-black text-slate-400 mb-1 uppercase tracking-widest">
-                CAM (Manoperă %)
+            <div className="p-4 bg-white dark:bg-slate-900 border border-border rounded-xl ring-2 ring-primary/20">
+              <label className="block text-[10px] sm:text-xs font-black text-primary mb-2 uppercase tracking-widest">
+                Venit Estimat Proiect (Vânzare)
               </label>
               <div className="flex items-center gap-3">
-                <Percent className="w-4 h-4 text-slate-400 shrink-0" />
+                <TrendingUp className="w-4 h-4 text-primary shrink-0" />
                 <input
-                  disabled
                   type="number"
-                  className="w-full text-xl sm:text-2xl font-bold bg-transparent focus:outline-none cursor-not-allowed"
-                  value={formData.taxe_manopera}
+                  placeholder="ex: 500000"
+                  className="w-full text-xl sm:text-2xl font-black bg-transparent focus:outline-none"
+                  value={formData.total_estimated_revenue}
+                  onChange={(e) => setFormData({ ...formData, total_estimated_revenue: parseFloat(e.target.value) || 0 })}
                 />
               </div>
-              <p className="text-[9px] text-slate-400 mt-1 italic">Legislație 2024</p>
+              <p className="text-[9px] text-slate-400 mt-1 italic">Crucial pentru calculul ROI și Cashflow</p>
             </div>
           </div>
         </div>

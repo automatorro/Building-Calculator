@@ -1,17 +1,17 @@
 import { createClient } from '@/utils/supabase/server'
 import Link from 'next/link'
+import { ArrowLeft, FileText } from 'lucide-react'
+import { notFound } from 'next/navigation'
+import ProjectClientContainer from '@/components/ProjectClientContainer'
+import ProjectActions from '@/components/ProjectActions'
 
 export const dynamic = 'force-dynamic'
-import { ArrowLeft, Plus, Settings, FileText, Download } from 'lucide-react'
-import { notFound } from 'next/navigation'
-import EstimateEditor from '@/components/EstimateEditor'
-import ProjectActions from '@/components/ProjectActions'
 
 export default async function ProjectDetailPage({ params }: { params: { id: string } }) {
   const supabase = await createClient()
   const { id } = await params
 
-  // 1. Preia datele proiectului
+  // 1. Preia datele proiectului (inclusiv noul venit estimat)
   const { data: project, error: projectError } = await supabase
     .from('projects')
     .select('*')
@@ -22,33 +22,29 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
     return notFound()
   }
 
-  // 2. Preia liniile de deviz (estimate lines) cu datele articolelor din catalog
-  const { data: estimateLines, error: linesError } = await supabase
+  // 2. Preia liniile de deviz (Planificare)
+  const { data: estimateLines } = await supabase
     .from('estimate_lines')
     .select(`
-      id,
-      quantity,
-      custom_prices,
-      excluded_resources,
+      *,
       items (
-        id,
-        code,
-        name,
-        um,
+        *,
         normatives (code),
         resources (
-          id,
-          type,
-          name,
-          um,
-          consumption,
-          unit_price
+          *
         )
       )
     `)
     .eq('project_id', id)
 
-  // 3. Mapăm datele pentru a corespunde interfeței EstimateLine
+  // 3. Preia achizițiile reale (Realizat)
+  const { data: purchases } = await supabase
+    .from('purchases')
+    .select('*')
+    .eq('project_id', id)
+    .order('date', { ascending: false })
+
+  // 4. Mapăm datele pentru a corespunde interfeței EstimateLine (compatibilitate cu Phase 5)
   const formattedLines = (estimateLines || []).map((line: any) => {
     const item = Array.isArray(line.items) ? line.items[0] : line.items
     const norm = item && Array.isArray(item.normatives) ? item.normatives[0] : item?.normatives
@@ -57,24 +53,24 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
       ...line,
       items: item ? {
         ...item,
-        normatives: norm || null
+        normatives: norm || null,
+        resources: item.resources || []
       } : null
     }
   })
 
   return (
-    <main className="min-h-screen p-8 max-w-7xl mx-auto">
-      {/* Header Proiect */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
-        <div className="space-y-2">
-          <Link href="/projects" className="inline-flex items-center gap-2 text-slate-500 hover:text-primary transition-colors mb-2 group">
-            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-            Înapoi la toate proiectele
+    <main className="min-h-screen p-4 md:p-8 max-w-7xl mx-auto space-y-8">
+      {/* Header Minimalist */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="space-y-1">
+          <Link href="/projects" className="inline-flex items-center gap-2 text-slate-500 hover:text-primary transition-colors mb-2 group text-xs font-bold uppercase tracking-widest">
+            <ArrowLeft className="w-3 h-3 group-hover:-translate-x-1 transition-transform" />
+            Proiecte
           </Link>
-          <h1 className="text-4xl font-black">{project.name}</h1>
-          <div className="flex items-center gap-4 text-slate-500 text-sm">
+          <div className="flex items-center gap-4 text-slate-400 text-[10px] font-black uppercase tracking-tighter">
             <span className="flex items-center gap-1">
-              <FileText size={14} /> ID: {id.slice(0, 8)}
+              <FileText size={12} /> {id.slice(0, 8)}
             </span>
             <span>•</span>
             <span>{project.location || 'Locație nespecificată'}</span>
@@ -88,11 +84,14 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
         />
       </div>
 
-      <EstimateEditor 
+      <ProjectClientContainer 
         projectId={id}
-        initialLines={formattedLines as any} 
-        settings={project.settings} 
+        projectName={project.name}
+        initialLines={formattedLines as any}
+        initialPurchases={purchases || []}
+        settings={project.settings}
         dimensions={project.dimensions || {}}
+        totalEstimatedRevenue={project.total_estimated_revenue || 0}
       />
     </main>
   )
