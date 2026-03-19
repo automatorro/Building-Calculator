@@ -17,6 +17,8 @@ export interface EstimateLine {
     code: string
     name: string
     um: string
+    category_id?: string
+    normative_id?: string
     normatives: { code: string } | null
     resources?: Resource[]
   } | null

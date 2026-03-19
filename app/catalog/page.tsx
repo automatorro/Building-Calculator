@@ -32,6 +32,7 @@ export default async function CatalogPage({
       code,
       name,
       um,
+      user_id,
       categories (name),
       normatives (code)
     `)

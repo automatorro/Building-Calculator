@@ -10,6 +10,7 @@ interface Item {
   code: string
   name: string
   um: string
+  user_id?: string | null
   categories: { name: string } | null
   normatives: { code: string } | null
 }
@@ -22,19 +23,26 @@ export default function CatalogFilter({
   projectId?: string | null 
 }) {
   const [search, setSearch] = useState('')
+  const [filterType, setFilterType] = useState<'all' | 'personal'>('all')
   const [addingId, setAddingId] = useState<string | null>(null)
+  const [showCreateModal, setShowCreateModal] = useState(false)
   const supabase = createClient()
   const router = useRouter()
 
   const filteredItems = useMemo(() => {
-    if (!search) return initialItems
+    let items = initialItems
+    if (filterType === 'personal') {
+      items = initialItems.filter(item => item.user_id !== null)
+    }
+
+    if (!search) return items
     const lowerSearch = search.toLowerCase()
-    return initialItems.filter(item => 
+    return items.filter(item => 
       item.name.toLowerCase().includes(lowerSearch) ||
       item.code.toLowerCase().includes(lowerSearch) ||
       (item.normatives?.code.toLowerCase().includes(lowerSearch))
     )
-  }, [search, initialItems])
+  }, [search, initialItems, filterType])
 
   const handleAddItem = async (itemId: string) => {
     if (!projectId) return
@@ -61,6 +69,26 @@ export default function CatalogFilter({
     }
   }
 
+  const handleCreateNewItem = async (newItem: any) => {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return alert('Te rugăm să te autentifici!')
+
+    const { data, error } = await supabase
+      .from('items')
+      .insert([{
+        ...newItem,
+        user_id: user.id,
+        code: `USER-${Math.random().toString(36).slice(2, 7).toUpperCase()}`
+      }])
+      .select()
+    
+    if (data) {
+      setShowCreateModal(false)
+      router.refresh()
+    }
+    if (error) console.error(error)
+  }
+
   return (
     <div className="lg:col-span-2 space-y-6">
       <div className="relative group">
@@ -85,11 +113,30 @@ export default function CatalogFilter({
       </div>
 
       <div className="space-y-4">
-        <div className="flex justify-between items-center px-1">
-          <h2 className="text-2xl font-bold">Articole de Deviz</h2>
-          <span className="text-sm font-medium text-slate-400">
-            {filteredItems.length} {filteredItems.length === 1 ? 'articol' : 'articole'} găsite
-          </span>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 px-1">
+          <div className="flex items-center gap-4">
+            <h2 className="text-2xl font-bold">Articole de Deviz</h2>
+            <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-lg text-[10px] font-black uppercase tracking-widest">
+              <button 
+                onClick={() => setFilterType('all')}
+                className={`px-3 py-1.5 rounded-md transition-all ${filterType === 'all' ? 'bg-white dark:bg-slate-700 shadow-sm text-primary' : 'text-slate-400'}`}
+              >
+                Toate
+              </button>
+              <button 
+                onClick={() => setFilterType('personal')}
+                className={`px-3 py-1.5 rounded-md transition-all ${filterType === 'personal' ? 'bg-white dark:bg-slate-700 shadow-sm text-primary' : 'text-slate-400'}`}
+              >
+                Biblioteca Mea
+              </button>
+            </div>
+          </div>
+          <button 
+            onClick={() => setShowCreateModal(true)}
+            className="bg-primary text-white text-xs font-black uppercase tracking-widest px-4 py-2 rounded-xl hover:shadow-lg transition-all flex items-center gap-2"
+          >
+            <PlusCircle size={14} /> Crează Articol Master
+          </button>
         </div>
 
         {filteredItems.length > 0 ? (
@@ -100,9 +147,16 @@ export default function CatalogFilter({
                 className="group relative p-5 bg-white dark:bg-slate-900 border border-border rounded-xl hover:border-primary/50 transition-all hover:shadow-md"
               >
                 <div className="flex justify-between items-start mb-2">
-                  <span className="text-xs font-mono font-bold text-primary bg-primary/5 px-2 py-0.5 rounded">
-                    {item.normatives?.code} {item.code}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-mono font-bold text-primary bg-primary/5 px-2 py-0.5 rounded">
+                      {item.normatives?.code} {item.code}
+                    </span>
+                    {item.user_id && (
+                      <span className="text-[9px] font-black uppercase tracking-widest bg-blue-500/10 text-blue-500 px-2 py-0.5 rounded border border-blue-500/10">
+                        Personal
+                      </span>
+                    )}
+                  </div>
                   <span className="text-xs text-slate-400 font-medium">u.m. {item.um}</span>
                 </div>
                 
@@ -151,7 +205,59 @@ export default function CatalogFilter({
           </div>
         )}
       </div>
+
+      {showCreateModal && (
+        <CreateItemModal 
+          onClose={() => setShowCreateModal(false)}
+          onSave={handleCreateNewItem}
+        />
+      )}
     </div>
   )
 }
 
+
+function CreateItemModal({ onClose, onSave }: { onClose: () => void, onSave: (item: any) => void }) {
+  const [formData, setFormData] = useState({
+    name: '',
+    um: 'buc',
+    category_id: ''
+  })
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4">
+      <div className="w-full max-w-md bg-white dark:bg-slate-900 rounded-3xl shadow-2xl p-8 space-y-6">
+        <h3 className="text-xl font-black">Adaugă Articol în Bibliotecă</h3>
+        <div className="space-y-4">
+          <div>
+            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 block mb-1">Denumire Articol</label>
+            <input 
+              className="w-full p-4 bg-slate-100 dark:bg-slate-800 rounded-2xl border-none outline-none font-bold"
+              placeholder="Ex: Montaj ferestre PVC"
+              value={formData.name}
+              onChange={e => setFormData({...formData, name: e.target.value})}
+            />
+          </div>
+          <div>
+            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 block mb-1">Unitate de Măsură</label>
+            <input 
+              className="w-full p-4 bg-slate-100 dark:bg-slate-800 rounded-2xl border-none outline-none font-bold"
+              placeholder="Ex: mp, buc, kg"
+              value={formData.um}
+              onChange={e => setFormData({...formData, um: e.target.value})}
+            />
+          </div>
+        </div>
+        <div className="flex gap-4 pt-4">
+          <button onClick={onClose} className="flex-1 py-4 font-bold text-slate-500 hover:bg-slate-100 rounded-2xl transition-all">Anulează</button>
+          <button 
+            onClick={() => onSave(formData)}
+            className="flex-1 py-4 bg-primary text-white font-black uppercase tracking-widest rounded-2xl shadow-lg transition-all"
+          >
+            Salvează
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}

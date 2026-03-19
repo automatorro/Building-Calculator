@@ -29,6 +29,8 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
       *,
       items (
         *,
+        category_id,
+        normative_id,
         normatives (code),
         resources (
           *

@@ -2,10 +2,10 @@
 
 export const dynamic = 'force-dynamic'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/utils/supabase/client'
-import { ArrowLeft, Save, Building2, MapPin, Percent, TrendingUp, Info } from 'lucide-react'
+import { ArrowLeft, Save, Building2, MapPin, Percent, TrendingUp, Info, LayoutTemplate, Check } from 'lucide-react'
 import Link from 'next/link'
 
 export default function NewProjectPage() {
@@ -24,6 +24,17 @@ export default function NewProjectPage() {
     total_estimated_revenue: 0
   })
 
+  const [templates, setTemplates] = useState<any[]>([])
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null)
+
+  useEffect(() => {
+    const fetchTemplates = async () => {
+      const { data } = await supabase.from('project_templates').select('*').order('created_at', { ascending: false })
+      if (data) setTemplates(data)
+    }
+    fetchTemplates()
+  }, [])
+
   const DEFAULT_STAGES = ["Organizare Șantier", "Fundație", "Structură", "Zidărie", "Instalații", "Finisaje Interioare", "Finisaje Exterioare"]
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -31,7 +42,18 @@ export default function NewProjectPage() {
     setLoading(true)
     setError(null)
 
-    const { data, error } = await supabase
+    let finalStages = DEFAULT_STAGES
+    let templateLines: any[] = []
+
+    if (selectedTemplateId) {
+      const t = templates.find(tpl => tpl.id === selectedTemplateId)
+      if (t) {
+        finalStages = t.stages
+        templateLines = t.lines_snapshot
+      }
+    }
+
+    const { data: project, error: projectError } = await supabase
       .from('projects')
       .insert([
         { 
@@ -43,23 +65,43 @@ export default function NewProjectPage() {
             tva: formData.tva,
             taxe_manopera: formData.taxe_manopera
           },
-          stages: DEFAULT_STAGES,
+          stages: finalStages,
           total_estimated_revenue: formData.total_estimated_revenue
         }
       ])
       .select()
+      .single()
 
-    if (error) {
-      setError(error.message)
+    if (projectError) {
+      setError(projectError.message)
       setLoading(false)
-    } else if (data) {
-      router.push(`/projects/${data[0].id}`)
+      return
+    }
+
+    if (project && templateLines.length > 0) {
+      const { error: linesError } = await supabase
+        .from('estimate_lines')
+        .insert(templateLines.map(l => ({
+          project_id: project.id,
+          manual_name: l.manual_name,
+          manual_um: l.manual_um,
+          quantity: l.quantity,
+          stage_name: l.stage_name,
+          resources_override: l.resources || [],
+          category_id: l.category_id,
+          normative_id: l.normative_id
+        })))
+      if (linesError) console.error('Error cloning template lines:', linesError)
+    }
+
+    if (project) {
+      router.push(`/projects/${project.id}`)
       router.refresh()
     }
   }
 
   return (
-    <main className="min-h-screen p-4 sm:p-8 max-w-3xl mx-auto">
+    <main className="min-h-screen p-4 sm:p-8 max-w-3xl mx-auto text-slate-900 dark:text-white">
       <Link href="/projects" className="inline-flex items-center gap-2 text-slate-500 hover:text-primary mb-6 sm:mb-8 transition-colors group">
         <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
         Înapoi la Proiecte
@@ -75,7 +117,7 @@ export default function NewProjectPage() {
         <div className="glass-card p-5 sm:p-8">
           <div className="flex items-center gap-3 mb-6 text-primary">
             <Building2 className="w-6 h-6" />
-            <h2 className="text-xl font-bold text-slate-900 dark:text-white">Informații Generale</h2>
+            <h2 className="text-xl font-bold">Informații Generale</h2>
           </div>
           
           <div className="grid gap-6">
@@ -110,20 +152,59 @@ export default function NewProjectPage() {
           </div>
         </div>
 
+        {/* Sectiune Alegere Sablon */}
+        <div className="glass-card p-5 sm:p-8 border-indigo-500/10 bg-indigo-500/[0.01]">
+          <div className="flex items-center gap-3 mb-6 text-indigo-600">
+            <LayoutTemplate className="w-6 h-6" />
+            <h2 className="text-xl font-bold">Alege un Șablon</h2>
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <button
+              type="button"
+              onClick={() => setSelectedTemplateId(null)}
+              className={`p-4 rounded-2xl border-2 text-left transition-all ${!selectedTemplateId ? 'border-primary bg-primary/[0.02] shadow-md' : 'border-slate-100 dark:border-slate-800 hover:border-slate-200 bg-white dark:bg-slate-900'}`}
+            >
+              <div className="flex justify-between items-start mb-2">
+                <div className="p-2 bg-slate-100 dark:bg-slate-800 rounded-lg text-slate-400"><Building2 size={16} /></div>
+                {!selectedTemplateId && <Check className="text-primary w-5 h-5" />}
+              </div>
+              <h4 className="font-bold text-sm">Standard (Goluț)</h4>
+              <p className="text-[10px] text-slate-500 mt-1">Doar etapele de bază, fără articole pre-configurate.</p>
+            </button>
+
+            {templates.map(t => (
+              <button
+                key={t.id}
+                type="button"
+                onClick={() => setSelectedTemplateId(t.id)}
+                className={`p-4 rounded-2xl border-2 text-left transition-all ${selectedTemplateId === t.id ? 'border-primary bg-primary/[0.02] shadow-md' : 'border-slate-100 dark:border-slate-800 hover:border-slate-200 bg-white dark:bg-slate-900'}`}
+              >
+                <div className="flex justify-between items-start mb-2">
+                  <div className="p-2 bg-indigo-100 dark:bg-indigo-900/40 rounded-lg text-indigo-500"><LayoutTemplate size={16} /></div>
+                  {selectedTemplateId === t.id && <Check className="text-primary w-5 h-5" />}
+                </div>
+                <h4 className="font-bold text-sm truncate">{t.name}</h4>
+                <p className="text-[10px] text-slate-500 mt-1">{t.lines_snapshot?.length || 0} articole salvate.</p>
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* Sectiune Setări Economice (Coeficienți) */}
         <div className="glass-card p-5 sm:p-8 bg-primary/[0.02]">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3 text-primary">
               <TrendingUp className="w-6 h-6" />
-              <h2 className="text-xl font-bold text-slate-900 dark:text-white">Coeficienți & Recapitație</h2>
+              <h2 className="text-xl font-bold">Coeficienți & Recapitație</h2>
             </div>
-            <div className="p-2 bg-blue-50 text-blue-600 rounded-lg" title="Aceste valori vor fi folosite pentru calculul prețului final de ofertă.">
+            <div className="p-2 bg-blue-50 dark:bg-blue-900/30 text-blue-600 rounded-lg" title="Aceste valori vor fi folosite pentru calculul prețului final de ofertă.">
               <Info className="w-4 h-4 text-primary" />
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-            <div className="p-4 bg-white dark:bg-slate-900 border border-border rounded-xl">
+            <div className="p-4 bg-white dark:bg-slate-950 border border-border rounded-xl">
               <label className="block text-[10px] sm:text-xs font-black text-slate-400 mb-2 uppercase tracking-widest">
                 Marjă Profit (%)
               </label>
@@ -139,7 +220,7 @@ export default function NewProjectPage() {
               </div>
             </div>
 
-            <div className="p-4 bg-white dark:bg-slate-900 border border-border rounded-xl">
+            <div className="p-4 bg-white dark:bg-slate-950 border border-border rounded-xl">
               <label className="block text-[10px] sm:text-xs font-black text-slate-400 mb-2 uppercase tracking-widest">
                 Cheltuieli Indirecte (%)
               </label>
@@ -155,7 +236,7 @@ export default function NewProjectPage() {
               </div>
             </div>
 
-            <div className="p-4 bg-white dark:bg-slate-900 border border-border rounded-xl">
+            <div className="p-4 bg-white dark:bg-slate-950 border border-border rounded-xl">
               <label className="block text-[10px] sm:text-xs font-black text-slate-400 mb-2 uppercase tracking-widest">
                 Cota TVA (%)
               </label>
@@ -170,7 +251,7 @@ export default function NewProjectPage() {
               </div>
             </div>
 
-            <div className="p-4 bg-white dark:bg-slate-900 border border-border rounded-xl ring-2 ring-primary/20">
+            <div className="p-4 bg-white dark:bg-slate-950 border border-border rounded-xl ring-2 ring-primary/20">
               <label className="block text-[10px] sm:text-xs font-black text-primary mb-2 uppercase tracking-widest">
                 Venit Estimat Proiect (Vânzare)
               </label>
@@ -190,7 +271,7 @@ export default function NewProjectPage() {
         </div>
 
         {error && (
-          <div className="p-4 bg-red-50 border border-red-100 text-red-600 rounded-xl text-sm font-medium">
+          <div className="p-4 bg-red-50 dark:bg-red-900/30 border border-red-100 dark:border-red-900/50 text-red-600 dark:text-red-400 rounded-xl text-sm font-medium">
             {error}
           </div>
         )}
@@ -201,7 +282,7 @@ export default function NewProjectPage() {
           className={`
             w-full flex items-center justify-center gap-3 p-4 sm:p-5 rounded-2xl text-lg sm:text-xl font-black transition-all shadow-xl active:scale-[0.98]
             ${loading 
-              ? 'bg-slate-100 text-slate-400 cursor-not-allowed' 
+              ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 cursor-not-allowed' 
               : 'bg-primary text-white shadow-primary/20 hover:shadow-primary/40'
             }
           `}

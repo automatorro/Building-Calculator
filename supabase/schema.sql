@@ -1,7 +1,49 @@
 -- ==========================================
+-- PHASE 1: CORE CATALOG
+-- ==========================================
+
+CREATE TABLE IF NOT EXISTS categories (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS normatives (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    code VARCHAR(50) UNIQUE NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS items (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    category_id UUID REFERENCES categories(id) ON DELETE SET NULL,
+    normative_id UUID REFERENCES normatives(id) ON DELETE SET NULL,
+    code VARCHAR(100) NOT NULL,
+    name TEXT NOT NULL,
+    um VARCHAR(50) NOT NULL,
+    user_id UUID REFERENCES auth.users(id), -- NULL = public/seed data
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS resources (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    item_id UUID REFERENCES items(id) ON DELETE CASCADE,
+    type VARCHAR(50) NOT NULL, -- material, labor, equipment, transport
+    name VARCHAR(255) NOT NULL,
+    um VARCHAR(50) NOT NULL,
+    quantity NUMERIC(15, 6) NOT NULL,
+    default_price NUMERIC(15, 4) DEFAULT 0,
+    waste_percent NUMERIC(5, 2) DEFAULT 0,
+    user_id UUID REFERENCES auth.users(id), -- NULL = public/seed data
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- ==========================================
 -- SEED DATA FOR BUILDING CALCULATOR
 -- Ruleaza acest script in Supabase SQL Editor
--- DUPA ce ai rulat scriptul de creare a tabelelor.
 -- ==========================================
 
 -- 1. Inseram Categoriile (Pastram ID-urile in variabile pentru a le folosi mai jos)
@@ -186,16 +228,59 @@ CREATE TABLE IF NOT EXISTS purchases (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- 5. Enable RLS
+-- 6. Tabel Șabloane de Proiect
+CREATE TABLE IF NOT EXISTS project_templates (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    user_id UUID REFERENCES auth.users(id),
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    stages JSONB DEFAULT '[]'::jsonb,
+    lines_snapshot JSONB DEFAULT '[]'::jsonb, -- Snapshot al liniilor de deviz (rețete complete)
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- 7. Enable RLS
+ALTER TABLE categories ENABLE ROW LEVEL SECURITY;
+ALTER TABLE normatives ENABLE ROW LEVEL SECURITY;
+ALTER TABLE items ENABLE ROW LEVEL SECURITY;
+ALTER TABLE resources ENABLE ROW LEVEL SECURITY;
 ALTER TABLE projects ENABLE ROW LEVEL SECURITY;
 ALTER TABLE shops ENABLE ROW LEVEL SECURITY;
 ALTER TABLE estimate_lines ENABLE ROW LEVEL SECURITY;
 ALTER TABLE vendor_offers ENABLE ROW LEVEL SECURITY;
 ALTER TABLE purchases ENABLE ROW LEVEL SECURITY;
+ALTER TABLE project_templates ENABLE ROW LEVEL SECURITY;
 
--- 6. RLS Policies
+-- 8. RLS Policies
 DO $$ 
 BEGIN
+    -- Public Read for Catalog (Seed Data)
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Allow public read access to categories') THEN
+        CREATE POLICY "Allow public read access to categories" ON categories FOR SELECT USING (true);
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Allow public read access to normatives') THEN
+        CREATE POLICY "Allow public read access to normatives" ON normatives FOR SELECT USING (true);
+    END IF;
+    
+    -- Items & Resources: Public Read if user_id is null, otherwise owner only
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Allow read access to items') THEN
+        CREATE POLICY "Allow read access to items" ON items FOR SELECT USING (user_id IS NULL OR auth.uid() = user_id);
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Allow owner CRUD on items') THEN
+        CREATE POLICY "Allow owner CRUD on items" ON items FOR ALL USING (auth.uid() = user_id);
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Allow read access to resources') THEN
+        CREATE POLICY "Allow read access to resources" ON resources FOR SELECT USING (user_id IS NULL OR auth.uid() = user_id);
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Allow owner CRUD on resources') THEN
+        CREATE POLICY "Allow owner CRUD on resources" ON resources FOR ALL USING (auth.uid() = user_id);
+    END IF;
+
+    -- Templates
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Allow owner CRUD on templates') THEN
+        CREATE POLICY "Allow owner CRUD on templates" ON project_templates FOR ALL USING (auth.uid() = user_id);
+    END IF;
     -- Projects
     IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Allow public access to projects') THEN
         CREATE POLICY "Allow public access to projects" ON projects FOR ALL USING (true);

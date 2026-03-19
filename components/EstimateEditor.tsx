@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
-import { Plus, Trash2, Save, Info, ChevronDown, ChevronUp, Settings2, CheckCircle2, Lightbulb, Store, Link as LinkIcon } from 'lucide-react'
+import { Plus, Trash2, Save, Info, ChevronDown, ChevronUp, Settings2, CheckCircle2, Lightbulb, Store, Link as LinkIcon, BookPlus } from 'lucide-react'
 import { createClient } from '@/utils/supabase/client'
 import { calculateLineCosts, EstimateLine, ProjectSettings, calculateProjectTotals } from '@/utils/calculators/estimate'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -189,6 +189,48 @@ export default function EstimateEditor({ projectId, initialLines, settings, dime
       return { ...l, metadata: newMetadata, quantity: newQuantity }
     }))
     setIsSaved(false)
+  }
+
+  const handleSaveToLibrary = async (line: EstimateLine) => {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) {
+      alert('Sesiune expirată. Te rugăm să te reloghezi.')
+      return
+    }
+
+    const resourcesToSave = ensureResourcesOverride(line)
+    const itemName = line.manual_name || line.items?.name || 'Articol fără nume'
+    const itemUM = line.manual_um || line.items?.um || 'buc'
+    
+    const { data: newItem, error: itemError } = await supabase
+      .from('items')
+      .insert([{
+        name: itemName,
+        um: itemUM,
+        code: line.items?.code || `USER-${Math.random().toString(36).slice(2, 7).toUpperCase()}`,
+        category_id: line.items?.category_id,
+        normative_id: line.items?.normative_id,
+        user_id: user.id
+      }])
+      .select()
+      .single()
+
+    if (itemError) return console.error('Error saving item:', itemError)
+
+    const resourcesToInsert = resourcesToSave.map((r: any) => ({
+      item_id: newItem.id,
+      type: r.type,
+      name: r.name,
+      um: r.um,
+      quantity: r.consumption,
+      default_price: line.custom_prices[r.id] ?? r.unit_price,
+      waste_percent: r.waste_percent || 0,
+      user_id: user.id
+    }))
+
+    const { error: resError } = await supabase.from('resources').insert(resourcesToInsert)
+    if (resError) console.error('Error saving resources:', resError)
+    else alert('✅ Rețetă salvată cu succes în Biblioteca Personală!')
   }
 
   return (
@@ -423,12 +465,21 @@ export default function EstimateEditor({ projectId, initialLines, settings, dime
                                   <Settings2 size={16} />
                                   <h5 className="text-[11px] font-black uppercase tracking-widest">Rețetă Resurse & Consumuri</h5>
                                 </div>
-                                <button 
-                                  onClick={() => handleAddResource(line.id)}
-                                  className="text-[10px] font-bold text-primary hover:underline flex items-center gap-1"
-                                >
-                                  <Plus size={12} /> Adaugă Resursă
-                                </button>
+                                <div className="flex items-center gap-4">
+                                  <button 
+                                    onClick={() => handleSaveToLibrary(line)}
+                                    className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-primary flex items-center gap-1.5 transition-colors border border-border/50 px-3 py-1.5 rounded-lg"
+                                    title="Salvează această variantă optimizată în Catalog"
+                                  >
+                                    <BookPlus size={12} /> Salvează în Bibliotecă
+                                  </button>
+                                  <button 
+                                    onClick={() => handleAddResource(line.id)}
+                                    className="text-[10px] font-bold text-primary hover:underline flex items-center gap-1"
+                                  >
+                                    <Plus size={12} /> Adaugă Resursă
+                                  </button>
+                                </div>
                               </div>
                               
                               <div className="grid gap-3">

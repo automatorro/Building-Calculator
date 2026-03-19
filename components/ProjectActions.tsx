@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Plus, Settings, Download, Lightbulb, FileSearch, ClipboardList, Store } from 'lucide-react'
+import { Plus, Settings, Download, Lightbulb, FileSearch, ClipboardList, Store, LayoutTemplate } from 'lucide-react'
 import Link from 'next/link'
 import SmartCalculator from './SmartCalculator'
 import ProjectStagesManager from './ProjectStagesManager'
@@ -50,6 +50,41 @@ export default function ProjectActions({ projectId, initialDimensions, initialSt
     }
   }
 
+  const handleSaveAsTemplate = async () => {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return alert('Te rugăm să te autentifici!')
+
+    const { data: lines, error: linesError } = await supabase
+      .from('estimate_lines')
+      .select('*, items(*, normatives(code))')
+      .eq('project_id', projectId)
+
+    if (linesError || !lines) return alert('Eroare la preluarea datelor proiectului')
+
+    const templateName = prompt('Nume Șablon:', `Șablon Modificat - ${new Date().toLocaleDateString()}`)
+    if (!templateName) return
+
+    const { error } = await supabase
+      .from('project_templates')
+      .insert([{
+        user_id: user.id,
+        name: templateName,
+        stages: initialStages,
+        lines_snapshot: lines.map(l => ({
+          manual_name: l.manual_name || l.items?.name,
+          manual_um: l.manual_um || l.items?.um,
+          quantity: l.quantity,
+          stage_name: l.stage_name,
+          resources: (l.resources_override && l.resources_override.length > 0) ? l.resources_override : (l.items?.resources || []),
+          category_id: l.items?.category_id,
+          normative_id: l.items?.normative_id
+        }))
+      }])
+
+    if (error) alert('Eroare: ' + error.message)
+    else alert('✅ Proiect salvat ca șablon cu succes!')
+  }
+
   return (
     <>
       <div className="flex items-center gap-3">
@@ -94,6 +129,15 @@ export default function ProjectActions({ projectId, initialDimensions, initialSt
             onChange={handleOcrUpload} 
           />
         </label>
+
+        <button 
+          onClick={handleSaveAsTemplate}
+          className="p-3 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-xl hover:bg-indigo-100 transition-all font-bold" 
+          title="Salvează acest proiect ca Șablon"
+        >
+          <LayoutTemplate size={20} />
+          <span className="hidden lg:inline text-sm ml-2">Salvează Șablon</span>
+        </button>
 
         <button className="p-3 bg-slate-100 dark:bg-slate-800 rounded-xl hover:text-primary transition-all" title="Setări Proiect">
           <Settings size={20} />
