@@ -1,12 +1,18 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useParams, useRouter } from 'next/navigation'
 import { TrendingUp, AlertTriangle, CheckCircle2, AlertCircle, Plus } from "lucide-react"
 
 // Internal Cost Base (Mock from Deviz module)
 const INTERNAL_ESTIMATION = 65000 // EUR
 
 export default function OffersPage() {
+  const params = useParams<{ id: string }>()
+  const router = useRouter()
+  useEffect(() => {
+    if (params?.id === 'current') router.replace('/projects')
+  }, [params?.id, router])
   const [offers, setOffers] = useState([
     { id: 1, name: "Constructor A SRL", amount: 50000 },
     { id: 2, name: "Echipa B (Meșteri)", amount: 66500 },

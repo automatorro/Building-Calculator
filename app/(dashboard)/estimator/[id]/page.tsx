@@ -1,12 +1,25 @@
 "use client"
 
 import { useState, useEffect } from 'react'
-import { Calculator, Save, ChevronRight, Settings2 } from 'lucide-react'
+import { useParams, useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { Calculator, Save, ChevronRight, Settings2, ArrowLeft } from 'lucide-react'
 
 // Base values for MVP estimation
 const BASE_COST_PER_MP = 500 // EUR
 
 export default function EstimatorPage() {
+  const params = useParams<{ id: string }>()
+  const router = useRouter()
+  const projectId = params?.id
+
+  // Redirect /estimator/current → /projects (no active project context)
+  useEffect(() => {
+    if (projectId === 'current') {
+      router.replace('/projects')
+    }
+  }, [projectId, router])
+
   const [formData, setFormData] = useState({
     tip_casa: 'casa',
     suprafata: 100,
@@ -47,16 +60,29 @@ export default function EstimatorPage() {
       
       <div className="flex items-center justify-between mb-8">
         <div>
+          {projectId && projectId !== 'current' && (
+            <Link
+              href={`/projects/${projectId}`}
+              className="inline-flex items-center gap-1 text-xs text-slate-400 hover:text-slate-600 mb-2"
+            >
+              <ArrowLeft size={12} /> Înapoi la proiect
+            </Link>
+          )}
           <h1 className="text-3xl font-bold text-slate-900 tracking-tight flex items-center gap-3">
             <Calculator className="w-8 h-8 text-blue-600" />
             Estimator Construcție
           </h1>
-          <p className="text-slate-500 mt-1">Introdu datele proiectului pentru a genera estimarea de bază.</p>
+          <p className="text-slate-500 mt-1">Calculator rapid de cost — pentru deviz complet folosește Deviz Detaliat.</p>
         </div>
-        <button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-medium transition-colors shadow-sm shadow-blue-500/20">
-          <Save className="w-5 h-5" />
-          Salvează Proiect
-        </button>
+        {projectId && projectId !== 'current' && (
+          <Link
+            href={`/deviz/${projectId}`}
+            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-medium transition-colors shadow-sm shadow-blue-500/20"
+          >
+            <ChevronRight className="w-5 h-5" />
+            Deviz detaliat
+          </Link>
+        )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

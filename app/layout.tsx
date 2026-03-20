@@ -1,36 +1,45 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
-import Navigation from "@/components/Navigation";
+import type { Metadata } from 'next'
+import { DM_Sans, DM_Serif_Display } from 'next/font/google'
+import './globals.css'
+import Navigation from '@/components/Navigation'
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+/* ─── Fonturi ─────────────────────────────────────────────────────────────
+   DM Sans → tot UI-ul: labels, butoane, inputuri, tabele
+   DM Serif Display → titluri mari h1, headings de impact
+   ───────────────────────────────────────────────────────────────────────── */
+const dmSans = DM_Sans({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600'],
+  variable: '--font-dm-sans',
+  display: 'swap',
+})
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const dmSerif = DM_Serif_Display({
+  subsets: ['latin'],
+  weight: ['400'],
+  style: ['normal', 'italic'],
+  variable: '--font-dm-serif',
+  display: 'swap',
+})
 
 export const metadata: Metadata = {
-  title: "Building Calculator - Devize Construcții Inteligente",
-  description: "Platformă avansată de management pentru costuri și devize în construcții.",
-};
+  title: 'BuildingCalc — Devize de construcții pentru oameni de pe șantier',
+  description:
+    'Platformă mobilă de management devize pentru constructori mici și mijlocii din România. Creează devize în 5 minute, urmărește costurile real-time, exportă PDF profesional.',
+  keywords: ['devize constructii', 'calculator deviz', 'software constructii Romania'],
+}
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: {
+  children: React.ReactNode
+}) {
   return (
-    <html lang="ro">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-background`}
-      >
+    <html lang="ro" className={`${dmSans.variable} ${dmSerif.variable}`}>
+      <body style={{ fontFamily: 'var(--font-dm-sans, "DM Sans", system-ui, sans-serif)' }}>
         <Navigation />
         {children}
       </body>
     </html>
-  );
+  )
 }

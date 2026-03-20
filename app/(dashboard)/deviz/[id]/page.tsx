@@ -1,155 +1,268 @@
-"use client"
+import { createClient } from '@/utils/supabase/server'
+import { redirect, notFound } from 'next/navigation'
+import { calculateLineCosts, EstimateLine, ProjectSettings } from '@/utils/calculators/estimate'
+import Link from 'next/link'
+import { ListTree, FileText, ArrowLeft } from 'lucide-react'
 
-import { useState, useEffect } from "react"
-import { ListTree, Download, FileText, ChevronDown, CheckCircle2 } from "lucide-react"
+export const dynamic = 'force-dynamic'
 
-// Hardcoded for MVP presentation. In a real app this comes from DB/State based on Estimator.
-const MOCK_TOTAL_COST = 65000 
+export default async function DevizPage({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}) {
+  const { id } = await params
+  const supabase = await createClient()
 
-const BREAKDOWN_PERCENTAGES = [
-  { id: 'fundatie', name: 'Fundație', pct: 0.15, icon: CheckCircle2 },
-  { id: 'structura', name: 'Structură', pct: 0.20, icon: CheckCircle2 },
-  { id: 'zidarie', name: 'Zidărie', pct: 0.15, icon: CheckCircle2 },
-  { id: 'acoperis', name: 'Acoperiș', pct: 0.15, icon: CheckCircle2 },
-  { id: 'instalatii', name: 'Instalații', pct: 0.15, icon: CheckCircle2 },
-  { id: 'finisaje', name: 'Finisaje', pct: 0.20, icon: CheckCircle2 },
-]
+  // Handle /deviz/current → redirect to user's most recent project
+  if (id === 'current') {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) redirect('/auth/login?redirect=/projects')
 
-export default function DevizPage() {
-  const [stages, setStages] = useState<any[]>([])
-  const [expandedStage, setExpandedStage] = useState<string | null>('fundatie')
+    const { data: latest } = await supabase
+      .from('projects')
+      .select('id')
+      .eq('user_id', user.id)
+      .order('updated_at', { ascending: false })
+      .limit(1)
+      .single()
 
-  useEffect(() => {
-    const data = BREAKDOWN_PERCENTAGES.map(stage => {
-      const stageTotal = MOCK_TOTAL_COST * stage.pct
-      const materiale = stageTotal * 0.6 // 60% materiale
-      const manopera = stageTotal * 0.4 // 40% manopera
-      
-      return {
-        ...stage,
-        total: stageTotal,
-        materiale,
-        manopera,
-        items: [
-          { name: 'Materiale principale', amount: materiale, unit: 'global' },
-          { name: 'Manoperă echipă', amount: manopera, unit: 'ore' },
-          { name: 'Utilaje și transport', amount: stageTotal * 0.05, unit: 'zile' }
-        ]
-      }
+    redirect(latest ? `/deviz/${latest.id}` : '/projects')
+  }
+
+  // Load project
+  const { data: project } = await supabase
+    .from('projects')
+    .select('*')
+    .eq('id', id)
+    .single()
+
+  if (!project) return notFound()
+
+  // Load estimate lines with resources
+  const { data: rawLines } = await supabase
+    .from('estimate_lines')
+    .select('*, items(*, resources(*), normatives(code))')
+    .eq('project_id', id)
+
+  // Normalize to EstimateLine shape (handle array vs object Supabase quirk)
+  const lines: EstimateLine[] = (rawLines || []).map((line: any) => {
+    const item = Array.isArray(line.items) ? line.items[0] : line.items
+    return {
+      ...line,
+      items: item
+        ? {
+            ...item,
+            resources: item.resources || [],
+            normatives:
+              (Array.isArray(item.normatives) ? item.normatives[0] : item.normatives) ??
+              null,
+          }
+        : null,
+    }
+  })
+
+  const settings: ProjectSettings = project.settings ?? {
+    profit: 15,
+    regie: 10,
+    tva: 19,
+    taxe_manopera: 0,
+  }
+
+  // Group lines by stage_name, accumulate costs
+  type StageEntry = {
+    name: string
+    totalDirect: number
+    totalOfertat: number
+    totalWithTVA: number
+    rows: { name: string; unit: string; quantity: number; totalOfertat: number }[]
+  }
+
+  const stageMap: Record<string, StageEntry> = {}
+
+  lines.forEach((line) => {
+    const stage = line.stage_name || 'Diverse'
+    if (!stageMap[stage]) {
+      stageMap[stage] = { name: stage, totalDirect: 0, totalOfertat: 0, totalWithTVA: 0, rows: [] }
+    }
+    const costs = calculateLineCosts(line, settings)
+    stageMap[stage].totalDirect  += costs.totalDirectCost
+    stageMap[stage].totalOfertat += costs.totalOfertatWithoutTVA
+    stageMap[stage].totalWithTVA += costs.totalWithTVA
+    stageMap[stage].rows.push({
+      name:         line.manual_name ?? line.items?.name ?? 'Articol',
+      unit:         line.manual_um   ?? line.items?.um   ?? 'buc',
+      quantity:     line.quantity,
+      totalOfertat: costs.totalOfertatWithoutTVA,
     })
-    setStages(data)
-  }, [])
+  })
+
+  const stages       = Object.values(stageMap)
+  const grandDirect  = stages.reduce((s, st) => s + st.totalDirect,  0)
+  const grandOfertat = stages.reduce((s, st) => s + st.totalOfertat, 0)
+  const grandWithTVA = stages.reduce((s, st) => s + st.totalWithTVA, 0)
+  const grandTVA     = grandWithTVA - grandOfertat
+  const regieAmt     = grandDirect * (settings.regie  / 100)
+  const profitAmt    = (grandDirect + regieAmt) * (settings.profit / 100)
+
+  const fmt = (n: number) =>
+    n.toLocaleString('ro-RO', { maximumFractionDigits: 0 })
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="flex items-center justify-between mb-8">
+      {/* Header */}
+      <div className="flex items-start justify-between mb-6">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900 tracking-tight flex items-center gap-3">
-            <ListTree className="w-8 h-8 text-blue-600" />
+          <Link
+            href={`/projects/${id}`}
+            className="inline-flex items-center gap-1 text-xs text-slate-400 hover:text-slate-600 mb-2"
+          >
+            <ArrowLeft size={12} /> {project.name}
+          </Link>
+          <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-3">
+            <ListTree className="w-7 h-7 text-blue-600" />
             Deviz Detaliat pe Etape
           </h1>
-          <p className="text-slate-500 mt-1">Costul total defalcat pe etape de execuție, materiale și manoperă.</p>
+          <p className="text-slate-500 text-sm mt-1">
+            Coeficienți aplicați: profit {settings.profit}% · regie {settings.regie}% · TVA {settings.tva}%
+          </p>
         </div>
-        <div className="flex items-center gap-3">
-          <button className="flex items-center gap-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 px-5 py-2.5 rounded-xl font-medium transition-colors shadow-sm">
-            <Download className="w-5 h-5" />
-            Export CSV
-          </button>
-          <button onClick={() => window.print()} className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-medium transition-colors shadow-sm shadow-blue-500/20">
-            <FileText className="w-5 h-5" />
-            Generează PDF
-          </button>
-        </div>
+        <Link
+          href={`/projects/${id}/print`}
+          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl text-sm font-medium transition-colors shadow-sm"
+        >
+          <FileText size={16} />
+          Export PDF
+        </Link>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        {/* Left Column - Deviz list */}
-        <div className="lg:col-span-3 space-y-4">
-          {stages.map((stage) => (
-            <div key={stage.id} className="glass-card overflow-hidden border border-slate-200 transition-all duration-300">
-              <button 
-                onClick={() => setExpandedStage(expandedStage === stage.id ? null : stage.id)}
-                className="w-full flex items-center justify-between p-5 bg-white/50 hover:bg-blue-50/50 transition-colors"
+      {lines.length === 0 ? (
+        <div className="glass-card p-12 text-center border border-slate-200">
+          <p className="text-slate-400 text-sm mb-4">
+            Niciun articol de deviz. Adaugă lucrări în Planificare.
+          </p>
+          <Link href={`/projects/${id}`} className="text-blue-600 font-medium hover:underline text-sm">
+            → Deschide Planificarea
+          </Link>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          {/* Stages accordion (HTML details — no JS needed) */}
+          <div className="lg:col-span-3 space-y-3">
+            {stages.map((stage, idx) => (
+              <details
+                key={stage.name}
+                className="glass-card overflow-hidden border border-slate-200"
+                open={idx === 0}
               >
-                <div className="flex items-center gap-4">
-                  <div className={`p-2 rounded-lg ${expandedStage === stage.id ? 'bg-blue-100 text-blue-600' : 'bg-slate-100 text-slate-500'}`}>
-                    <stage.icon className="w-6 h-6" />
+                <summary className="flex items-center justify-between p-5 bg-white/50 hover:bg-blue-50/50 cursor-pointer select-none list-none">
+                  <div className="flex items-center gap-4">
+                    <div className="w-9 h-9 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center font-bold text-sm shrink-0">
+                      {idx + 1}
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-slate-800">{stage.name}</h3>
+                      <p className="text-xs text-slate-400">
+                        {stage.rows.length} art. ·{' '}
+                        {grandOfertat > 0
+                          ? ((stage.totalOfertat / grandOfertat) * 100).toFixed(1)
+                          : 0}
+                        % din total
+                      </p>
+                    </div>
                   </div>
-                  <div className="text-left">
-                    <h3 className="font-semibold text-lg text-slate-800">{stage.name}</h3>
-                    <p className="text-sm text-slate-500">{((stage.pct) * 100).toFixed(0)}% din costul total</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-6">
                   <div className="text-right">
-                    <div className="font-bold text-lg text-slate-900">{stage.total.toLocaleString('ro-RO')} EUR</div>
+                    <div className="font-bold text-slate-900">{fmt(stage.totalOfertat)} lei</div>
+                    <div className="text-xs text-slate-400">fără TVA</div>
                   </div>
-                  <ChevronDown className={`w-5 h-5 text-slate-400 transition-transform duration-300 ${expandedStage === stage.id ? 'rotate-180' : ''}`} />
-                </div>
-              </button>
+                </summary>
 
-              {expandedStage === stage.id && (
                 <div className="p-5 border-t border-slate-100 bg-slate-50/50">
-                  <div className="grid grid-cols-2 gap-4 mb-6">
-                    <div className="bg-white p-4 rounded-xl border border-slate-200/60 shadow-sm">
-                      <div className="text-sm text-slate-500 mb-1">Total Materiale</div>
-                      <div className="font-semibold text-lg text-blue-700">{stage.materiale.toLocaleString('ro-RO')} EUR</div>
-                    </div>
-                    <div className="bg-white p-4 rounded-xl border border-slate-200/60 shadow-sm">
-                      <div className="text-sm text-slate-500 mb-1">Total Manoperă</div>
-                      <div className="font-semibold text-lg text-orange-600">{stage.manopera.toLocaleString('ro-RO')} EUR</div>
-                    </div>
+                  <div className="grid grid-cols-3 gap-3 mb-4">
+                    {[
+                      { label: 'Direct',         value: fmt(stage.totalDirect),  cls: 'text-slate-700' },
+                      { label: 'Ofertat (f.TVA)', value: fmt(stage.totalOfertat), cls: 'text-blue-700' },
+                      { label: 'Cu TVA',          value: fmt(stage.totalWithTVA), cls: 'text-slate-700' },
+                    ].map(c => (
+                      <div key={c.label} className="bg-white p-3 rounded-xl border border-slate-100">
+                        <div className="text-xs text-slate-400 mb-1">{c.label}</div>
+                        <div className={`font-semibold text-sm ${c.cls}`}>{c.value} lei</div>
+                      </div>
+                    ))}
                   </div>
 
-                  <table className="w-full text-sm text-left">
-                    <thead className="text-xs text-slate-500 uppercase bg-slate-100/50 rounded-lg">
-                      <tr>
-                        <th className="px-4 py-3 rounded-l-lg font-medium">Categorie Linie</th>
-                        <th className="px-4 py-3 font-medium">U.M.</th>
-                        <th className="px-4 py-3 rounded-r-lg font-medium text-right">Cost Estimat (EUR)</th>
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="text-xs text-slate-500 border-b border-slate-200">
+                        <th className="text-left pb-2 font-medium">Articol</th>
+                        <th className="text-center pb-2 font-medium w-16">U.M.</th>
+                        <th className="text-right pb-2 font-medium w-20">Cant.</th>
+                        <th className="text-right pb-2 font-medium w-32">Ofertat</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {stage.items.map((item: any, idx: number) => (
-                        <tr key={idx} className="border-b border-slate-100 last:border-0 hover:bg-white/40 transition-colors">
-                          <td className="px-4 py-3 font-medium text-slate-700">{item.name}</td>
-                          <td className="px-4 py-3 text-slate-500">{item.unit}</td>
-                          <td className="px-4 py-3 text-right font-semibold text-slate-700">{item.amount.toLocaleString('ro-RO')}</td>
+                      {stage.rows.map((row, i) => (
+                        <tr key={i} className="border-b border-slate-100 last:border-0 hover:bg-white/60">
+                          <td className="py-2 text-slate-700 font-medium">{row.name}</td>
+                          <td className="py-2 text-center text-slate-500">{row.unit}</td>
+                          <td className="py-2 text-right font-mono text-slate-600">{row.quantity}</td>
+                          <td className="py-2 text-right font-mono font-semibold text-slate-700">
+                            {fmt(row.totalOfertat)}
+                          </td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
                 </div>
-              )}
-            </div>
-          ))}
-        </div>
+              </details>
+            ))}
+          </div>
 
-        {/* Right Column - Summary */}
-        <div className="space-y-6">
-          <div className="glass-card p-6 border-t-4 border-t-green-500 sticky top-24">
-            <h3 className="font-semibold text-lg mb-4 text-slate-900">Sumar Total</h3>
-            
-            <div className="space-y-3 mb-6">
-              <div className="flex justify-between items-center text-sm">
-                <span className="text-slate-500">Materiale (60%)</span>
-                <span className="font-medium text-slate-700">{(MOCK_TOTAL_COST * 0.6).toLocaleString('ro-RO')} EUR</span>
-              </div>
-              <div className="flex justify-between items-center text-sm">
-                <span className="text-slate-500">Manoperă (40%)</span>
-                <span className="font-medium text-slate-700">{(MOCK_TOTAL_COST * 0.4).toLocaleString('ro-RO')} EUR</span>
-              </div>
-            </div>
+          {/* Summary sticky column */}
+          <div>
+            <div className="glass-card p-5 border-t-4 border-t-blue-500 sticky top-24">
+              <h3 className="font-semibold text-slate-900 mb-4">Recapitulație</h3>
+              <div className="space-y-3 text-sm">
+                <SumRow label="Cost direct"              value={`${fmt(grandDirect)} lei`} />
+                <SumRow label={`Regie (${settings.regie}%)`}   value={`${fmt(regieAmt)} lei`} />
+                <SumRow label={`Profit (${settings.profit}%)`} value={`${fmt(profitAmt)} lei`} />
 
-            <div className="pt-4 border-t border-slate-200">
-              <div className="text-sm text-slate-500 mb-1">Cost Total Deviz</div>
-              <div className="text-3xl font-bold tracking-tight text-slate-900">
-                {MOCK_TOTAL_COST.toLocaleString('ro-RO')} <span className="text-lg text-slate-400 font-normal">EUR</span>
+                <div className="border-t border-slate-200 pt-3">
+                  <SumRow label="Total fără TVA" value={`${fmt(grandOfertat)} lei`} bold />
+                  <SumRow label={`TVA (${settings.tva}%)`} value={`${fmt(grandTVA)} lei`} muted />
+                </div>
+              </div>
+
+              <div className="pt-4 border-t border-slate-200 mt-3">
+                <div className="text-xs text-slate-400 mb-1">Total cu TVA</div>
+                <div className="text-2xl font-bold text-slate-900">
+                  {fmt(grandWithTVA)}{' '}
+                  <span className="text-base font-normal text-slate-400">lei</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
+    </div>
+  )
+}
+
+function SumRow({
+  label,
+  value,
+  bold,
+  muted,
+}: {
+  label: string
+  value: string
+  bold?: boolean
+  muted?: boolean
+}) {
+  return (
+    <div className={`flex justify-between ${muted ? 'text-slate-400' : ''}`}>
+      <span className={bold ? 'font-semibold text-slate-900' : 'text-slate-500'}>{label}</span>
+      <span className={bold ? 'font-bold text-slate-900' : 'font-medium text-slate-700'}>{value}</span>
     </div>
   )
 }

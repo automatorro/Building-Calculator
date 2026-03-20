@@ -1,5 +1,7 @@
 "use client"
 
+import { useEffect } from 'react'
+import { useParams, useRouter } from 'next/navigation'
 import { CalendarDays, Flag, Clock } from "lucide-react"
 
 // Preset rules (user requirement: fiecare etapă depinde de precedenta, durate preset)
@@ -14,6 +16,11 @@ const TIMELINE_STAGES = [
 ]
 
 export default function TimelinePage() {
+  const params = useParams<{ id: string }>()
+  const router = useRouter()
+  useEffect(() => {
+    if (params?.id === 'current') router.replace('/projects')
+  }, [params?.id, router])
   const totalWeeks = TIMELINE_STAGES.reduce((acc, stage) => acc + stage.durationWeeks, 0)
   
   let currentStartWeek = 0

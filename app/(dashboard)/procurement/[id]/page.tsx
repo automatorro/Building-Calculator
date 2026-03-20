@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useParams, useRouter } from 'next/navigation'
 import { Package, Search, Filter, Warehouse, CheckCircle2 } from "lucide-react"
 
 // Hardcoded for MVP presentation
@@ -22,6 +23,11 @@ const MATERIAL_CATALOG = [
 ]
 
 export default function ProcurementPage() {
+  const params = useParams<{ id: string }>()
+  const router = useRouter()
+  useEffect(() => {
+    if (params?.id === 'current') router.replace('/projects')
+  }, [params?.id, router])
   const [materials, setMaterials] = useState<any[]>([])
   const [selectedSuppliers, setSelectedSuppliers] = useState<Record<string, string>>({}) // material_id -> supplier_id
 

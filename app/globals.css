@@ -1,75 +1,214 @@
 @import "tailwindcss";
 
-@theme {
-  --color-brand-50: #eff6ff;
-  --color-brand-100: #dbeafe;
-  --color-brand-500: #3b82f6;
-  --color-brand-600: #2563eb;
-  --color-brand-900: #1e3a8a;
-  
-  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+/* ─── Design tokens ──────────────────────────────────────────────────────────
+   Sursă unică de adevăr pentru întreaga aplicație.
+   Oglindesc exact landing page-ul BuildingCalc_LandingPage_v3.html
+   ─────────────────────────────────────────────────────────────────────────── */
+:root {
+  --black:        #1E2329;
+  --orange:       #E8500A;
+  --orange-dark:  #C43F06;
+  --orange-light: #FFF0E8;
+  --white:        #FAFAF8;
+  --gray-100:     #F3F2EF;
+  --gray-200:     #E5E3DE;
+  --gray-400:     #A8A59E;
+  --gray-600:     #6B6860;
+  --gray-800:     #2E2D2A;
+  --green:        #2A7D4F;
+  --green-light:  #E8F5EE;
+  --red-light:    #FCECEA;
+  --red:          #C0392B;
 
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-border: var(--border);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --radius: var(--radius);
+  --serif: var(--font-dm-serif, 'DM Serif Display', Georgia, serif);
+  --sans:  var(--font-dm-sans,  'DM Sans', system-ui, sans-serif);
+
+  --radius:    14px;
+  --radius-sm:  8px;
+
+  /* compat: Tailwind CSS vars pe care le foloseam */
+  --background:         var(--white);
+  --foreground:         var(--black);
+  --card:               var(--white);
+  --card-foreground:    var(--black);
+  --border:             var(--gray-200);
+  --primary:            var(--orange);
+  --primary-foreground: var(--white);
+}
+
+/* ─── Reset minim ─────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html  { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--sans);
+  background: var(--white);
+  color: var(--black);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
 @layer base {
-  :root {
-    --background: #f8fafc;
-    --foreground: #0f172a;
-    --card: #ffffff;
-    --card-foreground: #0f172a;
-    --border: #e2e8f0;
-    --primary: #2563eb;
-    --primary-foreground: #ffffff;
-    --radius: 0.75rem;
-  }
-
-  .dark {
-    --background: #0f172a;
-    --foreground: #f8fafc;
-    --card: #1e293b;
-    --card-foreground: #f8fafc;
-    --border: #334155;
-    --primary: #3b82f6;
-    --primary-foreground: #ffffff;
-  }
+  * { @apply border-border; }
 }
 
-@layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
-    font-feature-settings: "rlig" 1, "calt" 1;
-  }
+/* ─── Tipografie ─────────────────────────────────────────────────────────── */
+h1, h2, h3 {
+  letter-spacing: -0.02em;
+  line-height: 1.1;
 }
 
-/* Glassmorphism utilities */
-@layer utilities {
-  .glass {
-    @apply bg-white/70 backdrop-blur-lg border border-white/20 shadow-xl dark:bg-slate-900/70 dark:border-white/10;
-  }
-  .glass-card {
-    @apply bg-white/50 backdrop-blur-md border border-white/40 shadow-lg dark:bg-slate-800/50 dark:border-slate-700/50 rounded-2xl;
-  }
+/* ─── Card system (înlocuiește glass-card) ───────────────────────────────── */
+.card {
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius);
+  padding: 28px;
 }
 
+/* Card pe fundal dark (#1E2329) */
+.card-dark {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: var(--radius);
+}
+
+/* ─── Butoane ────────────────────────────────────────────────────────────── */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--orange);
+  color: var(--white);
+  padding: 12px 24px;
+  border-radius: var(--radius-sm);
+  font-size: 15px;
+  font-weight: 500;
+  font-family: var(--sans);
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background .2s, transform .15s;
+}
+.btn-primary:hover  { background: var(--orange-dark); transform: translateY(-1px); }
+.btn-primary:active { transform: scale(0.98); }
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  color: var(--gray-600);
+  padding: 12px 20px;
+  border-radius: var(--radius-sm);
+  font-size: 15px;
+  font-weight: 400;
+  font-family: var(--sans);
+  border: 1px solid var(--gray-200);
+  cursor: pointer;
+  text-decoration: none;
+  transition: all .2s;
+}
+.btn-ghost:hover { border-color: var(--gray-400); color: var(--black); }
+
+/* Ghost pe fundal dark */
+.btn-ghost-dark {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  color: rgba(255,255,255,0.6);
+  padding: 12px 20px;
+  border-radius: var(--radius-sm);
+  font-size: 15px;
+  font-weight: 400;
+  font-family: var(--sans);
+  border: 1px solid rgba(255,255,255,0.12);
+  cursor: pointer;
+  text-decoration: none;
+  transition: all .2s;
+}
+.btn-ghost-dark:hover { background: rgba(255,255,255,0.05); color: var(--white); border-color: rgba(255,255,255,0.25); }
+
+/* ─── Input / form ───────────────────────────────────────────────────────── */
+.input {
+  width: 100%;
+  background: var(--gray-100);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  font-family: var(--sans);
+  font-size: 14px;
+  color: var(--gray-800);
+  outline: none;
+  transition: border-color .15s;
+}
+.input:focus { border-color: var(--orange); }
+.input::placeholder { color: var(--gray-400); }
+
+/* ─── Badge-uri status ───────────────────────────────────────────────────── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 12px;
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 500;
+}
+.badge-success { background: var(--green-light); color: #27500A; }
+.badge-warning  { background: #FAEEDA;           color: #633806; }
+.badge-danger   { background: var(--red-light);  color: #791F1F; }
+.badge-info     { background: #E6F1FB;            color: #0C447C; }
+.badge-neutral  { background: var(--gray-100);   color: var(--gray-600); }
+
+/* ─── Eyebrow label (secțiuni) ───────────────────────────────────────────── */
+.eyebrow {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--orange);
+}
+
+/* ─── Animații scroll reveal (folosite în landing + pagini app) ──────────── */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity .6s ease, transform .6s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ─── ELIMINAT complet: .glass, .glass-card ─────────────────────────────── */
+/* Orice componentă care mai referențiază .glass-card va folosi .card        */
+/* Compatibilitate temporară pentru migrare incrementală:                    */
+.glass-card {
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius);
+}
+/* Notă: se elimină treptat din componente pe măsură ce le rescriem          */
+
+/* ─── Print media (pentru export PDF deviz) ──────────────────────────────── */
 @media print {
-  aside { display: none !important; }
-  header { display: none !important; }
-  main { margin-left: 0 !important; padding: 0 !important; }
-  .glass-card { 
-    box-shadow: none !important; 
+  nav, aside, header, .no-print { display: none !important; }
+  body { background: white; color: black; }
+  main { margin: 0 !important; padding: 0 !important; }
+  .card, .glass-card {
+    box-shadow: none !important;
     border: 1px solid #ccc !important;
     background: transparent !important;
   }
   button { display: none !important; }
+  a { color: inherit; text-decoration: none; }
 }
+
+/* ─── Scroll bar subtil ──────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--gray-200); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--gray-400); }

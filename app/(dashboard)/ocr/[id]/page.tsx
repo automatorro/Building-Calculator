@@ -1,9 +1,15 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useParams, useRouter } from 'next/navigation'
 import { ScanText, UploadCloud, FileText, CheckCircle2, ChevronRight, Loader2, Link2 } from "lucide-react"
 
 export default function OCRPage() {
+  const params = useParams<{ id: string }>()
+  const router = useRouter()
+  useEffect(() => {
+    if (params?.id === 'current') router.replace('/projects')
+  }, [params?.id, router])
   const [isDragging, setIsDragging] = useState(false)
   const [isProcessing, setIsProcessing] = useState(false)
   const [file, setFile] = useState<File | null>(null)
