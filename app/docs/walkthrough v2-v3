@@ -1,0 +1,37 @@
+Building Calculator - Catalog & Management Proiecte
+Am finalizat Etapa 2! Aplicația a evoluat de la un simplu catalog la un instrument complet de gestiune a proiectelor și calcul a devizelor.
+
+Realizări Etapa 2: Management Proiecte
+Navigație Globală: Meniu premium cu glassmorphism (Dashboard, Catalog, Proiecte).
+Dashboard Proiecte: Listarea tuturor proiectelor tale cu statistici și acces rapid.
+Creare Proiect Personalizat: Formular pentru definirea proiectului, locației și a coeficienților economici (Profit, Regie, TVA).
+Editor de Deviz Interactiv:
+Calcul în timp real: Orice modificare a cantității actualizează imediat totalul proiectului.
+Resurse Opționale: Poți activa/dezactiva materiale sau manoperă dintr-o normă (ex: renunți la plasa de fibră dacă o ai deja).
+Price Overrides: Poți introduce prețuri de ofertă personalizate per proiect, fără a afecta catalogul global.
+Fluxul de Lucru Recomandat
+Accesează Proiectele Mele.
+Creează un Proiect Nou.
+În pagina proiectului, apasă Adaugă Articol -> te va trimite în Catalog.
+Caută în catalog (ex: "Beton") și apasă butonul Plus (+).
+Revino în Proiect și configurează cantitățile și resursele.
+Realizări Etapa 2.5: Optimizare Mobile & Fixes
+Am rafinat interfața pentru a asigura o experiență impecabilă pe dispozitive mobile:
+
+Navigație Premium (FIXED): Am corectat problema de transparență a meniului pe mobil prin izolarea acestuia de containerul principal și aplicarea unui fundal solid (Opaque). Acum meniul acoperă corect conținutul paginii.
+Card-Based Item Details: Pe ecrane mici, tabelul tehnic de resurse se transformă în carduri verticale lizibile.
+Sticky Totals în Editor: Rezumatul financiar al devizului rămâne vizibil și ușor de salvat pe mobil.
+Formulare Responsive: Toate câmpurile de input și butoanele au fost redimensionate pentru touch-friendly usage.
+Ce am testat și verificat?
+ Integritate DB: Tabelele projects și estimate_lines sunt corect legate.
+ Logica de Calcul: Formulele de recapitație (Profit + Regie + TVA) sunt centralizate și verificate.
+ UI/UX: Am rezolvat conflictele de rute și am asigurat navigarea fluidă între Catalog și Proiecte.
+ Responsiveness: Validare pe viewport-uri de mobil (iPhone/Android) pentru toate paginile critice.
+Realizări Etapa 3: OCR & Smart Calculator
+Am introdus funcționalități avansate de automatizare pentru eficientizarea ofertării:
+
+Smart Calculator: O interfață nouă în detaliile proiectului care permite configurarea dimensiunilor casei (L, l, H, adâncime fundație etc.).
+Smart Quantities: În editorul de deviz, cantitățile pot fi acum "legate" de formule inteligente (ex: volum beton fundație). Acestea se actualizează automat când schimbi dimensiunile casei.
+OCR Reinforcement (Beta): Buton dedicat pentru importul extraselor de armare. Sistemul este pregătit să proceseze imagini și să extragă automat greutatea oțelului pe diametre.
+Database Evolution: Schema bazei de date a fost extinsă pentru a stoca noile metadate și setări geometrice.
+Aplicația Building Calculator este acum un instrument puternic de inginerie și cost management!
