@@ -1,5 +1,16 @@
 @import "tailwindcss";
 
+@theme {
+  --font-sans:  var(--font-dm-sans,  'DM Sans',           system-ui, sans-serif);
+  --font-serif: var(--font-dm-serif, 'DM Serif Display',  Georgia,   serif);
+  --font-mono:  ui-monospace, 'Cascadia Code', monospace;
+
+  --color-primary:     #E8500A;
+  --color-background:  #FAFAF8;
+  --color-foreground:  #1E2329;
+  --color-border:      #E5E3DE;
+}
+
 /* ─── Design tokens ──────────────────────────────────────────────────────────
    Sursă unică de adevăr pentru întreaga aplicație.
    Oglindesc exact landing page-ul BuildingCalc_LandingPage_v3.html
@@ -47,10 +58,6 @@ body {
   color: var(--black);
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
-}
-
-@layer base {
-  * { @apply border-border; }
 }
 
 /* ─── Tipografie ─────────────────────────────────────────────────────────── */
@@ -191,6 +198,15 @@ h1, h2, h3 {
   border: 1px solid var(--gray-200);
   border-radius: var(--radius);
 }
+
+/* Titluri principale de pagină — DM Serif Display */
+.page-title {
+  font-family: var(--font-dm-serif, 'DM Serif Display', Georgia, serif);
+  font-weight: 400;
+  color: #1E2329;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
 /* Notă: se elimină treptat din componente pe măsură ce le rescriem          */
 
 /* ─── Print media (pentru export PDF deviz) ──────────────────────────────── */
@@ -205,6 +221,20 @@ h1, h2, h3 {
   }
   button { display: none !important; }
   a { color: inherit; text-decoration: none; }
+}
+
+/* ─── Project card hover ────────────────────────────────────────────────── */
+.project-card {
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius);
+  padding: 24px;
+  cursor: pointer;
+  transition: border-color .2s, box-shadow .2s;
+}
+.project-card:hover {
+  border-color: rgba(232, 80, 10, 0.4);
+  box-shadow: 0 4px 20px rgba(232, 80, 10, 0.08);
 }
 
 /* ─── Scroll bar subtil ──────────────────────────────────────────────────── */

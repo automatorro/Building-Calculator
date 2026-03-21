@@ -108,16 +108,16 @@ export default function NewProjectPage() {
       </Link>
 
       <div className="mb-8 sm:mb-12">
-        <h1 className="text-3xl sm:text-4xl font-black mb-3">Creează Proiect Nou</h1>
-        <p className="text-slate-500 text-sm sm:text-base">Configurează datele de bază pentru noul tău deviz.</p>
+        <h1 className="page-title" style={{ fontSize: 32, marginBottom: 8 }}>Creează Proiect Nou</h1>
+        <p style={{ color: '#6B6860', fontSize: 15, fontWeight: 300 }}>Configurează datele de bază pentru noul tău deviz.</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
         {/* Sectiune Informatii Generale */}
         <div className="glass-card p-5 sm:p-8">
-          <div className="flex items-center gap-3 mb-6 text-primary">
-            <Building2 className="w-6 h-6" />
-            <h2 className="text-xl font-bold">Informații Generale</h2>
+          <div className="flex items-center gap-3 mb-6">
+            <Building2 className="w-6 h-6" style={{ color: '#E8500A' }} />
+            <h2 style={{ fontSize: 18, fontWeight: 600, color: '#1E2329' }}>Informații Generale</h2>
           </div>
           
           <div className="grid gap-6">
@@ -153,24 +153,29 @@ export default function NewProjectPage() {
         </div>
 
         {/* Sectiune Alegere Sablon */}
-        <div className="glass-card p-5 sm:p-8 border-indigo-500/10 bg-indigo-500/[0.01]">
-          <div className="flex items-center gap-3 mb-6 text-indigo-600">
+        <div className="glass-card p-5 sm:p-8">
+          <div className="flex items-center gap-3 mb-6" style={{ color: '#E8500A' }}>
             <LayoutTemplate className="w-6 h-6" />
-            <h2 className="text-xl font-bold">Alege un Șablon</h2>
+            <h2 style={{ fontSize: 18, fontWeight: 600, color: '#1E2329' }}>Alege un Șablon</h2>
           </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <button
               type="button"
               onClick={() => setSelectedTemplateId(null)}
-              className={`p-4 rounded-2xl border-2 text-left transition-all ${!selectedTemplateId ? 'border-primary bg-primary/[0.02] shadow-md' : 'border-slate-100 dark:border-slate-800 hover:border-slate-200 bg-white dark:bg-slate-900'}`}
+              style={{
+                padding: 16, borderRadius: 10, textAlign: 'left', transition: 'all .15s',
+                border: !selectedTemplateId ? '2px solid #E8500A' : '2px solid #E5E3DE',
+                background: !selectedTemplateId ? '#FFF0E8' : '#FAFAF8',
+                cursor: 'pointer', fontFamily: 'inherit',
+              }}
             >
-              <div className="flex justify-between items-start mb-2">
-                <div className="p-2 bg-slate-100 dark:bg-slate-800 rounded-lg text-slate-400"><Building2 size={16} /></div>
-                {!selectedTemplateId && <Check className="text-primary w-5 h-5" />}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
+                <div style={{ padding: 6, background: '#F3F2EF', borderRadius: 7 }}><Building2 size={16} color="#A8A59E" /></div>
+                {!selectedTemplateId && <Check size={18} color="#E8500A" />}
               </div>
-              <h4 className="font-bold text-sm">Standard (Goluț)</h4>
-              <p className="text-[10px] text-slate-500 mt-1">Doar etapele de bază, fără articole pre-configurate.</p>
+              <h4 style={{ fontSize: 13, fontWeight: 600, color: '#1E2329', marginBottom: 4 }}>Standard (Goluț)</h4>
+              <p style={{ fontSize: 11, color: '#A8A59E' }}>Doar etapele de bază, fără articole pre-configurate.</p>
             </button>
 
             {templates.map(t => (
@@ -178,28 +183,34 @@ export default function NewProjectPage() {
                 key={t.id}
                 type="button"
                 onClick={() => setSelectedTemplateId(t.id)}
-                className={`p-4 rounded-2xl border-2 text-left transition-all ${selectedTemplateId === t.id ? 'border-primary bg-primary/[0.02] shadow-md' : 'border-slate-100 dark:border-slate-800 hover:border-slate-200 bg-white dark:bg-slate-900'}`}
+                style={{
+                  padding: 16, borderRadius: 10, textAlign: 'left', transition: 'all .15s',
+                  border: selectedTemplateId === t.id ? '2px solid #E8500A' : '2px solid #E5E3DE',
+                  background: selectedTemplateId === t.id ? '#FFF0E8' : '#FAFAF8',
+                  cursor: 'pointer', fontFamily: 'inherit',
+                }}
               >
-                <div className="flex justify-between items-start mb-2">
-                  <div className="p-2 bg-indigo-100 dark:bg-indigo-900/40 rounded-lg text-indigo-500"><LayoutTemplate size={16} /></div>
-                  {selectedTemplateId === t.id && <Check className="text-primary w-5 h-5" />}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
+                  <div style={{ padding: 6, background: '#FFF0E8', borderRadius: 7 }}><LayoutTemplate size={16} color="#E8500A" /></div>
+                  {selectedTemplateId === t.id && <Check size={18} color="#E8500A" />}
                 </div>
-                <h4 className="font-bold text-sm truncate">{t.name}</h4>
-                <p className="text-[10px] text-slate-500 mt-1">{t.lines_snapshot?.length || 0} articole salvate.</p>
+                <h4 style={{ fontSize: 13, fontWeight: 600, color: '#1E2329', marginBottom: 4 }}>{t.name}</h4>
+                <p style={{ fontSize: 11, color: '#A8A59E' }}>{t.lines_snapshot?.length || 0} articole salvate.</p>
               </button>
             ))}
           </div>
         </div>
 
         {/* Sectiune Setări Economice (Coeficienți) */}
-        <div className="glass-card p-5 sm:p-8 bg-primary/[0.02]">
+        <div className="glass-card p-5 sm:p-8">
           <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3 text-primary">
-              <TrendingUp className="w-6 h-6" />
-              <h2 className="text-xl font-bold">Coeficienți & Recapitație</h2>
+            <div className="flex items-center gap-3">
+              <TrendingUp className="w-6 h-6" style={{ color: '#E8500A' }} />
+              <h2 style={{ fontSize: 18, fontWeight: 600, color: '#1E2329' }}>Coeficienți & Recapitație</h2>
             </div>
-            <div className="p-2 bg-blue-50 dark:bg-blue-900/30 text-blue-600 rounded-lg" title="Aceste valori vor fi folosite pentru calculul prețului final de ofertă.">
-              <Info className="w-4 h-4 text-primary" />
+            <div style={{ padding: 6, background: '#FFF0E8', borderRadius: 7 }}
+              title="Aceste valori vor fi folosite pentru calculul prețului final de ofertă.">
+              <Info className="w-4 h-4" style={{ color: '#E8500A' }} />
             </div>
           </div>
 

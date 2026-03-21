@@ -42,8 +42,8 @@ export default async function ItemDetailPage({ params }: { params: { id: string 
 
   const getTypeColor = (type: string) => {
     switch (type) {
-      case 'material': return 'text-blue-600 bg-blue-50'
-      case 'labor': return 'text-orange-600 bg-orange-50'
+      case 'material':  return 'text-blue-600 bg-blue-50'
+      case 'labor':     return 'text-orange-600 bg-orange-50'
       case 'equipment': return 'text-purple-600 bg-purple-50'
       case 'transport': return 'text-green-600 bg-green-50'
       default: return ''
@@ -57,20 +57,23 @@ export default async function ItemDetailPage({ params }: { params: { id: string 
         Înapoi la Catalog
       </a>
 
-      <div className="mb-12">
-        <div className="flex items-center gap-3 mb-4">
-          <span className="px-3 py-1 bg-primary text-white text-sm font-mono font-bold rounded">
+      <div className="mb-10">
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+          <span style={{ padding: '4px 10px', background: '#1E2329', color: '#FAFAF8',
+            fontSize: 12, fontFamily: 'monospace', fontWeight: 700, borderRadius: 6 }}>
             {item.normatives?.code} {item.code}
           </span>
-          <span className="text-slate-400">|</span>
-          <span className="text-slate-500 font-medium uppercase tracking-wider text-sm">
+          <span style={{ fontSize: 12, fontWeight: 600, color: '#A8A59E',
+            textTransform: 'uppercase', letterSpacing: '.06em' }}>
             {item.categories?.name}
           </span>
         </div>
-        <h1 className="text-4xl font-bold mb-4">{item.name}</h1>
-        <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-border inline-block">
-          <span className="text-slate-500 mr-2">Unitate de măsură:</span>
-          <span className="font-bold text-lg">{item.um}</span>
+        <h1 className="page-title" style={{ fontSize: 32, marginBottom: 14 }}>{item.name}</h1>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8,
+          background: '#F3F2EF', border: '1px solid #E5E3DE',
+          borderRadius: 8, padding: '8px 16px' }}>
+          <span style={{ fontSize: 13, color: '#6B6860' }}>Unitate de măsură:</span>
+          <span style={{ fontSize: 15, fontWeight: 700, color: '#1E2329' }}>{item.um}</span>
         </div>
       </div>
 
