@@ -324,7 +324,7 @@ export default function EstimateEditor({ projectId, initialLines, settings, dime
                           <div className="space-y-1 flex-1">
                             <div className="flex flex-wrap items-center gap-2">
                               <span className="text-[10px] font-mono font-bold bg-primary/10 text-primary px-1.5 py-0.5 rounded shrink-0">
-                                {isManual ? 'MANUAL' : line.items!.normatives?.code}
+                                {line.code || line.metadata?.catalog_norm_symbol || (isManual ? 'MANUAL' : line.items!.normatives?.code || 'N/A')}
                               </span>
                               {isManual ? (
                                 <input 
@@ -423,7 +423,7 @@ export default function EstimateEditor({ projectId, initialLines, settings, dime
                                 value={line.quantity}
                                 onChange={(e) => handleUpdateQuantity(line.id, e.target.value)}
                               />
-                              <span className="text-xs font-bold text-slate-400 pr-2">{isManual ? line.manual_um : line.items!.um}</span>
+                              <span className="text-xs font-bold text-slate-400 pr-2">{line.unit || (isManual ? line.manual_um : line.items!.um)}</span>
                             </div>
 
                             <div className="text-right min-w-[100px] md:min-w-[120px]">

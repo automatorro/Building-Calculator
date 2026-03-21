@@ -40,7 +40,7 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
     .from('purchases')
     .select('*')
     .eq('project_id', id)
-    .order('date', { ascending: false })
+    .order('created_at', { ascending: false })
 
   /* 4. Formatare linii */
   const formattedLines = (estimateLines || []).map((line: any) => {

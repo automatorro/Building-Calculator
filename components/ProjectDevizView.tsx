@@ -308,10 +308,14 @@ export default function ProjectDevizView({
                         <tbody>
                           {stageLines.map((line, i) => {
                             const costs = calculateLineCosts(line, settings)
-                            const isManual = !line.items
-                            const name = line.manual_name || line.items?.name || '—'
-                            const code = isManual ? 'MANUAL' : `${line.items?.normatives?.code || ''} ${line.items?.code || ''}`
-                            const um   = line.manual_um || line.items?.um || '—'
+                            const isCatalogNorm = !!(line.catalog_norm_id || line.metadata?.catalog_norm_id)
+                            const isManual = !line.items && !isCatalogNorm
+                            const name = line.name || line.manual_name || line.items?.name || '—'
+                            const code = line.code || line.metadata?.catalog_norm_symbol ||
+                              (line.items
+                                ? `${line.items.normatives?.code || ''} ${line.items.code || ''}`.trim()
+                                : 'MANUAL')
+                            const um   = line.unit || line.manual_um || line.items?.um || '—'
 
                             return (
                               <tr key={line.id} style={{ borderBottom:'1px solid #F3F2EF',

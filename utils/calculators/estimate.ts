@@ -5,6 +5,7 @@ export interface EstimateLine {
   excluded_resources: string[]
   metadata?: any
   stage_name?: string
+  // Câmpuri vechi (linii manuale / items)
   manual_name?: string
   manual_um?: string
   manual_price?: number
@@ -12,6 +13,15 @@ export interface EstimateLine {
   manual_equipment_price?: number
   manual_transport_price?: number
   resources_override?: Resource[]
+  // Câmpuri noi (direct din catalog_norms)
+  catalog_norm_id?: number
+  name?: string
+  code?: string
+  unit?: string
+  unit_price?: number
+  category?: string
+  sort_order?: number
+  notes?: string
   items: {
     id: string
     code: string
