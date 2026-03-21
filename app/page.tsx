@@ -1,3 +1,5 @@
+'use client'
+
 import Link from 'next/link'
 import HeroCalculator from '@/components/HeroCalculator'
 import FaqSection from '@/components/FaqSection'
