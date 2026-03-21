@@ -98,6 +98,11 @@ export default function HomePage() {
           .features-grid { grid-template-columns:1fr !important; }
           .final-h2 { font-size:32px !important; }
         }
+        .btn-primary:hover { background:#C43F06 !important; transform:translateY(-1px); }
+        .btn-ghost:hover { background:rgba(255,255,255,0.05) !important; color:#FAFAF8 !important; }
+        .btn-link-orange:hover { background:#C43F06 !important; }
+        .btn-cta-white:hover { transform:translateY(-2px); }
+        .footer-link:hover { color:rgba(255,255,255,0.8) !important; }
       `}</style>
 
       {/* ══════════════════════════════════════════════════════════════
@@ -153,25 +158,21 @@ export default function HomePage() {
             </p>
 
             <div style={{ display:'flex', gap:14, flexWrap:'wrap' }}>
-              <a href="#calculator" style={{
+              <a href="#calculator" className="btn-primary" style={{
                 display:'inline-flex', alignItems:'center', gap:8,
                 background:'#E8500A', color:'#FAFAF8', padding:'14px 28px',
                 borderRadius:8, fontSize:15, fontWeight:500, textDecoration:'none',
                 border:'none', cursor:'pointer', transition:'background .2s, transform .15s',
-              }}
-                onMouseEnter={e=>{ e.currentTarget.style.background='#C43F06'; e.currentTarget.style.transform='translateY(-1px)' }}
-                onMouseLeave={e=>{ e.currentTarget.style.background='#E8500A'; e.currentTarget.style.transform='none' }}>
+              }}>
                 Calculează acum — gratuit <IconArrow />
               </a>
-              <a href="#cum-functioneaza" style={{
+              <a href="#cum-functioneaza" className="btn-ghost" style={{
                 display:'inline-flex', alignItems:'center', gap:8,
                 background:'transparent', color:'rgba(255,255,255,0.6)',
                 padding:'14px 24px', borderRadius:8, fontSize:15, fontWeight:400,
                 textDecoration:'none', border:'1px solid rgba(255,255,255,0.12)',
                 transition:'all .2s',
-              }}
-                onMouseEnter={e=>{ e.currentTarget.style.background='rgba(255,255,255,0.05)'; e.currentTarget.style.color='#FAFAF8' }}
-                onMouseLeave={e=>{ e.currentTarget.style.background='transparent'; e.currentTarget.style.color='rgba(255,255,255,0.6)' }}>
+              }}>
                 Cum funcționează
               </a>
             </div>
@@ -698,14 +699,12 @@ export default function HomePage() {
                   </li>
                 ))}
               </ul>
-              <Link href="/auth/register" style={{
+              <Link href="/auth/register" className="btn-link-orange" style={{
                 display:'block', width:'100%', padding:13, borderRadius:8, fontSize:14,
                 fontWeight:600, cursor:'pointer', fontFamily:sans, textAlign:'center',
                 textDecoration:'none', background:'#E8500A', color:'#FAFAF8',
                 border:'none', transition:'background .2s',
-              }}
-                onMouseEnter={e=>(e.currentTarget.style.background='#C43F06')}
-                onMouseLeave={e=>(e.currentTarget.style.background='#E8500A')}>
+              }}>
                 14 zile gratuit, apoi 69 lei/lună
               </Link>
             </div>
@@ -765,14 +764,12 @@ export default function HomePage() {
           <p style={{ fontSize:17, color:'rgba(255,255,255,0.7)', marginBottom:36, fontWeight:300 }}>
             Fără instalare. Fără card. Fără să citești un manual.<br />Deviz complet în 5 minute.
           </p>
-          <Link href="/auth/register" style={{
+          <Link href="/auth/register" className="btn-cta-white" style={{
             display:'inline-flex', alignItems:'center', gap:8,
             background:'#FAFAF8', color:'#E8500A', padding:'16px 32px',
             borderRadius:8, fontSize:16, fontWeight:600, textDecoration:'none',
             border:'none', fontFamily:sans, transition:'transform .15s',
-          }}
-            onMouseEnter={e=>(e.currentTarget.style.transform='translateY(-2px)')}
-            onMouseLeave={e=>(e.currentTarget.style.transform='none')}>
+          }}>
             Creează cont gratuit <IconArrow />
           </Link>
           <p style={{ fontSize:13, color:'rgba(255,255,255,0.5)', marginTop:16 }}>
@@ -814,10 +811,9 @@ export default function HomePage() {
                 {col.title}
               </div>
               {col.links.map(l => (
-                <a key={l} href="#" style={{ display:'block', fontSize:14, color:'rgba(255,255,255,0.4)',
-                  textDecoration:'none', marginBottom:10, transition:'color .15s' }}
-                  onMouseEnter={e=>(e.currentTarget.style.color='rgba(255,255,255,0.8)')}
-                  onMouseLeave={e=>(e.currentTarget.style.color='rgba(255,255,255,0.4)')}>
+                <a key={l} href="#" className="footer-link" style={{
+                  display:'block', fontSize:14, color:'rgba(255,255,255,0.4)',
+                  textDecoration:'none', marginBottom:10, transition:'color .15s' }}>
                   {l}
                 </a>
               ))}
