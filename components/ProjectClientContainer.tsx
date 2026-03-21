@@ -27,6 +27,60 @@ interface ProjectClientContainerProps {
   stages: string[]   // ← din Supabase projects.stages
 }
 
+/* ─── Export Excel client-side ──────────────────────────────────────────── */
+async function exportExcel(lines: EstimateLine[], settings: ProjectSettings, projectName: string) {
+  const XLSX = await import('xlsx')
+  const { calculateLineCosts } = await import('@/utils/calculators/estimate')
+
+  const header = ['Nr.', 'Cod normativ', 'Descriere', 'UM', 'Cantitate',
+    'Cost direct unitar (lei)', 'Total direct (lei)', 'Total ofertat fără TVA (lei)', 'Etapă']
+
+  const rows = lines.map((line, i) => {
+    const costs = calculateLineCosts(line, settings)
+    const isManual = !line.items
+    const code = isManual
+      ? (line.metadata?.catalog_norm_symbol || 'MANUAL')
+      : `${line.items?.normatives?.code || ''} ${line.items?.code || ''}`.trim()
+    const name = line.manual_name || line.items?.name || ''
+    const um   = line.manual_um || line.items?.um || ''
+    return [
+      i + 1, code, name, um,
+      line.quantity,
+      +costs.unitDirectCost.toFixed(2),
+      +costs.totalDirectCost.toFixed(2),
+      +costs.totalOfertatWithoutTVA.toFixed(2),
+      line.stage_name || '',
+    ]
+  })
+
+  // Totaluri
+  const totalDirect  = rows.reduce((s, r) => s + (r[6] as number), 0)
+  const totalOfertat = rows.reduce((s, r) => s + (r[7] as number), 0)
+  const tva          = totalOfertat * (settings.tva / 100)
+
+  const wsData = [
+    header,
+    ...rows,
+    [],
+    ['', '', '', '', '', '', 'Total direct (lei):', +totalDirect.toFixed(2)],
+    ['', '', '', '', '', '', `Total fără TVA (${settings.regie}% regie + ${settings.profit}% profit):`, +totalOfertat.toFixed(2)],
+    ['', '', '', '', '', '', `TVA ${settings.tva}%:`, +tva.toFixed(2)],
+    ['', '', '', '', '', '', 'TOTAL GENERAL (cu TVA):', +(totalOfertat + tva).toFixed(2)],
+  ]
+
+  const ws = XLSX.utils.aoa_to_sheet(wsData)
+
+  // Lățimi coloane
+  ws['!cols'] = [
+    { wch: 5 }, { wch: 14 }, { wch: 45 }, { wch: 8 },
+    { wch: 10 }, { wch: 22 }, { wch: 20 }, { wch: 28 }, { wch: 18 },
+  ]
+
+  const wb = XLSX.utils.book_new()
+  XLSX.utils.book_append_sheet(wb, ws, 'Deviz')
+  XLSX.writeFile(wb, `deviz-${projectName.toLowerCase().replace(/\s+/g, '-')}-${new Date().toISOString().split('T')[0]}.xlsx`)
+}
+
 /* ─── Export CSV client-side ────────────────────────────────────────────── */
 function exportCSV(lines: EstimateLine[], settings: ProjectSettings, projectName: string) {
   const { calculateLineCosts } = require('@/utils/calculators/estimate')
@@ -136,6 +190,9 @@ export default function ProjectClientContainer({
 
   /* ── Export CSV ───────────────────────────────────────────────────────── */
   const handleExportCSV = () => exportCSV(lines, settings, projectName)
+
+  /* ── Export Excel ─────────────────────────────────────────────────────── */
+  const handleExportExcel = () => exportExcel(lines, settings, projectName)
 
   /* ── Tab config ────────────────────────────────────────────────────────── */
   const TABS: Array<{ id: Tab; label: string; icon: React.ElementType }> = [
@@ -266,6 +323,7 @@ export default function ProjectClientContainer({
               projectLocation={projectLocation}
               onExportPDF={handleExportPDF}
               onExportCSV={handleExportCSV}
+              onExportExcel={handleExportExcel}
             />
           </motion.div>
         )}

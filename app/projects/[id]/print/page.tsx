@@ -1,12 +1,17 @@
 import { createClient } from '@/utils/supabase/server'
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import { calculateLineCosts, EstimateLine, ProjectSettings } from '@/utils/calculators/estimate'
+import PrintButton from './PrintButton'
 
 export const dynamic = 'force-dynamic'
 
 export default async function PrintPage({ params }: { params: { id: string } }) {
   const supabase = await createClient()
   const { id } = await params
+
+  /* Verifică autentificarea */
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/auth/login')
 
   const { data: project, error: projectError } = await supabase
     .from('projects')
@@ -58,8 +63,21 @@ export default async function PrintPage({ params }: { params: { id: string } }) 
 
   return (
     <>
-      {/* Auto-print script */}
-      <script dangerouslySetInnerHTML={{ __html: 'window.onload = () => window.print()' }} />
+      {/* Butoane acțiuni — se ascund la print */}
+      <div className="no-print" style={{
+        position: 'fixed', top: 16, right: 16, zIndex: 100,
+        display: 'flex', gap: 10, alignItems: 'center',
+      }}>
+        <PrintButton />
+        <a href={`/projects/${id}`} style={{
+          padding: '10px 20px', background: '#F3F2EF',
+          border: '1px solid #E5E3DE', borderRadius: 8,
+          fontSize: 14, fontWeight: 500, color: '#6B6860',
+          textDecoration: 'none', fontFamily: 'DM Sans, system-ui, sans-serif',
+        }}>
+          ← Înapoi la proiect
+        </a>
+      </div>
 
       <div style={{ fontFamily: 'DM Sans, sans-serif', color: '#1E2329', padding: '20mm', maxWidth: '210mm', margin: '0 auto', fontSize: 11 }}>
 

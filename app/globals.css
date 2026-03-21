@@ -242,3 +242,42 @@ h1, h2, h3 {
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--gray-200); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--gray-400); }
+
+/* ─── Stiluri Print (pagina /print) ─────────────────────────────────────── */
+@media print {
+  .no-print { display: none !important; }
+
+  body {
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 11pt;
+    color: #000;
+    background: white;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Ascunde sidebar, topbar, layout dashboard la print */
+  aside, header { display: none !important; }
+  .flex-1.ml-64 { margin-left: 0 !important; }
+  main { padding: 0 !important; overflow: visible !important; }
+
+  table {
+    border-collapse: collapse;
+    page-break-inside: auto;
+  }
+
+  tr { page-break-inside: avoid; }
+
+  td, th {
+    border: 1px solid #ccc;
+    padding: 4pt 6pt;
+    font-size: 9pt;
+  }
+
+  h1, h2 { page-break-after: avoid; }
+
+  @page {
+    size: A4 portrait;
+    margin: 1.5cm 1.5cm 2cm;
+  }
+}

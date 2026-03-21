@@ -1,16 +1,15 @@
 'use client'
 
 import { useState } from 'react'
-import { Plus, Minus, Ruler, Layers, Square, Box, Save, X, Lightbulb } from 'lucide-react'
+import { X, Lightbulb, ArrowRight, ArrowLeft, Check, Plus, Minus, Save, Loader2 } from 'lucide-react'
+import { createClient } from '@/utils/supabase/client'
+import { useRouter } from 'next/navigation'
 
+/* ─── Tipuri ───────────────────────────────────────────────────────────────── */
 interface Dimensions {
-  length: number
-  width: number
-  height: number
-  foundation_depth: number
-  foundation_width: number
-  slab_thickness: number
-  wall_thickness: number
+  length: number; width: number; height: number
+  foundation_depth: number; foundation_width: number
+  slab_thickness: number; wall_thickness: number
   [key: string]: number
 }
 
@@ -21,155 +20,479 @@ interface SmartCalculatorProps {
   onClose: () => void
 }
 
-export default function SmartCalculator({ projectId, initialDimensions, onSave, onClose }: SmartCalculatorProps) {
-  const [dims, setDims] = useState<Dimensions>(Object.assign({
-    length: 10,
-    width: 8,
-    height: 3,
-    foundation_depth: 0.8,
-    foundation_width: 0.6,
-    slab_thickness: 0.15,
-    wall_thickness: 0.25,
-  }, initialDimensions))
+type ProjectType = 'house' | 'apartment' | 'foundation' | 'roof' | 'bathroom'
+
+interface GeneratedLine {
+  name: string
+  unit: string
+  quantity: number
+  stage: string
+  symbol?: string
+  include: boolean
+}
+
+/* ─── Generare linii din parametri ─────────────────────────────────────────── */
+function generateLines(type: ProjectType, params: Record<string, number>): GeneratedLine[] {
+  const { suprafata = 0, niveluri = 1, perimetru, adancime, latime, inaltime = 3 } = params
+  const perim = perimetru || Math.sqrt(suprafata) * 4
+  const desfasurata = suprafata * niveluri
+
+  switch (type) {
+    case 'house': {
+      const wallArea = perim * inaltime * niveluri
+      return [
+        { name: 'Săpătură fundații cu excavatorul', unit: 'mc', quantity: +(suprafata * 0.8).toFixed(1), stage: 'Fundație', symbol: 'TsA02A1', include: true },
+        { name: 'Umplutură cu piatră spartă/balast sub fundații', unit: 'mc', quantity: +(suprafata * 0.15).toFixed(1), stage: 'Fundație', symbol: 'TsA07A1', include: true },
+        { name: 'Beton simplu fundații continue B150 (C12/15)', unit: 'mc', quantity: +(perim * 0.4 * 0.6).toFixed(1), stage: 'Fundație', symbol: 'BcA01B1', include: true },
+        { name: 'Beton armat fundații C20/25', unit: 'mc', quantity: +(suprafata * 0.12).toFixed(1), stage: 'Fundație', symbol: 'BcA02A1', include: true },
+        { name: 'Armătură OB37 fundații', unit: 'kg', quantity: +(suprafata * 0.12 * 80).toFixed(0), stage: 'Fundație', symbol: 'BcC01A1', include: true },
+        { name: 'Hidroizolație fundații cu bitum aplicat la cald', unit: 'mp', quantity: +(perim * (adancime || 0.8) * 2).toFixed(1), stage: 'Fundație', symbol: 'IzA04A1', include: true },
+
+        { name: 'Beton armat planșee C20/25 (15 cm)', unit: 'mc', quantity: +(desfasurata * 0.15).toFixed(1), stage: 'Structură', symbol: 'BcA05A1', include: true },
+        { name: 'Cofraje planșee', unit: 'mp', quantity: +(desfasurata).toFixed(1), stage: 'Structură', symbol: 'BcB04A1', include: true },
+        { name: 'Beton armat stâlpi C25/30', unit: 'mc', quantity: +(desfasurata * 0.03).toFixed(1), stage: 'Structură', symbol: 'BcA03A1', include: true },
+        { name: 'Cofraje stâlpi', unit: 'mp', quantity: +(desfasurata * 0.03 / 0.25 * 4).toFixed(1), stage: 'Structură', symbol: 'BcB02A1', include: true },
+        { name: 'Plasă sudată STNB planșee', unit: 'mp', quantity: +(desfasurata * 1.1).toFixed(1), stage: 'Structură', symbol: 'BcC02A1', include: true },
+
+        { name: 'Zidărie din blocuri BCA 25 cm', unit: 'mc', quantity: +(wallArea * 0.25).toFixed(1), stage: 'Zidărie', symbol: 'ZdA02A1', include: true },
+        { name: 'Pereți despărțitori gips-carton simplu', unit: 'mp', quantity: +(suprafata * 0.8).toFixed(1), stage: 'Zidărie', symbol: 'ZdA05A1', include: true },
+        { name: 'Centuri din beton armat', unit: 'ml', quantity: +(perim * niveluri).toFixed(1), stage: 'Zidărie', symbol: 'ZdB02A1', include: true },
+
+        { name: 'Șarpantă din lemn ecarisat cu astereală (2 pante)', unit: 'mp', quantity: +(suprafata * 1.3).toFixed(1), stage: 'Acoperiș', symbol: 'CvA01A1', include: true },
+        { name: 'Învelitoare din țiglă ceramică', unit: 'mp', quantity: +(suprafata * 1.3).toFixed(1), stage: 'Acoperiș', symbol: 'CvA03A1', include: true },
+        { name: 'Jgheaburi și burlane PVC', unit: 'ml', quantity: +(perim * 0.6).toFixed(1), stage: 'Acoperiș', symbol: 'CvA05A1', include: true },
+
+        { name: 'Tencuială interioară drișcuită', unit: 'mp', quantity: +(wallArea * 1.8).toFixed(1), stage: 'Finisaje', symbol: 'TcA01A1', include: true },
+        { name: 'Tencuială exterioară drișcuită', unit: 'mp', quantity: +(wallArea * 0.85).toFixed(1), stage: 'Finisaje', symbol: 'TcA02A1', include: true },
+        { name: 'Glet de ipsos interior', unit: 'mp', quantity: +(wallArea * 1.8).toFixed(1), stage: 'Finisaje', symbol: 'TcA03A1', include: true },
+        { name: 'Șapă ciment M150 armată (5 cm)', unit: 'mp', quantity: +(desfasurata).toFixed(1), stage: 'Finisaje', symbol: 'TcB05A1', include: true },
+        { name: 'Vopsire lavabilă interior 2 straturi', unit: 'mp', quantity: +(wallArea * 1.8).toFixed(1), stage: 'Finisaje', symbol: 'ZgA02A1', include: true },
+        { name: 'Termoizolație fațade polistiren 10 cm', unit: 'mp', quantity: +(wallArea * 0.85).toFixed(1), stage: 'Finisaje', symbol: 'IzA01A1', include: true },
+
+        { name: 'Ferestre PVC cu geam termoizolant', unit: 'buc', quantity: Math.ceil(suprafata / 15), stage: 'Tâmplărie', symbol: 'TmA01B1', include: true },
+        { name: 'Uși interioare (standard)', unit: 'buc', quantity: Math.ceil(suprafata / 20), stage: 'Tâmplărie', symbol: 'TmA02A1', include: true },
+        { name: 'Ușă exterioară metalică', unit: 'buc', quantity: 1, stage: 'Tâmplărie', symbol: 'TmA03A1', include: true },
+
+        { name: 'Instalație apă rece PP Ø20', unit: 'ml', quantity: +(suprafata * 0.8).toFixed(1), stage: 'Instalații', symbol: 'IsA01A1', include: true },
+        { name: 'Instalație apă caldă PP Ø20', unit: 'ml', quantity: +(suprafata * 0.6).toFixed(1), stage: 'Instalații', symbol: 'IsA02A1', include: true },
+        { name: 'Canalizare PVC Ø110', unit: 'ml', quantity: +(suprafata * 0.4).toFixed(1), stage: 'Instalații', symbol: 'IsA03B1', include: true },
+        { name: 'Centrală termică în condensație 24 kW', unit: 'buc', quantity: 1, stage: 'Instalații', symbol: 'IsC01A1', include: true },
+        { name: 'Instalație electrică cablu 2.5 mm²', unit: 'ml', quantity: +(suprafata * 4).toFixed(0), stage: 'Instalații', symbol: 'IeA01B1', include: true },
+        { name: 'Tablou electric 8 circuite', unit: 'buc', quantity: 1, stage: 'Instalații', symbol: 'IeA04A1', include: true },
+      ]
+    }
+
+    case 'apartment': {
+      return [
+        { name: 'Demontare tencuieli vechi', unit: 'mp', quantity: +(suprafata * 2.5).toFixed(1), stage: 'Demolare', symbol: 'TcA01A1', include: true },
+        { name: 'Desfacere pardoseală existentă', unit: 'mp', quantity: +suprafata.toFixed(1), stage: 'Demolare', include: true },
+
+        { name: 'Tencuială interioară drișcuită nouă', unit: 'mp', quantity: +(suprafata * 2.5).toFixed(1), stage: 'Pereți', symbol: 'TcA01A1', include: true },
+        { name: 'Glet de ipsos', unit: 'mp', quantity: +(suprafata * 2.5).toFixed(1), stage: 'Pereți', symbol: 'TcA03A1', include: true },
+        { name: 'Vopsire lavabilă 2 straturi', unit: 'mp', quantity: +(suprafata * 2.5).toFixed(1), stage: 'Pereți', symbol: 'ZgA02A1', include: true },
+
+        { name: 'Șapă autonivelantă (4-6 cm)', unit: 'mp', quantity: +suprafata.toFixed(1), stage: 'Pardoseli', symbol: 'TcB06A1', include: true },
+        { name: 'Parchet laminat 8 mm', unit: 'mp', quantity: +(suprafata * 0.7).toFixed(1), stage: 'Pardoseli', symbol: 'TcB03A1', include: true },
+        { name: 'Gresie ceramică antiderapantă', unit: 'mp', quantity: +(suprafata * 0.3).toFixed(1), stage: 'Pardoseli', symbol: 'TcB01A1', include: true },
+
+        { name: 'Ferestre PVC cu geam termoizolant', unit: 'buc', quantity: Math.ceil(suprafata / 20), stage: 'Tâmplărie', symbol: 'TmA01A1', include: true },
+        { name: 'Uși interioare', unit: 'buc', quantity: Math.ceil(suprafata / 20), stage: 'Tâmplărie', symbol: 'TmA02A1', include: true },
+
+        { name: 'Înlocuire instalație apă rece PP', unit: 'ml', quantity: +(suprafata * 0.5).toFixed(1), stage: 'Instalații', symbol: 'IsA01A1', include: true },
+        { name: 'Înlocuire instalație electrică', unit: 'ml', quantity: +(suprafata * 3).toFixed(0), stage: 'Instalații', symbol: 'IeA01B1', include: true },
+      ]
+    }
+
+    case 'foundation': {
+      const s = suprafata || perim * (latime || 0.6)
+      return [
+        { name: 'Săpătură fundații cu excavatorul', unit: 'mc', quantity: +(perim * (adancime || 1) * (latime || 0.8)).toFixed(1), stage: 'Fundație', symbol: 'TsA02A1', include: true },
+        { name: 'Beton simplu de egalizare B100', unit: 'mc', quantity: +(perim * 0.1 * (latime || 0.6)).toFixed(1), stage: 'Fundație', symbol: 'BcA01A1', include: true },
+        { name: 'Beton armat fundații C20/25', unit: 'mc', quantity: +(perim * (adancime || 0.8) * (latime || 0.6)).toFixed(1), stage: 'Fundație', symbol: 'BcA02A1', include: true },
+        { name: 'Cofraje fundații', unit: 'mp', quantity: +(perim * (adancime || 0.8) * 2).toFixed(1), stage: 'Fundație', symbol: 'BcB01A1', include: true },
+        { name: 'Armătură OB37', unit: 'kg', quantity: +(perim * (adancime || 0.8) * (latime || 0.6) * 80).toFixed(0), stage: 'Fundație', symbol: 'BcC01A1', include: true },
+        { name: 'Hidroizolație fundații cu bitum', unit: 'mp', quantity: +(perim * (adancime || 0.8) * 2).toFixed(1), stage: 'Fundație', symbol: 'IzA04A1', include: true },
+        { name: 'Umplutură cu pământ bătut manual', unit: 'mc', quantity: +(perim * (adancime || 0.8) * 0.3).toFixed(1), stage: 'Fundație', symbol: 'TsA06A1', include: true },
+      ]
+    }
+
+    case 'roof': {
+      return [
+        { name: 'Desfacere învelitoare veche', unit: 'mp', quantity: +(suprafata * 1.3).toFixed(1), stage: 'Acoperiș', include: true },
+        { name: 'Reparații șarpantă existentă', unit: 'ml', quantity: +(Math.sqrt(suprafata) * 8).toFixed(1), stage: 'Acoperiș', include: true },
+        { name: 'Învelitoare din țiglă ceramică cu astereală', unit: 'mp', quantity: +(suprafata * 1.3).toFixed(1), stage: 'Acoperiș', symbol: 'CvA03A1', include: true },
+        { name: 'Hidroizolație sub țiglă (carton bitumat)', unit: 'mp', quantity: +(suprafata * 1.3).toFixed(1), stage: 'Acoperiș', include: true },
+        { name: 'Jgheaburi și burlane PVC D100', unit: 'ml', quantity: +(perim * 0.6).toFixed(1), stage: 'Acoperiș', symbol: 'CvA05A1', include: true },
+        { name: 'Termoizolație pod vată minerală suflată 20 cm', unit: 'mp', quantity: +(suprafata).toFixed(1), stage: 'Acoperiș', symbol: 'IzA03A1', include: true },
+      ]
+    }
+
+    case 'bathroom': {
+      return [
+        { name: 'Desfacere faianță/gresie existentă', unit: 'mp', quantity: +(suprafata * 3.5).toFixed(1), stage: 'Demolări', include: true },
+        { name: 'Tencuială pe pereți baie (rezistentă umiditate)', unit: 'mp', quantity: +(suprafata * 2.5).toFixed(1), stage: 'Pereți & Pardoseli', symbol: 'TcA01B1', include: true },
+        { name: 'Placare cu faianță ceramică pereți', unit: 'mp', quantity: +(suprafata * 2.5).toFixed(1), stage: 'Pereți & Pardoseli', symbol: 'TcB02A1', include: true },
+        { name: 'Placare cu gresie ceramică antiderapantă podea', unit: 'mp', quantity: +suprafata.toFixed(1), stage: 'Pereți & Pardoseli', symbol: 'TcB01A1', include: true },
+        { name: 'Lavoar complet cu robineți și sifon', unit: 'buc', quantity: 1, stage: 'Sanitare', symbol: 'IsB01A1', include: true },
+        { name: 'Vas WC cu rezervor, complet echipat', unit: 'buc', quantity: 1, stage: 'Sanitare', symbol: 'IsB02A1', include: true },
+        { name: 'Cabină duș cu panou și robineți', unit: 'buc', quantity: 1, stage: 'Sanitare', symbol: 'IsB04A1', include: true },
+        { name: 'Instalație apă rece PP Ø20', unit: 'ml', quantity: +(suprafata * 2).toFixed(1), stage: 'Sanitare', symbol: 'IsA01A1', include: true },
+        { name: 'Instalație apă caldă PP Ø20', unit: 'ml', quantity: +(suprafata * 1.5).toFixed(1), stage: 'Sanitare', symbol: 'IsA02A1', include: true },
+        { name: 'Canalizare PVC Ø50', unit: 'ml', quantity: +(suprafata * 1).toFixed(1), stage: 'Sanitare', symbol: 'IsA03A1', include: true },
+        { name: 'Spot LED 7W încastrat tavan', unit: 'buc', quantity: Math.ceil(suprafata / 1.5), stage: 'Electrice', symbol: 'IeB02A1', include: true },
+      ]
+    }
+
+    default:
+      return []
+  }
+}
+
+/* ─── Componenta principală ─────────────────────────────────────────────────── */
+export default function SmartCalculator({
+  projectId, initialDimensions, onSave, onClose,
+}: SmartCalculatorProps) {
+  const [step, setStep] = useState<1 | 2 | 3>(1)
+  const [projectType, setProjectType] = useState<ProjectType | null>(null)
+  const [params, setParams] = useState<Record<string, number>>({
+    suprafata: initialDimensions.length * initialDimensions.width || 100,
+    niveluri: 1,
+    inaltime: initialDimensions.height || 3,
+    adancime: initialDimensions.foundation_depth || 0.8,
+    latime: initialDimensions.foundation_width || 0.6,
+    perimetru: 0,
+  })
+  const [lines, setLines] = useState<GeneratedLine[]>([])
   const [saving, setSaving] = useState(false)
 
-  const handleChange = (key: keyof Dimensions, value: string) => {
-    const num = parseFloat(value) || 0
-    setDims(prev => ({ ...prev, [key]: num }))
+  const supabase = createClient()
+  const router = useRouter()
+
+  const S = {
+    black: '#1E2329', orange: '#E8500A', white: '#FAFAF8',
+    gray100: '#F3F2EF', gray200: '#E5E3DE', gray400: '#A8A59E', gray600: '#6B6860',
+    serif: 'var(--font-dm-serif,"DM Serif Display",Georgia,serif)',
+    sans: 'var(--font-dm-sans,"DM Sans",system-ui,sans-serif)',
   }
 
-  const handleSave = async () => {
+  const TYPES: { id: ProjectType; label: string; desc: string; icon: string }[] = [
+    { id: 'house', label: 'Casă individuală', desc: 'P, P+E, P+M — de la fundație la cheie', icon: '🏠' },
+    { id: 'apartment', label: 'Renovare apartament', desc: 'Reabilitare completă interior', icon: '🏢' },
+    { id: 'foundation', label: 'Fundație', desc: 'Fundații izolate, continue sau radier', icon: '⛏️' },
+    { id: 'roof', label: 'Acoperiș', desc: 'Șarpantă nouă sau înlocuire învelitoare', icon: '🏗️' },
+    { id: 'bathroom', label: 'Baie', desc: 'Renovare completă baie cu sanitare', icon: '🚿' },
+  ]
+
+  const PARAMS_CONFIG: Record<ProjectType, { key: string; label: string; unit: string; min: number; step: number }[]> = {
+    house: [
+      { key: 'suprafata', label: 'Suprafață parter (mp)', unit: 'mp', min: 20, step: 5 },
+      { key: 'niveluri', label: 'Nr. niveluri (P=1, P+E=2)', unit: '', min: 1, step: 1 },
+      { key: 'inaltime', label: 'Înălțime etaj (m)', unit: 'm', min: 2.5, step: 0.1 },
+    ],
+    apartment: [
+      { key: 'suprafata', label: 'Suprafață utilă (mp)', unit: 'mp', min: 20, step: 5 },
+    ],
+    foundation: [
+      { key: 'perimetru', label: 'Perimetru fundație (ml)', unit: 'ml', min: 10, step: 1 },
+      { key: 'adancime', label: 'Adâncime fundație (m)', unit: 'm', min: 0.5, step: 0.1 },
+      { key: 'latime', label: 'Lățime fundație (m)', unit: 'm', min: 0.4, step: 0.05 },
+    ],
+    roof: [
+      { key: 'suprafata', label: 'Suprafață la sol (mp)', unit: 'mp', min: 20, step: 5 },
+    ],
+    bathroom: [
+      { key: 'suprafata', label: 'Suprafață baie (mp)', unit: 'mp', min: 2, step: 0.5 },
+    ],
+  }
+
+  const handleGenerate = () => {
+    if (!projectType) return
+    const generated = generateLines(projectType, params)
+    setLines(generated)
+    setStep(3)
+  }
+
+  const handleSaveLines = async () => {
     setSaving(true)
-    await onSave(dims)
+    const toInsert = lines
+      .filter(l => l.include)
+      .map(l => ({
+        project_id: projectId,
+        item_id: null,
+        manual_name: l.name,
+        manual_um: l.unit,
+        manual_price: 0,
+        quantity: l.quantity,
+        stage_name: l.stage,
+        custom_prices: {},
+        excluded_resources: [],
+        metadata: l.symbol ? { catalog_norm_symbol: l.symbol } : {},
+      }))
+
+    const { error } = await supabase.from('estimate_lines').insert(toInsert)
+
+    if (error) {
+      alert('Eroare la salvare: ' + error.message)
+    } else {
+      // Salvează și dimensiunile
+      await onSave({
+        length: Math.sqrt(params.suprafata || 100),
+        width: Math.sqrt(params.suprafata || 100),
+        height: params.inaltime || 3,
+        foundation_depth: params.adancime || 0.8,
+        foundation_width: params.latime || 0.6,
+        slab_thickness: 0.15,
+        wall_thickness: 0.25,
+      })
+      router.refresh()
+      onClose()
+    }
     setSaving(false)
-    onClose()
   }
 
-  // Calculatate derivate
-  const area = dims.length * dims.width
-  const perimeter = (dims.length + dims.width) * 2
-  const foundationVolume = perimeter * dims.foundation_depth * dims.foundation_width
-  const slabVolume = area * dims.slab_thickness
-  const wallArea = perimeter * dims.height
-  const wallVolume = wallArea * dims.wall_thickness
+  const inputStyle: React.CSSProperties = {
+    width: '100%', padding: '10px 14px', background: S.gray100,
+    border: `1px solid ${S.gray200}`, borderRadius: 8, fontSize: 14,
+    color: S.black, fontFamily: S.sans, outline: 'none', boxSizing: 'border-box',
+  }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-end bg-slate-900/40 backdrop-blur-sm p-4">
-      <div className="w-full max-w-xl bg-white dark:bg-slate-900 rounded-3xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden animate-in slide-in-from-right-8 duration-300">
+    <div style={{ position: 'fixed', inset: 0, zIndex: 100,
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      background: 'rgba(30,35,41,0.6)', backdropFilter: 'blur(4px)', padding: 16 }}>
+      <div style={{ width: '100%', maxWidth: 600, maxHeight: '90vh', display: 'flex',
+        flexDirection: 'column', background: S.white, borderRadius: 20,
+        boxShadow: '0 32px 80px rgba(0,0,0,0.3)', fontFamily: S.sans, overflow: 'hidden' }}>
+
         {/* Header */}
-        <div className="p-6 border-b border-border flex items-center justify-between bg-primary/5">
-          <div className="flex items-center gap-3 text-primary">
-            <div className="p-2 bg-primary text-white rounded-xl">
-              <Lightbulb size={24} />
+        <div style={{ background: S.black, padding: '20px 24px',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{ width: 36, height: 36, background: S.orange, borderRadius: 10,
+              display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Lightbulb size={18} color="white" />
             </div>
             <div>
-              <h2 className="text-xl font-black">Smart Calculator</h2>
-              <p className="text-xs text-slate-500 font-bold uppercase tracking-wider">Configurează dimensiunile casei</p>
+              <div style={{ fontSize: 16, fontWeight: 600, color: S.white }}>
+                Generator Deviz
+              </div>
+              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>
+                Pas {step} din 3
+              </div>
             </div>
           </div>
-          <button 
-            onClick={onClose}
-            className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors"
-          >
-            <X size={24} />
+          <button onClick={onClose}
+            style={{ background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: 8,
+              padding: 8, cursor: 'pointer', color: 'rgba(255,255,255,0.7)', display: 'flex' }}>
+            <X size={18} />
           </button>
         </div>
 
-        {/* Content */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-8">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {/* Amprenta la sol */}
-            <DimensionGroup title="Amprentă la Sol & Perimetru" icon={<Ruler size={18} />}>
-              <DimensionInput label="Lungime (m)" value={dims.length} onChange={(v) => handleChange('length', v)} />
-              <DimensionInput label="Lățime (m)" value={dims.width} onChange={(v) => handleChange('width', v)} />
-            </DimensionGroup>
+        {/* Progress bar */}
+        <div style={{ height: 3, background: S.gray200 }}>
+          <div style={{ height: '100%', background: S.orange, width: `${(step / 3) * 100}%`,
+            transition: 'width .3s' }} />
+        </div>
 
-            {/* Structura */}
-            <DimensionGroup title="Structură & Pereți" icon={<Layers size={18} />}>
-              <DimensionInput label="Înălțime Parter (m)" value={dims.height} onChange={(v) => handleChange('height', v)} />
-              <DimensionInput label="Grosime Pereți (m)" value={dims.wall_thickness} onChange={(v) => handleChange('wall_thickness', v)} />
-            </DimensionGroup>
+        {/* Conținut */}
+        <div style={{ flex: 1, overflowY: 'auto', padding: 24 }}>
 
-            {/* Fundatie */}
-            <DimensionGroup title="Fundație" icon={<Square size={18} />}>
-              <DimensionInput label="Adâncime (m)" value={dims.foundation_depth} onChange={(v) => handleChange('foundation_depth', v)} />
-              <DimensionInput label="Lățime (m)" value={dims.foundation_width} onChange={(v) => handleChange('foundation_width', v)} />
-            </DimensionGroup>
-
-            {/* Placa */}
-            <DimensionGroup title="Placă" icon={<Box size={18} />}>
-              <DimensionInput label="Grosime Placă (m)" value={dims.slab_thickness} onChange={(v) => handleChange('slab_thickness', v)} />
-            </DimensionGroup>
-          </div>
-
-          {/* Rezultate Calculate */}
-          <div className="bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-6 border border-border">
-            <h3 className="text-sm font-black text-slate-400 uppercase tracking-widest mb-4">Estimări Cantități Directe</h3>
-            <div className="grid grid-cols-2 gap-4">
-              <ResultCard label="Beton Fundație" value={`${foundationVolume.toFixed(2)} m³`} />
-              <ResultCard label="Beton Placă" value={`${slabVolume.toFixed(2)} m³`} />
-              <ResultCard label="Suprafață Cofraj" value={`${(perimeter * 0.5 + perimeter * dims.height).toFixed(2)} m²`} />
-              <ResultCard label="Săpătură (V)" value={`${(foundationVolume * 1.2).toFixed(2)} m³`} />
+          {/* Step 1 — Tip proiect */}
+          {step === 1 && (
+            <div>
+              <h2 style={{ fontFamily: S.serif, fontSize: 22, fontWeight: 400,
+                color: S.black, marginBottom: 6 }}>
+                Ce vrei să devizezi?
+              </h2>
+              <p style={{ fontSize: 14, color: S.gray600, marginBottom: 20 }}>
+                Alege tipul de lucrare și generăm automat articolele de deviz.
+              </p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {TYPES.map(t => (
+                  <button key={t.id} onClick={() => setProjectType(t.id)}
+                    style={{ display: 'flex', alignItems: 'center', gap: 16,
+                      padding: '14px 18px', borderRadius: 12, cursor: 'pointer',
+                      border: projectType === t.id ? `2px solid ${S.orange}` : `1px solid ${S.gray200}`,
+                      background: projectType === t.id ? '#FFF0E8' : S.white,
+                      textAlign: 'left', fontFamily: S.sans, transition: 'all .15s' }}>
+                    <span style={{ fontSize: 28 }}>{t.icon}</span>
+                    <div>
+                      <div style={{ fontSize: 15, fontWeight: 600, color: S.black }}>
+                        {t.label}
+                      </div>
+                      <div style={{ fontSize: 12, color: S.gray600 }}>{t.desc}</div>
+                    </div>
+                    {projectType === t.id && (
+                      <Check size={18} style={{ marginLeft: 'auto', color: S.orange, flexShrink: 0 }} />
+                    )}
+                  </button>
+                ))}
+              </div>
             </div>
-            <p className="mt-4 text-[10px] text-slate-400 italic">
-              * Estimările includ un coeficient de pierdere tehnologică de 5-10%.
-            </p>
-          </div>
+          )}
+
+          {/* Step 2 — Parametri */}
+          {step === 2 && projectType && (
+            <div>
+              <h2 style={{ fontFamily: S.serif, fontSize: 22, fontWeight: 400,
+                color: S.black, marginBottom: 6 }}>
+                Parametrii lucrării
+              </h2>
+              <p style={{ fontSize: 14, color: S.gray600, marginBottom: 20 }}>
+                Completează dimensiunile și generăm cantitățile automat.
+              </p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                {PARAMS_CONFIG[projectType].map(p => (
+                  <div key={p.key}>
+                    <label style={{ display: 'block', fontSize: 13, fontWeight: 500,
+                      color: S.black, marginBottom: 6 }}>
+                      {p.label}
+                    </label>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <button onClick={() => setParams(prev => ({
+                        ...prev, [p.key]: Math.max(p.min, (prev[p.key] || p.min) - p.step)
+                      }))} style={{ width: 36, height: 36, borderRadius: 8, border: `1px solid ${S.gray200}`,
+                        background: S.white, cursor: 'pointer', display: 'flex',
+                        alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        <Minus size={14} />
+                      </button>
+                      <input type="number" value={params[p.key] || p.min}
+                        min={p.min} step={p.step}
+                        onChange={e => setParams(prev => ({ ...prev, [p.key]: parseFloat(e.target.value) || p.min }))}
+                        style={inputStyle}
+                        onFocus={e => (e.target.style.borderColor = S.orange)}
+                        onBlur={e => (e.target.style.borderColor = S.gray200)} />
+                      <button onClick={() => setParams(prev => ({
+                        ...prev, [p.key]: (prev[p.key] || p.min) + p.step
+                      }))} style={{ width: 36, height: 36, borderRadius: 8, border: `1px solid ${S.gray200}`,
+                        background: S.white, cursor: 'pointer', display: 'flex',
+                        alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        <Plus size={14} />
+                      </button>
+                      {p.unit && (
+                        <span style={{ fontSize: 13, color: S.gray400, flexShrink: 0 }}>{p.unit}</span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Step 3 — Preview linii generate */}
+          {step === 3 && (
+            <div>
+              <h2 style={{ fontFamily: S.serif, fontSize: 22, fontWeight: 400,
+                color: S.black, marginBottom: 6 }}>
+                Previzualizare deviz generat
+              </h2>
+              <p style={{ fontSize: 14, color: S.gray600, marginBottom: 20 }}>
+                {lines.filter(l => l.include).length} articole selectate. Bifează/debifează orice linie.
+              </p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                {[...new Set(lines.map(l => l.stage))].map(stage => (
+                  <div key={stage}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: S.gray400,
+                      textTransform: 'uppercase', letterSpacing: '.06em',
+                      padding: '8px 0 4px' }}>
+                      {stage}
+                    </div>
+                    {lines.filter(l => l.stage === stage).map((line, i) => {
+                      const idx = lines.indexOf(line)
+                      return (
+                        <div key={i} onClick={() => setLines(prev =>
+                          prev.map((l, j) => j === idx ? { ...l, include: !l.include } : l)
+                        )} style={{ display: 'flex', alignItems: 'center', gap: 12,
+                          padding: '10px 12px', borderRadius: 8, cursor: 'pointer',
+                          background: line.include ? S.white : S.gray100,
+                          border: `1px solid ${line.include ? S.gray200 : S.gray100}`,
+                          opacity: line.include ? 1 : 0.5, transition: 'all .15s',
+                          marginBottom: 4 }}>
+                          <div style={{ width: 20, height: 20, borderRadius: 4, flexShrink: 0,
+                            border: `2px solid ${line.include ? S.orange : S.gray200}`,
+                            background: line.include ? S.orange : 'transparent',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            {line.include && <Check size={12} color="white" />}
+                          </div>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ fontSize: 13, fontWeight: 500, color: S.black,
+                              whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                              {line.name}
+                            </div>
+                            {line.symbol && (
+                              <div style={{ fontSize: 10, color: S.orange, fontFamily: 'monospace' }}>
+                                {line.symbol}
+                              </div>
+                            )}
+                          </div>
+                          <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                            <div style={{ fontSize: 13, fontWeight: 600, color: S.black }}>
+                              {line.quantity.toLocaleString('ro-RO')}
+                            </div>
+                            <div style={{ fontSize: 11, color: S.gray400 }}>{line.unit}</div>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Footer */}
-        <div className="p-6 border-t border-border bg-slate-50/50 dark:bg-slate-800/50 flex flex-col sm:flex-row gap-4">
-          <p className="text-xs text-slate-500 flex-1">
-            Modificarea acestor valori poate actualiza sugestiile de cantități în rândurile de deviz marcate ca "Smart".
-          </p>
-          <button
-            onClick={handleSave}
-            disabled={saving}
-            className="flex items-center justify-center gap-2 bg-primary text-white py-3 px-8 rounded-2xl font-black shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all disabled:opacity-50"
-          >
-            <Save size={18} />
-            {saving ? 'Se salvează...' : 'Salvează Dimensiuni'}
-          </button>
+        <div style={{ padding: '16px 24px', borderTop: `1px solid ${S.gray200}`,
+          display: 'flex', gap: 10, justifyContent: 'space-between',
+          background: S.gray100 }}>
+          {step > 1 ? (
+            <button onClick={() => setStep(step === 3 ? 2 : 1 as any)}
+              style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '10px 18px',
+                background: S.white, border: `1px solid ${S.gray200}`, borderRadius: 8,
+                fontSize: 14, fontWeight: 500, color: S.gray600, cursor: 'pointer',
+                fontFamily: S.sans }}>
+              <ArrowLeft size={15} /> Înapoi
+            </button>
+          ) : (
+            <button onClick={onClose}
+              style={{ padding: '10px 18px', background: 'transparent',
+                border: `1px solid ${S.gray200}`, borderRadius: 8, fontSize: 14,
+                fontWeight: 500, color: S.gray600, cursor: 'pointer', fontFamily: S.sans }}>
+              Anulează
+            </button>
+          )}
+
+          {step === 1 && (
+            <button onClick={() => projectType && setStep(2)} disabled={!projectType}
+              style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '10px 24px',
+                background: projectType ? S.orange : S.gray200, border: 'none', borderRadius: 8,
+                fontSize: 14, fontWeight: 600, color: 'white',
+                cursor: projectType ? 'pointer' : 'not-allowed', fontFamily: S.sans }}>
+              Continuă <ArrowRight size={15} />
+            </button>
+          )}
+
+          {step === 2 && (
+            <button onClick={handleGenerate}
+              style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '10px 24px',
+                background: S.orange, border: 'none', borderRadius: 8,
+                fontSize: 14, fontWeight: 600, color: 'white', cursor: 'pointer',
+                fontFamily: S.sans }}>
+              Generează deviz <ArrowRight size={15} />
+            </button>
+          )}
+
+          {step === 3 && (
+            <button onClick={handleSaveLines} disabled={saving || lines.filter(l => l.include).length === 0}
+              style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '10px 24px',
+                background: saving ? S.gray400 : S.orange, border: 'none', borderRadius: 8,
+                fontSize: 14, fontWeight: 600, color: 'white',
+                cursor: saving ? 'not-allowed' : 'pointer', fontFamily: S.sans }}>
+              {saving ? <><Loader2 size={15} /> Se salvează...</> : <><Save size={15} /> Adaugă în deviz ({lines.filter(l => l.include).length})</>}
+            </button>
+          )}
         </div>
       </div>
-    </div>
-  )
-}
-
-function DimensionGroup({ title, icon, children }: { title: string, icon: React.ReactNode, children: React.ReactNode }) {
-  return (
-    <div className="space-y-4">
-      <div className="flex items-center gap-2 text-slate-900 dark:text-white font-bold">
-        <span className="text-primary">{icon}</span>
-        {title}
-      </div>
-      <div className="space-y-3">
-        {children}
-      </div>
-    </div>
-  )
-}
-
-function DimensionInput({ label, value, onChange }: { label: string, value: number, onChange: (v: string) => void }) {
-  return (
-    <div>
-      <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{label}</label>
-      <input 
-        type="number"
-        step="0.01"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="w-full p-3 bg-slate-50 dark:bg-white/5 border border-border rounded-xl focus:border-primary/50 outline-none transition-all font-mono font-bold"
-      />
-    </div>
-  )
-}
-
-function ResultCard({ label, value }: { label: string, value: string }) {
-  return (
-    <div className="p-4 bg-white dark:bg-slate-900 border border-border rounded-xl shadow-sm">
-      <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{label}</div>
-      <div className="text-xl font-black text-primary">{value}</div>
     </div>
   )
 }

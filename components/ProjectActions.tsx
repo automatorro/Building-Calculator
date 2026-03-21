@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Plus, Settings, Download, Lightbulb, FileSearch, ClipboardList, Store, LayoutTemplate } from 'lucide-react'
+import { Plus, Settings, Download, Lightbulb, FileSearch, ClipboardList, Store, LayoutTemplate, Share2 } from 'lucide-react'
 import Link from 'next/link'
 import SmartCalculator from './SmartCalculator'
 import ProjectStagesManager from './ProjectStagesManager'
@@ -47,6 +47,29 @@ export default function ProjectActions({ projectId, initialDimensions, initialSt
       // Aici vom adăuga logica de inserare în DB
     } catch (err) {
       alert('Eroare la procesarea OCR')
+    }
+  }
+
+  const handleShare = async () => {
+    // Activează public_share_enabled și preia token-ul
+    const { data, error } = await supabase
+      .from('projects')
+      .update({ public_share_enabled: true })
+      .eq('id', projectId)
+      .select('public_token')
+      .single()
+
+    if (error || !data?.public_token) {
+      alert('Eroare la generarea link-ului. Rulează mai întâi migrarea 003_public_share.sql în Supabase.')
+      return
+    }
+
+    const shareUrl = `${window.location.origin}/share/${data.public_token}`
+    try {
+      await navigator.clipboard.writeText(shareUrl)
+      alert(`✅ Link copiat!\n\n${shareUrl}\n\nTrimite-l beneficiarului — nu necesită cont.`)
+    } catch {
+      prompt('Copiază link-ul:', shareUrl)
     }
   }
 
@@ -143,7 +166,16 @@ export default function ProjectActions({ projectId, initialDimensions, initialSt
           <Settings size={20} />
         </button>
 
-        <Link 
+        <button
+          onClick={handleShare}
+          className="flex items-center gap-2 p-3 bg-teal-50 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 rounded-xl hover:bg-teal-100 transition-all font-bold"
+          title="Partajează devizul cu beneficiarul"
+        >
+          <Share2 size={20} />
+          <span className="hidden sm:inline text-sm">Partajează</span>
+        </button>
+
+        <Link
           href={`/catalog?projectId=${projectId}`}
           className="bg-primary text-white px-6 py-3 rounded-2xl font-bold shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all flex items-center gap-2"
         >

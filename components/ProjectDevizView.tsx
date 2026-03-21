@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { ListTree, ChevronDown, ChevronUp, Download, FileText, CheckCircle2 } from 'lucide-react'
+import { ListTree, ChevronDown, ChevronUp, Download, FileText, CheckCircle2, Sheet } from 'lucide-react'
 import {
   EstimateLine,
   ProjectSettings,
@@ -16,11 +16,34 @@ interface ProjectDevizViewProps {
   projectLocation?: string
   onExportPDF: () => void
   onExportCSV: () => void
+  onExportExcel?: () => void
 }
 
 /* Formatare număr în lei */
 const lei = (n: number) =>
   n.toLocaleString('ro-RO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+
+/* Coeficienți pierderi tehnologice per tip lucrare */
+const PIERDERI: Record<string, number> = {
+  faianță: 0.08, faianta: 0.08,
+  gresie: 0.08,
+  tencuială: 0.05, tencuiala: 0.05,
+  vopsitorie: 0.10, vopsire: 0.10,
+  beton: 0.03,
+  cofraj: 0.05,
+  zidărie: 0.04, zidarie: 0.04, bca: 0.04,
+  acoperiș: 0.06, acoperis: 0.06, învelitoare: 0.06, invelitoare: 0.06,
+  tâmplărie: 0.02, tamplarie: 0.02,
+  pardoseală: 0.08, pardoseala: 0.08, parchet: 0.08,
+}
+
+function getPierderi(name: string): number {
+  const lower = name.toLowerCase()
+  for (const [key, val] of Object.entries(PIERDERI)) {
+    if (lower.includes(key)) return val
+  }
+  return 0.05 // default 5%
+}
 
 export default function ProjectDevizView({
   lines,
@@ -29,8 +52,11 @@ export default function ProjectDevizView({
   projectLocation,
   onExportPDF,
   onExportCSV,
+  onExportExcel,
 }: ProjectDevizViewProps) {
   const [expandedStage, setExpandedStage] = useState<string | null>(null)
+  const [discountB2B, setDiscountB2B] = useState(0)
+  const [includePierderi, setIncludePierderi] = useState(false)
 
   /* Grupăm liniile după etapă */
   const grouped = useMemo(() => {
@@ -68,6 +94,11 @@ export default function ProjectDevizView({
   const profitAmount  = costCuRegie * (settings.profit / 100)
   const fAraTVA       = totals.totalOfertat
   const tvaAmount     = totals.totalWithTVA - fAraTVA
+
+  /* Ajustări discount B2B + pierderi */
+  const discountFactor  = 1 - discountB2B / 100
+  const totalCuDiscount = fAraTVA * discountFactor
+  const economieLei     = fAraTVA - totalCuDiscount
 
   if (lines.length === 0) {
     return (
@@ -111,6 +142,17 @@ export default function ProjectDevizView({
             onMouseLeave={e=>{e.currentTarget.style.borderColor='#E5E3DE'}}>
             <Download size={14} /> Export CSV
           </button>
+          {onExportExcel && (
+            <button onClick={onExportExcel}
+              style={{ display:'flex', alignItems:'center', gap:7, padding:'9px 18px',
+                background:'#E8F5EE', border:'1px solid #2A7D4F33', borderRadius:8,
+                fontSize:13, fontWeight:500, color:'#2A7D4F', cursor:'pointer',
+                fontFamily:'inherit', transition:'all .15s' }}
+              onMouseEnter={e=>{e.currentTarget.style.background='#D4EDDA'}}
+              onMouseLeave={e=>{e.currentTarget.style.background='#E8F5EE'}}>
+              <Sheet size={14} /> Export Excel
+            </button>
+          )}
           <button onClick={onExportPDF}
             style={{ display:'flex', alignItems:'center', gap:7, padding:'9px 18px',
               background:'#E8500A', border:'none', borderRadius:8,
@@ -121,6 +163,58 @@ export default function ProjectDevizView({
             <FileText size={14} /> Generează PDF
           </button>
         </div>
+      </div>
+
+      {/* ── Controale discount B2B + pierderi ── */}
+      <div style={{ background:'#F3F2EF', borderRadius:12, padding:'16px 20px',
+        border:'1px solid #E5E3DE', display:'flex', flexWrap:'wrap', gap:24, alignItems:'center' }}>
+        {/* Slider discount */}
+        <div style={{ flex:'1 1 260px' }}>
+          <div style={{ display:'flex', justifyContent:'space-between', marginBottom:8 }}>
+            <label style={{ fontSize:13, fontWeight:500, color:'#1E2329' }}>
+              Discount B2B la materiale
+            </label>
+            <span style={{ fontSize:14, fontWeight:700, color:'#E8500A' }}>{discountB2B}%</span>
+          </div>
+          <input type="range" min={0} max={40} value={discountB2B}
+            onChange={e => setDiscountB2B(Number(e.target.value))}
+            style={{ width:'100%', accentColor:'#E8500A', cursor:'pointer' }} />
+          <p style={{ fontSize:11, color:'#A8A59E', marginTop:4 }}>
+            Prețul tău negociat cu furnizorul (0 = preț de listă)
+          </p>
+        </div>
+        {/* Toggle pierderi */}
+        <label style={{ display:'flex', alignItems:'center', gap:10, cursor:'pointer',
+          flex:'1 1 200px' }}>
+          <div onClick={() => setIncludePierderi(!includePierderi)}
+            style={{ width:40, height:22, borderRadius:11, background: includePierderi ? '#E8500A' : '#E5E3DE',
+              position:'relative', transition:'background .2s', cursor:'pointer', flexShrink:0 }}>
+            <div style={{ position:'absolute', top:3, left: includePierderi ? 21 : 3,
+              width:16, height:16, borderRadius:'50%', background:'white',
+              transition:'left .2s', boxShadow:'0 1px 3px rgba(0,0,0,0.2)' }} />
+          </div>
+          <div>
+            <div style={{ fontSize:13, fontWeight:500, color:'#1E2329' }}>
+              Pierderi tehnologice automate
+            </div>
+            <div style={{ fontSize:11, color:'#A8A59E' }}>
+              +5–10% pe cantități (faianta +8%, vopsit +10% etc.)
+            </div>
+          </div>
+        </label>
+        {/* Preview economie */}
+        {discountB2B > 0 && (
+          <div style={{ background:'#E8F5EE', border:'1px solid #2A7D4F33',
+            borderRadius:8, padding:'10px 16px', flexShrink:0 }}>
+            <div style={{ fontSize:11, color:'#2A7D4F', textTransform:'uppercase',
+              letterSpacing:'.04em', fontWeight:600, marginBottom:2 }}>
+              Economie estimată
+            </div>
+            <div style={{ fontSize:18, fontWeight:700, color:'#2A7D4F' }}>
+              -{lei(economieLei)} lei
+            </div>
+          </div>
+        )}
       </div>
 
       <div style={{ display:'grid', gridTemplateColumns:'1fr 300px', gap:24, alignItems:'start' }}>
@@ -233,7 +327,14 @@ export default function ProjectDevizView({
                                   {um}
                                 </td>
                                 <td style={{ padding:'8px 12px', textAlign:'right', color:'#1E2329', fontWeight:500 }}>
-                                  {line.quantity.toLocaleString('ro-RO')}
+                                  {includePierderi ? (
+                                    <span title={`+${(getPierderi(name) * 100).toFixed(0)}% pierderi`}>
+                                      {(line.quantity * (1 + getPierderi(name))).toLocaleString('ro-RO', { maximumFractionDigits: 2 })}
+                                      <span style={{ fontSize:10, color:'#E8500A', marginLeft:3 }}>
+                                        +{(getPierderi(name) * 100).toFixed(0)}%
+                                      </span>
+                                    </span>
+                                  ) : line.quantity.toLocaleString('ro-RO')}
                                 </td>
                                 <td style={{ padding:'8px 12px', textAlign:'right', color:'#6B6860' }}>
                                   {lei(costs.unitDirectCost)}
@@ -298,6 +399,12 @@ export default function ProjectDevizView({
                 sub />
               <div style={{ borderTop:'1px solid rgba(255,255,255,0.08)', margin:'4px 0' }} />
               <RecapRow label="Valoare fără TVA" value={lei(fAraTVA)} unit="lei" accent />
+              {discountB2B > 0 && (
+                <RecapRow
+                  label={`Discount B2B tău (${discountB2B}%)`}
+                  value={`-${lei(economieLei)}`} unit="lei"
+                  sub />
+              )}
               <RecapRow
                 label={`TVA (${settings.tva}%)`}
                 value={lei(tvaAmount)} unit="lei"

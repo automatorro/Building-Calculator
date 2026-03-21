@@ -3,7 +3,9 @@
     "allow": [
       "Bash(find C:UsersUtilizator.antigravitybuilding-calculatorsupabase -type f \\\\\\(-name *.ts -o -name *.sql \\\\\\))",
       "Bash(npx tsc:*)",
-      "Bash(ls \"C:\\\\Users\\\\Utilizator\\\\.antigravity\\\\building-calculator\\\\app\\\\projects\\\\[id]\"\" 2>/dev/null || echo \"no print dir \")"
+      "Bash(ls \"C:\\\\Users\\\\Utilizator\\\\.antigravity\\\\building-calculator\\\\app\\\\projects\\\\[id]\"\" 2>/dev/null || echo \"no print dir \")",
+      "Bash(npm install:*)",
+      "Bash(node -e \"require\\(''xlsx''\\); console.log\\(''ok''\\)\")"
     ]
   }
 }
