@@ -29,12 +29,12 @@ export default async function CatalogPage({
   )].filter(Boolean).sort()
 
   return (
-    <main className="min-h-screen p-8 max-w-6xl mx-auto">
-      <header className="mb-10">
-        <h1 className="page-title text-4xl mb-3">
+    <main className="min-h-screen max-w-6xl mx-auto px-6 py-8">
+      <header className="mb-8">
+        <h1 className="page-title mb-3" style={{ fontSize: 36 }}>
           Catalog de Norme & Devize
         </h1>
-        <p style={{ color: '#6B6860', maxWidth: 560, lineHeight: 1.6, fontWeight: 300 }}>
+        <p style={{ color: '#6B6860', maxWidth: 560, lineHeight: 1.6, fontWeight: 300, fontSize: 15 }}>
           Explorează baza de date de norme tehnice pentru construcții.
           Alege o normă pentru a o adăuga direct în devizul proiectului.
         </p>
@@ -51,35 +51,42 @@ export default async function CatalogPage({
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 0, background: 'white',
+        border: '1px solid #E5E3DE', borderRadius: 14, overflow: 'hidden' }}
+        className="block lg:grid">
+
         {/* Sidebar */}
-        <div className="space-y-6">
-          <section className="glass-card p-5">
-            <h2 style={{ fontSize: 14, fontWeight: 600, color: '#1E2329',
-              marginBottom: 14, paddingBottom: 10, borderBottom: '1px solid #E5E3DE' }}>
+        <div style={{ borderRight: '1px solid #E5E3DE', background: '#FAFAF8', padding: '24px 20px' }}
+          className="space-y-5">
+
+          <section>
+            <h2 style={{ fontSize: 11, fontWeight: 700, color: '#A8A59E',
+              marginBottom: 12, letterSpacing: '.08em', textTransform: 'uppercase' }}>
               Categorii
             </h2>
-            <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
               {categories.map((cat) => (
                 <li key={cat} style={{ display: 'flex', alignItems: 'center', gap: 8,
-                  fontSize: 13, color: '#6B6860' }}>
-                  <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#E8500A', flexShrink: 0 }} />
+                  fontSize: 13, color: '#6B6860', padding: '5px 8px', borderRadius: 6 }}>
+                  <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#E8500A', flexShrink: 0 }} />
                   {cat}
                 </li>
               ))}
             </ul>
           </section>
 
-          <section className="glass-card p-5">
-            <h2 style={{ fontSize: 14, fontWeight: 600, color: '#1E2329',
-              marginBottom: 14, paddingBottom: 10, borderBottom: '1px solid #E5E3DE' }}>
+          <div style={{ height: 1, background: '#E5E3DE' }} />
+
+          <section>
+            <h2 style={{ fontSize: 11, fontWeight: 700, color: '#A8A59E',
+              marginBottom: 12, letterSpacing: '.08em', textTransform: 'uppercase' }}>
               Indicatoare
             </h2>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
               {normativePrefixes.map((prefix) => (
                 <span key={prefix} style={{
-                  padding: '3px 8px', background: '#FFF0E8',
-                  border: '1px solid #E8500A33', borderRadius: 5,
+                  padding: '4px 9px', background: '#FFF0E8',
+                  border: '1px solid #E8500A33', borderRadius: 6,
                   fontSize: 11, fontFamily: 'monospace', fontWeight: 700, color: '#E8500A',
                 }}>
                   {prefix}
@@ -88,14 +95,18 @@ export default async function CatalogPage({
             </div>
           </section>
 
-          <section className="glass-card p-5">
-            <p style={{ fontSize: 13, color: '#6B6860', lineHeight: 1.6 }}>
-              <strong style={{ color: '#1E2329' }}>{norms?.length ?? 0}</strong> norme disponibile
-            </p>
-          </section>
+          <div style={{ height: 1, background: '#E5E3DE' }} />
+
+          <p style={{ fontSize: 13, color: '#A8A59E', lineHeight: 1.6 }}>
+            <strong style={{ color: '#1E2329', fontSize: 18, fontWeight: 700 }}>{norms?.length ?? 0}</strong>
+            {' '}norme disponibile
+          </p>
         </div>
 
-        <CatalogFilter initialNorms={(norms as any) || []} projectId={projectId} />
+        {/* Conținut principal */}
+        <div style={{ padding: '24px' }}>
+          <CatalogFilter initialNorms={(norms as any) || []} projectId={projectId} />
+        </div>
       </div>
     </main>
   )

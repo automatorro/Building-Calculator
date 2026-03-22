@@ -58,36 +58,56 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
     : ['Fundație', 'Structură', 'Zidărie', 'Acoperiș', 'Instalații', 'Finisaje']
 
   return (
-    <main className="min-h-screen p-4 md:p-8 max-w-7xl mx-auto space-y-8">
+    <main className="min-h-screen max-w-7xl mx-auto px-4 md:px-8 py-6 md:py-8 space-y-6">
 
       {/* ── Header ── */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div className="space-y-1">
+      <div style={{
+        background: 'white', border: '1px solid #E5E3DE',
+        borderRadius: 14, padding: '20px 28px',
+        display: 'flex', flexDirection: 'column', gap: 16,
+      }}>
+        {/* Rândul 1: breadcrumb + acțiuni */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
           <Link href="/projects"
-            className="inline-flex items-center gap-2 text-slate-500 hover:text-primary transition-colors mb-2 group text-xs font-bold uppercase tracking-widest">
-            <ArrowLeft className="w-3 h-3 group-hover:-translate-x-1 transition-transform" />
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 6,
+              color: '#A8A59E', textDecoration: 'none',
+              fontSize: 11, fontWeight: 700, letterSpacing: '.08em', textTransform: 'uppercase',
+            }}>
+            <ArrowLeft size={12} />
             Proiecte
           </Link>
+          <ProjectActions
+            projectId={id}
+            initialDimensions={project.dimensions || {}}
+            initialStages={stages}
+          />
+        </div>
+
+        {/* Rândul 2: titlu + meta */}
+        <div>
           <h1 style={{
             fontFamily: 'var(--font-dm-serif,"DM Serif Display",Georgia,serif)',
-            fontSize: 26, fontWeight: 400, color: '#1E2329', letterSpacing: '-0.02em',
+            fontSize: 28, fontWeight: 400, color: '#1E2329', letterSpacing: '-0.02em',
+            marginBottom: 6,
           }}>
             {project.name}
           </h1>
-          <div className="flex items-center gap-4 text-slate-400 text-[10px] font-black uppercase tracking-tighter">
-            <span className="flex items-center gap-1">
-              <FileText size={12} /> {id.slice(0, 8)}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+            <span style={{
+              display: 'inline-flex', alignItems: 'center', gap: 4,
+              background: '#F3F2EF', padding: '3px 10px', borderRadius: 100,
+              fontSize: 11, fontWeight: 600, color: '#A8A59E', fontFamily: 'monospace',
+            }}>
+              <FileText size={11} /> {id.slice(0, 8).toUpperCase()}
             </span>
-            <span>•</span>
-            <span>{project.location || 'Locație nespecificată'}</span>
+            {project.location && (
+              <span style={{ fontSize: 13, color: '#6B6860', fontWeight: 400 }}>
+                {project.location}
+              </span>
+            )}
           </div>
         </div>
-
-        <ProjectActions
-          projectId={id}
-          initialDimensions={project.dimensions || {}}
-          initialStages={stages}
-        />
       </div>
 
       {/* ── Container principal ── */}

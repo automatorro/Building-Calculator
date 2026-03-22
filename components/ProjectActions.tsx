@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { Plus, Settings, Download, Lightbulb, FileSearch, ClipboardList, Store, LayoutTemplate, Share2 } from 'lucide-react'
+import { useState, useRef, useEffect } from 'react'
+import { Plus, Download, Lightbulb, FileSearch, ClipboardList, Store, LayoutTemplate, Share2, ChevronDown, Settings } from 'lucide-react'
 import Link from 'next/link'
 import SmartCalculator from './SmartCalculator'
 import ProjectStagesManager from './ProjectStagesManager'
@@ -17,41 +17,47 @@ interface ProjectActionsProps {
 }
 
 export default function ProjectActions({ projectId, initialDimensions, initialStages }: ProjectActionsProps) {
-  const [showSmartCalc, setShowSmartCalc] = useState(false)
-  const [showStages, setShowStages] = useState(false)
-  const [showShops, setShowShops] = useState(false)
-  const router = useRouter()
+  const [showSmartCalc, setShowSmartCalc]   = useState(false)
+  const [showStages,    setShowStages]      = useState(false)
+  const [showShops,     setShowShops]       = useState(false)
+  const [showDropdown,  setShowDropdown]    = useState(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+  const router   = useRouter()
   const supabase = createClient()
+
+  /* Închide dropdown la click în afara lui */
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setShowDropdown(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
   const handleSaveDimensions = async (dimensions: any) => {
     const { error } = await supabase
       .from('projects')
       .update({ dimensions })
       .eq('id', projectId)
-
-    if (error) {
-      alert('Eroare la salvarea dimensiunilor: ' + error.message)
-    } else {
-      router.refresh()
-    }
+    if (error) alert('Eroare la salvarea dimensiunilor: ' + error.message)
+    else router.refresh()
   }
 
   const handleOcrUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
-
     try {
       const results = await processReinforcementTable(file)
       console.log('OCR Results:', results)
       alert(`Am detectat ${results.length} rânduri în extrasul de armare. (Funcționalitate în curs de finalizare)`)
-      // Aici vom adăuga logica de inserare în DB
-    } catch (err) {
+    } catch {
       alert('Eroare la procesarea OCR')
     }
   }
 
   const handleShare = async () => {
-    // Activează public_share_enabled și preia token-ul
     const { data, error } = await supabase
       .from('projects')
       .update({ public_share_enabled: true })
@@ -95,98 +101,137 @@ export default function ProjectActions({ projectId, initialDimensions, initialSt
         stages: initialStages,
         lines_snapshot: lines.map(l => ({
           manual_name: l.manual_name || l.items?.name,
-          manual_um: l.manual_um || l.items?.um,
-          quantity: l.quantity,
-          stage_name: l.stage_name,
-          resources: (l.resources_override && l.resources_override.length > 0) ? l.resources_override : (l.items?.resources || []),
-          category_id: l.items?.category_id,
-          normative_id: l.items?.normative_id
-        }))
+          manual_um:   l.manual_um   || l.items?.um,
+          quantity:    l.quantity,
+          stage_name:  l.stage_name,
+          resources:   (l.resources_override && l.resources_override.length > 0) ? l.resources_override : (l.items?.resources || []),
+          category_id:   l.items?.category_id,
+          normative_id:  l.items?.normative_id,
+        })),
       }])
 
     if (error) alert('Eroare: ' + error.message)
     else alert('✅ Proiect salvat ca șablon cu succes!')
   }
 
+  /* ─── Stiluri comune ─────────────────────────────────────────────────── */
+  const dropdownItemStyle: React.CSSProperties = {
+    display: 'flex', alignItems: 'center', gap: 10,
+    padding: '9px 12px', borderRadius: 7, width: '100%',
+    background: 'transparent', border: 'none', cursor: 'pointer',
+    fontSize: 13, fontWeight: 400, color: '#6B6860',
+    fontFamily: 'inherit', textAlign: 'left', transition: 'background .12s',
+  }
+
   return (
     <>
-      <div className="flex items-center gap-3">
-        <button className="p-3 bg-slate-100 dark:bg-slate-800 rounded-xl hover:text-primary transition-all" title="Descarcă PDF">
-          <Download size={20} />
-        </button>
-        
-        <button 
-          onClick={() => setShowSmartCalc(true)}
-          className="flex items-center gap-2 p-3 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl hover:bg-blue-100 transition-all font-bold"
-          title="Smart Calculator"
-        >
-          <Lightbulb size={20} />
-          <span className="hidden sm:inline text-sm">Smart Calc</span>
-        </button>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
 
-        <button 
-          onClick={() => setShowStages(true)}
-          className="flex items-center gap-2 p-3 bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-xl hover:bg-green-100 transition-all font-bold"
-          title="Etape Proiect"
-        >
-          <ClipboardList size={20} />
-          <span className="hidden lg:inline text-sm">Etape Proiect</span>
-        </button>
+        {/* ── Dropdown "Operații ▾" ─────────────────────────────────────── */}
+        <div style={{ position: 'relative' }} ref={dropdownRef}>
+          <button
+            onClick={() => setShowDropdown(v => !v)}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 6,
+              padding: '9px 14px', background: 'white',
+              border: '1px solid #E5E3DE', borderRadius: 8,
+              fontSize: 13, fontWeight: 500, color: '#6B6860',
+              cursor: 'pointer', fontFamily: 'inherit',
+              transition: 'border-color .15s',
+            }}
+            onMouseEnter={e => (e.currentTarget.style.borderColor = '#A8A59E')}
+            onMouseLeave={e => (e.currentTarget.style.borderColor = '#E5E3DE')}
+          >
+            Operații <ChevronDown size={13} style={{ marginTop: 1 }} />
+          </button>
 
-        <button 
-          onClick={() => setShowShops(true)}
-          className="flex items-center gap-2 p-3 bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-xl hover:bg-orange-100 transition-all font-bold"
-          title="Furnizori / Magazine"
-        >
-          <Store size={20} />
-          <span className="hidden xl:inline text-sm">Furnizori</span>
-        </button>
+          {showDropdown && (
+            <div style={{
+              position: 'absolute', right: 0, top: 'calc(100% + 6px)',
+              background: 'white', border: '1px solid #E5E3DE',
+              borderRadius: 10, boxShadow: '0 8px 28px rgba(0,0,0,0.1)',
+              minWidth: 230, zIndex: 50, padding: '6px',
+            }}>
+              <DropdownBtn
+                icon={<Lightbulb size={15} />} label="Smart Calc"
+                style={dropdownItemStyle}
+                onClick={() => { setShowSmartCalc(true); setShowDropdown(false) }}
+              />
+              <DropdownBtn
+                icon={<ClipboardList size={15} />} label="Etape Proiect"
+                style={dropdownItemStyle}
+                onClick={() => { setShowStages(true); setShowDropdown(false) }}
+              />
+              <DropdownBtn
+                icon={<Store size={15} />} label="Furnizori"
+                style={dropdownItemStyle}
+                onClick={() => { setShowShops(true); setShowDropdown(false) }}
+              />
 
-        <label className="flex items-center gap-2 p-3 bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-xl hover:bg-purple-100 transition-all font-bold cursor-pointer" title="Importă Extras Armare (OCR)">
-          <FileSearch size={20} />
-          <span className="hidden sm:inline text-sm">Importă Extras</span>
-          <input 
-            type="file" 
-            className="hidden" 
-            accept="image/*" 
-            onChange={handleOcrUpload} 
-          />
-        </label>
+              {/* File input item */}
+              <label style={{ ...dropdownItemStyle, cursor: 'pointer' }}
+                onMouseEnter={e => (e.currentTarget.style.background = '#F3F2EF')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+                <FileSearch size={15} style={{ flexShrink: 0 }} />
+                Importă Extras (OCR)
+                <input type="file" className="hidden" accept="image/*"
+                  onChange={e => { handleOcrUpload(e); setShowDropdown(false) }} />
+              </label>
 
-        <button 
-          onClick={handleSaveAsTemplate}
-          className="p-3 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-xl hover:bg-indigo-100 transition-all font-bold" 
-          title="Salvează acest proiect ca Șablon"
-        >
-          <LayoutTemplate size={20} />
-          <span className="hidden lg:inline text-sm ml-2">Salvează Șablon</span>
-        </button>
+              <DropdownBtn
+                icon={<LayoutTemplate size={15} />} label="Salvează ca Șablon"
+                style={dropdownItemStyle}
+                onClick={() => { handleSaveAsTemplate(); setShowDropdown(false) }}
+              />
+              <DropdownBtn
+                icon={<Share2 size={15} />} label="Partajează deviz"
+                style={dropdownItemStyle}
+                onClick={() => { handleShare(); setShowDropdown(false) }}
+              />
 
-        <button className="p-3 bg-slate-100 dark:bg-slate-800 rounded-xl hover:text-primary transition-all" title="Setări Proiect">
-          <Settings size={20} />
-        </button>
+              <div style={{ height: 1, background: '#E5E3DE', margin: '4px 0' }} />
 
-        <button
-          onClick={handleShare}
-          className="flex items-center gap-2 p-3 bg-teal-50 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 rounded-xl hover:bg-teal-100 transition-all font-bold"
-          title="Partajează devizul cu beneficiarul"
-        >
-          <Share2 size={20} />
-          <span className="hidden sm:inline text-sm">Partajează</span>
-        </button>
+              <DropdownBtn
+                icon={<Download size={15} />} label="Descarcă PDF"
+                style={dropdownItemStyle}
+                onClick={() => { window.open(`/projects/${projectId}/print`, '_blank'); setShowDropdown(false) }}
+              />
+              <DropdownBtn
+                icon={<Settings size={15} />} label="Setări Proiect"
+                style={dropdownItemStyle}
+                onClick={() => setShowDropdown(false)}
+              />
+            </div>
+          )}
+        </div>
 
+        {/* ── Acțiune primară — portocaliu ─────────────────────────────── */}
         <Link
           href={`/catalog?projectId=${projectId}`}
-          className="bg-primary text-white px-6 py-3 rounded-2xl font-bold shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all flex items-center gap-2"
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: 6,
+            background: '#E8500A', color: 'white', textDecoration: 'none',
+            padding: '9px 16px', borderRadius: 8,
+            fontSize: 13, fontWeight: 600, fontFamily: 'inherit',
+            boxShadow: '0 2px 8px rgba(232,80,10,0.25)',
+            transition: 'background .15s, box-shadow .15s',
+          }}
+          onMouseEnter={e => {
+            e.currentTarget.style.background = '#C43F06'
+            e.currentTarget.style.boxShadow = '0 4px 14px rgba(232,80,10,0.35)'
+          }}
+          onMouseLeave={e => {
+            e.currentTarget.style.background = '#E8500A'
+            e.currentTarget.style.boxShadow = '0 2px 8px rgba(232,80,10,0.25)'
+          }}
         >
-          <Plus size={20} />
-          <span className="hidden sm:inline">Adaugă Articol</span>
-          <span className="sm:hidden">Adaugă</span>
+          <Plus size={15} />
+          <span>Adaugă Articol</span>
         </Link>
       </div>
 
       {showSmartCalc && (
-        <SmartCalculator 
+        <SmartCalculator
           projectId={projectId}
           initialDimensions={initialDimensions}
           onSave={handleSaveDimensions}
@@ -194,17 +239,37 @@ export default function ProjectActions({ projectId, initialDimensions, initialSt
         />
       )}
       {showStages && (
-        <ProjectStagesManager 
+        <ProjectStagesManager
           projectId={projectId}
           initialStages={initialStages}
           onClose={() => setShowStages(false)}
         />
       )}
       {showShops && (
-        <ShopManager 
-          onClose={() => setShowShops(false)}
-        />
+        <ShopManager onClose={() => setShowShops(false)} />
       )}
     </>
+  )
+}
+
+/* ─── Helper: buton item dropdown ───────────────────────────────────────── */
+function DropdownBtn({
+  icon, label, onClick, style,
+}: {
+  icon: React.ReactNode
+  label: string
+  onClick: () => void
+  style: React.CSSProperties
+}) {
+  return (
+    <button
+      onClick={onClick}
+      style={style}
+      onMouseEnter={e => (e.currentTarget.style.background = '#F3F2EF')}
+      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+    >
+      <span style={{ color: '#A8A59E', flexShrink: 0 }}>{icon}</span>
+      {label}
+    </button>
   )
 }

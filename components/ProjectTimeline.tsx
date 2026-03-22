@@ -109,7 +109,7 @@ export default function ProjectTimeline({
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 24, padding: '4px 0' }}>
 
       {/* ── Header ── */}
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
@@ -140,8 +140,8 @@ export default function ProjectTimeline({
       }}>
         {/* Header săptămâni */}
         <div style={{
-          display: 'flex', borderBottom: '1px solid #E5E3DE',
-          background: '#F3F2EF', padding: '10px 24px',
+          display: 'flex', borderBottom: '2px solid #E5E3DE',
+          background: '#EDEBE6', padding: '12px 24px',
         }}>
           <div style={{ width: 200, flexShrink: 0, fontSize: 11,
             fontWeight: 600, color: '#A8A59E', textTransform: 'uppercase', letterSpacing: '.06em' }}>
@@ -177,10 +177,10 @@ export default function ProjectTimeline({
               <div key={stage.name} style={{
                 display: 'flex', alignItems: 'center',
                 borderBottom: idx < stageStats.length - 1 ? '1px solid #F3F2EF' : 'none',
-                position: 'relative', zIndex: 1,
+                position: 'relative', zIndex: 1, minHeight: 64,
               }}>
                 {/* Nume etapă */}
-                <div style={{ width: 200, flexShrink: 0, padding: '16px 24px',
+                <div style={{ width: 200, flexShrink: 0, padding: '14px 24px',
                   display: 'flex', alignItems: 'center', gap: 10 }}>
                   <div style={{ width: 8, height: 8, borderRadius: '50%',
                     background: stage.color.bg, flexShrink: 0 }} />

@@ -223,6 +223,49 @@ h1, h2, h3 {
   a { color: inherit; text-decoration: none; }
 }
 
+/* ─── Section card — folosit în paginile interioare ─────────────────────── */
+.section-card {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  margin-bottom: 16px;
+}
+
+/* Butoane header proiect — uniformizare */
+.action-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #6B6860;
+  background: transparent;
+  border: 1px solid #E5E3DE;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-family: var(--sans);
+  cursor: pointer;
+  transition: border-color .15s, color .15s;
+}
+.action-btn-secondary:hover { border-color: #A8A59E; color: #1E2329; }
+
+.action-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #E8500A;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--sans);
+  cursor: pointer;
+  transition: background .15s;
+}
+.action-btn-primary:hover { background: #C43F06; }
+
 /* ─── Project card hover ────────────────────────────────────────────────── */
 .project-card {
   background: var(--white);
