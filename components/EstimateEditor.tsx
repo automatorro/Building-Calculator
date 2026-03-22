@@ -156,6 +156,7 @@ export default function EstimateEditor({ projectId, initialLines, settings, dime
   const handleSave = async () => {
     setLoading(true)
     for (const line of lines) {
+      const isCatalogNorm = !!line.catalog_norm_id
       const { error } = await supabase
         .from('estimate_lines')
         .upsert({
@@ -164,15 +165,16 @@ export default function EstimateEditor({ projectId, initialLines, settings, dime
           quantity: line.quantity,
           custom_prices: line.custom_prices,
           excluded_resources: line.excluded_resources,
-          metadata: line.metadata,
           stage_name: line.stage_name,
-          manual_name: line.manual_name,
-          manual_um: line.manual_um,
-          manual_price: line.manual_price,
-          manual_labor_price: line.manual_labor_price,
-          manual_equipment_price: line.manual_equipment_price,
-          manual_transport_price: line.manual_transport_price,
-          resources_override: line.resources_override || []
+          sort_order: line.sort_order ?? 0,
+          notes: line.notes,
+          // Câmpuri catalog norms (sau fallback manual)
+          catalog_norm_id: line.catalog_norm_id ?? null,
+          name:       isCatalogNorm ? line.name       : (line.manual_name  ?? line.name),
+          code:       isCatalogNorm ? line.code       : null,
+          unit:       isCatalogNorm ? line.unit       : (line.manual_um    ?? line.unit),
+          unit_price: isCatalogNorm ? line.unit_price : (line.manual_price ?? line.unit_price ?? 0),
+          category:   line.category ?? null,
         })
       if (error) console.error('Error saving line:', error)
     }
@@ -315,7 +317,8 @@ export default function EstimateEditor({ projectId, initialLines, settings, dime
                 {lines.filter(l => (l.stage_name || 'Alte Lucrări') === stage).map((line) => {
                   const lineCosts = calculateLineCosts(line, settings)
                   const isExpanded = expandedId === line.id
-                  const isManual = !line.items
+                  const isCatalogNorm = !!(line.catalog_norm_id || (line.code && !line.items))
+                  const isManual = !line.items && !isCatalogNorm
 
                   return (
                     <div key={line.id} className="group border-b border-border/10 last:border-0">
@@ -326,8 +329,10 @@ export default function EstimateEditor({ projectId, initialLines, settings, dime
                               <span className="text-[10px] font-mono font-bold bg-primary/10 text-primary px-1.5 py-0.5 rounded shrink-0">
                                 {line.code || line.metadata?.catalog_norm_symbol || (isManual ? 'MANUAL' : line.items!.normatives?.code || 'N/A')}
                               </span>
-                              {isManual ? (
-                                <input 
+                              {isCatalogNorm ? (
+                                <h4 className="font-bold text-base md:text-lg leading-tight">{line.name || line.manual_name || '—'}</h4>
+                              ) : isManual ? (
+                                <input
                                   className="font-bold text-base md:text-lg leading-tight bg-transparent border-b border-dashed border-transparent hover:border-border/50 focus:border-primary outline-none transition-all w-full max-w-md"
                                   value={line.manual_name}
                                   onChange={(e) => handleUpdateManualField(line.id, 'manual_name', e.target.value)}
@@ -337,11 +342,18 @@ export default function EstimateEditor({ projectId, initialLines, settings, dime
                               )}
                             </div>
                             <div className="text-[11px] text-slate-400 font-bold uppercase tracking-wider">
-                              {isManual ? (
+                              {isCatalogNorm ? (
+                                <span>
+                                  {(line.unit_price ?? 0) > 0
+                                    ? `${(line.unit_price!).toFixed(2)} Lei / ${line.unit || '—'}`
+                                    : `Preț necompletat · ${line.unit || '—'} · ${line.category || ''}`
+                                  }
+                                </span>
+                              ) : isManual ? (
                                 <div className="flex flex-wrap items-center gap-3 mt-1">
                                   <div className="flex items-center gap-1">
                                     <span className="opacity-50 text-[9px]">Mat:</span>
-                                    <input 
+                                    <input
                                       type="number"
                                       className="w-14 bg-transparent border-b border-border/30 font-mono text-primary outline-none text-[10px]"
                                       value={line.manual_price}
@@ -350,7 +362,7 @@ export default function EstimateEditor({ projectId, initialLines, settings, dime
                                   </div>
                                   <div className="flex items-center gap-1">
                                     <span className="opacity-50 text-[9px]">Man:</span>
-                                    <input 
+                                    <input
                                       type="number"
                                       className="w-14 bg-transparent border-b border-border/30 font-mono text-orange-500 outline-none text-[10px]"
                                       value={line.manual_labor_price}
@@ -359,7 +371,7 @@ export default function EstimateEditor({ projectId, initialLines, settings, dime
                                   </div>
                                   <div className="flex items-center gap-1">
                                     <span className="opacity-50 text-[9px]">Util:</span>
-                                    <input 
+                                    <input
                                       type="number"
                                       className="w-12 bg-transparent border-b border-border/30 font-mono text-blue-500 outline-none text-[10px]"
                                       value={line.manual_equipment_price}
@@ -368,7 +380,7 @@ export default function EstimateEditor({ projectId, initialLines, settings, dime
                                   </div>
                                   <div className="flex items-center gap-1">
                                     <span className="opacity-50 text-[9px]">Trans:</span>
-                                    <input 
+                                    <input
                                       type="number"
                                       className="w-12 bg-transparent border-b border-border/30 font-mono text-purple-500 outline-none text-[10px]"
                                       value={line.manual_transport_price}
@@ -377,7 +389,7 @@ export default function EstimateEditor({ projectId, initialLines, settings, dime
                                   </div>
                                   <div className="flex items-center gap-1 border-l pl-2 border-border/30 ml-1">
                                     <span className="opacity-50 text-[9px]">UM:</span>
-                                    <input 
+                                    <input
                                       className="w-10 bg-transparent border-b border-border/30 outline-none text-[10px]"
                                       value={line.manual_um}
                                       onChange={(e) => handleUpdateManualField(line.id, 'manual_um', e.target.value)}

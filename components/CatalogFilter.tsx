@@ -57,25 +57,19 @@ export default function CatalogFilter({
 
     const { error } = await supabase
       .from('estimate_lines')
-      .insert([{
+      .insert({
         project_id: projectId,
-        item_id: null,
-        // Câmpuri noi (schema actualizată)
         catalog_norm_id: norm.id,
         name: norm.name,
         code: norm.symbol,
         unit: norm.unit,
-        unit_price: norm.unit_price,
+        unit_price: norm.unit_price ?? 0,
         category: norm.category,
-        // Câmpuri compatibilitate (pentru calcule și display existent)
-        manual_name: norm.name,
-        manual_um: norm.unit,
-        manual_price: norm.unit_price,
         quantity: 1,
+        sort_order: 0,
         custom_prices: {},
         excluded_resources: [],
-        metadata: { catalog_norm_symbol: norm.symbol, catalog_norm_id: norm.id },
-      }])
+      })
 
     if (!error) {
       setAddedIds(prev => new Set(prev).add(norm.id))

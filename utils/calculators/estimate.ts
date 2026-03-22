@@ -77,8 +77,11 @@ export function calculateLineCosts(line: EstimateLine, settings: ProjectSettings
       else if (res.type === 'equipment') directEquipment += cost
       else if (res.type === 'transport') directTransport += cost
     })
+  } else if (line.unit_price != null && line.unit_price > 0) {
+    // Linie din catalog_norms — unit_price este costul direct total per unitate
+    directMaterial = line.unit_price
   } else {
-    // Manual item calculation with breakdown
+    // Linie manuală cu defalcare pe tipuri de cost
     directMaterial = line.manual_price || 0
     directLabor = line.manual_labor_price || 0
     directEquipment = line.manual_equipment_price || 0
