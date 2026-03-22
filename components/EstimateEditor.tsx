@@ -239,7 +239,7 @@ export default function EstimateEditor({ projectId, initialLines, settings, dime
     <div className="flex flex-col lg:grid lg:grid-cols-4 gap-8">
       {/* Sidebar Info Proiect */}
       <div className="space-y-6 order-1 lg:order-1">
-        <div className="glass-card p-6 border-primary/10 bg-primary/[0.01]">
+        <div className="glass-card p-6 shadow-sm" style={{ borderColor: '#E5E3DE' }}>
           <h3 className="font-bold mb-4 uppercase text-xs tracking-widest text-slate-400">Recapitație Proiect</h3>
           <div className="space-y-3">
             <div className="flex justify-between text-sm">

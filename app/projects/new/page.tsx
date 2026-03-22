@@ -101,7 +101,7 @@ export default function NewProjectPage() {
   }
 
   return (
-    <main className="min-h-screen p-4 sm:p-8 max-w-3xl mx-auto text-slate-900 dark:text-white">
+    <main className="min-h-screen max-w-2xl mx-auto px-6 py-8">
       <Link href="/projects" className="inline-flex items-center gap-2 text-slate-500 hover:text-primary mb-6 sm:mb-8 transition-colors group">
         <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
         Înapoi la Proiecte

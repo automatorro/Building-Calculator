@@ -31,19 +31,23 @@ export default function ProjectDashboard({ financials, projectName, onAddPurchas
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
       {/* Header Info */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">{projectName}</h1>
-          <p className="text-slate-500 font-bold uppercase text-[10px] tracking-widest mt-1">Status Financiar Proiect (Live)</p>
-        </div>
-        <div className="flex gap-3">
-          <button 
-            onClick={onAddPurchase}
-            className="bg-primary text-white px-6 py-3 rounded-2xl font-black text-sm uppercase tracking-widest shadow-lg shadow-primary/25 hover:shadow-primary/40 active:scale-95 transition-all flex items-center gap-2"
-          >
-            <Wallet size={18} /> Înregistrează Achiziție
-          </button>
-        </div>
+      <div className="flex items-center justify-between gap-4">
+        <p style={{ fontSize: 11, fontWeight: 700, color: '#A8A59E', letterSpacing: '.08em', textTransform: 'uppercase' }}>
+          Status Financiar Proiect (Live)
+        </p>
+        <button
+          onClick={onAddPurchase}
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: 6,
+            background: '#E8500A', color: 'white', border: 'none',
+            padding: '9px 16px', borderRadius: 8,
+            fontSize: 13, fontWeight: 600, fontFamily: 'inherit',
+            cursor: 'pointer', boxShadow: '0 2px 8px rgba(232,80,10,0.2)',
+            transition: 'background .15s',
+          }}
+        >
+          <Wallet size={15} /> Înregistrează Achiziție
+        </button>
       </div>
 
       {/* 4 Întrebări în 5 Secunde */}
