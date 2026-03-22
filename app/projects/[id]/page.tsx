@@ -97,7 +97,7 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
         projectLocation={project.location}
         initialLines={formattedLines as any}
         initialPurchases={purchases || []}
-        settings={project.settings || { profit: 5, regie: 10, tva: 19, taxe_manopera: 2.25 }}
+        settings={project.settings || { profit: 5, regie: 10, tva: 21, taxe_manopera: 2.25 }}
         dimensions={project.dimensions || {}}
         totalEstimatedRevenue={project.total_estimated_revenue || 0}
         stages={stages}

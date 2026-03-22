@@ -36,7 +36,7 @@ export default async function PrintPage({ params }: { params: { id: string } }) 
   })
 
   const settings: ProjectSettings = project.settings ?? {
-    profit: 15, regie: 10, tva: 19, taxe_manopera: 0,
+    profit: 15, regie: 10, tva: 21, taxe_manopera: 0,
   }
 
   // Group by stage

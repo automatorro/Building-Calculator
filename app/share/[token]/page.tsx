@@ -37,7 +37,7 @@ export default async function SharePage({ params }: { params: { token: string } 
   })
 
   const settings: ProjectSettings = (project.settings as ProjectSettings) || {
-    profit: 5, regie: 10, tva: 19, taxe_manopera: 2.25,
+    profit: 5, regie: 10, tva: 21, taxe_manopera: 2.25,
   }
 
   /* Grupare pe etapă pentru afișare simplificată */

@@ -19,7 +19,7 @@ export default function NewProjectPage() {
     location: '',
     profit: 5,
     regie: 10,
-    tva: 19,
+    tva: 21,
     taxe_manopera: 2.25,
     total_estimated_revenue: 0
   })
