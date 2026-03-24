@@ -38,8 +38,9 @@ function LogoMark({ size = 30 }: { size?: number }) {
 }
 
 const NAV_LINKS = [
-  { label: 'Proiecte',      href: '/projects' },
-  { label: 'Catalog norme', href: '/catalog' },
+  { label: 'Proiecte',          href: '/projects' },
+  { label: 'Catalog norme',     href: '/catalog' },
+  { label: 'Cum funcționează',  href: '/cum-functioneaza.html' },
 ]
 
 export default function Navigation() {

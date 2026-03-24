@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cum funcționează — BuildingCalc</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --black: #1E2329;
+  --orange: #E8500A;
+  --orange-dark: #C43F06;
+  --orange-light: #FFF0E8;
+  --white: #FAFAF8;
+  --gray-100: #F3F2EF;
+  --gray-200: #E5E3DE;
+  --gray-400: #A8A59E;
+  --gray-600: #6B6860;
+  --gray-800: #2E2D2A;
+  --green: #2A7D4F;
+  --green-light: #E8F5EE;
+  --red-light: #FCECEA;
+  --red: #C0392B;
+  --serif: 'DM Serif Display', Georgia, serif;
+  --sans: 'DM Sans', system-ui, sans-serif;
+  --radius: 14px;
+  --radius-sm: 8px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: var(--sans); background: var(--white); color: var(--black); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+
+/* NAV */
+.doc-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 0 32px; height: 56px; background: var(--black); backdrop-filter: blur(12px); }
+.nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.logo-mark { width: 28px; height: 28px; background: var(--orange); border-radius: 6px; display: flex; align-items: center; justify-content: center; }
+.logo-mark svg { width: 16px; height: 16px; }
+.logo-text { font-family: var(--serif); font-size: 18px; color: #fff; }
+.logo-text span { color: var(--orange); }
+.nav-links { display: flex; gap: 8px; list-style: none; }
+.nav-links a { color: rgba(255,255,255,0.5); text-decoration: none; font-size: 13px; font-weight: 400; padding: 6px 12px; border-radius: 6px; transition: all .2s; }
+.nav-links a:hover, .nav-links a.active { color: #fff; background: rgba(255,255,255,0.08); }
+
+/* HERO */
+.hero { padding: 120px 32px 64px; text-align: center; background: var(--black); color: #fff; }
+.hero h1 { font-family: var(--serif); font-size: 48px; line-height: 1.15; max-width: 700px; margin: 0 auto 20px; letter-spacing: -.02em; }
+.hero h1 em { color: var(--orange); font-style: normal; }
+.hero p { font-size: 18px; color: rgba(255,255,255,0.5); max-width: 600px; margin: 0 auto; line-height: 1.6; font-weight: 300; }
+
+/* SECTIONS */
+.section { padding: 80px 32px; max-width: 900px; margin: 0 auto; }
+.section-alt { background: var(--gray-100); }
+.section-dark { background: var(--black); color: #fff; }
+.section-num { font-family: var(--serif); font-size: 14px; color: var(--orange); margin-bottom: 8px; }
+.section-title { font-family: var(--serif); font-size: 32px; line-height: 1.2; letter-spacing: -.02em; margin-bottom: 12px; }
+.section-desc { font-size: 16px; color: var(--gray-600); line-height: 1.7; font-weight: 300; margin-bottom: 32px; max-width: 700px; }
+.section-dark .section-desc { color: rgba(255,255,255,0.45); }
+
+/* WIDGET CONTAINER */
+.widget { background: #fff; border: 1px solid var(--gray-200); border-radius: var(--radius); overflow: hidden; margin: 24px 0; }
+.section-alt .widget { border-color: #ddd; }
+
+/* SHARED WIDGET STYLES */
+.w-tabs { display: flex; border-bottom: 1px solid var(--gray-200); }
+.w-tab { flex: 1; text-align: center; padding: 12px 8px; font-size: 13px; font-weight: 500; cursor: pointer; color: var(--gray-400); border-bottom: 2px solid transparent; background: none; border-left: none; border-right: none; border-top: none; font-family: var(--sans); transition: all .15s; }
+.w-tab.active { color: var(--black); border-bottom-color: var(--orange); }
+.w-view { display: none; }
+.w-view.vis { display: block; }
+.w-pad { padding: 20px; }
+.w-kpi { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 1px; background: var(--gray-200); }
+.w-kpi-item { background: #fff; padding: 16px; }
+.w-kpi-label { font-size: 11px; color: var(--gray-400); font-weight: 500; margin-bottom: 4px; }
+.w-kpi-val { font-family: 'DM Sans', monospace; font-size: 20px; font-weight: 600; }
+.w-kpi-sub { font-size: 11px; margin-top: 2px; }
+.w-btn { padding: 10px 20px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 500; cursor: pointer; font-family: var(--sans); border: none; }
+.w-btn-primary { background: var(--orange); color: #fff; }
+.w-btn-ghost { background: transparent; color: var(--gray-600); border: 1px solid var(--gray-200); }
+.w-alert { border-radius: var(--radius-sm); padding: 12px 16px; font-size: 13px; line-height: 1.5; margin: 12px 0; }
+.w-alert-ok { background: var(--green-light); color: var(--green); }
+.w-alert-warn { background: #FAEEDA; color: #633806; }
+.w-alert-danger { background: var(--red-light); color: #791F1F; }
+.w-alert-info { background: #E6F1FB; color: #0C447C; }
+.w-field { margin-bottom: 16px; }
+.w-field-label { font-size: 11px; font-weight: 500; color: var(--gray-400); margin-bottom: 6px; }
+.w-input { width: 100%; height: 44px; border-radius: var(--radius-sm); border: 1px solid var(--gray-200); padding: 0 14px; font-size: 15px; font-family: var(--sans); background: #fff; color: var(--black); }
+.w-input:focus { border-color: var(--orange); outline: none; }
+.w-select { height: 44px; border-radius: var(--radius-sm); border: 1px solid var(--gray-200); padding: 0 14px; font-size: 14px; font-family: var(--sans); background: #fff; color: var(--black); }
+.w-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+.w-pill { padding: 6px 14px; border-radius: var(--radius-sm); border: 1px solid var(--gray-200); background: transparent; color: var(--gray-600); font-size: 13px; cursor: pointer; font-family: var(--sans); font-weight: 500; transition: all .15s; }
+.w-pill.active { background: var(--orange); color: #fff; border-color: var(--orange); }
+.w-recap { background: var(--gray-100); border-radius: var(--radius-sm); padding: 16px; margin: 16px 0; }
+.w-recap-row { display: flex; justify-content: space-between; font-size: 13px; padding: 4px 0; }
+.w-recap-label { color: var(--gray-600); }
+.w-recap-val { font-family: 'DM Sans', monospace; font-weight: 600; }
+.w-recap-total { border-top: 2px solid var(--black); margin-top: 8px; padding-top: 10px; font-weight: 600; font-size: 15px; }
+.w-badge { font-size: 11px; padding: 3px 10px; border-radius: 99px; font-weight: 500; display: inline-block; }
+
+/* PHONE MOCKUP */
+.phone { background: var(--gray-100); border-radius: 24px; padding: 16px; max-width: 400px; margin: 0 auto; }
+.phone-bar { display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--gray-400); margin-bottom: 12px; padding: 0 4px; }
+.phone-time { font-weight: 600; font-size: 13px; color: var(--black); }
+.phone-screen { background: #fff; border-radius: var(--radius); overflow: hidden; }
+
+/* PROGRESS BARS */
+.progress-bar { height: 6px; background: var(--gray-100); border-radius: 3px; overflow: hidden; margin: 6px 0; }
+.progress-fill { height: 100%; border-radius: 3px; transition: width .3s; }
+
+/* TOC sidebar */
+.toc { position: fixed; right: 24px; top: 50%; transform: translateY(-50%); z-index: 50; display: flex; flex-direction: column; gap: 6px; }
+.toc a { width: 8px; height: 8px; border-radius: 50%; background: var(--gray-200); display: block; transition: all .2s; }
+.toc a:hover, .toc a.active { background: var(--orange); transform: scale(1.5); }
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .hero h1 { font-size: 32px; }
+  .section { padding: 48px 20px; }
+  .w-kpi { grid-template-columns: 1fr 1fr; }
+  .nav-links { display: none; }
+  .toc { display: none; }
+  .hero { padding: 100px 20px 48px; }
+  .section-title { font-size: 26px; }
+}
+
+/* SCROLL ANIMATIONS */
+.reveal { opacity: 0; transform: translateY(24px); transition: opacity .6s ease, transform .6s ease; }
+.reveal.visible { opacity: 1; transform: none; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="doc-nav">
+  <a href="/" class="nav-logo">
+    <div class="logo-mark"><svg viewBox="0 0 16 16" fill="none"><path d="M2 14L8 2L14 14M5 10H11" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <span class="logo-text">Building<span>Calc</span></span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="/">Acasă</a></li>
+    <li><a href="#flux" class="active">Cum funcționează</a></li>
+    <li><a href="/#preturi">Prețuri</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <h1>Tot ce faci pe șantier.<br><em>Pas cu pas.</em></h1>
+  <p>De la cererea de ofertă până la bilanțul zilnic — cum te ajută BuildingCalc în fiecare moment al zilei tale de constructor.</p>
+</section>
+
+<!-- ============================================ -->
+<!-- SECTION 1: FLUXUL GENERAL -->
+<!-- ============================================ -->
+<section class="section" id="flux">
+  <div class="section-num reveal">01</div>
+  <h2 class="section-title reveal">Fluxul complet al unui proiect</h2>
+  <p class="section-desc reveal">Din perspectiva constructorului român — de la momentul în care primește o cerere de ofertă până la finalizarea lucrării. Două faze mari: pregătirea (la birou) și execuția (pe șantier).</p>
+
+  <div class="widget reveal">
+    <div class="w-pad">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+        <!-- Faza 1 -->
+        <div style="background:var(--green-light);border-radius:var(--radius-sm);padding:20px">
+          <div style="font-weight:600;color:var(--green);font-size:13px;margin-bottom:16px">FAZA 1 — PREGĂTIRE (birou / acasă)</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="background:#fff;border-radius:8px;padding:12px;border-left:3px solid var(--green)">
+              <div style="font-weight:600;font-size:13px">Cerere de ofertă</div>
+              <div style="font-size:12px;color:var(--gray-600)">Clientul trimite planuri</div>
+            </div>
+            <div style="text-align:center;color:var(--gray-400);font-size:14px">↓</div>
+            <div style="background:#fff;border-radius:8px;padding:12px;border-left:3px solid var(--green)">
+              <div style="font-weight:600;font-size:13px">Creează proiect</div>
+              <div style="font-size:12px;color:var(--gray-600)">Nume, coeficienți, TVA</div>
+            </div>
+            <div style="text-align:center;color:var(--gray-400);font-size:14px">↓</div>
+            <div style="background:#fff;border-radius:8px;padding:12px;border-left:3px solid var(--green)">
+              <div style="font-weight:600;font-size:13px">Compune devizul</div>
+              <div style="font-size:12px;color:var(--gray-600)">Catalog norme + manual</div>
+            </div>
+            <div style="text-align:center;color:var(--gray-400);font-size:14px">↓</div>
+            <div style="background:#fff;border-radius:8px;padding:12px;border-left:3px solid var(--green)">
+              <div style="font-weight:600;font-size:13px">Ajustează rețetele</div>
+              <div style="font-size:12px;color:var(--gray-600)">Prețuri reale, pierderi</div>
+            </div>
+          </div>
+          <div style="margin-top:16px;display:flex;flex-direction:column;gap:6px">
+            <div style="background:rgba(42,125,79,0.1);border-radius:6px;padding:8px 12px;font-size:12px;color:var(--green)">→ Trimite ofertă beneficiar</div>
+            <div style="background:rgba(42,125,79,0.1);border-radius:6px;padding:8px 12px;font-size:12px;color:var(--green)">→ Export PDF / Excel</div>
+            <div style="background:rgba(42,125,79,0.1);border-radius:6px;padding:8px 12px;font-size:12px;color:var(--green)">→ Link WhatsApp beneficiar</div>
+          </div>
+        </div>
+        <!-- Faza 2 -->
+        <div style="background:var(--orange-light);border-radius:var(--radius-sm);padding:20px">
+          <div style="font-weight:600;color:var(--orange);font-size:13px;margin-bottom:16px">FAZA 2 — EXECUȚIE (pe șantier, zilnic)</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="background:#fff;border-radius:8px;padding:12px;border-left:3px solid var(--orange)">
+              <div style="font-weight:600;font-size:13px">Dashboard dimineață</div>
+              <div style="font-size:12px;color:var(--gray-600)">Ce urmează, ce lipsește</div>
+            </div>
+            <div style="text-align:center;color:var(--gray-400);font-size:14px">↓</div>
+            <div style="background:#fff;border-radius:8px;padding:12px;border-left:3px solid var(--orange)">
+              <div style="font-weight:600;font-size:13px">Înregistrează achiziții</div>
+              <div style="font-size:12px;color:var(--gray-600)">Sumă + etapă + poză bon</div>
+            </div>
+            <div style="text-align:center;color:var(--gray-400);font-size:14px">↓</div>
+            <div style="background:#fff;border-radius:8px;padding:12px;border-left:3px solid var(--red)">
+              <div style="font-weight:600;font-size:13px;color:var(--red)">Alertă depășire buget</div>
+              <div style="font-size:12px;color:var(--gray-600)">Impact imediat pe profit</div>
+            </div>
+            <div style="text-align:center;color:var(--gray-400);font-size:14px">↓</div>
+            <div style="background:#fff;border-radius:8px;padding:12px;border-left:3px solid var(--orange)">
+              <div style="font-weight:600;font-size:13px">Bilanț zilnic</div>
+              <div style="font-size:12px;color:var(--gray-600)">Cheltuit vs planificat</div>
+            </div>
+          </div>
+          <div style="margin-top:16px;display:flex;flex-direction:column;gap:6px">
+            <div style="background:rgba(232,80,10,0.08);border-radius:6px;padding:8px 12px;font-size:12px;color:var(--orange)">→ Jurnal de șantier</div>
+            <div style="background:rgba(232,80,10,0.08);border-radius:6px;padding:8px 12px;font-size:12px;color:var(--orange)">→ Calculator timp execuție</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================ -->
+<!-- SECTION 2: SETĂRI PROIECT -->
+<!-- ============================================ -->
+<section class="section section-alt" id="setari">
+  <div class="section-num reveal">02</div>
+  <h2 class="section-title reveal">Coeficienții care contează</h2>
+  <p class="section-desc reveal">Fiecare proiect are propriii coeficienți financiari. Mișcă slider-ele și vezi cum se propagă prin formula completă de recapitulație — pe o simulare de 100.000 lei cost direct.</p>
+
+  <div class="widget reveal" id="w-setari">
+    <div class="w-pad">
+      <div style="margin-bottom:20px">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
+          <span style="font-size:13px;color:var(--gray-600);min-width:200px">Cheltuieli indirecte (regie)</span>
+          <input type="range" min="0" max="25" value="10" step="0.5" id="s-regie" oninput="calcSetari()" style="flex:1">
+          <span style="font-family:monospace;font-weight:600;min-width:40px;text-align:right" id="s-regie-v">10%</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
+          <span style="font-size:13px;color:var(--gray-600);min-width:200px">Procent profit</span>
+          <input type="range" min="0" max="20" value="5" step="0.5" id="s-profit" oninput="calcSetari()" style="flex:1">
+          <span style="font-family:monospace;font-weight:600;min-width:40px;text-align:right" id="s-profit-v">5%</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px">
+          <span style="font-size:13px;color:var(--gray-600);min-width:200px">TVA</span>
+          <div class="w-pills" id="s-tva-pills">
+            <span class="w-pill" onclick="setTVA(5)">5%</span>
+            <span class="w-pill" onclick="setTVA(11)">11%</span>
+            <span class="w-pill active" onclick="setTVA(21)">21%</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="w-recap">
+        <div class="w-recap-row"><span class="w-recap-label">Cost direct (materiale + manoperă + utilaje)</span><span class="w-recap-val">100.000 lei</span></div>
+        <div class="w-recap-row"><span class="w-recap-label">Cheltuieli indirecte (regie) <span id="sf-regie-p">10%</span></span><span class="w-recap-val" id="sf-regie">+10.000 lei</span></div>
+        <div class="w-recap-row"><span class="w-recap-label">Profit <span id="sf-profit-p">5%</span></span><span class="w-recap-val" id="sf-profit">+5.500 lei</span></div>
+        <div class="w-recap-row"><span class="w-recap-label">Total fără TVA</span><span class="w-recap-val" id="sf-ftva">115.500 lei</span></div>
+        <div class="w-recap-row"><span class="w-recap-label">TVA <span id="sf-tva-p">21%</span></span><span class="w-recap-val" id="sf-tva">+24.255 lei</span></div>
+        <div class="w-recap-row w-recap-total"><span>Total general (ofertă beneficiar)</span><span class="w-recap-val" id="sf-total" style="color:var(--green)">139.755 lei</span></div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:16px">
+        <div style="background:var(--gray-100);border-radius:8px;padding:12px">
+          <div style="font-size:11px;color:var(--gray-400)">Profit net constructor</div>
+          <div style="font-family:monospace;font-size:18px;font-weight:600;color:var(--green)" id="sf-m-profit">5.500 lei</div>
+        </div>
+        <div style="background:var(--gray-100);border-radius:8px;padding:12px">
+          <div style="font-size:11px;color:var(--gray-400)">% din ofertă</div>
+          <div style="font-family:monospace;font-size:18px;font-weight:600" id="sf-m-pct">3.9%</div>
+        </div>
+        <div style="background:var(--gray-100);border-radius:8px;padding:12px">
+          <div style="font-size:11px;color:var(--gray-400)">Regie acoperită</div>
+          <div style="font-family:monospace;font-size:18px;font-weight:600" id="sf-m-regie">10.000 lei</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================ -->
+<!-- SECTION 3: EDITARE REȚETE -->
+<!-- ============================================ -->
+<section class="section" id="retete">
+  <div class="section-num reveal">03</div>
+  <h2 class="section-title reveal">Rețeta fiecărei lucrări, sub control total</h2>
+  <p class="section-desc reveal">Fiecare articol de deviz are o rețetă completă de resurse — materiale, manoperă, utilaje. Editează orice câmp, dezactivează o resursă, schimbă un preț — totul se recalculează instant prin tot lanțul.</p>
+
+  <div class="widget reveal" id="w-retete">
+    <div style="padding:14px 20px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;border-bottom:1px solid var(--gray-200)" onclick="document.getElementById('retete-expand').style.display=document.getElementById('retete-expand').style.display==='none'?'block':'none'">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-family:monospace;font-size:12px;font-weight:600;padding:2px 8px;border-radius:4px;background:#E6F1FB;color:#0C447C">CA04A+</span>
+        <span style="font-size:14px;font-weight:500">Turnare beton armat fundații — beton marfă</span>
+      </div>
+      <div style="text-align:right">
+        <div style="font-family:monospace;font-size:18px;font-weight:600" id="r-head-total">8.336 lei</div>
+        <div style="font-size:12px;color:var(--gray-400)" id="r-head-sub">18 mc × 463,11 lei/mc</div>
+      </div>
+    </div>
+    <div id="retete-expand" style="padding:20px">
+      <div style="font-size:11px;font-weight:500;color:var(--gray-400);margin-bottom:10px">REȚETĂ RESURSE — EDITABILĂ</div>
+      <div id="r-resources">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--gray-200);flex-wrap:wrap" id="rr0">
+          <input type="checkbox" checked onchange="rToggle(0,this.checked)" style="accent-color:var(--orange)">
+          <span class="w-badge" style="background:#E6F1FB;color:#0C447C">material</span>
+          <span style="font-size:13px;flex:1;min-width:120px">Beton C25/30 marfă</span>
+          <div style="display:flex;align-items:center;gap:4px"><span style="font-size:11px;color:var(--gray-400)">Consum</span><input type="number" value="1.02" step="0.01" style="width:55px;height:28px;border:1px solid var(--gray-200);border-radius:6px;text-align:center;font-family:monospace;font-size:12px" data-r="0" data-f="c" oninput="rCalc()"><span style="font-size:11px;color:var(--gray-400)">mc</span></div>
+          <div style="display:flex;align-items:center;gap:4px"><span style="font-size:11px;color:var(--gray-400)">Preț</span><input type="number" value="380" style="width:60px;height:28px;border:1px solid var(--gray-200);border-radius:6px;text-align:center;font-family:monospace;font-size:12px" data-r="0" data-f="p" oninput="rCalc()"><span style="font-size:11px;color:var(--gray-400)">lei</span></div>
+          <div style="display:flex;align-items:center;gap:4px"><span style="font-size:11px;color:var(--gray-400)">Pierderi</span><input type="number" value="3" style="width:36px;height:24px;border:1px solid transparent;border-radius:4px;text-align:center;font-family:monospace;font-size:11px;background:#FAEEDA;color:#633806" data-r="0" data-f="w" oninput="rCalc()"><span style="font-size:11px;color:var(--gray-400)">%</span></div>
+          <span style="font-family:monospace;font-size:13px;font-weight:600;min-width:75px;text-align:right" id="rc0">399,11 lei</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--gray-200);flex-wrap:wrap" id="rr1">
+          <input type="checkbox" checked onchange="rToggle(1,this.checked)" style="accent-color:var(--orange)">
+          <span class="w-badge" style="background:#FAEEDA;color:#633806">manoperă</span>
+          <span style="font-size:13px;flex:1;min-width:120px">Betonist calificat</span>
+          <div style="display:flex;align-items:center;gap:4px"><span style="font-size:11px;color:var(--gray-400)">Consum</span><input type="number" value="0.45" step="0.05" style="width:55px;height:28px;border:1px solid var(--gray-200);border-radius:6px;text-align:center;font-family:monospace;font-size:12px" data-r="1" data-f="c" oninput="rCalc()"><span style="font-size:11px;color:var(--gray-400)">ora</span></div>
+          <div style="display:flex;align-items:center;gap:4px"><span style="font-size:11px;color:var(--gray-400)">Preț</span><input type="number" value="55" style="width:60px;height:28px;border:1px solid var(--gray-200);border-radius:6px;text-align:center;font-family:monospace;font-size:12px" data-r="1" data-f="p" oninput="rCalc()"><span style="font-size:11px;color:var(--gray-400)">lei</span></div>
+          <span style="font-family:monospace;font-size:13px;font-weight:600;min-width:75px;text-align:right" id="rc1">24,75 lei</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0;flex-wrap:wrap" id="rr2">
+          <input type="checkbox" checked onchange="rToggle(2,this.checked)" style="accent-color:var(--orange)">
+          <span class="w-badge" style="background:var(--gray-100);color:var(--gray-600)">utilaj</span>
+          <span style="font-size:13px;flex:1;min-width:120px">Vibrator beton</span>
+          <div style="display:flex;align-items:center;gap:4px"><span style="font-size:11px;color:var(--gray-400)">Consum</span><input type="number" value="0.25" step="0.05" style="width:55px;height:28px;border:1px solid var(--gray-200);border-radius:6px;text-align:center;font-family:monospace;font-size:12px" data-r="2" data-f="c" oninput="rCalc()"><span style="font-size:11px;color:var(--gray-400)">ora</span></div>
+          <div style="display:flex;align-items:center;gap:4px"><span style="font-size:11px;color:var(--gray-400)">Preț</span><input type="number" value="25" style="width:60px;height:28px;border:1px solid var(--gray-200);border-radius:6px;text-align:center;font-family:monospace;font-size:12px" data-r="2" data-f="p" oninput="rCalc()"><span style="font-size:11px;color:var(--gray-400)">lei</span></div>
+          <span style="font-family:monospace;font-size:13px;font-weight:600;min-width:75px;text-align:right" id="rc2">6,25 lei</span>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin-top:16px">
+        <div style="background:var(--gray-100);border-radius:8px;padding:10px"><div style="font-size:10px;color:var(--gray-400)">Materiale</div><div style="font-family:monospace;font-size:14px;font-weight:600;color:#0C447C" id="r-bd-mat">399,11</div></div>
+        <div style="background:var(--gray-100);border-radius:8px;padding:10px"><div style="font-size:10px;color:var(--gray-400)">Manoperă</div><div style="font-family:monospace;font-size:14px;font-weight:600;color:#633806" id="r-bd-man">24,75</div></div>
+        <div style="background:var(--gray-100);border-radius:8px;padding:10px"><div style="font-size:10px;color:var(--gray-400)">Utilaje</div><div style="font-family:monospace;font-size:14px;font-weight:600" id="r-bd-util">6,25</div></div>
+        <div style="background:var(--gray-100);border-radius:8px;padding:10px"><div style="font-size:10px;color:var(--gray-400)">Cost unitar</div><div style="font-family:monospace;font-size:14px;font-weight:600" id="r-bd-unit">430,11</div></div>
+      </div>
+
+      <div class="w-recap" style="margin-top:12px">
+        <div class="w-recap-row"><span class="w-recap-label">Cost direct (18 mc)</span><span class="w-recap-val" id="r-cd">7.742 lei</span></div>
+        <div class="w-recap-row"><span class="w-recap-label">+ Regie 10% + Profit 5%</span><span class="w-recap-val" id="r-coef">+1.193 lei</span></div>
+        <div class="w-recap-row"><span class="w-recap-label">+ TVA 21%</span><span class="w-recap-val" id="r-tva">+1.876 lei</span></div>
+        <div class="w-recap-row w-recap-total"><span>Total linie cu coeficienți</span><span class="w-recap-val" id="r-total" style="color:var(--green)">10.812 lei</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================ -->
+<!-- SECTION 4: DASHBOARD DIMINEAȚĂ -->
+<!-- ============================================ -->
+<section class="section section-alt" id="dashboard">
+  <div class="section-num reveal">04</div>
+  <h2 class="section-title reveal">Dashboard-ul de dimineață</h2>
+  <p class="section-desc reveal">4 întrebări, 5 secunde. Fără scroll, fără tap-uri, fără gândire. Exact ce vede constructorul când deschide aplicația la 7 dimineața.</p>
+
+  <div class="reveal">
+    <div class="phone">
+      <div class="phone-bar"><span class="phone-time">07:04</span><span>Luni, 23 martie</span><span>78%</span></div>
+      <div class="phone-screen">
+        <div style="padding:14px 16px;border-bottom:1px solid var(--gray-200)">
+          <div style="font-size:16px;font-weight:600">Casa Popescu — Săcălaz</div>
+          <div style="font-size:11px;color:var(--gray-400)">Ziua 47 din ~90 — Etapa activă: Structură</div>
+        </div>
+        <div class="w-kpi">
+          <div class="w-kpi-item"><div class="w-kpi-label">Cât am cheltuit?</div><div class="w-kpi-val">156.240</div><div class="w-kpi-sub" style="color:var(--gray-400)">lei din 268.000</div></div>
+          <div class="w-kpi-item"><div class="w-kpi-label">Cât mai am?</div><div class="w-kpi-val" style="color:#185FA5">74.560</div><div class="w-kpi-sub" style="color:var(--gray-400)">lei buget rămas</div></div>
+          <div class="w-kpi-item"><div class="w-kpi-label">Profit estimat</div><div class="w-kpi-val" style="color:var(--green)">37.200</div><div class="w-kpi-sub" style="color:var(--green)">13,9% marjă</div></div>
+          <div class="w-kpi-item"><div class="w-kpi-label">Status buget</div><div class="w-kpi-val">67%</div><div class="w-kpi-sub" style="color:var(--green)">în grafic</div></div>
+        </div>
+        <div style="padding:8px 12px">
+          <div style="display:flex;height:24px;border-radius:6px;overflow:hidden;margin:8px 0 4px">
+            <div style="width:58%;background:#378ADD"></div>
+            <div style="width:28%;background:#85B7EB"></div>
+            <div style="width:14%;background:var(--green)"></div>
+          </div>
+          <div style="display:flex;gap:12px;font-size:10px;color:var(--gray-400)">
+            <span>● Cheltuit: 156.240</span><span style="color:#85B7EB">● De cheltuit: 74.560</span><span style="color:var(--green)">● Profit: 37.200</span>
+          </div>
+        </div>
+        <div style="margin:8px 12px;background:var(--red-light);border-radius:8px;padding:12px;display:flex;gap:10px">
+          <div style="width:20px;height:20px;border-radius:50%;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0">!</div>
+          <div style="font-size:12px;color:#791F1F;line-height:1.5"><strong>Structura a depășit bugetul cu 8,4%</strong><br>Impact pe profit: -4.800 lei</div>
+        </div>
+        <div style="padding:12px 16px">
+          <div style="font-size:10px;font-weight:600;color:var(--gray-400);margin-bottom:8px">DE FĂCUT AZI</div>
+          <div style="display:flex;gap:8px;padding:8px 0;border-bottom:1px solid var(--gray-200);font-size:12px">
+            <span style="font-size:10px;color:var(--gray-400);min-width:36px">07:00</span>
+            <div><div>Turnare planșeu etaj 1 — echipa betoniști (6 oameni)</div><span class="w-badge" style="background:var(--red-light);color:#791F1F;font-size:10px;margin-top:2px">urgent — beton comandat 08:30</span></div>
+          </div>
+          <div style="display:flex;gap:8px;padding:8px 0;border-bottom:1px solid var(--gray-200);font-size:12px">
+            <span style="font-size:10px;color:var(--gray-400);min-width:36px">11:00</span>
+            <div>Vizită diriginte șantier — verificare armatură planșeu</div>
+          </div>
+          <div style="display:flex;gap:8px;padding:8px 0;font-size:12px">
+            <span style="font-size:10px;color:var(--gray-400);min-width:36px">14:00</span>
+            <div><div>Comandă fier beton Ø12 pentru centuri — 850 kg</div><span class="w-badge" style="background:var(--red-light);color:#791F1F;font-size:10px;margin-top:2px">stoc epuizat</span></div>
+          </div>
+        </div>
+        <div style="padding:12px 16px">
+          <button class="w-btn w-btn-primary" style="width:100%;padding:14px;font-size:14px;border-radius:var(--radius)">+ Înregistrează achiziție</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================ -->
+<!-- SECTION 5: ÎNREGISTRARE RAPIDĂ ACHIZIȚIE -->
+<!-- ============================================ -->
+<section class="section" id="achizitie">
+  <div class="section-num reveal">05</div>
+  <h2 class="section-title reveal">30 de secunde pentru o achiziție</h2>
+  <p class="section-desc reveal">Acțiunea cea mai frecventă — 3-8 ori pe zi, cu o singură mână, în soare. Introdu suma, alege etapa cu un singur tap, vezi impactul pe buget înainte de a salva.</p>
+
+  <div class="reveal">
+    <div class="phone">
+      <div class="phone-bar"><span class="phone-time">14:12</span><span>Factură de la furnizor</span><span>72%</span></div>
+      <div class="phone-screen">
+        <div style="padding:14px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--gray-200)">
+          <span style="font-size:15px;font-weight:500">Înregistrează achiziție</span>
+          <span style="width:28px;height:28px;border-radius:50%;background:var(--gray-100);display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--gray-400)">×</span>
+        </div>
+        <div style="padding:16px">
+          <div class="w-field">
+            <div class="w-field-label">SUMĂ TOTALĂ (LEI)</div>
+            <input type="number" inputmode="decimal" placeholder="Introdu suma..." id="aq-sum" oninput="aqCalc()" style="width:100%;height:56px;border:1px solid var(--gray-200);border-radius:var(--radius-sm);text-align:center;font-size:24px;font-family:monospace;font-weight:600;padding:0 14px;background:#fff;color:var(--black)" value="8580">
+          </div>
+          <div class="w-field">
+            <div class="w-field-label">ETAPĂ</div>
+            <div class="w-pills" id="aq-stages">
+              <span class="w-pill" onclick="aqPick(this)">Fundație</span>
+              <span class="w-pill active" onclick="aqPick(this)">Structură</span>
+              <span class="w-pill" onclick="aqPick(this)">Zidărie</span>
+              <span class="w-pill" onclick="aqPick(this)">Acoperiș</span>
+            </div>
+          </div>
+          <div class="w-field">
+            <div class="w-field-label">CATEGORIE</div>
+            <div class="w-pills">
+              <span class="w-pill active">Material</span>
+              <span class="w-pill">Manoperă</span>
+              <span class="w-pill">Utilaj</span>
+            </div>
+          </div>
+          <div class="w-field">
+            <div class="w-field-label">FOTO BON (OPȚIONAL)</div>
+            <div style="display:flex;gap:8px">
+              <div style="width:60px;height:60px;border:2px dashed var(--gray-200);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--gray-400);cursor:pointer">+</div>
+              <div style="width:60px;height:60px;border:2px dashed var(--gray-200);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--gray-400);cursor:pointer">+</div>
+              <div style="width:60px;height:60px;border:2px dashed var(--gray-200);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--gray-400);cursor:pointer">+</div>
+            </div>
+          </div>
+
+          <div id="aq-impact" style="background:var(--gray-100);border-radius:var(--radius-sm);padding:12px;margin:12px 0">
+            <div style="font-size:11px;font-weight:600;color:var(--gray-400);margin-bottom:6px">IMPACT DUPĂ ACEASTĂ ACHIZIȚIE</div>
+            <div class="w-recap-row"><span class="w-recap-label">Total cheltuit etapă Structură</span><span class="w-recap-val" id="aq-stage-total">62.970 lei</span></div>
+            <div class="w-recap-row"><span class="w-recap-label">Buget planificat etapă</span><span class="w-recap-val">58.000 lei</span></div>
+            <div class="w-recap-row"><span class="w-recap-label">Deviere</span><span class="w-recap-val" id="aq-dev" style="color:var(--red)">+4.970 lei (+8,6%)</span></div>
+            <div class="w-recap-row" style="border-top:1px solid var(--gray-200);padding-top:6px;margin-top:4px"><span class="w-recap-label">Profit estimat</span><span class="w-recap-val" id="aq-profit" style="color:var(--green)">32.230 lei</span></div>
+          </div>
+
+          <div id="aq-alert" class="w-alert w-alert-danger">Atenție — această achiziție duce etapa Structură peste bugetul planificat cu <strong id="aq-alert-val">4.970</strong> lei.</div>
+
+          <button class="w-btn w-btn-primary" style="width:100%;padding:14px;margin-top:8px;font-size:14px;border-radius:var(--radius)">Salvează achiziția</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================ -->
+<!-- SECTION 6: COMPARATOR VARIANTE -->
+<!-- ============================================ -->
+<section class="section section-alt" id="comparator">
+  <div class="section-num reveal">06</div>
+  <h2 class="section-title reveal">BCA sau cărămidă? Știi exact diferența.</h2>
+  <p class="section-desc reveal">Selectezi două variante din catalog și le compari side-by-side: cost, timp de execuție și impact pe deviz. Schimbă suprafața și numărul de muncitori.</p>
+
+  <div class="widget reveal" id="w-comp">
+    <div class="w-pad">
+      <div style="display:flex;gap:12px;align-items:center;margin-bottom:16px;flex-wrap:wrap">
+        <span style="font-size:12px;color:var(--gray-600)">Suprafață pereți:</span>
+        <input type="number" value="220" id="comp-sup" oninput="compCalc()" step="10" style="width:70px;height:32px;border:1px solid var(--gray-200);border-radius:6px;text-align:center;font-family:monospace;font-weight:600">
+        <span style="font-size:12px;color:var(--gray-400)">mp</span>
+        <span style="font-size:12px;color:var(--gray-600);margin-left:12px">Muncitori:</span>
+        <input type="number" value="4" id="comp-munc" oninput="compCalc()" min="1" max="12" style="width:50px;height:32px;border:1px solid var(--gray-200);border-radius:6px;text-align:center;font-family:monospace;font-weight:600">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div style="border:1px solid var(--gray-200);border-radius:var(--radius-sm);padding:16px" id="comp-a">
+          <div style="font-size:11px;color:var(--gray-400);font-weight:500">VARIANTA A</div>
+          <div style="font-size:16px;font-weight:600;margin:4px 0">BCA 30cm</div>
+          <div style="font-size:12px;color:var(--gray-600);margin-bottom:12px">Bloc 625×300×240mm · R = 2.5 mp·K/W</div>
+          <div style="font-size:13px;display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--gray-200)"><span style="color:var(--gray-600)">Cost / mp</span><span style="font-family:monospace;font-weight:600">153 lei</span></div>
+          <div style="font-size:13px;display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--gray-200)"><span style="color:var(--gray-600)">Cost total</span><span style="font-family:monospace;font-weight:600" id="ca-total">33.660 lei</span></div>
+          <div style="font-size:13px;display:flex;justify-content:space-between;padding:6px 0"><span style="color:var(--gray-600)">Durată</span><span style="font-family:monospace;font-weight:600" id="ca-zile">18 zile</span></div>
+        </div>
+        <div style="border:1px solid var(--gray-200);border-radius:var(--radius-sm);padding:16px" id="comp-b">
+          <div style="font-size:11px;color:var(--gray-400);font-weight:500">VARIANTA B</div>
+          <div style="font-size:16px;font-weight:600;margin:4px 0">Porotherm 25cm</div>
+          <div style="font-size:12px;color:var(--gray-600);margin-bottom:12px">Bloc ceramic 440×250×238mm · R = 1.8 mp·K/W</div>
+          <div style="font-size:13px;display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--gray-200)"><span style="color:var(--gray-600)">Cost / mp</span><span style="font-family:monospace;font-weight:600">197 lei</span></div>
+          <div style="font-size:13px;display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--gray-200)"><span style="color:var(--gray-600)">Cost total</span><span style="font-family:monospace;font-weight:600" id="cb-total">43.340 lei</span></div>
+          <div style="font-size:13px;display:flex;justify-content:space-between;padding:6px 0"><span style="color:var(--gray-600)">Durată</span><span style="font-family:monospace;font-weight:600" id="cb-zile">27 zile</span></div>
+        </div>
+      </div>
+      <div class="w-recap" style="margin-top:16px">
+        <div class="w-recap-row"><span class="w-recap-label">Economie cu BCA</span><span class="w-recap-val" id="comp-eco" style="color:var(--green)">-9.680 lei (22%)</span></div>
+        <div class="w-recap-row"><span class="w-recap-label">Timp câștigat</span><span class="w-recap-val" id="comp-zile" style="color:var(--green)">-9 zile</span></div>
+        <div class="w-recap-row"><span class="w-recap-label">Termoizolație suplimentară Porotherm</span><span class="w-recap-val" id="comp-termo" style="color:#854F0B">~4.400 lei (EPS 5cm)</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================ -->
+<!-- SECTION 7: EXPORT PDF + LINK BENEFICIAR -->
+<!-- ============================================ -->
+<section class="section" id="export">
+  <div class="section-num reveal">07</div>
+  <h2 class="section-title reveal">Două documente, două audiențe</h2>
+  <p class="section-desc reveal">Devizul tehnic (PDF cu coduri normative și prețuri unitare) rămâne la constructor. Beneficiarul primește un link pe WhatsApp cu devizul tradus în limbaj simplu — fără coduri, fără prețuri unitare, fără procent de profit.</p>
+
+  <div class="widget reveal" id="w-export">
+    <div class="w-tabs">
+      <div class="w-tab active" onclick="showExport(0)">Deviz tehnic (PDF)</div>
+      <div class="w-tab" onclick="showExport(1)">Ofertă beneficiar (link)</div>
+    </div>
+    <div class="w-view vis" id="exp0">
+      <div style="padding:24px;border:1px dashed var(--gray-200);margin:20px;border-radius:var(--radius-sm)">
+        <div style="display:flex;justify-content:space-between;border-bottom:2px solid var(--black);padding-bottom:12px;margin-bottom:16px">
+          <div style="font-size:12px;color:var(--gray-600);line-height:1.5"><strong style="font-size:14px;color:var(--black)">SC Construct Vest SRL</strong><br>CUI: RO12345678<br>Timișoara, str. Constructorilor 15</div>
+          <div style="text-align:right"><div style="font-size:16px;font-weight:600">Deviz de lucrări</div><div style="font-size:11px;color:var(--gray-400);margin-top:4px">Casa Popescu — Săcălaz<br>Data: 23.03.2026</div></div>
+        </div>
+        <table style="width:100%;border-collapse:collapse;font-size:11px;margin-bottom:16px">
+          <thead><tr style="background:var(--gray-100)"><th style="padding:6px;text-align:left;border:1px solid var(--gray-200)">Nr</th><th style="padding:6px;text-align:left;border:1px solid var(--gray-200)">Simbol</th><th style="padding:6px;text-align:left;border:1px solid var(--gray-200)">Descriere</th><th style="padding:6px;text-align:right;border:1px solid var(--gray-200)">Cant.</th><th style="padding:6px;text-align:right;border:1px solid var(--gray-200)">Preț</th><th style="padding:6px;text-align:right;border:1px solid var(--gray-200)">Total</th></tr></thead>
+          <tbody>
+            <tr style="background:var(--gray-100);font-weight:600"><td colspan="6" style="padding:6px;border:1px solid var(--gray-200)">FUNDAȚIE</td></tr>
+            <tr><td style="padding:5px;border:1px solid var(--gray-200)">1</td><td style="padding:5px;border:1px solid var(--gray-200);font-family:monospace;font-size:10px">TsA04XA</td><td style="padding:5px;border:1px solid var(--gray-200)">Săpătură fundații manual</td><td style="padding:5px;border:1px solid var(--gray-200);text-align:right;font-family:monospace">32</td><td style="padding:5px;border:1px solid var(--gray-200);text-align:right;font-family:monospace">85</td><td style="padding:5px;border:1px solid var(--gray-200);text-align:right;font-family:monospace">2.720</td></tr>
+            <tr><td style="padding:5px;border:1px solid var(--gray-200)">2</td><td style="padding:5px;border:1px solid var(--gray-200);font-family:monospace;font-size:10px">CA04A+</td><td style="padding:5px;border:1px solid var(--gray-200)">Turnare beton armat fundații</td><td style="padding:5px;border:1px solid var(--gray-200);text-align:right;font-family:monospace">18</td><td style="padding:5px;border:1px solid var(--gray-200);text-align:right;font-family:monospace">463</td><td style="padding:5px;border:1px solid var(--gray-200);text-align:right;font-family:monospace">8.336</td></tr>
+          </tbody>
+        </table>
+        <div style="width:50%;margin-left:auto">
+          <div style="display:flex;justify-content:space-between;font-size:12px;padding:3px 0"><span style="color:var(--gray-600)">Cost direct</span><span style="font-family:monospace;font-weight:600">44.918 lei</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;padding:3px 0"><span style="color:var(--gray-600)">Regie (10%)</span><span style="font-family:monospace">4.492 lei</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;padding:3px 0"><span style="color:var(--gray-600)">Profit (5%)</span><span style="font-family:monospace">2.471 lei</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;padding:3px 0"><span style="color:var(--gray-600)">TVA (21%)</span><span style="font-family:monospace">10.895 lei</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:14px;padding:8px 0;border-top:2px solid var(--black);margin-top:4px;font-weight:600"><span>TOTAL</span><span style="font-family:monospace">62.776 lei</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="w-view" id="exp1">
+      <div class="w-pad">
+        <div class="w-alert w-alert-warn">Beneficiarul NU vede: coduri normative, prețuri unitare, rețete de resurse, procent profit, procent regie. Vede doar categorii și totaluri pe etape.</div>
+        <div style="text-align:center;padding:20px 0">
+          <div style="font-size:18px;font-weight:600">Casa Popescu — Săcălaz</div>
+          <div style="font-size:13px;color:var(--gray-400);margin-top:4px">Ofertă estimativă de lucrări · 23 martie 2026</div>
+        </div>
+        <div style="background:var(--gray-100);border-radius:var(--radius-sm);padding:16px">
+          <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--gray-200)"><div><div style="font-weight:600">Fundație</div><div style="font-size:12px;color:var(--gray-600)">Săpătură, beton armat, cofraj, hidroizolație</div></div><div style="font-family:monospace;font-size:15px;font-weight:600">36.470 lei</div></div>
+          <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--gray-200)"><div><div style="font-weight:600">Structură</div><div style="font-size:12px;color:var(--gray-600)">Stâlpi, pereți portanți, planșee beton armat</div></div><div style="font-family:monospace;font-size:15px;font-weight:600">22.020 lei</div></div>
+          <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--gray-200)"><div><div style="font-weight:600">Zidărie</div><div style="font-size:12px;color:var(--gray-600)">Pereți exteriori BCA 30cm, interiori BCA 15cm</div></div><div style="font-family:monospace;font-size:15px;font-weight:600">18.400 lei</div></div>
+          <div style="display:flex;justify-content:space-between;padding:14px 0;border-top:2px solid var(--black);margin-top:8px;font-weight:600;font-size:16px"><span>Total estimativ (cu TVA 21%)</span><span style="font-family:monospace;color:var(--green)">175.490 lei</span></div>
+        </div>
+        <div style="text-align:center;font-size:11px;color:var(--gray-400);margin-top:16px;font-style:italic">Prețurile sunt estimative. Pentru deviz definitiv, contactați constructorul.</div>
+        <div style="background:#E6F1FB;border-radius:var(--radius-sm);padding:12px;margin-top:16px;display:flex;align-items:center;gap:12px">
+          <span style="font-family:monospace;font-size:12px;color:#0C447C;flex:1">buildingcalculator.netlify.app/share/a7f3b2c1-...</span>
+          <button class="w-btn" style="background:#185FA5;color:#fff;padding:6px 14px;font-size:12px">Copiază link</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================ -->
+<!-- SECTION 8: ALERTE DEPĂȘIRE BUGET -->
+<!-- ============================================ -->
+<section class="section section-alt" id="alerte">
+  <div class="section-num reveal">08</div>
+  <h2 class="section-title reveal">Alertă în momentul în care contează</h2>
+  <p class="section-desc reveal">Nu la sfârșit de lună, ci exact când înregistrezi achiziția care duce o etapă peste buget. Schimbă suma și etapa pentru a vedea cum se transformă alerta.</p>
+
+  <div class="widget reveal" id="w-alerte">
+    <div class="w-pad">
+      <div style="display:flex;gap:12px;align-items:center;margin-bottom:16px;flex-wrap:wrap">
+        <span style="font-size:12px;color:var(--gray-600)">Etapă:</span>
+        <select id="al-stage" onchange="alCalc()" style="height:36px;border-radius:6px;border:1px solid var(--gray-200);padding:0 10px;font-size:13px;font-family:var(--sans)">
+          <option value="28400|29200">Fundație (28.400 / 29.200)</option>
+          <option value="54390|58000" selected>Structură (54.390 / 58.000)</option>
+          <option value="4200|35000">Zidărie (4.200 / 35.000)</option>
+          <option value="0|24800">Acoperiș (0 / 24.800)</option>
+        </select>
+        <span style="font-size:12px;color:var(--gray-600);margin-left:8px">Sumă:</span>
+        <input type="number" value="8580" id="al-amount" oninput="alCalc()" step="500" style="width:90px;height:36px;border:1px solid var(--gray-200);border-radius:6px;text-align:center;font-family:monospace;font-weight:600;font-size:14px">
+        <span style="font-size:12px;color:var(--gray-400)">lei</span>
+      </div>
+      <div style="height:12px;background:var(--gray-100);border-radius:6px;overflow:hidden;position:relative;margin-bottom:4px">
+        <div id="al-meter" style="height:100%;border-radius:6px;background:var(--red);width:108%;transition:width .3s"></div>
+        <div style="position:absolute;top:-2px;bottom:-2px;width:2px;background:var(--black);border-radius:1px;left:100%"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--gray-400);margin-bottom:16px"><span id="al-spent-lbl">62.970 lei cheltuit</span><span id="al-plan-lbl">din 58.000 lei planificat</span></div>
+
+      <div id="al-card" style="border-radius:var(--radius-sm);padding:16px;background:var(--red-light);border:1px solid #F09595">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <span class="w-badge" style="background:#F09595;color:#501313" id="al-badge">depășire buget</span>
+        </div>
+        <div style="font-size:15px;font-weight:600;color:#791F1F;margin-bottom:6px" id="al-title">Etapa Structură a depășit bugetul planificat</div>
+        <div style="font-size:12px;color:#A32D2D;line-height:1.6" id="al-body">Achiziția de 8.580 lei duce totalul etapei la 62.970 lei, cu 4.970 lei peste bugetul de 58.000 lei (+8,6%). Impact pe profit: -4.970 lei.</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:10px">
+          <div style="background:rgba(240,149,149,0.2);border-radius:6px;padding:8px"><div style="font-size:10px;color:#A32D2D">Deviere</div><div style="font-family:monospace;font-size:14px;font-weight:600;color:#791F1F" id="al-m-dev">+4.970 lei</div></div>
+          <div style="background:rgba(240,149,149,0.2);border-radius:6px;padding:8px"><div style="font-size:10px;color:#A32D2D">Procent</div><div style="font-family:monospace;font-size:14px;font-weight:600;color:#791F1F" id="al-m-pct">+8,6%</div></div>
+          <div style="background:rgba(240,149,149,0.2);border-radius:6px;padding:8px"><div style="font-size:10px;color:#A32D2D">Profit rămas</div><div style="font-family:monospace;font-size:14px;font-weight:600;color:#791F1F" id="al-m-profit">32.230 lei</div></div>
+        </div>
+        <div style="display:flex;gap:6px;margin-top:12px;flex-wrap:wrap" id="al-actions">
+          <button class="w-btn w-btn-primary" style="font-size:12px;padding:8px 14px">Ajustează devizul</button>
+          <button class="w-btn w-btn-ghost" style="font-size:12px;padding:8px 14px;border-color:rgba(163,45,45,0.3);color:#791F1F">Renegociază</button>
+          <button class="w-btn w-btn-ghost" style="font-size:12px;padding:8px 14px;border-color:rgba(163,45,45,0.3);color:#791F1F">Accept depășirea</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================ -->
+<!-- SECTION 9: CALCULATOR TIMP EXECUȚIE -->
+<!-- ============================================ -->
+<section class="section" id="timp">
+  <div class="section-num reveal">09</div>
+  <h2 class="section-title reveal">Câte zile durează fiecare etapă?</h2>
+  <p class="section-desc reveal">Schimbă numărul de muncitori pe fiecare etapă și vezi cum se recalculează duratele instant. Formula: cantitate ÷ (norma zilnică × nr. muncitori).</p>
+
+  <div class="widget reveal" id="w-timp">
+    <div class="w-pad">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:20px">
+        <div style="background:var(--gray-100);border-radius:8px;padding:12px"><div style="font-size:10px;color:var(--gray-400)">Durată totală</div><div style="font-family:monospace;font-size:20px;font-weight:600" id="t-total">60 zile</div><div style="font-size:10px;color:var(--gray-400)" id="t-weeks">~12 săptămâni</div></div>
+        <div style="background:var(--gray-100);border-radius:8px;padding:12px"><div style="font-size:10px;color:var(--gray-400)">Cost manoperă</div><div style="font-family:monospace;font-size:20px;font-weight:600" id="t-cost">52.000</div><div style="font-size:10px;color:var(--gray-400)">lei estimat</div></div>
+        <div style="background:var(--gray-100);border-radius:8px;padding:12px"><div style="font-size:10px;color:var(--gray-400)">Echipă medie</div><div style="font-family:monospace;font-size:20px;font-weight:600" id="t-crew">4.5</div><div style="font-size:10px;color:var(--gray-400)">muncitori/zi</div></div>
+      </div>
+
+      <div style="border:1px solid var(--gray-200);border-radius:var(--radius-sm);padding:14px;margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span style="font-weight:600">Fundație</span><span style="font-family:monospace;font-weight:600" id="td-fund">12 zile</span></div>
+        <div style="font-size:12px;color:var(--gray-600)">Echipă: <input type="number" value="4" min="1" max="20" id="tc-fund" oninput="tCalcAll()" style="width:44px;height:28px;border:1px solid var(--gray-200);border-radius:6px;text-align:center;font-family:monospace;font-weight:600;font-size:13px"> muncitori</div>
+        <div style="font-size:11px;color:var(--gray-400);margin-top:6px">Săpătură 32mc · Cofraj 48mp · Armătură 1420kg · Turnare 18mc · Hidroizolație 86mp</div>
+      </div>
+      <div style="border:1px solid var(--gray-200);border-radius:var(--radius-sm);padding:14px;margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span style="font-weight:600">Structură</span><span style="font-family:monospace;font-weight:600" id="td-struct">18 zile</span></div>
+        <div style="font-size:12px;color:var(--gray-600)">Echipă: <input type="number" value="6" min="1" max="20" id="tc-struct" oninput="tCalcAll()" style="width:44px;height:28px;border:1px solid var(--gray-200);border-radius:6px;text-align:center;font-family:monospace;font-weight:600;font-size:13px"> muncitori</div>
+        <div style="font-size:11px;color:var(--gray-400);margin-top:6px">Cofraj stâlpi 95mp · Armătură 2100kg · Turnare 34mc · Cofraj planșee 120mp</div>
+      </div>
+      <div style="border:1px solid var(--gray-200);border-radius:var(--radius-sm);padding:14px;margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span style="font-weight:600">Zidărie</span><span style="font-family:monospace;font-weight:600" id="td-zid">18 zile</span></div>
+        <div style="font-size:12px;color:var(--gray-600)">Echipă: <input type="number" value="3" min="1" max="20" id="tc-zid" oninput="tCalcAll()" style="width:44px;height:28px;border:1px solid var(--gray-200);border-radius:6px;text-align:center;font-family:monospace;font-weight:600;font-size:13px"> muncitori</div>
+        <div style="font-size:11px;color:var(--gray-400);margin-top:6px">BCA ext 30cm 145mp · BCA int 15cm 68mp · Buiandrugi 42ml</div>
+      </div>
+      <div style="border:1px solid var(--gray-200);border-radius:var(--radius-sm);padding:14px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span style="font-weight:600">Acoperiș</span><span style="font-family:monospace;font-weight:600" id="td-acop">12 zile</span></div>
+        <div style="font-size:12px;color:var(--gray-600)">Echipă: <input type="number" value="4" min="1" max="20" id="tc-acop" oninput="tCalcAll()" style="width:44px;height:28px;border:1px solid var(--gray-200);border-radius:6px;text-align:center;font-family:monospace;font-weight:600;font-size:13px"> muncitori</div>
+        <div style="font-size:11px;color:var(--gray-400);margin-top:6px">Șarpantă 8.5mc · Astereală+folie 180mp · Învelitoare tablă 180mp · Jgheaburi 52ml</div>
+      </div>
+
+      <div style="margin-top:20px;font-size:11px;color:var(--gray-400)">
+        <div style="display:flex;margin-bottom:6px"><span style="min-width:80px;text-align:right;margin-right:8px;color:var(--gray-600)">Fundație</span><div style="flex:1;height:20px;background:var(--gray-100);border-radius:4px;position:relative;overflow:hidden"><div id="tg0" style="position:absolute;height:100%;border-radius:4px;background:var(--green);display:flex;align-items:center;padding:0 6px;font-size:10px;color:#fff;font-weight:600;left:0;width:20%">12z</div></div></div>
+        <div style="display:flex;margin-bottom:6px"><span style="min-width:80px;text-align:right;margin-right:8px;color:var(--gray-600)">Structură</span><div style="flex:1;height:20px;background:var(--gray-100);border-radius:4px;position:relative;overflow:hidden"><div id="tg1" style="position:absolute;height:100%;border-radius:4px;background:#378ADD;display:flex;align-items:center;padding:0 6px;font-size:10px;color:#fff;font-weight:600;left:20%;width:30%">18z</div></div></div>
+        <div style="display:flex;margin-bottom:6px"><span style="min-width:80px;text-align:right;margin-right:8px;color:var(--gray-600)">Zidărie</span><div style="flex:1;height:20px;background:var(--gray-100);border-radius:4px;position:relative;overflow:hidden"><div id="tg2" style="position:absolute;height:100%;border-radius:4px;background:#BA7517;display:flex;align-items:center;padding:0 6px;font-size:10px;color:#fff;font-weight:600;left:50%;width:30%">18z</div></div></div>
+        <div style="display:flex;margin-bottom:6px"><span style="min-width:80px;text-align:right;margin-right:8px;color:var(--gray-600)">Acoperiș</span><div style="flex:1;height:20px;background:var(--gray-100);border-radius:4px;position:relative;overflow:hidden"><div id="tg3" style="position:absolute;height:100%;border-radius:4px;background:#D85A30;display:flex;align-items:center;padding:0 6px;font-size:10px;color:#fff;font-weight:600;left:80%;width:20%">12z</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA FINAL -->
+<section style="background:var(--black);padding:80px 32px;text-align:center">
+  <h2 style="font-family:var(--serif);font-size:36px;color:#fff;margin-bottom:16px">Pregătit să-ți organizezi<br><em style="color:var(--orange)">următorul șantier</em>?</h2>
+  <p style="font-size:16px;color:rgba(255,255,255,0.4);margin-bottom:32px">Creează un deviz în câteva minute, urmărește cheltuielile în timp real.</p>
+  <a href="/" style="display:inline-block;background:var(--orange);color:#fff;padding:16px 32px;border-radius:var(--radius-sm);font-size:16px;font-weight:600;text-decoration:none;transition:background .2s" onmouseover="this.style.background='#C43F06'" onmouseout="this.style.background='var(--orange)'">Încearcă gratuit →</a>
+</section>
+
+<!-- FOOTER -->
+<footer style="padding:32px;text-align:center;border-top:1px solid var(--gray-200)">
+  <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:8px;opacity:0.5">
+    <div class="logo-mark" style="width:20px;height:20px;border-radius:4px"><svg viewBox="0 0 16 16" fill="none" style="width:12px;height:12px"><path d="M2 14L8 2L14 14M5 10H11" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <span style="font-family:var(--serif);font-size:14px">Building<span style="color:var(--orange)">Calc</span></span>
+  </div>
+  <p style="font-size:12px;color:var(--gray-400)">© 2026 BuildingCalc. Toate drepturile rezervate.</p>
+</footer>
+
+<script>
+function fmt(n){return Math.round(n).toLocaleString('ro-RO')}
+function fmt2(n){return n.toFixed(2).replace('.',',')}
+
+// === SECTION 2: SETĂRI ===
+var sTVA=21;
+function setTVA(v){sTVA=v;document.querySelectorAll('#s-tva-pills .w-pill').forEach(function(p){p.classList.remove('active')});event.target.classList.add('active');calcSetari()}
+function calcSetari(){
+  var regie=parseFloat(document.getElementById('s-regie').value)||0;
+  var profit=parseFloat(document.getElementById('s-profit').value)||0;
+  document.getElementById('s-regie-v').textContent=regie+'%';
+  document.getElementById('s-profit-v').textContent=profit+'%';
+  var cd=100000;
+  var regieVal=cd*(regie/100);
+  var cuRegie=cd+regieVal;
+  var profitVal=cuRegie*(profit/100);
+  var fTVA=cuRegie+profitVal;
+  var tvaVal=fTVA*(sTVA/100);
+  var total=fTVA+tvaVal;
+  document.getElementById('sf-regie-p').textContent=regie+'%';
+  document.getElementById('sf-regie').textContent='+'+fmt(regieVal)+' lei';
+  document.getElementById('sf-profit-p').textContent=profit+'%';
+  document.getElementById('sf-profit').textContent='+'+fmt(profitVal)+' lei';
+  document.getElementById('sf-ftva').textContent=fmt(fTVA)+' lei';
+  document.getElementById('sf-tva-p').textContent=sTVA+'%';
+  document.getElementById('sf-tva').textContent='+'+fmt(tvaVal)+' lei';
+  document.getElementById('sf-total').textContent=fmt(total)+' lei';
+  document.getElementById('sf-m-profit').textContent=fmt(profitVal)+' lei';
+  document.getElementById('sf-m-pct').textContent=(profitVal/fTVA*100).toFixed(1)+'%';
+  document.getElementById('sf-m-regie').textContent=fmt(regieVal)+' lei';
+}
+
+// === SECTION 3: REȚETE ===
+var rRes=[{c:1.02,p:380,w:3,on:true,type:'mat'},{c:0.45,p:55,w:0,on:true,type:'man'},{c:0.25,p:25,w:0,on:true,type:'util'}];
+function rToggle(i,v){rRes[i].on=v;document.getElementById('rr'+i).style.opacity=v?1:0.35;rCalc()}
+function rCalc(){
+  var mat=0,man=0,util=0;
+  for(var i=0;i<rRes.length;i++){
+    var el=document.getElementById('rr'+i);
+    var inputs=el.querySelectorAll('input[type=number]');
+    var c=parseFloat(inputs[0].value)||0;
+    var p=parseFloat(inputs[1].value)||0;
+    var w=inputs[2]?parseFloat(inputs[2].value)||0:0;
+    rRes[i].c=c;rRes[i].p=p;rRes[i].w=w;
+    if(!rRes[i].on)continue;
+    var wm=1+(w/100);
+    var cost=c*p*wm;
+    document.getElementById('rc'+i).textContent=fmt2(cost)+' lei';
+    if(rRes[i].type==='mat')mat+=cost;
+    else if(rRes[i].type==='man')man+=cost;
+    else util+=cost;
+  }
+  var unit=mat+man+util;
+  document.getElementById('r-bd-mat').textContent=fmt2(mat);
+  document.getElementById('r-bd-man').textContent=fmt2(man);
+  document.getElementById('r-bd-util').textContent=fmt2(util);
+  document.getElementById('r-bd-unit').textContent=fmt2(unit);
+  var cd=unit*18;
+  var regie=cd*0.10;var profit=(cd+regie)*0.05;var fTVA=cd+regie+profit;var tva=fTVA*0.21;var total=fTVA+tva;
+  document.getElementById('r-cd').textContent=fmt(cd)+' lei';
+  document.getElementById('r-coef').textContent='+'+fmt(regie+profit)+' lei';
+  document.getElementById('r-tva').textContent='+'+fmt(tva)+' lei';
+  document.getElementById('r-total').textContent=fmt(total)+' lei';
+  document.getElementById('r-head-total').textContent=fmt(cd)+' lei';
+  document.getElementById('r-head-sub').textContent='18 mc × '+fmt2(unit)+' lei/mc';
+}
+
+// === SECTION 5: ACHIZIȚIE ===
+function aqPick(el){document.querySelectorAll('#aq-stages .w-pill').forEach(function(p){p.classList.remove('active')});el.classList.add('active');aqCalc()}
+function aqCalc(){
+  var sum=parseFloat(document.getElementById('aq-sum').value)||0;
+  var newSpent=54390+sum;var diff=newSpent-58000;var pct=diff/58000*100;
+  document.getElementById('aq-stage-total').textContent=fmt(newSpent)+' lei';
+  document.getElementById('aq-dev').textContent=(diff>=0?'+':'')+fmt(diff)+' lei ('+(diff>=0?'+':'')+pct.toFixed(1)+'%)';
+  document.getElementById('aq-dev').style.color=diff>0?'var(--red)':'var(--green)';
+  document.getElementById('aq-profit').textContent=fmt(37200-Math.max(0,diff))+' lei';
+  document.getElementById('aq-alert').style.display=diff>0?'block':'none';
+  document.getElementById('aq-alert-val').textContent=fmt(Math.abs(diff));
+}
+
+// === SECTION 6: COMPARATOR ===
+function compCalc(){
+  var s=parseFloat(document.getElementById('comp-sup').value)||220;
+  var m=parseInt(document.getElementById('comp-munc').value)||4;
+  var aT=153*s,bT=197*s;
+  var aZ=Math.ceil(s/(3.2*m)),bZ=Math.ceil(s/(2.1*m));
+  document.getElementById('ca-total').textContent=fmt(aT)+' lei';
+  document.getElementById('cb-total').textContent=fmt(bT)+' lei';
+  document.getElementById('ca-zile').textContent=aZ+' zile';
+  document.getElementById('cb-zile').textContent=bZ+' zile';
+  document.getElementById('comp-eco').textContent='-'+fmt(bT-aT)+' lei ('+Math.round((bT-aT)/bT*100)+'%)';
+  document.getElementById('comp-zile').textContent='-'+(bZ-aZ)+' zile';
+  document.getElementById('comp-termo').textContent='~'+fmt(s*20)+' lei (EPS 5cm)';
+}
+
+// === SECTION 7: EXPORT ===
+function showExport(i){document.querySelectorAll('#w-export .w-view').forEach(function(v,j){v.classList.toggle('vis',j===i)});document.querySelectorAll('#w-export .w-tab').forEach(function(t,j){t.classList.toggle('active',j===i)})}
+
+// === SECTION 8: ALERTE ===
+function alCalc(){
+  var parts=document.getElementById('al-stage').value.split('|');
+  var spent=parseFloat(parts[0]),planned=parseFloat(parts[1]);
+  var amount=parseFloat(document.getElementById('al-amount').value)||0;
+  var newSpent=spent+amount;var diff=newSpent-planned;var pct=planned>0?(diff/planned*100):0;
+  var fillPct=Math.min(120,newSpent/planned*100);
+  document.getElementById('al-meter').style.width=Math.min(100,fillPct)+'%';
+  document.getElementById('al-meter').style.background=pct>5?'var(--red)':pct>0?'#EF9F27':fillPct>90?'#378ADD':'var(--green)';
+  document.getElementById('al-spent-lbl').textContent=fmt(newSpent)+' lei cheltuit';
+  document.getElementById('al-plan-lbl').textContent='din '+fmt(planned)+' lei planificat';
+  var card=document.getElementById('al-card');
+  if(pct>5){
+    card.style.background='var(--red-light)';card.style.borderColor='#F09595';
+    document.getElementById('al-badge').textContent='depășire buget';document.getElementById('al-badge').style.background='#F09595';document.getElementById('al-badge').style.color='#501313';
+    document.getElementById('al-title').style.color='#791F1F';document.getElementById('al-title').textContent='Etapa a depășit bugetul planificat';
+    document.getElementById('al-body').style.color='#A32D2D';document.getElementById('al-body').textContent='Achiziția de '+fmt(amount)+' lei duce totalul la '+fmt(newSpent)+' lei, cu '+fmt(Math.abs(diff))+' lei peste bugetul de '+fmt(planned)+' lei (+'+pct.toFixed(1)+'%).';
+    document.getElementById('al-actions').style.display='flex';
+  } else if(pct>0){
+    card.style.background='#FAEEDA';card.style.borderColor='#EF9F27';
+    document.getElementById('al-badge').textContent='ușor peste buget';document.getElementById('al-badge').style.background='#FAC775';document.getElementById('al-badge').style.color='#412402';
+    document.getElementById('al-title').style.color='#633806';document.getElementById('al-title').textContent='Etapa este ușor peste buget';
+    document.getElementById('al-body').style.color='#854F0B';document.getElementById('al-body').textContent='Totalul ('+fmt(newSpent)+' lei) depășește cu '+fmt(Math.abs(diff))+' lei bugetul de '+fmt(planned)+' lei (+'+pct.toFixed(1)+'%).';
+    document.getElementById('al-actions').style.display='flex';
+  } else {
+    card.style.background='var(--green-light)';card.style.borderColor='#9FE1CB';
+    document.getElementById('al-badge').textContent='în grafic';document.getElementById('al-badge').style.background='#9FE1CB';document.getElementById('al-badge').style.color='#04342C';
+    document.getElementById('al-title').style.color='#085041';document.getElementById('al-title').textContent='Achiziția se încadrează în buget';
+    document.getElementById('al-body').style.color='#0F6E56';document.getElementById('al-body').textContent='Totalul rămâne la '+fmt(newSpent)+' lei din '+fmt(planned)+' lei ('+Math.round(fillPct)+'%). Nicio problemă.';
+    document.getElementById('al-actions').style.display='none';
+  }
+  document.getElementById('al-m-dev').textContent=(diff>=0?'+':'')+fmt(Math.abs(diff))+' lei';
+  document.getElementById('al-m-pct').textContent=(pct>=0?'+':'')+pct.toFixed(1)+'%';
+  document.getElementById('al-m-profit').textContent=fmt(37200-Math.max(0,diff))+' lei';
+}
+
+// === SECTION 9: TIMP EXECUȚIE ===
+var tTasks=[
+  {qty:32,norm:2.5,stage:'fund'},{qty:48,norm:4.0,stage:'fund'},{qty:1420,norm:120,stage:'fund'},{qty:18,norm:12,stage:'fund'},{qty:86,norm:15,stage:'fund'},
+  {qty:95,norm:3.5,stage:'struct'},{qty:2100,norm:100,stage:'struct'},{qty:34,norm:10,stage:'struct'},{qty:120,norm:3.0,stage:'struct'},
+  {qty:145,norm:3.2,stage:'zid'},{qty:68,norm:4.5,stage:'zid'},{qty:42,norm:5.0,stage:'zid'},
+  {qty:8.5,norm:0.8,stage:'acop'},{qty:180,norm:12,stage:'acop'},{qty:180,norm:10,stage:'acop'},{qty:52,norm:8,stage:'acop'}
+];
+function tCalcStage(stage,crew){var total=0;tTasks.forEach(function(t){if(t.stage===stage)total+=Math.ceil(t.qty/(t.norm*crew))});return total}
+function tCalcAll(){
+  var cF=parseInt(document.getElementById('tc-fund').value)||4;
+  var cS=parseInt(document.getElementById('tc-struct').value)||6;
+  var cZ=parseInt(document.getElementById('tc-zid').value)||3;
+  var cA=parseInt(document.getElementById('tc-acop').value)||4;
+  var dF=tCalcStage('fund',cF),dS=tCalcStage('struct',cS),dZ=tCalcStage('zid',cZ),dA=tCalcStage('acop',cA);
+  document.getElementById('td-fund').textContent=dF+' zile';
+  document.getElementById('td-struct').textContent=dS+' zile';
+  document.getElementById('td-zid').textContent=dZ+' zile';
+  document.getElementById('td-acop').textContent=dA+' zile';
+  var total=dF+dS+dZ+dA;
+  document.getElementById('t-total').textContent=total+' zile';
+  document.getElementById('t-weeks').textContent='~'+Math.ceil(total/5)+' săptămâni';
+  var manDays=dF*cF+dS*cS+dZ*cZ+dA*cA;
+  document.getElementById('t-cost').textContent=fmt(manDays*65*8);
+  document.getElementById('t-crew').textContent=(manDays/Math.max(1,total)).toFixed(1);
+  var pxD=100/Math.max(total,1);var s=0;
+  document.getElementById('tg0').style.left=s+'%';document.getElementById('tg0').style.width=(dF*pxD)+'%';document.getElementById('tg0').textContent=dF+'z';s+=dF*pxD;
+  document.getElementById('tg1').style.left=s+'%';document.getElementById('tg1').style.width=(dS*pxD)+'%';document.getElementById('tg1').textContent=dS+'z';s+=dS*pxD;
+  document.getElementById('tg2').style.left=s+'%';document.getElementById('tg2').style.width=(dZ*pxD)+'%';document.getElementById('tg2').textContent=dZ+'z';s+=dZ*pxD;
+  document.getElementById('tg3').style.left=s+'%';document.getElementById('tg3').style.width=(dA*pxD)+'%';document.getElementById('tg3').textContent=dA+'z';
+}
+
+// INIT ALL
+calcSetari();rCalc();aqCalc();compCalc();alCalc();tCalcAll();
+
+// SCROLL ANIMATIONS
+var reveals=document.querySelectorAll('.reveal');
+var observer=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting)e.target.classList.add('visible')})},{threshold:0.1});
+reveals.forEach(function(r){observer.observe(r)});
+</script>
+</body>
+</html>
