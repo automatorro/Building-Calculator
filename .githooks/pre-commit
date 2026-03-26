@@ -1,0 +1,26 @@
+#!/bin/bash
+# .githooks/pre-commit — Blochează commit pe fișiere protejate
+# Activare: git config core.hooksPath .githooks
+
+PROTECTED=(
+  "utils/calculators/estimate.ts"
+  "utils/calculators/financials.ts"
+  "middleware.ts"
+)
+
+BLOCKED=0
+for file in "${PROTECTED[@]}"; do
+  if git diff --cached --name-only | grep -q "$file"; then
+    echo "❌ BLOCAT: $file este protejat și nu poate fi comis."
+    echo "   Rulează: git reset HEAD -- $file"
+    BLOCKED=1
+  fi
+done
+
+if [ $BLOCKED -eq 1 ]; then
+  echo ""
+  echo "Commit anulat. Fișierele de mai sus conțin logica de business corectă"
+  echo "și nu trebuie modificate. Dacă chiar trebuie, dezactivează temporar:"
+  echo "  git commit --no-verify"
+  exit 1
+fi
