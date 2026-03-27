@@ -11,29 +11,49 @@ export default async function CatalogPage({
 }) {
   const supabase = await createClient()
   const resolvedParams = await searchParams
+
   const projectId =
     typeof resolvedParams.projectId === 'string' ? resolvedParams.projectId : null
+  const q = typeof resolvedParams.q === 'string' ? resolvedParams.q.trim() : ''
+  const cat = typeof resolvedParams.cat === 'string' ? resolvedParams.cat : ''
 
-  const { data: norms, error: normsError } = await supabase
+  // Statistici pentru landing (fără să încarci toate normele)
+  const { data: statsData } = await supabase
     .from('catalog_norms')
-    .select('id, symbol, name, unit, category, unit_price')
+    .select('category')
     .eq('is_active', true)
-    .order('category')
-    .order('symbol')
-    .limit(2000)
 
-  const categories = [...new Set(norms?.map((n) => n.category) || [])].sort()
+  const totalNorms = statsData?.length || 0
+  const categories = [...new Set(statsData?.map((n) => n.category) || [])].sort()
 
-  const normativePrefixes = [
-    ...new Set(
-      norms
-        ?.map((n) => {
-          const match = n.symbol.match(/^[A-Za-z]+/)
-          return match ? match[0].substring(0, 4).toUpperCase() : null
-        })
-        .filter(Boolean) || []
-    ),
-  ].sort()
+  // Norme: doar dacă există search sau filtru categorie
+  let norms: any[] = []
+  let searchError = null
+
+  if (q.length >= 2 || cat) {
+    let query = supabase
+      .from('catalog_norms')
+      .select('id, symbol, name, unit, category, unit_price')
+      .eq('is_active', true)
+
+    if (cat) {
+      query = query.eq('category', cat)
+    }
+
+    if (q.length >= 2) {
+      query = query.or(
+        `name.ilike.%${q}%,symbol.ilike.%${q}%`
+      )
+    }
+
+    const { data, error } = await query
+      .order('category')
+      .order('symbol')
+      .limit(200)
+
+    norms = data || []
+    searchError = error
+  }
 
   return (
     <main className="min-h-screen p-8 max-w-6xl mx-auto">
@@ -42,62 +62,80 @@ export default async function CatalogPage({
           Catalog de Norme & Devize
         </h1>
         <p className="text-slate-600 dark:text-slate-400 max-w-2xl">
-          {norms?.length.toLocaleString('ro-RO') || '0'} norme tehnice pentru
-          construcții. Alege o normă pentru a o adăuga în devizul proiectului.
+          {totalNorms.toLocaleString('ro-RO')} norme tehnice pentru construcții.
+          Caută o normă pentru a o adăuga în devizul proiectului.
         </p>
       </header>
 
-      {normsError && (
+      {searchError && (
         <div className="bg-red-50 text-red-600 p-4 rounded-lg mb-8 border border-red-200">
-          <p className="font-bold">Eroare la conectarea cu baza de date:</p>
-          <p>{normsError.message}</p>
+          <p className="font-bold">Eroare:</p>
+          <p>{searchError.message}</p>
         </div>
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Sidebar categorii */}
         <div className="space-y-8">
           <section className="glass-card p-6">
             <h2 className="text-xl font-semibold mb-4 border-b border-border pb-2">
               Categorii
             </h2>
-            <ul className="space-y-2">
-              {categories.map((cat) => (
-                <li
-                  key={cat}
-                  className="text-sm flex items-center gap-2 text-slate-700 dark:text-slate-300 capitalize"
-                >
-                  <span className="w-2 h-2 rounded-full bg-primary/40 flex-shrink-0" />
-                  {cat}
+            <ul className="space-y-1">
+              {categories.map((c) => (
+                <li key={c}>
+                  <a
+                    href={`/catalog?cat=${encodeURIComponent(c)}${projectId ? `&projectId=${projectId}` : ''}`}
+                    className={`flex items-center gap-2 text-sm py-1 px-2 rounded transition-colors capitalize
+                      ${cat === c
+                        ? 'bg-primary/10 text-primary font-medium'
+                        : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
+                      }`}
+                  >
+                    <span className="w-2 h-2 rounded-full bg-primary/40 flex-shrink-0" />
+                    {c}
+                  </a>
                 </li>
               ))}
+              {cat && (
+                <li>
+                  <a
+                    href={`/catalog${projectId ? `?projectId=${projectId}` : ''}`}
+                    className="flex items-center gap-2 text-xs py-1 px-2 text-slate-400 hover:text-primary transition-colors"
+                  >
+                    ✕ Șterge filtrul
+                  </a>
+                </li>
+              )}
             </ul>
           </section>
 
           <section className="glass-card p-6">
-            <h2 className="text-xl font-semibold mb-4 border-b border-border pb-2">
-              Indicatoare
+            <h2 className="text-xl font-semibold mb-3 border-b border-border pb-2">
+              Statistici
             </h2>
-            <div className="flex flex-wrap gap-2">
-              {normativePrefixes.slice(0, 30).map((prefix) => (
-                <span
-                  key={prefix}
-                  className="px-2 py-1 bg-primary/5 text-primary border border-primary/20 rounded text-xs font-mono font-bold"
-                >
-                  {prefix}
+            <div className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
+              <div className="flex justify-between">
+                <span>Total norme</span>
+                <span className="font-bold text-primary">
+                  {totalNorms.toLocaleString('ro-RO')}
                 </span>
-              ))}
-              {normativePrefixes.length > 30 && (
-                <span className="text-xs text-slate-400 self-center">
-                  +{normativePrefixes.length - 30} altele
-                </span>
-              )}
+              </div>
+              <div className="flex justify-between">
+                <span>Categorii</span>
+                <span className="font-bold">{categories.length}</span>
+              </div>
             </div>
           </section>
         </div>
 
+        {/* Filtru și rezultate */}
         <CatalogFilter
-          initialNorms={(norms as any) || []}
+          initialNorms={norms}
           projectId={projectId}
+          initialSearch={q}
+          initialCategory={cat}
+          totalCount={totalNorms}
         />
       </div>
     </main>
