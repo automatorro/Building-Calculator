@@ -474,7 +474,7 @@ function PurchaseFormModal({
               onBlur={e=>(e.target.style.borderColor='#E5E3DE')} />
           </div>
 
-          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(140px, 1fr))', gap:12 }}>
             <div>
               <label style={{ display:'block', fontSize:12, fontWeight:500,
                 color:'#6B6860', textTransform:'uppercase', letterSpacing:'.04em', marginBottom:6 }}>
@@ -497,7 +497,7 @@ function PurchaseFormModal({
             </div>
           </div>
 
-          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(140px, 1fr))', gap:12 }}>
             <div>
               <label style={{ display:'block', fontSize:12, fontWeight:500,
                 color:'#6B6860', textTransform:'uppercase', letterSpacing:'.04em', marginBottom:6 }}>

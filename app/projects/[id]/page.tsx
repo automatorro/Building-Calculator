@@ -63,7 +63,7 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
       {/* ── Header ── */}
       <div style={{
         background: 'white', border: '1px solid #E5E3DE',
-        borderRadius: 14, padding: '20px 28px',
+        borderRadius: 14, padding: 'clamp(16px, 4vw, 28px)',
         display: 'flex', flexDirection: 'column', gap: 16,
       }}>
         {/* Rândul 1: breadcrumb + acțiuni */}

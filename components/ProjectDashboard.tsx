@@ -82,7 +82,7 @@ export default function ProjectDashboard({ financials, projectName, onAddPurchas
         />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-8">
         {/* Progress & Visuals */}
         <div className="lg:col-span-2 space-y-6">
           <div className="glass-card p-4 md:p-8 bg-white dark:bg-slate-900 border-border/50 shadow-xl overflow-hidden relative">
@@ -106,7 +106,7 @@ export default function ProjectDashboard({ financials, projectName, onAddPurchas
                 />
               </div>
               
-              <div className="grid grid-cols-2 mt-8 pt-8 border-t border-border/30 gap-8">
+              <div className="grid grid-cols-2 mt-6 md:mt-8 pt-6 md:pt-8 border-t border-border/30 gap-4 md:gap-8">
                 <div>
                   <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Venit Total (Vânzare)</div>
                   <div className="text-xl font-bold font-mono">{totalEstimatedRevenue.toLocaleString('ro-RO')} Lei</div>
@@ -124,7 +124,7 @@ export default function ProjectDashboard({ financials, projectName, onAddPurchas
 
           {/* Etape Drill-down */}
           <div className="glass-card bg-white dark:bg-slate-900 border-border/50 shadow-lg">
-            <div className="p-6 border-b border-border/50 flex justify-between items-center">
+            <div className="p-4 md:p-6 border-b border-border/50 flex flex-wrap justify-between items-center gap-2">
               <h3 className="font-black uppercase text-xs tracking-widest">Performanță pe Etape</h3>
               <button 
                 onClick={onViewStages}
@@ -135,7 +135,7 @@ export default function ProjectDashboard({ financials, projectName, onAddPurchas
             </div>
             <div className="divide-y divide-border/50">
               {deviations.slice(0, 5).map((dev, idx) => (
-                <div key={idx} className="p-6 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800/20 transition-colors">
+                <div key={idx} className="p-4 md:p-6 flex items-start justify-between gap-3 hover:bg-slate-50 dark:hover:bg-slate-800/20 transition-colors">
                   <div className="space-y-1">
                     <div className="font-bold text-sm tracking-tight">{dev.stage}</div>
                     <div className="text-[10px] font-medium text-slate-400">
@@ -158,7 +158,7 @@ export default function ProjectDashboard({ financials, projectName, onAddPurchas
 
         {/* Sidebar Alerts & Forecast */}
         <div className="space-y-6">
-          <div className={`glass-card p-6 border-border/20 ${alerts.some(a => a.type === 'danger') ? 'bg-red-50/30 dark:bg-red-950/20 ring-1 ring-red-500/20' : 'bg-orange-50/20 dark:bg-orange-950/20'}`}>
+          <div className={`glass-card p-4 md:p-6 border-border/20 ${alerts.some(a => a.type === 'danger') ? 'bg-red-50/30 dark:bg-red-950/20 ring-1 ring-red-500/20' : 'bg-orange-50/20 dark:bg-orange-950/20'}`}>
             <div className="flex items-center gap-2 text-primary mb-4">
               <AlertTriangle size={18} className={alerts.some(a => a.type === 'danger') ? 'text-red-500' : 'text-orange-500'} />
               <h3 className="font-black uppercase text-xs tracking-widest text-slate-900 dark:text-white">Alerte Producție</h3>
@@ -184,7 +184,7 @@ export default function ProjectDashboard({ financials, projectName, onAddPurchas
             </div>
           </div>
 
-          <div className="glass-card p-6 bg-slate-900 text-white shadow-2xl overflow-hidden relative">
+          <div className="glass-card p-4 md:p-6 bg-slate-900 text-white shadow-2xl overflow-hidden relative">
             <div className="relative z-10">
               <div className="flex items-center gap-2 text-primary mb-6">
                 <Clock size={18} />
@@ -219,15 +219,15 @@ export default function ProjectDashboard({ financials, projectName, onAddPurchas
             <div className="absolute -right-16 -top-16 w-32 h-32 bg-primary/10 rounded-full blur-2xl" />
           </div>
 
-          <div className="p-6 rounded-3xl border-2 border-dashed border-border flex flex-col items-center text-center space-y-3">
+          <div className="p-4 md:p-6 rounded-3xl border-2 border-dashed border-border flex flex-col items-center text-center space-y-3">
             <div className="p-3 bg-slate-100 dark:bg-slate-800 rounded-full text-slate-400">
               <BarChart3 size={24} />
             </div>
             <div>
               <h4 className="font-bold text-sm">Vrei să reduci costul?</h4>
-              <p className="text-[10px] text-slate-500 mt-1">Rulează un scenariu de tip " EPS vs Vată" pentru a vedea impactul în profitul final.</p>
+              <p className="text-xs text-slate-500 mt-1">Rulează un scenariu de tip " EPS vs Vată" pentru a vedea impactul în profitul final.</p>
             </div>
-            <button className="text-[10px] font-black text-primary uppercase border-b border-primary/30">Start Scenariu</button>
+            <button className="text-xs font-black text-primary uppercase border-b border-primary/30 py-1">Start Scenariu</button>
           </div>
         </div>
       </div>
@@ -237,7 +237,7 @@ export default function ProjectDashboard({ financials, projectName, onAddPurchas
 
 function SummaryCard({ label, value, subValue, icon, trend }: { label: string, value: string, subValue: string, icon: React.ReactNode, trend: 'positive' | 'negative' | null }) {
   return (
-    <div className="glass-card p-6 bg-white dark:bg-slate-900 border-border/50 shadow-sm transition-all hover:shadow-md hover:border-primary/20">
+    <div className="glass-card p-4 md:p-6 bg-white dark:bg-slate-900 border-border/50 shadow-sm transition-all hover:shadow-md hover:border-primary/20">
       <div className="flex justify-between items-start mb-4">
         <div className="p-2.5 bg-slate-50 dark:bg-slate-800 rounded-xl">{icon}</div>
         {trend && (
