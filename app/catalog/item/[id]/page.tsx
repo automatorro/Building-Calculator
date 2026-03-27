@@ -73,7 +73,7 @@ export default async function CatalogItemPage({
   }, {})
 
   return (
-    <main className="min-h-screen p-8 max-w-5xl mx-auto">
+    <main className="min-h-screen p-4 md:p-8 max-w-5xl mx-auto">
       <a
         href={`/catalog${projectId ? `?projectId=${projectId}` : ''}`}
         className="inline-flex items-center gap-2 text-slate-500 hover:text-primary mb-8 transition-colors group"
@@ -97,7 +97,7 @@ export default async function CatalogItemPage({
             </span>
           )}
         </div>
-        <h1 className="text-3xl font-bold mb-3 leading-snug">{norm.name}</h1>
+        <h1 className="text-xl md:text-3xl font-bold mb-3 leading-snug">{norm.name}</h1>
         {norm.description && (
           <p className="text-slate-500 dark:text-slate-400 text-base max-w-3xl">{norm.description}</p>
         )}

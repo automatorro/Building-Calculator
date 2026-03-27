@@ -101,7 +101,7 @@ export function Sidebar() {
   ].some(p => pathname.startsWith(p))
 
   return (
-    <aside className="w-64 h-screen fixed left-0 top-0 border-r border-slate-200/60 bg-white/60 backdrop-blur-xl z-20 flex flex-col p-4 shadow-sm">
+    <aside className="hidden md:flex w-64 h-screen fixed left-0 top-0 border-r border-slate-200/60 bg-white/60 backdrop-blur-xl z-20 flex-col p-4 shadow-sm">
 
       {/* ── Logo ── */}
       <div className="flex items-center gap-3 px-2 py-4 mb-6">

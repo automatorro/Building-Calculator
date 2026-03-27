@@ -217,7 +217,7 @@ export default function ProjectDevizView({
         )}
       </div>
 
-      <div style={{ display:'grid', gridTemplateColumns:'1fr 300px', gap:24, alignItems:'start' }}>
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-6 items-start">
 
         {/* ── Etape ── */}
         <div style={{ display:'flex', flexDirection:'column', gap:8 }}>

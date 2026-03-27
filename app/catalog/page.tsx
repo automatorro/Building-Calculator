@@ -56,9 +56,9 @@ export default async function CatalogPage({
   }
 
   return (
-    <main className="min-h-screen p-8 max-w-6xl mx-auto">
-      <header className="mb-12">
-        <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-primary to-brand-600 bg-clip-text text-transparent">
+    <main className="min-h-screen p-4 md:p-8 max-w-6xl mx-auto">
+      <header className="mb-8 md:mb-12">
+        <h1 className="text-2xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-primary to-brand-600 bg-clip-text text-transparent">
           Catalog de Norme & Devize
         </h1>
         <p className="text-slate-600 dark:text-slate-400 max-w-2xl">

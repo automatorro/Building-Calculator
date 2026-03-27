@@ -2,8 +2,8 @@ import { Bell, Search, UserCircle } from "lucide-react"
 
 export function Topbar() {
   return (
-    <header className="h-16 border-b border-slate-200/60 bg-white/40 backdrop-blur-md sticky top-0 z-20 flex items-center justify-between px-8 shadow-sm">
-      <div className="flex items-center relative w-96">
+    <header className="h-16 border-b border-slate-200/60 bg-white/40 backdrop-blur-md sticky top-0 z-20 flex items-center justify-between px-4 md:px-8 shadow-sm">
+      <div className="flex items-center relative flex-1 max-w-xs md:max-w-md">
         <Search className="w-4 h-4 text-slate-400 absolute left-3" />
         <input 
           type="text" 
@@ -20,7 +20,7 @@ export function Topbar() {
         <div className="h-8 w-px bg-slate-200"></div>
         <button className="flex items-center gap-2 text-sm font-medium text-slate-700 hover:text-slate-900">
           <UserCircle className="w-8 h-8 text-slate-400" />
-          <span>Contul meu</span>
+          <span className="hidden sm:inline">Contul meu</span>
         </button>
       </div>
     </header>

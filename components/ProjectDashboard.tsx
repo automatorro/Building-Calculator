@@ -31,7 +31,7 @@ export default function ProjectDashboard({ financials, projectName, onAddPurchas
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
       {/* Header Info */}
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <p style={{ fontSize: 11, fontWeight: 700, color: '#A8A59E', letterSpacing: '.08em', textTransform: 'uppercase' }}>
           Status Financiar Proiect (Live)
         </p>
@@ -85,7 +85,7 @@ export default function ProjectDashboard({ financials, projectName, onAddPurchas
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Progress & Visuals */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="glass-card p-8 bg-white dark:bg-slate-900 border-border/50 shadow-xl overflow-hidden relative">
+          <div className="glass-card p-4 md:p-8 bg-white dark:bg-slate-900 border-border/50 shadow-xl overflow-hidden relative">
             <div className="relative z-10">
               <div className="flex justify-between items-end mb-4">
                 <div>

@@ -134,9 +134,10 @@ export default function ProjectTimeline({
       </div>
 
       {/* ── Gantt bar ── */}
+      <div className="overflow-x-auto">
       <div style={{
         background: '#FAFAF8', border: '1px solid #E5E3DE',
-        borderRadius: 14, overflow: 'hidden',
+        borderRadius: 14, overflow: 'hidden', minWidth: 560,
       }}>
         {/* Header săptămâni */}
         <div style={{
@@ -241,6 +242,7 @@ export default function ProjectTimeline({
             Finalizare: calculată de la data de start
           </div>
         </div>
+      </div>
       </div>
 
       {/* ── Cards etape cu detalii ── */}
