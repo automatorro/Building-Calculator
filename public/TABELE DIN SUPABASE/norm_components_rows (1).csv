@@ -1,0 +1,101 @@
+id,norm_id,name,specification,unit,qty_per_unit,unit_price,component_type,is_optional,optional_note,can_substitute,substitute_note,sort_order,created_at,updated_at
+1,62,Polistiren EPS grafitat 10cm (λ=0.031),"densitate 15 kg/m³, certificat ETA, ETICS",mp,1.0500,28.00,material,false,,true,Alternativ: vată minerală lamelară 10cm (+40%),1,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+2,62,Adeziv și șpaclu de bază (sac 25kg),"clasa C2TE, adeziv mineral cu polimeri",kg,6.0000,2.80,material,false,,false,,2,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+3,62,Dibluri cu cui metalic Ø8×160mm,"dibluri certificat ETA, cap inecat",buc,6.0000,0.90,material,false,,false,,3,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+4,62,Plasă fibră sticlă 160g/m²,"rezistentă la alcalin, ochiuri 4×4mm",mp,1.1000,4.50,material,false,,false,,4,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+5,62,Grund de amorsare (bidon 10l),"grund acrilic pigmentat, nuanțat",l,0.2000,8.00,material,false,,false,,5,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+6,62,Tencuială decorativă silicatică 1.5mm,"finisaj drișcat, alb sau culoare standard",kg,3.5000,6.00,material,false,,true,Alternativ: tencuială siloxanică (+15%),6,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+7,62,Profil de soclu PVC perforat,"h=150mm, cu picurător",ml,0.0500,12.00,material,true,Necesar la soclul clădirii,false,,7,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+8,62,Profil colț PVC cu plasă,armare colțuri ferestre și uși,ml,0.1000,5.00,material,true,Recomandat la colțuri și glafuri,false,,8,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+9,62,Manoperă montaj termosistem complet,inclusiv pregătire suprafață și finisaj,mp,1.0000,32.00,manopera,false,,false,,9,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+10,62,Transport materiale la obiectiv,"per mp, estimat distanță medie",mp,1.0000,3.00,transport,true,Inclus în oferta furnizorului regional,false,,10,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+11,3588,Gresie porțelanată rectificată 60×60cm,"clasa de calitate I, R10 (antiderapant interior)",mp,1.0800,45.00,material,false,,true,Alternativ format 30×60 sau 120×60,1,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+12,3588,Adeziv flexibil C2TE (sac 25kg),"adeziv alb, gresie mare format",kg,5.5000,2.80,material,false,,false,,2,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+13,3588,Chit de rost flexibil (pungă 2kg),"culoare la alegere, rezistent la mucegai",kg,0.4000,8.50,material,false,,true,"Alternativ: chit epoxidic (+200% preț, baie)",3,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+14,3588,Cruce de rostuire 2mm sau 3mm,plastic reutilizabil,buc,8.0000,0.15,material,true,Înlocuite de dreptare la profesioniști,false,,4,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+15,3588,Profil de dilatație PVC sau inox,la treceri între camere sau >25mp,ml,0.0300,12.00,material,true,Obligatoriu la suprafețe >25mp,false,,5,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+16,3588,Manoperă montaj gresie,"pregătire pat, trasaj, tăiere, rostuire",mp,1.0000,45.00,manopera,false,,false,,6,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+17,3588,Transport deșeuri tăieturi,"la container, per mp",mp,1.0000,2.00,transport,true,De obicei inclus în prețul manoperei,false,,7,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+18,46,Faianță ceramică glazurată 30×60cm,"clasa I, rezistentă la umezeală, baie/bucătărie",mp,1.1000,32.00,material,false,,true,Alternativ: gresie porțelanată pe perete,1,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+19,46,Adeziv C2TE pentru suprafețe umede,adeziv alb cu aditivi hidrofugi,kg,5.0000,2.80,material,false,,false,,2,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+20,46,Chit rost flexibil hidrofug (2kg),"culoare la alegere, rezistent mucegai clasa C",kg,0.3500,9.00,material,false,,true,Alternativ epoxidic pentru rosturi <2mm în duș,3,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+21,46,Profil inox de colț 10mm,protecție muchii externe,ml,0.1500,8.00,material,true,La colțuri exterioare vizibile,false,,4,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+22,46,Silicon sanitar (tub 280ml),pentru rosturi de dilatație la îmbinări,buc,0.1000,12.00,material,true,La colțuri și îmbinare perete-pardos.,false,,5,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+23,46,Manoperă montaj faianță,"pregătire suprafață, trasaj, tăiere, rostuire",mp,1.0000,50.00,manopera,false,,false,,6,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+24,27291,Ipsos de construcții (sac 25kg),"ipsos alb cls A, timp priză 60–90 min",kg,12.0000,1.20,material,false,,false,,1,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+25,27291,Amorsa de contact (bidon 10l),grund acrilic pentru aderență pe beton/BCA,l,0.1500,7.50,material,false,,false,,2,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+26,27291,Bandă de colț PVC pentru ghidaj,"profil H sau L, rigidizare muchii",ml,0.0800,4.50,material,true,Recomandat la colțuri ușilor și ferestr.,false,,3,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+27,27291,Manoperă tencuire ipsos proiectat,"inclusiv preparare, aplicare, drișcuire",mp,1.0000,22.00,manopera,false,,false,,4,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+28,27288,Gleț de ipsos finisaj (sac 25kg),"gleț alb cls A, aplicat 2–3mm",kg,2.5000,1.80,material,false,,false,,1,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+29,27288,Grund acrilic interior,"amorsa acrilică diluabilă, 1 strat",l,0.1500,8.00,material,false,,false,,2,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+30,27288,Vopsea lavabilă albă (găleat 15l),"lavabilitate ≥5.000 frecări, coeficient mat",l,0.3000,12.00,material,false,,true,Alternativ: vopsea premium (+50%),3,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+31,27288,Manoperă gletuit + vopsit 2 straturi,"șlefuire, grunduire, 2x vopsit",mp,1.0000,28.00,manopera,false,,false,,4,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+32,27260,Polistiren armat EPS pentru pardoseală radiantă 3cm,"cu deniveluri pentru fixare țeavă, λ=0.038",mp,1.0500,22.00,material,false,,true,Alternativ: sisteme cu plăci prefabricate,1,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+33,27260,Folie de barieră vapori 0.2mm,polietilenă cu bandă de etanșare,mp,1.1000,1.80,material,false,,false,,2,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+34,27260,Bandă de margine perimetrală 8mm,"spumă PE cu folie, h=100mm",ml,0.4000,2.50,material,false,,false,,3,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+35,27260,Țeavă PE-Xa Ø16×2mm pentru pardoseală,"rolă 200ml, certificat ISO, pas 15cm",ml,7.0000,3.20,material,false,,false,,4,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+36,27260,Clips fixare țeavă (pungă 100buc),clips simplu pentru ștan perforat sau plăci,buc,5.0000,0.18,material,false,,false,,5,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+37,27260,Șapă autonivelantă (sac 25kg),"fluidă, grosime 5–8cm peste țeavă",kg,50.0000,0.95,material,false,,true,Alternativ: șapă tradițională (-20% preț),6,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+38,27260,Aditiv pentru șapă cu pardoseală radiantă,"plastifiant fluidizant, 1l/100kg șapă",l,0.5000,8.00,material,true,Recomandat pentru rezistență mai bună,false,,7,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+39,27260,Manoperă montaj pardoseală radiantă,"inclusiv folie, bandă, țeavă, șapă",mp,1.0000,32.00,manopera,false,,false,,8,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+40,27260,Transport și descărcare materiale,"per mp, estimat",mp,1.0000,3.00,transport,true,De obicei inclus la comenzi >200mp,false,,9,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+41,27280,Placă gips-carton 12.5mm standard (GKB),"120×250cm, KNAUF/RIGIPS echivalent",mp,1.0800,8.50,material,false,,false,,1,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+42,27280,Profil CD60 (bara 3m),"zincat 0.6mm, pentru caroiaj plafon",ml,1.3000,4.20,material,false,,false,,2,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+43,27280,Profil UD28 (bara 3m),"profil perete, fixare perimetrală",ml,0.4200,3.80,material,false,,false,,3,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+44,27280,Tirant reglabil (suspendă + tijă),"reglaj 0–1m, zincat",buc,1.0000,2.80,material,false,,false,,4,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+45,27280,Conector CD (cruce de legătură),cuplă CD–CD intersecție,buc,0.6000,0.45,material,false,,false,,5,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+46,27280,Șurub autoforant 3.5×25mm (cutie 200),pentru fixare placă pe CD,buc,18.0000,0.08,material,false,,false,,6,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+47,27280,Diblu cu cui pentru beton/cărămidă,"fixare UD în perete, Ø6×40",buc,0.5000,0.40,material,false,,false,,7,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+48,27280,Bandă armătură rosturi (50m),bandă hârtie sau plasă fibră sticlă,ml,1.1000,0.35,material,false,,false,,8,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+49,27280,Chit pentru rosturi gips-carton (5kg),Uniflott sau echivalent,kg,0.3000,6.50,material,false,,false,,9,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+50,27280,Vată minerală bazaltică 5cm,"termic+acustic, densitate 35 kg/m³",mp,1.0500,12.00,material,true,Recomandat între etaje sau la pod,true,Alternativ: polistiren 3cm (mai subțire),10,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+51,27280,Manoperă montaj tavan GC complet,structură + plăci + chituire,mp,1.0000,48.00,manopera,false,,false,,11,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+52,27252,"Robinet gaz cu filet 3/4""","robinet sferă DN20, corp bronz",buc,1.0000,28.00,material,false,,false,,1,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+53,27252,"Racord flexibil gaz inox 1/2""×500mm","omologat ANRE, presiune 0.5bar",buc,1.0000,35.00,material,false,,false,,2,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+54,27252,Grup de siguranță cu manometru,"3/4"", presiune max 3bar",buc,1.0000,45.00,material,false,,false,,3,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+55,27252,"Robineți de trecere 1/2"" (set 2)",tur/retur circuit primar,set,1.0000,22.00,material,false,,false,,4,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+56,27252,"Furtun flexibil apă 1/2""×500mm (set 2)","inox împletit, DN15",set,1.0000,18.00,material,false,,false,,5,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+57,27252,Vas expansiune 8l (dacă lipsește),"presiune max 3bar, cu garnitură",buc,1.0000,65.00,material,true,Unele centrale au vas incorporat,false,,6,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+58,27252,Kit evacuare coaxiala Ø60/100 (2m),pentru centrale cu tiraj forțat,set,1.0000,95.00,material,false,,true,Alternativ: kit separat Ø80/125 (etaj),7,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+59,27252,Teflon și fitinguri diverse,"garnituri, cânepă, pastă etanș",set,1.0000,15.00,material,false,,false,,8,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+60,27252,Manoperă montaj și racordare,"fixare, racorduri hidraulice și gaz",buc,1.0000,450.00,manopera,false,,false,,9,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+61,27252,Punere în funcțiune + reglaj,"autorizare ANRE instalator, test etanșeitate",buc,1.0000,200.00,manopera,false,,false,,10,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+62,27252,Transport echipament la obiectiv,pentru centrale >30kg,buc,1.0000,80.00,transport,true,Inclus de regulă în prețul centralei,false,,11,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+63,27257,Console fixare radiator (set 2),"zincat, pentru radiatoare până la 600mm",set,1.0000,12.00,material,false,,false,,1,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+64,27257,"Robinet termostatic Ø1/2"" drept",cu cap termostatic M30 inclus,buc,1.0000,35.00,material,false,,true,Alternativ: robinet simplu fără cap (-15 lei),2,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+65,27257,"Robinet de retur Ø1/2"" drept",robinet de reglaj sau retur,buc,1.0000,22.00,material,false,,false,,3,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+66,27257,"Aerisitor manual Ø1/2""",pentru eliminare aer din radiator,buc,1.0000,6.00,material,false,,false,,4,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+67,27257,"Dop inox Ø1/2""",pentru orificiul liber al radiatorului,buc,1.0000,3.00,material,false,,false,,5,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+68,27257,"Furtun flexibil Ø1/2""×500mm (set 2)","inox împletit, tur și retur",set,1.0000,18.00,material,true,Dacă racordurile nu sunt rigide/lipite,false,,6,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+69,27257,Manoperă montaj radiator complet,"trasaj, fixare, racorduri, aerisire",buc,1.0000,95.00,manopera,false,,false,,7,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+70,27294,Cadru încastrabil WC (Geberit/Tece echiv.),"h=1120mm, cu rezervor 6/3l inclus",buc,1.0000,320.00,material,false,,false,,1,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+71,27294,Clapetă acționare dual flush (crom mat),compatibilă cu cadrul ales,buc,1.0000,65.00,material,false,,true,Alternativ: clapetă standard (-30 lei),2,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+72,27294,Șuruburi fixare vas WC (set),"M12×200 inox, cu piulițe și distanțiere",set,1.0000,18.00,material,false,,false,,3,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+73,27294,Manșon elastic WC Ø90/110mm,etanșare vas la perete,buc,1.0000,12.00,material,false,,false,,4,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+74,27294,Garnitură etanșare rezervor,"garnitură conică 3/8""",buc,1.0000,8.00,material,false,,false,,5,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+75,27294,"Furtun alimentare 3/8""×500mm",inox împletit cu robinet de colț,buc,1.0000,18.00,material,false,,false,,6,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+76,27294,Silicon sanitar alb (tub 280ml),etanșare bază vas la pardoseală,buc,0.5000,12.00,material,false,,false,,7,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+77,27294,Manoperă montaj cadru + vas,"fixare cadru, racorduri, montaj vas, reglaj",set,1.0000,500.00,manopera,false,,false,,8,2026-03-26 12:13:54.761924+00,2026-03-26 12:13:54.761924+00
+78,27253,"Robinet gaz cu filet 1""",corp bronz DN25,buc,1.0000,38.00,material,false,,false,,1,2026-03-26 18:42:00.214002+00,2026-03-26 18:42:00.214002+00
+79,27253,"Racord flexibil gaz inox 1""×600mm",omologat ANRE,buc,1.0000,48.00,material,false,,false,,2,2026-03-26 18:42:00.214002+00,2026-03-26 18:42:00.214002+00
+80,27253,"Grup siguranță 1""",manometru+supapă 3bar,buc,1.0000,55.00,material,false,,false,,3,2026-03-26 18:42:00.214002+00,2026-03-26 18:42:00.214002+00
+81,27253,"Robineți trecere 3/4"" set 2",tur/retur circuit primar,set,1.0000,30.00,material,false,,false,,4,2026-03-26 18:42:00.214002+00,2026-03-26 18:42:00.214002+00
+82,27253,"Furtun flexibil apă 3/4""×600mm set 2",inox împletit,set,1.0000,26.00,material,false,,false,,5,2026-03-26 18:42:00.214002+00,2026-03-26 18:42:00.214002+00
+83,27253,Vas expansiune 12l,"dacă lipsește, presiune 3bar",buc,1.0000,78.00,material,true,Unele centrale au vas incorporat,false,,6,2026-03-26 18:42:00.214002+00,2026-03-26 18:42:00.214002+00
+84,27253,"Kit evacuare coaxial Ø80/125, 3m",centrale >24kW,set,1.0000,120.00,material,false,,true,Alternativ Ø60/100 dacă permite producătorul,7,2026-03-26 18:42:00.214002+00,2026-03-26 18:42:00.214002+00
+85,27253,"Teflon, fitinguri, garnituri diverse",set montaj,set,1.0000,18.00,material,false,,false,,8,2026-03-26 18:42:00.214002+00,2026-03-26 18:42:00.214002+00
+86,27253,Manoperă montaj și racordare,"fixare, hidraulic, gaz",buc,1.0000,500.00,manopera,false,,false,,9,2026-03-26 18:42:00.214002+00,2026-03-26 18:42:00.214002+00
+87,27253,Punere în funcțiune + autorizare ANRE,test etanșeitate și parametri,buc,1.0000,230.00,manopera,false,,false,,10,2026-03-26 18:42:00.214002+00,2026-03-26 18:42:00.214002+00
+88,27253,Transport echipament la obiectiv,>30kg,buc,1.0000,90.00,transport,true,Inclus de regulă în prețul centralei,false,,11,2026-03-26 18:42:00.214002+00,2026-03-26 18:42:00.214002+00
+89,27254,Suport antivibrații cazan,profil oțel sau cauciuc dens,buc,1.0000,45.00,material,true,Recomandat pentru reducere vibrații,false,,1,2026-03-26 18:42:00.214002+00,2026-03-26 18:42:00.214002+00
+90,27254,Racorduri hidraulice cu izolație DN25 set,tur/retur cu flanșe,set,1.0000,95.00,material,false,,false,,2,2026-03-26 18:42:00.214002+00,2026-03-26 18:42:00.214002+00
+91,27254,Robineți sferă DN25 set 2,tur/retur,set,1.0000,55.00,material,false,,false,,3,2026-03-26 18:42:00.214002+00,2026-03-26 18:42:00.214002+00
+92,27254,Grup pompare cu regulator,dacă cazanul nu are,buc,1.0000,145.00,material,true,Unele cazane livrează fără grup pompare,false,,4,2026-03-26 18:42:00.214002+00,2026-03-26 18:42:00.214002+00
+93,27254,Vas expansiune deschis 18l,sau închis 18l dacă circuitul e închis,buc,1.0000,90.00,material,true,Necesitate depinde de schema de instalație,false,,5,2026-03-26 18:42:00.214002+00,2026-03-26 18:42:00.214002+00
+94,27254,Racord coș/vizor curățare,"DN150, inox",buc,1.0000,45.00,material,false,,false,,6,2026-03-26 18:42:00.214002+00,2026-03-26 18:42:00.214002+00
+95,27254,Manoperă montaj complet,"poziționare, racorduri, etanșeitate",buc,1.0000,480.00,manopera,false,,false,,7,2026-03-26 18:42:00.214002+00,2026-03-26 18:42:00.214002+00
+96,27254,Punere în funcțiune,"reglaj tiraj, parametri ardere",buc,1.0000,150.00,manopera,false,,false,,8,2026-03-26 18:42:00.214002+00,2026-03-26 18:42:00.214002+00
+97,27255,Console fixare perete pentru boiler,"zincat, sarcină >80kg",set,1.0000,28.00,material,false,,false,,1,2026-03-26 18:42:00.214002+00,2026-03-26 18:42:00.214002+00
+98,27255,"Robinet de siguranță + scurgere 3/4""",supapă 6bar cu scurgere la pardoseală,buc,1.0000,35.00,material,false,,false,,2,2026-03-26 18:42:00.214002+00,2026-03-26 18:42:00.214002+00
+99,27255,"Racorduri flexibile apă 1/2"" set 2",tur/retur rece-cald,set,1.0000,20.00,material,false,,false,,3,2026-03-26 18:42:00.214002+00,2026-03-26 18:42:00.214002+00
+100,27255,Cablu electric MYYM 3×2.5mm² (5ml),pentru alimentare directă,ml,5.0000,2.50,material,false,,false,,4,2026-03-26 18:42:00.214002+00,2026-03-26 18:42:00.214002+00

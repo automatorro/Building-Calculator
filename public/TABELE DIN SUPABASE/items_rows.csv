@@ -1,0 +1,7 @@
+id,normative_id,category_id,code,name,um,created_at,user_id
+033c4181-bdd5-41b5-ab2d-d18bcebf04ad,89855c0c-b158-4101-b866-ad4291ce0536,e3827dbd-218f-4856-a4cb-cb020a992f79,TsCA01C1,"Turnare beton armat clasa C20/25 (B250) în fundații, continuu",mc,2026-03-17 12:32:49.844876+00,
+29e5aad2-07fb-4b5e-9270-ea75a37b115a,e6334227-99c1-447e-8c14-1cc498804269,54a595ee-dd7b-4357-ac3b-5f9037970b6f,RpcCF01A,"Tencuieli interioare driscuite, aplicate manual, grosime 2.5 cm",mp,2026-03-17 12:32:49.844876+00,
+361983e3-1fa9-4fe3-95f0-4d28a6c8e14f,89855c0c-b158-4101-b866-ad4291ce0536,e3827dbd-218f-4856-a4cb-cb020a992f79,TsCC01A1,Fasonare și montare armătură din oțel BST500,kg,2026-03-17 12:32:49.844876+00,
+41f621b7-dfb1-458e-bb06-13febd0439b6,89855c0c-b158-4101-b866-ad4291ce0536,e3827dbd-218f-4856-a4cb-cb020a992f79,TsCB01A1,Cofraje din panouri de tego pentru fundații și grinzi de fundare,mp,2026-03-17 12:32:49.844876+00,
+aa39fb98-a25e-4c0b-b7ce-4a7c23eeed55,,,USER-G8RAG,Placi OSB,buc,2026-03-22 22:02:09.416378+00,e5ac92cb-a860-4809-b9f8-3207bc7d5b18
+e798c8ed-92ad-4733-84b6-cb96e29db09a,e6334227-99c1-447e-8c14-1cc498804269,54a595ee-dd7b-4357-ac3b-5f9037970b6f,RpcCD01A,"Zidărie din blocuri ceramice cu goluri, grosime 25 cm, mortar M50",mc,2026-03-17 12:32:49.844876+00,

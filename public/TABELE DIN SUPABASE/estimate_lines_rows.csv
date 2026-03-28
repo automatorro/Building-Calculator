@@ -1,0 +1,13 @@
+id,project_id,item_id,quantity,custom_prices,excluded_resources,created_at,catalog_norm_id,name,code,unit,unit_price,category,stage_name,sort_order,notes,updated_at
+03f40112-c96c-4608-95be-bcad130243c5,1d0e861a-c3e5-4434-ba25-1cc7fcd6ca4f,,1.0000,{},[],2026-03-24 16:18:31.921909+00,,Articol nou,,buc,0.00,,,0,,2026-03-24 16:18:31.921909+00
+4582fb7a-cda3-4dcb-b08c-737981959edc,1d0e861a-c3e5-4434-ba25-1cc7fcd6ca4f,,1.0000,{},[],2026-03-24 16:18:31.297439+00,,Articol nou,,buc,0.00,,,0,,2026-03-24 16:18:31.297439+00
+519ade57-4213-4057-abd5-f1da2cfdbb70,1d0e861a-c3e5-4434-ba25-1cc7fcd6ca4f,,154.0000,"{""0c68d95d-7887-4e00-bdbe-e159901125fb"": 50}",[],2026-03-22 22:03:27.912052+00,,Dibluri metalice prindere,,buc,0.00,,,0,,2026-03-22 22:03:27.912052+00
+574ffa55-fde0-4923-a843-a6223d79cbcf,1d0e861a-c3e5-4434-ba25-1cc7fcd6ca4f,,12.0000,{},[],2026-03-27 22:27:57.369534+00,,Articol nou,,buc,0.00,,Alte Lucrări,0,,2026-03-27 22:27:57.369534+00
+74295794-6fdf-4386-83c0-6ff11e2a93fc,c46ea720-a8ad-447e-bead-9fefdfe9afde,,1.0000,{},[],2026-03-26 12:19:08.016146+00,3379,"Invelitoare din ţiglă solzi din argilă arsă dublu  ",CE02B1,mp,0.00,Acoperiș,,0,,2026-03-26 12:19:08.016146+00
+8c5ec547-c91f-43ce-9d01-f11391674b80,1d0e861a-c3e5-4434-ba25-1cc7fcd6ca4f,,1.0000,{},[],2026-03-27 22:27:57.134192+00,,Articol nou,,buc,0.00,,Alte Lucrări,0,,2026-03-27 22:27:57.134192+00
+93d74a39-d8a8-4e3b-b17f-8166928107db,1d0e861a-c3e5-4434-ba25-1cc7fcd6ca4f,,1.0000,{},[],2026-03-24 16:18:31.732825+00,,Articol nou,,buc,0.00,,Alte Lucrări,0,,2026-03-24 16:18:31.732825+00
+9e84086c-f0c8-4c1a-8d73-b4af602df36c,1d0e861a-c3e5-4434-ba25-1cc7fcd6ca4f,,1.0000,{},[],2026-03-24 16:18:32.123267+00,,Articol nou,,buc,0.00,,,0,,2026-03-24 16:18:32.123267+00
+ba73a8c5-2aa2-44c7-ac75-daf14a27e5cb,d9724775-aa1b-4ab1-b20b-ebe6a7ebfaec,,1.0000,{},[],2026-03-22 18:36:09.290654+00,33,"Șarpantă din lemn ecarisat, acoperișuri cu 2 pante, astereală inclusă",CvA01A1,mp,185.00,Acoperiș,,0,,2026-03-22 18:36:09.290654+00
+ccb7375e-c430-4da1-928c-3a0f505c88fe,1d0e861a-c3e5-4434-ba25-1cc7fcd6ca4f,,200.0000,{},[],2026-03-22 22:06:11.701548+00,33,"Șarpantă din lemn ecarisat, acoperișuri cu 2 pante, astereală inclusă",CvA01A1,mp,185.00,Acoperiș,,0,,2026-03-22 22:06:11.701548+00
+da67b37f-cf77-4e68-af75-9f5387f2ce62,1d0e861a-c3e5-4434-ba25-1cc7fcd6ca4f,,1.0000,{},[],2026-03-24 16:18:31.524067+00,,Articol nou,,buc,0.00,,Alte Lucrări,0,,2026-03-24 16:18:31.524067+00
+e6f27c19-cfd6-43da-919b-315e13958208,1d0e861a-c3e5-4434-ba25-1cc7fcd6ca4f,,153.0000,{},[],2026-03-22 22:03:28.504888+00,,Vata minerala,,buc,0.00,,Alte Lucrări,0,,2026-03-22 22:03:28.504888+00

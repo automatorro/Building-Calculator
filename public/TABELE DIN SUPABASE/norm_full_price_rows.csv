@@ -1,0 +1,101 @@
+id,symbol,name,unit,category,has_components,price_total,price_material,price_labor,price_transport,price_total_with_optional,is_active,created_at
+1,TsA01A1,"Săpătură manuală în teren categoria I-II, la fundații cu adâncimea până la 0,6 m",mc,Terasamente,false,85.00,,,,,true,2026-03-21 18:23:21.468505+00
+2,TsA02A1,"Săpătură cu excavatorul în teren categoria I-II, de la nivelul terenului natural",mc,Terasamente,false,35.00,,,,,true,2026-03-21 18:23:21.468505+00
+3,TsA06A1,Umplutură cu pământ bătut manual în straturi de 20 cm,mc,Terasamente,false,65.00,,,,,true,2026-03-21 18:23:21.468505+00
+4,TsA07A1,"Umplutură cu piatră spartă, pietriș sau balast",mc,Terasamente,false,120.00,,,,,true,2026-03-21 18:23:21.468505+00
+5,TsB01A1,Nivelarea manuală a terenului,mp,Terasamente,false,8.50,,,,,true,2026-03-21 18:23:21.468505+00
+6,TsC01A1,"Sprijiniri de maluri cu dulapi, pe 1 față, H ≤ 2 m",mp,Terasamente,false,55.00,,,,,true,2026-03-21 18:23:21.468505+00
+7,TsD01A1,"Epuisment mecanic, pompe de mică capacitate (Q ≤ 3 mc/h)",ore,Terasamente,false,45.00,,,,,true,2026-03-21 18:23:21.468505+00
+8,BcA01A1,"Beton simplu în fundații continue, B100 (C8/10)",mc,Beton/Structură,false,580.00,,,,,true,2026-03-21 18:23:21.468505+00
+9,BcA01B1,"Beton simplu în fundații continue, B150 (C12/15)",mc,Beton/Structură,false,620.00,,,,,true,2026-03-21 18:23:21.468505+00
+10,BcA02A1,"Beton armat în fundații izolate, C20/25 (B250)",mc,Beton/Structură,false,950.00,,,,,true,2026-03-21 18:23:21.468505+00
+11,BcA03A1,"Beton armat în stâlpi, C25/30",mc,Beton/Structură,false,1250.00,,,,,true,2026-03-21 18:23:21.468505+00
+12,BcA04A1,"Beton armat în grinzi, C20/25",mc,Beton/Structură,false,1100.00,,,,,true,2026-03-21 18:23:21.468505+00
+13,BcA05A1,"Beton armat în planșee, C20/25, grosime 15 cm",mc,Beton/Structură,false,1050.00,,,,,true,2026-03-21 18:23:21.468505+00
+14,BcA06A1,"Beton armat în pereți, C20/25, grosime 15-20 cm",mc,Beton/Structură,false,1180.00,,,,,true,2026-03-21 18:23:21.468505+00
+15,BcA07A1,"Beton simplu pentru pardoseli, B100, grosime 10 cm",mp,Beton/Structură,false,65.00,,,,,true,2026-03-21 18:23:21.468505+00
+16,BcB01A1,Cofraje din panouri de placaj pentru fundații și grinzi de fundare,mp,Beton/Structură,true,56.065000,18.065000,38.000000,0,56.065000,true,2026-03-21 18:23:21.468505+00
+17,BcB02A1,Cofraje din panouri de placaj pentru stâlpi cu secțiunea dreptunghiulară,mp,Beton/Structură,true,73.334000,25.334000,48.000000,0,73.334000,true,2026-03-21 18:23:21.468505+00
+18,BcB03A1,Cofraje din panouri de placaj pentru grinzi,mp,Beton/Structură,true,76.800000,24.800000,52.000000,0,76.800000,true,2026-03-21 18:23:21.468505+00
+19,BcB04A1,Cofraje din panouri de placaj pentru planșee,mp,Beton/Structură,true,70.450000,20.450000,50.000000,0,70.450000,true,2026-03-21 18:23:21.468505+00
+20,BcC01A1,"Armătură din bare OB37, d ≤ 12 mm, montare în fundații",kg,Beton/Structură,false,8.50,,,,,true,2026-03-21 18:23:21.468505+00
+21,BcC01B1,"Armătură din bare PC52, d > 12 mm, montare în stâlpi și grinzi",kg,Beton/Structură,false,9.20,,,,,true,2026-03-21 18:23:21.468505+00
+22,BcC02A1,"Plasă sudată STNB, montare în planșee",mp,Beton/Structură,false,35.00,,,,,true,2026-03-21 18:23:21.468505+00
+23,ZdA01A1,"Zidărie din cărămidă plină presată (CPlP), grosime 25 cm, mortar M10",mc,Zidărie,false,680.00,,,,,true,2026-03-21 18:23:21.468505+00
+24,ZdA01B1,"Zidărie din cărămidă plină presată (CPlP), grosime 30 cm, mortar M10",mc,Zidărie,false,690.00,,,,,true,2026-03-21 18:23:21.468505+00
+25,ZdA02A1,"Zidărie din blocuri BCA, grosime 25 cm, mortar M5",mc,Zidărie,false,520.00,,,,,true,2026-03-21 18:23:21.468505+00
+26,ZdA02B1,"Zidărie din blocuri BCA, grosime 30 cm, mortar M5",mc,Zidărie,false,530.00,,,,,true,2026-03-21 18:23:21.468505+00
+27,ZdA03A1,"Zidărie de umplutură din cărămidă eficientă, grosime 25 cm",mc,Zidărie,false,650.00,,,,,true,2026-03-21 18:23:21.468505+00
+28,ZdA04A1,"Pereți despărțitori din cărămidă, grosime 12 cm, mortar M5",mp,Zidărie,false,145.00,,,,,true,2026-03-21 18:23:21.468505+00
+29,ZdA05A1,"Pereți despărțitori din gips-carton 12.5 mm simplu, structură metalică",mp,Zidărie,false,125.00,,,,,true,2026-03-21 18:23:21.468505+00
+30,ZdA05B1,"Pereți despărțitori din gips-carton dublu, structură metalică, cu vată minerală",mp,Zidărie,false,185.00,,,,,true,2026-03-21 18:23:21.468505+00
+31,ZdB01A1,"Buiandrugi prefabricați din beton armat, până la L = 1,5 m",buc,Zidărie,false,180.00,,,,,true,2026-03-21 18:23:21.468505+00
+32,ZdB02A1,"Centuri din beton armat, b = 25 cm, h = 25 cm",ml,Zidărie,false,125.00,,,,,true,2026-03-21 18:23:21.468505+00
+33,CvA01A1,"Șarpantă din lemn ecarisat, acoperișuri cu 2 pante, astereală inclusă",mp,Acoperiș,false,185.00,,,,,true,2026-03-21 18:23:21.468505+00
+34,CvA02A1,"Șarpantă din lemn ecarisat, acoperișuri cu 4 pante, astereală inclusă",mp,Acoperiș,false,210.00,,,,,true,2026-03-21 18:23:21.468505+00
+35,CvA03A1,Învelitoare din țiglă ceramică pe astereală cu carton bitumat,mp,Acoperiș,false,145.00,,,,,true,2026-03-21 18:23:21.468505+00
+36,CvA03B1,Învelitoare din tablă ondulată din oțel galvanizat,mp,Acoperiș,false,95.00,,,,,true,2026-03-21 18:23:21.468505+00
+37,CvA04A1,"Învelitoare din membrane bituminoase, sistem dublu strat",mp,Acoperiș,false,165.00,,,,,true,2026-03-21 18:23:21.468505+00
+38,CvA05A1,"Jgheaburi și burlane din PVC, D = 100 mm",ml,Acoperiș,false,65.00,,,,,true,2026-03-21 18:23:21.468505+00
+39,CvA06A1,"Hidroizolație terașe, membrană bituminoasă 4 mm",mp,Acoperiș,false,95.00,,,,,true,2026-03-21 18:23:21.468505+00
+40,TcA01A1,"Tencuială interioară drișcuită pe zidărie, grosime 2 cm",mp,Finisaje interioare,false,55.00,,,,,true,2026-03-21 18:23:21.468505+00
+41,TcA01B1,"Tencuială interioară drișcuită pe beton, grosime 1.5 cm",mp,Finisaje interioare,false,65.00,,,,,true,2026-03-21 18:23:21.468505+00
+42,TcA02A1,"Tencuială exterioară drișcuită pe zidărie, grosime 2.5 cm",mp,Finisaje interioare,false,95.00,,,,,true,2026-03-21 18:23:21.468505+00
+43,TcA03A1,"Gletuire cu glet de ipsos la interior, grosime 2 mm",mp,Finisaje interioare,false,35.00,,,,,true,2026-03-21 18:23:21.468505+00
+44,TcA04A1,"Tencuială decorativă silicatică, structurată, la exterior",mp,Finisaje exterioare,false,85.00,,,,,true,2026-03-21 18:23:21.468505+00
+45,TcB01A1,"Placare cu gresie ceramică antiderapantă, dim. 30x30-60x60 cm",mp,Finisaje interioare,false,155.00,,,,,true,2026-03-21 18:23:21.468505+00
+46,TcB02A1,"Placare cu faianță ceramică, dim. 20x30-30x60 cm",mp,Finisaje interioare,true,102.350000,52.350000,50.000000,0,104.750000,true,2026-03-21 18:23:21.468505+00
+47,TcB03A1,Pardoseală din parchet laminat 8 mm cu suport fonoizolant,mp,Finisaje interioare,false,145.00,,,,,true,2026-03-21 18:23:21.468505+00
+48,TcB04A1,"Pardoseală din parchet masiv de stejar, lăcuit în fabrică",mp,Finisaje interioare,false,285.00,,,,,true,2026-03-21 18:23:21.468505+00
+49,TcB05A1,"Șapă ciment M150 armată cu plasă, grosime 5 cm",mp,Finisaje interioare,false,75.00,,,,,true,2026-03-21 18:23:21.468505+00
+50,TcB06A1,"Șapă autonivelantă, grosime 4-6 cm",mp,Finisaje interioare,false,95.00,,,,,true,2026-03-21 18:23:21.468505+00
+51,ZgA01A1,"Grunduire tavan și pereți, 1 strat",mp,Finisaje interioare,false,8.50,,,,,true,2026-03-21 18:23:21.468505+00
+52,ZgA02A1,"Vopsire lavabilă interior, 2 straturi, pe suprafețe grunduite",mp,Finisaje interioare,false,18.00,,,,,true,2026-03-21 18:23:21.468505+00
+53,ZgA03A1,"Vopsire exterioară fațade cu vopsea siliconică, 2 straturi",mp,Finisaje exterioare,false,28.00,,,,,true,2026-03-21 18:23:21.468505+00
+54,ZgA04A1,"Vopsire tâmplărie lemn, grund + 2 straturi vopsea email",mp,Finisaje interioare,false,55.00,,,,,true,2026-03-21 18:23:21.468505+00
+55,ZgA05A1,"Vopsire anticorozivă tâmplărie metalică, 2 straturi",mp,Finisaje interioare,false,45.00,,,,,true,2026-03-21 18:23:21.468505+00
+56,TmA01A1,"Montaj fereastră PVC cu geam termoizolant, până la 1,5 mp",buc,Tâmplărie,false,180.00,,,,,true,2026-03-21 18:23:21.468505+00
+57,TmA01B1,"Montaj fereastră PVC cu geam termoizolant, 1.5-3 mp",buc,Tâmplărie,false,220.00,,,,,true,2026-03-21 18:23:21.468505+00
+58,TmA02A1,"Montaj ușă interioară, tocul și canatul, dimensiuni standard",buc,Tâmplărie,false,350.00,,,,,true,2026-03-21 18:23:21.468505+00
+59,TmA03A1,"Montaj ușă exterioară metalică cu geam, tocul inclus",buc,Tâmplărie,false,650.00,,,,,true,2026-03-21 18:23:21.468505+00
+60,TmA04A1,"Montaj glafuri fereastră PVC, lățime 20 cm",ml,Tâmplărie,false,45.00,,,,,true,2026-03-21 18:23:21.468505+00
+61,TmA05A1,"Montaj ușă garaj basculantă, suprafață până la 9 mp",buc,Tâmplărie,false,950.00,,,,,true,2026-03-21 18:23:21.468505+00
+62,IzA01A1,"Termoizolație fațade cu polistiren expandat 10 cm, sistem complet",mp,Izolații,true,111.150000,79.150000,32.000000,0,115.250000,true,2026-03-21 18:23:21.468505+00
+63,IzA01B1,"Termoizolație fațade cu polistiren expandat 15 cm, sistem complet",mp,Izolații,false,215.00,,,,,true,2026-03-21 18:23:21.468505+00
+64,IzA02A1,Termoizolație planșee cu vată minerală bazaltică 10 cm,mp,Izolații,false,95.00,,,,,true,2026-03-21 18:23:21.468505+00
+65,IzA03A1,"Termoizolație pod cu vată minerală suflată, grosime 20 cm",mp,Izolații,false,75.00,,,,,true,2026-03-21 18:23:21.468505+00
+66,IzA04A1,"Hidroizolație fundații cu bitum aplicat la cald, 2 straturi",mp,Izolații,false,55.00,,,,,true,2026-03-21 18:23:21.468505+00
+67,IzA05A1,Fonoizolație pardoseli cu rogojini de vată minerală 3 cm,mp,Izolații,false,45.00,,,,,true,2026-03-21 18:23:21.468505+00
+68,IsA01A1,"Instalație apă rece, țeavă PP Ø20 montată aparent/îngropat",ml,Instalații sanitare,false,55.00,,,,,true,2026-03-21 18:23:21.468505+00
+69,IsA01B1,"Instalație apă rece, țeavă PP Ø25 montată aparent/îngropat",ml,Instalații sanitare,false,65.00,,,,,true,2026-03-21 18:23:21.468505+00
+70,IsA02A1,"Instalație apă caldă, țeavă PP Ø20, cu izolație",ml,Instalații sanitare,false,75.00,,,,,true,2026-03-21 18:23:21.468505+00
+71,IsA03A1,"Canalizare, țeavă PVC Ø50 montată îngropat",ml,Instalații sanitare,false,55.00,,,,,true,2026-03-21 18:23:21.468505+00
+72,IsA03B1,"Canalizare, țeavă PVC Ø110 montată îngropat",ml,Instalații sanitare,false,75.00,,,,,true,2026-03-21 18:23:21.468505+00
+73,IsB01A1,"Montaj lavoar complet cu robineți, sifon, racorduri",buc,Instalații sanitare,false,450.00,,,,,true,2026-03-21 18:23:21.468505+00
+74,IsB02A1,"Montaj vas WC cu rezervor, complet echipat",buc,Instalații sanitare,false,550.00,,,,,true,2026-03-21 18:23:21.468505+00
+75,IsB03A1,Montaj cadă de baie acrilică cu robineți și sifon,buc,Instalații sanitare,false,950.00,,,,,true,2026-03-21 18:23:21.468505+00
+76,IsB04A1,Montaj cabină duș completă cu panou și robineti,buc,Instalații sanitare,false,1250.00,,,,,true,2026-03-21 18:23:21.468505+00
+77,IsC01A1,"Centrală termică în condensație, putere 24-32 kW, montaj complet",buc,Instalații sanitare,false,4500.00,,,,,true,2026-03-21 18:23:21.468505+00
+78,IsC02A1,"Radiatoare oțel tip 22, L = 1000 mm, montaj complet",buc,Instalații sanitare,false,450.00,,,,,true,2026-03-21 18:23:21.468505+00
+79,IsC03A1,"Instalație încălzire în pardoseală, țeavă PEX, complet",mp,Instalații sanitare,false,145.00,,,,,true,2026-03-21 18:23:21.468505+00
+80,IeA01A1,"Instalație electrică, cablu CYY 3x1.5 mm², montaj în tuburi",ml,Instalații electrice,false,18.00,,,,,true,2026-03-21 18:23:21.468505+00
+81,IeA01B1,"Instalație electrică, cablu CYY 3x2.5 mm², montaj în tuburi",ml,Instalații electrice,false,22.00,,,,,true,2026-03-21 18:23:21.468505+00
+82,IeA02A1,"Priză simplă încastrată cu capac, montaj complet",buc,Instalații electrice,false,95.00,,,,,true,2026-03-21 18:23:21.468505+00
+83,IeA03A1,"Întrerupător simplu încastrat, montaj complet",buc,Instalații electrice,false,75.00,,,,,true,2026-03-21 18:23:21.468505+00
+84,IeA04A1,"Tablou electric echipat, 8 circuite, montaj complet",buc,Instalații electrice,false,1850.00,,,,,true,2026-03-21 18:23:21.468505+00
+85,IeA05A1,"Aparataj exterior (întreruptor, priză) cu protecție IP55",buc,Instalații electrice,false,145.00,,,,,true,2026-03-21 18:23:21.468505+00
+86,IeB01A1,"Corp iluminat LED suspendat, 40W, montaj și cablare",buc,Instalații electrice,false,285.00,,,,,true,2026-03-21 18:23:21.468505+00
+87,IeB02A1,"Spot încastrat LED 7W, montat în tavan gips-carton",buc,Instalații electrice,false,145.00,,,,,true,2026-03-21 18:23:21.468505+00
+88,IeC01A1,"Instalație paratrăsnet, tije captare cu coborâre și priză de pământ",corp,Instalații electrice,false,3500.00,,,,,true,2026-03-21 18:23:21.468505+00
+91,ACA01A1,"Montare tub de azociment de 3m lungime  imbinat cu mufa de azbociment clasa 20 avand dn 80  ",m,Instalații sanitare,false,0.00,,,,,true,2026-03-22 08:37:00.228435+00
+92,ACA01B1,"Montare tub de azociment de 3m lungime  imbinat cu mufa de azbociment clasa 20 avand dn 100  ",m,Instalații sanitare,false,0.00,,,,,true,2026-03-22 08:37:00.228435+00
+93,ACA01C1,"Montare tub de azociment de 3m lungime  imbinat cu mufa de azbociment clasa 20 avand dn 125  ",m,Instalații sanitare,false,0.00,,,,,true,2026-03-22 08:37:00.228435+00
+94,ACA01D1,"Montare tub de azociment de 3m lungime  imbinat cu mufa de azbociment clasa 20 avand dn 150  ",m,Instalații sanitare,false,0.00,,,,,true,2026-03-22 08:37:00.228435+00
+95,ACA01E1,"Montare tub de azociment de 3m lungime  imbinat cu mufa de azbociment clasa 20 avand dn 200  ",m,Instalații sanitare,false,0.00,,,,,true,2026-03-22 08:37:00.228435+00
+96,ACA01F1,"Montare tub de azociment de 3m lungime  imbinat cu mufa de azbociment clasa 20 avand dn 250  ",m,Instalații sanitare,false,0.00,,,,,true,2026-03-22 08:37:00.228435+00
+97,ACA01G1,"Montare tub de azociment de 3m lungime  imbinat cu mufa de azbociment clasa 20 avand dn 300  ",m,Instalații sanitare,false,0.00,,,,,true,2026-03-22 08:37:00.228435+00
+98,ACA02A1,"Tub azbociment 3 m  cls. 20 imbinat cu mufa cu flansa avand d: 80 mm  ",m,Instalații sanitare,false,0.00,,,,,true,2026-03-22 08:37:00.228435+00
+99,ACA02B1,"Tub azbociment 3 m  cls. 20 imbinat cu mufa cu flansa avand d: 100 mm  ",m,Instalații sanitare,false,0.00,,,,,true,2026-03-22 08:37:00.228435+00
+100,ACA02C1,"Tub azbociment 3 m  cls. 20 imbinat cu mufa cu flansa avand d: 125 mm  ",m,Instalații sanitare,false,0.00,,,,,true,2026-03-22 08:37:00.228435+00
+101,ACA02D1,"Tub azbociment 3 m  cls. 20 imbinat cu mufa cu flansa avand d: 150 mm  ",m,Instalații sanitare,false,0.00,,,,,true,2026-03-22 08:37:00.228435+00
+102,ACA02E1,"Tub azbociment 3 m  cls. 20 imbinat cu mufa cu flansa avand d: 200 mm  ",m,Instalații sanitare,false,0.00,,,,,true,2026-03-22 08:37:00.228435+00

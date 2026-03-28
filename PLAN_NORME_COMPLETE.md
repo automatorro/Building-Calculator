@@ -145,7 +145,7 @@ Sesiunile 1–25 · ~250 norme
 
 **Sesiunile 11–13 — Zidărie (25 tipuri)**
 - Zidărie BCA 30cm, 20cm, 15cm
-- Zidărie Porotherm 25cm, 30cm, 38cm
+- Zidărie Tip Porotherm 25cm, 30cm, 38cm
 - Zidărie cărămidă plină
 - Pereți despărțitori gips-carton
 
@@ -156,19 +156,23 @@ Sesiunile 1–25 · ~250 norme
 
 **Sesiunile 26–30 — Tencuieli și gleturi (30 tipuri)**
 - Tencuieli interioare clasice (var-ciment)
+- Tencuieli interioare mecanizate
 - Tencuieli ipsos manual/proiectat
 - Tencuieli exterioare clasice
+- Tencuieli exterioare mecanizate
 - Gleturi ipsos/acrilic
 - Reparații locale
+- Sape autonivelante
 
 **Sesiunile 31–35 — Pardoseli (35 tipuri)**
 - Gresie porțelanată format mic/mare
-- Parchet laminat/stratificat
+- Parchet laminat/stratificat/SPC
 - Parchet masiv
 - Mozaic
 - Epoxidice industriale
 - Covor PVC
 - Screed autonivelant
+- Microciment
 
 **Sesiunile 36–38 — Vopsitorii (20 tipuri)**
 - Vopsea lavabilă interior
@@ -182,9 +186,13 @@ Sesiunile 1–25 · ~250 norme
 - Placaj exterior ceramică
 - Placaj piatră naturală
 - Mozaic ceramic
+- Podea din rasini epoxidice
+- Podea din microciment
 
 **Sesiunile 42–45 — Termoizolații (40 tipuri)**
-- Termosistem EPS 10/15/20cm
+- Termosistem EPS 10/15/20cm 
+- Termosistem EPS grafitat
+- Termosistem Polistiren extrudat
 - Termosistem vată minerală
 - Izolație planșee (vată/EPS)
 - Hidroizolații membrane
