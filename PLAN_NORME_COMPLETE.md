@@ -209,7 +209,6 @@ Sesiunile 1–25 · \~250 norme
 - Placaj piatră naturală
 - Mozaic ceramic
 - Podea din rasini epoxidice
-- Podea din microciment
 
 **Sesiunile 42–45 — Termoizolații (40 tipuri)**
 
