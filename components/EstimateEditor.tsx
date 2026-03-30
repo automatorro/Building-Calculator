@@ -21,6 +21,9 @@ export default function EstimateEditor({ projectId, initialLines, settings, dime
   const [loading, setLoading] = useState(false)
   const [isSaved, setIsSaved] = useState(false)
   const [activeOfferPicker, setActiveOfferPicker] = useState<{ resourceId: string, resourceName: string, lineId: string } | null>(null)
+  const [openLineMenuId, setOpenLineMenuId] = useState<string | null>(null)
+  const [collapsedStages, setCollapsedStages] = useState<Record<string, boolean>>({})
+  const [didInitCollapse, setDidInitCollapse] = useState(false)
   const supabase = createClient()
 
   // Calculăm valorile "Smart" disponibile bazate pe dimensiuni
@@ -43,6 +46,37 @@ export default function EstimateEditor({ projectId, initialLines, settings, dime
       'floor_area': area
     }
   }, [dimensions])
+
+  const smartValueLabels: Record<string, string> = useMemo(() => ({
+    foundation_concrete: 'Beton fundații (m³)',
+    slab_concrete: 'Beton placă (m³)',
+    wall_volume: 'Volum pereți (m³)',
+    formwork_area: 'Cofraj (m²)',
+    excavation_volume: 'Excavație (m³)',
+    floor_area: 'Suprafață (m²)',
+  }), [])
+
+  useEffect(() => {
+    if (!openLineMenuId) return
+    const onPointerDown = (e: PointerEvent) => {
+      const target = e.target as HTMLElement | null
+      if (!target) return
+      if (target.closest(`[data-line-menu-root="${openLineMenuId}"]`)) return
+      setOpenLineMenuId(null)
+    }
+    window.addEventListener('pointerdown', onPointerDown)
+    return () => window.removeEventListener('pointerdown', onPointerDown)
+  }, [openLineMenuId])
+
+  useEffect(() => {
+    if (didInitCollapse) return
+    const stageOrder = Array.from(new Set(lines.map(l => l.stage_name || 'Alte Lucrări')))
+    if (stageOrder.length === 0) return
+    const next: Record<string, boolean> = {}
+    stageOrder.forEach((s, idx) => { next[s] = idx !== 0 })
+    setCollapsedStages(next)
+    setDidInitCollapse(true)
+  }, [didInitCollapse, lines])
 
   const totals = useMemo(() => calculateProjectTotals(lines, settings), [lines, settings])
 
@@ -310,9 +344,9 @@ export default function EstimateEditor({ projectId, initialLines, settings, dime
             <h2 className="font-bold text-lg">Centralizator Lucrări</h2>
             <button 
               onClick={() => handleAddManualLine()}
-              className="text-xs font-bold text-primary flex items-center gap-1 hover:underline px-3 py-1.5 hover:bg-primary/10 rounded-lg transition-colors"
+              className="inline-flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-xl text-sm font-black shadow-lg shadow-primary/25 hover:bg-primary-dark transition-all active:scale-95"
             >
-              <Plus size={14} /> Creează Rețetă Custom
+              <Plus size={16} /> Creează Propria Rețetă
             </button>
           </div>
 
@@ -320,13 +354,23 @@ export default function EstimateEditor({ projectId, initialLines, settings, dime
             {Array.from(new Set(lines.map(l => l.stage_name || 'Alte Lucrări'))).map(stage => (
               <div key={stage} className="bg-slate-50/30 dark:bg-white/[0.02]">
                 <div className="px-6 py-2 bg-slate-100/50 dark:bg-slate-800/40 border-y border-border/30 flex justify-between items-center">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">{stage}</span>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setCollapsedStages(prev => ({ ...prev, [stage]: !prev[stage] }))}
+                      className="p-1 rounded bg-white/60 dark:bg-slate-900/30 hover:bg-slate-200/60 dark:hover:bg-slate-700/40 text-slate-600 hover:text-primary transition-colors ring-1 ring-border/40"
+                      aria-label={collapsedStages[stage] ? 'Extinde categoria' : 'Restrânge categoria'}
+                    >
+                      {collapsedStages[stage] ? <ChevronDown size={18} strokeWidth={3} /> : <ChevronUp size={18} strokeWidth={3} />}
+                    </button>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">{stage}</span>
+                  </div>
                   <button onClick={() => handleAddManualLine(stage)} className="text-[9px] font-bold text-primary/70 hover:text-primary uppercase tracking-tighter hover:bg-primary/10 px-2 py-1 rounded">
                     + Rețetă nouă în {stage}
                   </button>
                 </div>
                 
-                {lines.filter(l => (l.stage_name || 'Alte Lucrări') === stage).map((line) => {
+                {!collapsedStages[stage] && lines.filter(l => (l.stage_name || 'Alte Lucrări') === stage).map((line) => {
                   const lineCosts = calculateLineCosts(line, settings)
                   const isExpanded = expandedId === line.id
                   const isCatalogNorm = !!(line.catalog_norm_id || (line.code && !line.items))
@@ -346,7 +390,7 @@ export default function EstimateEditor({ projectId, initialLines, settings, dime
                               ) : isManual ? (
                                 <input
                                   className="font-bold text-base md:text-lg leading-tight bg-transparent border-b border-dashed border-transparent hover:border-border/50 focus:border-primary outline-none transition-all w-full max-w-md"
-                                  value={line.manual_name}
+                                  value={line.manual_name ?? ''}
                                   onChange={(e) => handleUpdateManualField(line.id, 'manual_name', e.target.value)}
                                 />
                               ) : (
@@ -364,46 +408,46 @@ export default function EstimateEditor({ projectId, initialLines, settings, dime
                               ) : isManual ? (
                                 <div className="flex flex-wrap items-center gap-3 mt-1">
                                   <div className="flex items-center gap-1">
-                                    <span className="opacity-50 text-[9px]">Mat:</span>
+                                    <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest text-slate-500">Material:</span>
                                     <input
                                       type="number"
-                                      className="w-14 bg-transparent border-b border-border/30 font-mono text-primary outline-none text-[10px]"
-                                      value={line.manual_price}
+                                      className="w-16 px-2 py-1 bg-slate-50 dark:bg-slate-950/40 border border-primary/30 hover:border-primary/50 rounded-lg font-mono text-primary outline-none text-[11px] sm:text-[12px] font-bold focus:ring-2 focus:ring-primary/20 focus:border-primary/60 transition-all"
+                                      value={line.manual_price ?? 0}
                                       onChange={(e) => handleUpdateManualField(line.id, 'manual_price', e.target.value)}
                                     />
                                   </div>
                                   <div className="flex items-center gap-1">
-                                    <span className="opacity-50 text-[9px]">Man:</span>
+                                    <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest text-slate-500">Manoperă:</span>
                                     <input
                                       type="number"
-                                      className="w-14 bg-transparent border-b border-border/30 font-mono text-orange-500 outline-none text-[10px]"
-                                      value={line.manual_labor_price}
+                                      className="w-16 px-2 py-1 bg-slate-50 dark:bg-slate-950/40 border border-primary/30 hover:border-primary/50 rounded-lg font-mono text-orange-500 outline-none text-[11px] sm:text-[12px] font-bold focus:ring-2 focus:ring-primary/20 focus:border-primary/60 transition-all"
+                                      value={line.manual_labor_price ?? 0}
                                       onChange={(e) => handleUpdateManualField(line.id, 'manual_labor_price', e.target.value)}
                                     />
                                   </div>
                                   <div className="flex items-center gap-1">
-                                    <span className="opacity-50 text-[9px]">Util:</span>
+                                    <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest text-slate-500">Utilaje:</span>
                                     <input
                                       type="number"
-                                      className="w-12 bg-transparent border-b border-border/30 font-mono text-blue-500 outline-none text-[10px]"
-                                      value={line.manual_equipment_price}
+                                      className="w-16 px-2 py-1 bg-slate-50 dark:bg-slate-950/40 border border-primary/30 hover:border-primary/50 rounded-lg font-mono text-blue-500 outline-none text-[11px] sm:text-[12px] font-bold focus:ring-2 focus:ring-primary/20 focus:border-primary/60 transition-all"
+                                      value={line.manual_equipment_price ?? 0}
                                       onChange={(e) => handleUpdateManualField(line.id, 'manual_equipment_price', e.target.value)}
                                     />
                                   </div>
                                   <div className="flex items-center gap-1">
-                                    <span className="opacity-50 text-[9px]">Trans:</span>
+                                    <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest text-slate-500">Transport:</span>
                                     <input
                                       type="number"
-                                      className="w-12 bg-transparent border-b border-border/30 font-mono text-purple-500 outline-none text-[10px]"
-                                      value={line.manual_transport_price}
+                                      className="w-16 px-2 py-1 bg-slate-50 dark:bg-slate-950/40 border border-primary/30 hover:border-primary/50 rounded-lg font-mono text-purple-500 outline-none text-[11px] sm:text-[12px] font-bold focus:ring-2 focus:ring-primary/20 focus:border-primary/60 transition-all"
+                                      value={line.manual_transport_price ?? 0}
                                       onChange={(e) => handleUpdateManualField(line.id, 'manual_transport_price', e.target.value)}
                                     />
                                   </div>
                                   <div className="flex items-center gap-1 border-l pl-2 border-border/30 ml-1">
-                                    <span className="opacity-50 text-[9px]">UM:</span>
+                                    <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest text-slate-500">Unitate:</span>
                                     <input
-                                      className="w-10 bg-transparent border-b border-border/30 outline-none text-[10px]"
-                                      value={line.manual_um}
+                                      className="w-16 px-2 py-1 bg-slate-50 dark:bg-slate-950/40 border border-primary/30 hover:border-primary/50 rounded-lg outline-none text-[11px] sm:text-[12px] font-mono font-bold text-slate-600 dark:text-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary/60 transition-all"
+                                      value={line.manual_um ?? ''}
                                       onChange={(e) => handleUpdateManualField(line.id, 'manual_um', e.target.value)}
                                     />
                                   </div>
@@ -416,38 +460,55 @@ export default function EstimateEditor({ projectId, initialLines, settings, dime
 
                           <div className="flex items-center gap-4 md:gap-8 shrink-0">
                             <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800/50 p-1 rounded-xl border border-border/30">
-                              <div className="relative group/popover">
-                                <button className="p-2 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg text-slate-400 hover:text-primary transition-colors cursor-pointer">
+                              <div className="relative" data-line-menu-root={line.id}>
+                                <button
+                                  type="button"
+                                  onClick={() => setOpenLineMenuId(prev => prev === line.id ? null : line.id)}
+                                  className="p-2 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg text-slate-400 hover:text-primary transition-colors cursor-pointer"
+                                  aria-label="Acțiuni rând"
+                                >
                                   <MoreVertical size={16} className={line.metadata?.smart_link ? 'text-primary' : ''} />
                                 </button>
-                                <div className="absolute bottom-full right-0 mb-2 w-48 bg-white dark:bg-slate-900 border border-border shadow-2xl rounded-xl p-2 opacity-0 group-hover/popover:opacity-100 pointer-events-none group-hover/popover:pointer-events-auto transition-all z-30 scale-95 group-hover/popover:scale-100">
-                                  <div className="text-[10px] font-black uppercase text-slate-400 mb-2 px-2 tracking-widest">Acțiuni Rând</div>
-                                  <button onClick={() => handleDuplicateLine(line)} className="w-full text-left p-2 text-xs rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex items-center gap-2 font-bold">
-                                    <Copy size={14} /> Duplică rând
-                                  </button>
-                                  <button onClick={() => handleDeleteLine(line.id)} className="w-full text-left p-2 text-xs rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors flex items-center gap-2 border-b border-border/50 pb-3 mb-2 font-bold">
-                                    <Trash2 size={14} /> Șterge rând
-                                  </button>
-                                  
-                                  <div className="text-[10px] font-black uppercase text-slate-400 mb-2 px-2 tracking-widest">Legătură Cantitate</div>
-                                  {Object.keys(smartValues).map(key => (
-                                    <button 
-                                      key={key}
-                                      onClick={() => handleSmartLink(line.id, key)}
-                                      className={`w-full text-left p-2 text-xs rounded-lg transition-colors capitalize ${line.metadata?.smart_link === key ? 'bg-primary text-white' : 'hover:bg-slate-100 dark:hover:bg-slate-800'}`}
-                                    >
-                                      {key.replace('_', ' ')}
-                                    </button>
-                                  ))}
-                                  {line.metadata?.smart_link && (
+                                {openLineMenuId === line.id && (
+                                  <div className="absolute bottom-full right-0 mb-2 w-56 bg-white dark:bg-slate-900 border border-border shadow-2xl rounded-xl p-2 transition-all z-30">
+                                    <div className="text-[10px] font-black uppercase text-slate-400 mb-2 px-2 tracking-widest">Acțiuni rând</div>
                                     <button
-                                      onClick={() => handleSmartLink(line.id, null)}
-                                      className="w-full text-left p-2 text-xs rounded-lg text-red-500 hover:bg-red-50 transition-colors border-t border-border mt-1"
+                                      type="button"
+                                      onClick={() => { handleDuplicateLine(line); setOpenLineMenuId(null) }}
+                                      className="w-full text-left p-2 text-xs rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex items-center gap-2 font-bold"
                                     >
-                                      Deleagă (Manual)
+                                      <Copy size={14} /> Duplică rând
                                     </button>
-                                  )}
-                                </div>
+                                    <button
+                                      type="button"
+                                      onClick={() => { handleDeleteLine(line.id); setOpenLineMenuId(null) }}
+                                      className="w-full text-left p-2 text-xs rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors flex items-center gap-2 border-b border-border/50 pb-3 mb-2 font-bold"
+                                    >
+                                      <Trash2 size={14} /> Șterge rând
+                                    </button>
+                                    
+                                    <div className="text-[10px] font-black uppercase text-slate-400 mb-2 px-2 tracking-widest">Leagă cantitatea (Smart)</div>
+                                    {Object.keys(smartValues).map((key) => (
+                                      <button 
+                                        key={key}
+                                        type="button"
+                                        onClick={() => { handleSmartLink(line.id, key); setOpenLineMenuId(null) }}
+                                        className={`w-full text-left p-2 text-xs rounded-lg transition-colors ${line.metadata?.smart_link === key ? 'bg-primary text-white' : 'hover:bg-slate-100 dark:hover:bg-slate-800'}`}
+                                      >
+                                        {smartValueLabels[key] || key.replace(/_/g, ' ')}
+                                      </button>
+                                    ))}
+                                    {line.metadata?.smart_link && (
+                                      <button
+                                        type="button"
+                                        onClick={() => { handleSmartLink(line.id, null); setOpenLineMenuId(null) }}
+                                        className="w-full text-left p-2 text-xs rounded-lg text-red-500 hover:bg-red-50 transition-colors border-t border-border mt-1 font-bold"
+                                      >
+                                        Elimină legătura (Manual)
+                                      </button>
+                                    )}
+                                  </div>
+                                )}
                               </div>
                               <input 
                                 type="number" 
