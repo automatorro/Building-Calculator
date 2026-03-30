@@ -38,10 +38,11 @@ function LogoMark({ size = 28 }: { size?: number }) {
   return (
     <div style={{ width:size, height:size, background:C.orange, borderRadius:7,
       display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-      <svg width={Math.round(size*.55)} height={Math.round(size*.55)} viewBox="0 0 24 24"
-        fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
-        <polyline points="9 22 9 12 15 12 15 22"/>
+      <svg width={Math.round(size*.62)} height={Math.round(size*.62)} viewBox="0 0 24 24"
+        fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M3 18h18" />
+        <path d="M5 18v-1a7 7 0 0 1 14 0v1" />
+        <path d="M10 11V7a2 2 0 0 1 4 0v4" />
       </svg>
     </div>
   )
@@ -102,7 +103,7 @@ function LoginForm() {
       <Link href="/" style={{ display:'flex', alignItems:'center', gap:10, textDecoration:'none', marginBottom:36 }}>
         <LogoMark />
         <span style={{ fontFamily:C.sans, fontWeight:600, fontSize:15, color:C.black, letterSpacing:'-0.02em' }}>
-          Building<span style={{ color:C.orange }}>Calc</span>
+          Santi<span style={{ color:C.orange }}>er</span>
         </span>
       </Link>
 
@@ -111,7 +112,7 @@ function LoginForm() {
         Bine ai revenit
       </h1>
       <p style={{ fontSize:15, color:C.gray600, marginBottom:32, lineHeight:1.5 }}>
-        Intră în contul tău BuildingCalc.
+        Intră în contul tău Santier.
       </p>
 
       {/* Eroare */}
@@ -204,7 +205,7 @@ export default function LoginPage() {
         <Link href="/" style={{ display:'flex', alignItems:'center', gap:10, textDecoration:'none' }}>
           <LogoMark />
           <span style={{ fontFamily:C.sans, fontWeight:600, fontSize:15, color:C.white, letterSpacing:'-0.02em' }}>
-            Building<span style={{ color:C.orange }}>Calc</span>
+            Santi<span style={{ color:C.orange }}>er</span>
           </span>
         </Link>
 

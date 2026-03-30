@@ -32,8 +32,10 @@ export default function AuthLayout({
           justifyContent: 'center',
           flexShrink: 0,
         }}>
-          <svg width="18" height="18" viewBox="0 0 16 16" fill="none">
-            <path d="M2 14L8 2L14 14M5 10H11" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" width="20" height="20">
+            <path d="M3 18h18" />
+            <path d="M5 18v-1a7 7 0 0 1 14 0v1" />
+            <path d="M10 11V7a2 2 0 0 1 4 0v4" />
           </svg>
         </div>
         <span style={{
@@ -42,7 +44,7 @@ export default function AuthLayout({
           color: '#FAFAF8',
           letterSpacing: '-0.02em',
         }}>
-          Building<span style={{ color: '#E8500A' }}>Calc</span>
+          Santi<span style={{ color: '#E8500A' }}>er</span>
         </span>
       </a>
 
@@ -54,7 +56,7 @@ export default function AuthLayout({
         color: 'rgba(255,255,255,0.25)',
         textAlign: 'center',
       }}>
-        © 2026 BuildingCalc · Construit în România
+        © 2026 Santier.app · Construit în România
       </p>
     </div>
   )

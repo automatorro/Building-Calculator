@@ -111,7 +111,13 @@ export function Sidebar() {
           borderRadius: 8,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
-          <Building2 className="w-4 h-4 text-white" />
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+            <path d="M3 18h18" />
+            <path d="M19 18v-1a7 7 0 0 0-14 0v1" />
+            <path d="M12 10V7" />
+            <path d="M9 11V9" />
+            <path d="M15 11V9" />
+          </svg>
         </div>
         <span style={{
           fontFamily: 'var(--font-dm-sans,"DM Sans",system-ui,sans-serif)',
@@ -119,7 +125,7 @@ export function Sidebar() {
           color: '#1E2329',
           letterSpacing: '-0.02em',
         }}>
-          Building<span style={{ color: '#E8500A' }}>Calc</span>
+          Șanti<span style={{ color: '#E8500A' }}>er</span>
         </span>
       </div>
 

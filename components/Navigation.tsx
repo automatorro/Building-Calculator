@@ -21,17 +21,20 @@ function LogoMark({ size = 30 }: { size?: number }) {
       }}
     >
       <svg
-        width={Math.round(size * 0.53)}
-        height={Math.round(size * 0.53)}
+        width={Math.round(size * 0.7)}
+        height={Math.round(size * 0.7)}
         viewBox="0 0 24 24"
         fill="none"
         stroke="white"
-        strokeWidth="2.2"
+        strokeWidth="2.5"
         strokeLinecap="round"
         strokeLinejoin="round"
       >
-        <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
-        <polyline points="9 22 9 12 15 12 15 22" />
+        <path d="M3 18h18" />
+        <path d="M19 18v-1a7 7 0 0 0-14 0v1" />
+        <path d="M12 10V7" />
+        <path d="M9 11V9" />
+        <path d="M15 11V9" />
       </svg>
     </div>
   )
@@ -142,7 +145,7 @@ export default function Navigation() {
         <Link href="/" style={{ display:'flex', alignItems:'center', gap:10, textDecoration:'none' }}>
           <LogoMark />
           <span style={{ fontWeight:600, fontSize:15, color:'#FAFAF8', letterSpacing:'-0.02em' }}>
-            Building<span style={{ color:'#E8500A' }}>Calc</span>
+            Șanti<span style={{ color:'#E8500A' }}>er</span>
           </span>
         </Link>
 
@@ -214,7 +217,7 @@ export default function Navigation() {
               <Link href="/" onClick={()=>setOpen(false)} style={{ display:'flex', alignItems:'center', gap:10, textDecoration:'none' }}>
                 <LogoMark />
                 <span style={{ fontWeight:600, fontSize:15, color:'#FAFAF8', letterSpacing:'-0.02em' }}>
-                  Building<span style={{ color:'#E8500A' }}>Calc</span>
+                  Șanti<span style={{ color:'#E8500A' }}>er</span>
                 </span>
               </Link>
               <button onClick={()=>setOpen(false)} style={{ background:'rgba(255,255,255,0.06)', border:'none', borderRadius:8, color:'rgba(255,255,255,0.55)', cursor:'pointer', padding:8, display:'flex' }}>

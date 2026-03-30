@@ -85,10 +85,14 @@ export default async function PrintPage({ params }: { params: { id: string } }) 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24, borderBottom: '2px solid #1E2329', paddingBottom: 16 }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-              <div style={{ width: 20, height: 20, background: '#E8500A', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <span style={{ color: '#fff', fontWeight: 900, fontSize: 10 }}>B</span>
+              <div style={{ width: 22, height: 22, background: '#E8500A', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" width="14" height="14">
+                  <path d="M3 18h18" />
+                  <path d="M5 18v-1a7 7 0 0 1 14 0v1" />
+                  <path d="M10 11V7a2 2 0 0 1 4 0v4" />
+                </svg>
               </div>
-              <span style={{ fontWeight: 700, fontSize: 14 }}>Building<span style={{ color: '#E8500A' }}>Calc</span></span>
+              <span style={{ fontWeight: 700, fontSize: 14 }}>Santi<span style={{ color: '#E8500A' }}>er</span></span>
             </div>
             <div style={{ fontSize: 20, fontWeight: 700, letterSpacing: '-0.02em' }}>{project.name}</div>
             {project.location && <div style={{ color: '#6B6860', fontSize: 11, marginTop: 2 }}>{project.location}</div>}
@@ -183,7 +187,7 @@ export default async function PrintPage({ params }: { params: { id: string } }) 
         </div>
 
         <div style={{ marginTop: 24, borderTop: '1px solid #E5E3DE', paddingTop: 8, fontSize: 8, color: '#A8A59E', textAlign: 'center' }}>
-          Document generat automat de BuildingCalc · {today}
+          Document generat automat de Santier.app · {today}
         </div>
       </div>
     </>

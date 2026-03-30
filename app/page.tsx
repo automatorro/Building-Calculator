@@ -22,10 +22,12 @@ function LogoMark({ size = 30 }: { size?: number }) {
   return (
     <div style={{ width:size, height:size, background:'#E8500A', borderRadius:7,
       display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-      <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"
-        width={size*0.55} height={size*0.55}>
-        <path d="M2 14L8 2L14 14M5 10H11" stroke="white" strokeWidth="2"
-          strokeLinecap="round" strokeLinejoin="round"/>
+      <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" width={size*0.7} height={size*0.7}>
+        <path d="M3 18h18" />
+        <path d="M19 18v-1a7 7 0 0 0-14 0v1" />
+        <path d="M12 10V7" />
+        <path d="M9 11V9" />
+        <path d="M15 11V9" />
       </svg>
     </div>
   )
@@ -272,7 +274,7 @@ export default function HomePage() {
               <div style={{ fontSize:11, fontWeight:600, letterSpacing:'.1em',
                 textTransform:'uppercase', marginBottom:24, paddingBottom:14,
                 borderBottom:'1px solid rgba(255,255,255,0.08)', color:'#E8500A' }}>
-                BuildingCalc
+                Șantier.app
               </div>
               {[
                 'Funcționează pe orice telefon, direct din browser, acum',
@@ -362,7 +364,7 @@ export default function HomePage() {
             color:'#E8500A', marginBottom:14 }}>Pe teren, în timp real</p>
           <h2 className="section-title" style={{ fontFamily:serif, fontSize:44, lineHeight:1.1,
             letterSpacing:'-.02em', color:'#1E2329', marginBottom:18 }}>
-            Ziua unui constructor<br />cu BuildingCalc.
+            Ziua unui constructor<br />cu Șantier.app.
           </h2>
           <p style={{ fontSize:17, color:'#6B6860', lineHeight:1.65, maxWidth:520, fontWeight:300 }}>
             Nu funcționalități abstracte. Situații concrete din ziua ta de lucru.
@@ -498,7 +500,7 @@ export default function HomePage() {
                 desc:'Înregistrezi fiecare achiziție direct din aplicație. Comparația automată cu devizul planificat îți arată abaterile pe etape și impactul pe profit.',
                 icon:<path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/> },
               { title:'Alertă depășire buget', highlight:true,
-                badge:'green', badgeText:'Exclusiv BuildingCalc',
+                badge:'green', badgeText:'Exclusiv Santier',
                 desc:'În momentul în care o achiziție duce o etapă peste bugetul planificat, primești alertă cu impactul exact pe profitul final. Nu la sfârșit — acum.',
                 icon:<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/> },
               { title:'Foto la fiecare achiziție', highlight:false,
@@ -793,7 +795,7 @@ export default function HomePage() {
               <LogoMark />
               <span style={{ fontFamily:sans, fontWeight:600, fontSize:16, color:'#FAFAF8',
                 letterSpacing:'-.02em' }}>
-                Building<span style={{ color:'#E8500A' }}>Calc</span>
+                Șanti<span style={{ color:'#E8500A' }}>er</span>
               </span>
             </div>
             <p style={{ fontSize:14, color:'rgba(255,255,255,0.35)', lineHeight:1.65,
@@ -826,7 +828,7 @@ export default function HomePage() {
           borderTop:'1px solid rgba(255,255,255,0.06)',
           display:'flex', justifyContent:'space-between', alignItems:'center' }}>
           <div style={{ fontSize:13, color:'rgba(255,255,255,0.2)' }}>
-            © 2026 BuildingCalc. Toate drepturile rezervate.
+            © 2026 Șantier.app. Toate drepturile rezervate.
           </div>
           <div style={{ fontSize:13, color:'rgba(255,255,255,0.2)' }}>
             Construit în România, pentru România

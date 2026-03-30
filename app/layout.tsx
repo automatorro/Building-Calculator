@@ -24,10 +24,10 @@ const dmSerif = DM_Serif_Display({
 })
 
 export const metadata: Metadata = {
-  title: 'BuildingCalc — Devize de construcții pentru oameni de pe șantier',
+  title: 'Șantier.app — Devize de construcții pentru oameni de pe șantier',
   description:
-    'Platformă mobilă de management devize pentru constructori mici și mijlocii din România. Creează devize în 5 minute, urmărește costurile real-time, exportă PDF profesional.',
-  keywords: ['devize constructii', 'calculator deviz', 'software constructii Romania'],
+    'Platformă mobilă de management devize pentru constructori mici și mijlocii din România. Creează devize în 5 minute prin Șantier.app, urmărește costurile real-time, exportă PDF profesional.',
+  keywords: ['devize constructii', 'calculator deviz', 'şantier app', 'software constructii Romania'],
 }
 
 export default function RootLayout({

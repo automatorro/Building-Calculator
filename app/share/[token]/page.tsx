@@ -72,14 +72,15 @@ export default async function SharePage({ params }: { params: { token: string } 
         <div style={{ width: 28, height: 28, background: C.orange, borderRadius: 7,
           display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white"
-            strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
-            <polyline points="9 22 9 12 15 12 15 22"/>
+            strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M3 18h18" />
+            <path d="M5 18v-1a7 7 0 0 1 14 0v1" />
+            <path d="M10 11V7a2 2 0 0 1 4 0v4" />
           </svg>
         </div>
         <span style={{ fontFamily: C.sans, fontWeight: 600, fontSize: 15,
           color: C.white, letterSpacing: '-0.02em' }}>
-          Building<span style={{ color: C.orange }}>Calc</span>
+          Santi<span style={{ color: C.orange }}>er</span>
         </span>
         <span style={{ marginLeft: 'auto', fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>
           Deviz partajat · {today}
@@ -160,7 +161,7 @@ export default async function SharePage({ params }: { params: { token: string } 
         {/* Disclaimer */}
         <p style={{ textAlign: 'center', fontSize: 12, color: C.gray400,
           marginTop: 24, lineHeight: 1.6 }}>
-          Prețuri orientative, generate automat de BuildingCalc.<br />
+          Prețuri orientative, generate automat de Santier.app.<br />
           Pentru deviz definitiv, contactați constructorul.
         </p>
       </div>
