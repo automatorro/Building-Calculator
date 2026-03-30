@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
-import { Plus, Trash2, Save, Info, ChevronDown, ChevronUp, Settings2, CheckCircle2, Lightbulb, Store, Link as LinkIcon, BookPlus } from 'lucide-react'
+import { Plus, Trash2, Save, Info, ChevronDown, ChevronUp, Settings2, CheckCircle2, Lightbulb, Store, Link as LinkIcon, BookPlus, MoreVertical, Copy } from 'lucide-react'
+import { toast } from 'sonner'
 import { createClient } from '@/utils/supabase/client'
 import { calculateLineCosts, EstimateLine, ProjectSettings, calculateProjectTotals } from '@/utils/calculators/estimate'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -84,6 +85,17 @@ export default function EstimateEditor({ projectId, initialLines, settings, dime
   const handleDeleteLine = (id: string) => {
     setLines(lines.filter(l => l.id !== id))
     setIsSaved(false)
+    toast.success('Rând șters.')
+  }
+
+  const handleDuplicateLine = (line: EstimateLine) => {
+    const newLine = {
+      ...line,
+      id: crypto.randomUUID(),
+    }
+    setLines([...lines, newLine])
+    setIsSaved(false)
+    toast.success('Rând duplicat cu succes!')
   }
 
   const ensureResourcesOverride = (line: EstimateLine) => {
@@ -298,9 +310,9 @@ export default function EstimateEditor({ projectId, initialLines, settings, dime
             <h2 className="font-bold text-lg">Centralizator Lucrări</h2>
             <button 
               onClick={() => handleAddManualLine()}
-              className="text-xs font-bold text-primary flex items-center gap-1 hover:underline"
+              className="text-xs font-bold text-primary flex items-center gap-1 hover:underline px-3 py-1.5 hover:bg-primary/10 rounded-lg transition-colors"
             >
-              <Plus size={14} /> Adaugă Articol Manual
+              <Plus size={14} /> Creează Rețetă Custom
             </button>
           </div>
 
@@ -309,8 +321,8 @@ export default function EstimateEditor({ projectId, initialLines, settings, dime
               <div key={stage} className="bg-slate-50/30 dark:bg-white/[0.02]">
                 <div className="px-6 py-2 bg-slate-100/50 dark:bg-slate-800/40 border-y border-border/30 flex justify-between items-center">
                   <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">{stage}</span>
-                  <button onClick={() => handleAddManualLine(stage)} className="text-[9px] font-bold text-primary/70 hover:text-primary uppercase tracking-tighter">
-                    + Adaugă în {stage}
+                  <button onClick={() => handleAddManualLine(stage)} className="text-[9px] font-bold text-primary/70 hover:text-primary uppercase tracking-tighter hover:bg-primary/10 px-2 py-1 rounded">
+                    + Rețetă nouă în {stage}
                   </button>
                 </div>
                 
@@ -405,11 +417,19 @@ export default function EstimateEditor({ projectId, initialLines, settings, dime
                           <div className="flex items-center gap-4 md:gap-8 shrink-0">
                             <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800/50 p-1 rounded-xl border border-border/30">
                               <div className="relative group/popover">
-                                <button className="p-2 text-slate-400 hover:text-primary transition-colors">
-                                  <LinkIcon size={16} className={line.metadata?.smart_link ? 'text-primary' : ''} />
+                                <button className="p-2 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg text-slate-400 hover:text-primary transition-colors cursor-pointer">
+                                  <MoreVertical size={16} className={line.metadata?.smart_link ? 'text-primary' : ''} />
                                 </button>
-                                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 bg-white dark:bg-slate-900 border border-border shadow-2xl rounded-xl p-2 opacity-0 group-hover/popover:opacity-100 pointer-events-none group-hover/popover:pointer-events-auto transition-all z-30 scale-95 group-hover/popover:scale-100">
-                                  <div className="text-[10px] font-black uppercase text-slate-400 mb-2 px-2 tracking-widest">Legătură Smart</div>
+                                <div className="absolute bottom-full right-0 mb-2 w-48 bg-white dark:bg-slate-900 border border-border shadow-2xl rounded-xl p-2 opacity-0 group-hover/popover:opacity-100 pointer-events-none group-hover/popover:pointer-events-auto transition-all z-30 scale-95 group-hover/popover:scale-100">
+                                  <div className="text-[10px] font-black uppercase text-slate-400 mb-2 px-2 tracking-widest">Acțiuni Rând</div>
+                                  <button onClick={() => handleDuplicateLine(line)} className="w-full text-left p-2 text-xs rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex items-center gap-2 font-bold">
+                                    <Copy size={14} /> Duplică rând
+                                  </button>
+                                  <button onClick={() => handleDeleteLine(line.id)} className="w-full text-left p-2 text-xs rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors flex items-center gap-2 border-b border-border/50 pb-3 mb-2 font-bold">
+                                    <Trash2 size={14} /> Șterge rând
+                                  </button>
+                                  
+                                  <div className="text-[10px] font-black uppercase text-slate-400 mb-2 px-2 tracking-widest">Legătură Cantitate</div>
                                   {Object.keys(smartValues).map(key => (
                                     <button 
                                       key={key}
@@ -431,7 +451,7 @@ export default function EstimateEditor({ projectId, initialLines, settings, dime
                               </div>
                               <input 
                                 type="number" 
-                                className="w-20 bg-transparent text-center font-black text-lg outline-none text-slate-900 dark:text-white"
+                                className="w-24 bg-transparent text-center font-black text-lg outline-none text-slate-900 dark:text-white p-2 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 focus:bg-white dark:focus:bg-slate-900 rounded-lg cursor-pointer transition-colors border border-transparent focus:border-border"
                                 value={line.quantity}
                                 onChange={(e) => handleUpdateQuantity(line.id, e.target.value)}
                               />

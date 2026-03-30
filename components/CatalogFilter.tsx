@@ -4,6 +4,7 @@ import { useState, useCallback } from 'react'
 import { Search, X, PlusCircle, Check, ChevronDown, ChevronUp } from 'lucide-react'
 import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 
 interface CatalogNorm {
   id: number
@@ -70,6 +71,7 @@ export default function CatalogFilter({
 
     if (!error) {
       setAddedId(norm.id)
+      toast.success('Normă adăugată în deviz!')
       setTimeout(() => {
         setAddingId(null)
         setAddedId(null)

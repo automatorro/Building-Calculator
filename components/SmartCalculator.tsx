@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { X, Lightbulb, ArrowRight, ArrowLeft, Check, Plus, Minus, Save, Loader2 } from 'lucide-react'
 import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 
 /* ─── Tipuri ───────────────────────────────────────────────────────────────── */
 interface Dimensions {
@@ -226,13 +227,15 @@ export default function SmartCalculator({
         stage_name: l.stage,
         custom_prices: {},
         excluded_resources: [],
+        resources_override: [],
         metadata: l.symbol ? { catalog_norm_symbol: l.symbol } : {},
       }))
 
     const { error } = await supabase.from('estimate_lines').insert(toInsert)
 
     if (error) {
-      alert('Eroare la salvare: ' + error.message)
+      toast.error('Eroare la salvare: ' + error.message)
+      console.error(error)
     } else {
       // Salvează și dimensiunile
       await onSave({
@@ -244,6 +247,7 @@ export default function SmartCalculator({
         slab_thickness: 0.15,
         wall_thickness: 0.25,
       })
+      toast.success('Devizul Smart a fost generat și adăugat!')
       router.refresh()
       onClose()
     }

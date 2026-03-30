@@ -6,9 +6,11 @@ import Link from 'next/link'
 import SmartCalculator from './SmartCalculator'
 import ProjectStagesManager from './ProjectStagesManager'
 import ShopManager from './ShopManager'
+import OcrPreviewModal from './OcrPreviewModal'
 import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
 import { processReinforcementTable } from '@/utils/ocr'
+import { toast } from 'sonner'
 
 interface ProjectActionsProps {
   projectId: string
@@ -21,6 +23,8 @@ export default function ProjectActions({ projectId, initialDimensions, initialSt
   const [showStages,    setShowStages]      = useState(false)
   const [showShops,     setShowShops]       = useState(false)
   const [showDropdown,  setShowDropdown]    = useState(false)
+  const [showOcrModal,  setShowOcrModal]    = useState(false)
+  const [ocrResults,    setOcrResults]      = useState<any[]>([])
   const dropdownRef = useRef<HTMLDivElement>(null)
   const router   = useRouter()
   const supabase = createClient()
@@ -49,12 +53,16 @@ export default function ProjectActions({ projectId, initialDimensions, initialSt
     const file = e.target.files?.[0]
     if (!file) return
     try {
+      toast.loading('Analizez extrasul...', { id: 'ocr-loading' })
       const results = await processReinforcementTable(file)
-      console.log('OCR Results:', results)
-      alert(`Am detectat ${results.length} rânduri în extrasul de armare. (Funcționalitate în curs de finalizare)`)
+      toast.dismiss('ocr-loading')
+      setOcrResults(results)
+      setShowOcrModal(true)
     } catch {
-      alert('Eroare la procesarea OCR')
+      toast.dismiss('ocr-loading')
+      toast.error('Eroare la procesarea OCR')
     }
+    e.target.value = ''
   }
 
   const handleShare = async () => {
@@ -152,11 +160,7 @@ export default function ProjectActions({ projectId, initialDimensions, initialSt
               borderRadius: 10, boxShadow: '0 8px 28px rgba(0,0,0,0.1)',
               minWidth: 230, zIndex: 50, padding: '6px',
             }}>
-              <DropdownBtn
-                icon={<Lightbulb size={15} />} label="Smart Calc"
-                style={dropdownItemStyle}
-                onClick={() => { setShowSmartCalc(true); setShowDropdown(false) }}
-              />
+
               <DropdownBtn
                 icon={<ClipboardList size={15} />} label="Etape Proiect"
                 style={dropdownItemStyle}
@@ -205,6 +209,25 @@ export default function ProjectActions({ projectId, initialDimensions, initialSt
           )}
         </div>
 
+        {/* ── Buton Smart Calc Promovat ─────────────────────────────────────── */}
+        <button
+          onClick={() => setShowSmartCalc(true)}
+          className="hover:shadow-lg hover:-translate-y-0.5 active:scale-95"
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: 8,
+            background: 'linear-gradient(135deg, #0f172a, #1e293b)',
+            color: 'white', textDecoration: 'none',
+            padding: '9px 16px', borderRadius: 8,
+            fontSize: 13, fontWeight: 700, fontFamily: 'inherit',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+            transition: 'all .15s',
+            border: '1px solid rgba(255,255,255,0.1)',
+          }}
+        >
+          <Lightbulb size={16} className="text-amber-400" />
+          <span>Smart Calc</span>
+        </button>
+
         {/* ── Acțiune primară — portocaliu ─────────────────────────────── */}
         <Link
           href={`/catalog?projectId=${projectId}`}
@@ -226,7 +249,7 @@ export default function ProjectActions({ projectId, initialDimensions, initialSt
           }}
         >
           <Plus size={15} />
-          <span>Adaugă Articol</span>
+          <span>Catalog</span>
         </Link>
       </div>
 
@@ -247,6 +270,13 @@ export default function ProjectActions({ projectId, initialDimensions, initialSt
       )}
       {showShops && (
         <ShopManager onClose={() => setShowShops(false)} />
+      )}
+      {showOcrModal && (
+        <OcrPreviewModal
+          projectId={projectId}
+          initialData={ocrResults}
+          onClose={() => setShowOcrModal(false)}
+        />
       )}
     </>
   )

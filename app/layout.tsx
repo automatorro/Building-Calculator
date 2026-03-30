@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { DM_Sans, DM_Serif_Display } from 'next/font/google'
 import './globals.css'
 import Navigation from '@/components/Navigation'
+import { Toaster } from 'sonner'
 
 /* ─── Fonturi ─────────────────────────────────────────────────────────────
    DM Sans → tot UI-ul: labels, butoane, inputuri, tabele
@@ -38,6 +39,7 @@ export default function RootLayout({
     <html lang="ro" className={`${dmSans.variable} ${dmSerif.variable}`}>
       <body style={{ fontFamily: 'var(--font-dm-sans, "DM Sans", system-ui, sans-serif)' }}>
         <Navigation />
+        <Toaster position="top-center" richColors />
         {children}
       </body>
     </html>

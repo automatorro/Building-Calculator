@@ -2,6 +2,7 @@
 import { createClient } from '@/utils/supabase/server'
 import { notFound } from 'next/navigation'
 import { ArrowLeft, Box } from 'lucide-react'
+import AddToProjectButton from '@/components/AddToProjectButton'
 
 export const dynamic = 'force-dynamic'
 
@@ -273,12 +274,7 @@ export default async function CatalogItemPage({
           >
             ← Înapoi la catalog
           </a>
-          <a
-            href={`/projects/${projectId}`}
-            className="px-6 py-3 bg-primary text-white rounded-xl hover:bg-primary/90 transition-colors text-sm font-medium"
-          >
-            Mergi la proiect →
-          </a>
+          <AddToProjectButton norm={norm} projectId={projectId} />
         </div>
       )}
     </main>

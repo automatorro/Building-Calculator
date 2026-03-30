@@ -14,6 +14,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion'
 import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 
 interface ProjectClientContainerProps {
   projectId: string
@@ -156,6 +157,7 @@ export default function ProjectClientContainer({
       const updated = [...purchases, data as Purchase]
       setPurchases(updated)
       setShowPurchaseForm(false)
+      toast.success('Achiziție înregistrată cu succes!')
 
       /* Verificare depășire buget pe etapă */
       if (newPurchase.stage_name) {
@@ -170,10 +172,14 @@ export default function ProjectClientContainer({
           const exceeded = newTotal - planned
           const impact   = -(exceeded * (settings.profit / 100))
           setBudgetAlert({ stage, exceeded, impact })
+          toast.warning(`Atenție! Bugetul pentru etapa "${stage}" a fost depășit.`)
         }
       }
     }
-    if (error) console.error('Error adding purchase:', error)
+    if (error) {
+      console.error('Error adding purchase:', error)
+      toast.error('Eroare la adăugarea achiziției: ' + (error.message || 'Eroare necunoscută'))
+    }
   }
 
   const handleUpdateRevenue = async (val: number) => {

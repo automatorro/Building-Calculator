@@ -219,15 +219,20 @@ export default function ProjectDashboard({ financials, projectName, onAddPurchas
             <div className="absolute -right-16 -top-16 w-32 h-32 bg-primary/10 rounded-full blur-2xl" />
           </div>
 
-          <div className="p-4 md:p-6 rounded-3xl border-2 border-dashed border-border flex flex-col items-center text-center space-y-3">
+          <div className="p-4 md:p-6 rounded-3xl border-2 border-dashed border-border flex flex-col items-center text-center space-y-3 relative overflow-hidden opacity-60">
+            <div className="absolute top-3 right-3 bg-slate-200 dark:bg-slate-800 text-[9px] font-black uppercase px-2 py-1 rounded text-slate-500 tracking-wider">
+              În curând
+            </div>
             <div className="p-3 bg-slate-100 dark:bg-slate-800 rounded-full text-slate-400">
               <BarChart3 size={24} />
             </div>
             <div>
-              <h4 className="font-bold text-sm">Vrei să reduci costul?</h4>
-              <p className="text-xs text-slate-500 mt-1">Rulează un scenariu de tip " EPS vs Vată" pentru a vedea impactul în profitul final.</p>
+              <h4 className="font-bold text-sm text-slate-400">Vrei să reduci costul?</h4>
+              <p className="text-xs text-slate-400 mt-1">Rulează un scenariu de tip "EPS vs Vată" pentru a vedea impactul în profitul final.</p>
             </div>
-            <button className="text-xs font-black text-primary uppercase border-b border-primary/30 py-1">Start Scenariu</button>
+            <button disabled className="text-[10px] font-black text-slate-300 uppercase py-1 cursor-not-allowed">
+              Modul indisponibil
+            </button>
           </div>
         </div>
       </div>
