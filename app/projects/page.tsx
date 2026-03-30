@@ -1,16 +1,76 @@
-import { createClient } from '@/utils/supabase/server'
+'use client'
+
+import { useEffect, useMemo, useState } from 'react'
+import { createClient } from '@/utils/supabase/client'
 import Link from 'next/link'
-import { Plus, MapPin, Calendar, ArrowRight, Briefcase } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { Plus, MapPin, Calendar, ArrowRight, Briefcase, Trash2 } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 
-export default async function ProjectsPage() {
-  const supabase = await createClient()
+export default function ProjectsPage() {
+  const supabase = useMemo(() => createClient(), [])
+  const router = useRouter()
 
-  const { data: projects, error } = await supabase
-    .from('projects')
-    .select('*')
-    .order('created_at', { ascending: false })
+  const [projects, setProjects] = useState<any[] | null>(null)
+  const [error, setError] = useState<{ message: string } | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
+
+  useEffect(() => {
+    let alive = true
+
+    const load = async () => {
+      setLoading(true)
+      const { data, error } = await supabase
+        .from('projects')
+        .select('*')
+        .order('created_at', { ascending: false })
+
+      if (!alive) return
+      if (error) setError({ message: error.message })
+      else setError(null)
+      setProjects((data as any[]) || [])
+      setLoading(false)
+    }
+
+    load()
+
+    return () => { alive = false }
+  }, [supabase])
+
+  const handleDeleteProject = async (project: { id: string; name?: string }) => {
+    const confirmed = window.confirm(
+      `Ești sigur că vrei să ștergi proiectul „${project.name || 'fără nume'}”?\n\nȘtergerea este permanentă. Nu vei mai avea acces la nicio dată din acest proiect.`
+    )
+    if (!confirmed) return
+
+    setDeletingId(project.id)
+    const { data: deletedRows, error } = await supabase
+      .from('projects')
+      .delete()
+      .eq('id', project.id)
+      .select('id')
+
+    if (error) {
+      setDeletingId(null)
+      window.alert('Eroare la ștergere: ' + error.message)
+      return
+    }
+
+    if (!deletedRows || deletedRows.length === 0) {
+      setDeletingId(null)
+      window.alert(
+        'Ștergerea nu a fost permisă de baza de date (RLS). Proiectul nu a fost șters.\n\n' +
+        'Trebuie adăugată în Supabase o policy de DELETE pe tabela projects (cel puțin pentru rolul authenticated).'
+      )
+      return
+    }
+
+    setProjects(prev => (prev || []).filter(p => p.id !== project.id))
+    setDeletingId(null)
+    router.refresh()
+  }
 
   const S = {
     page: {
@@ -66,16 +126,38 @@ export default async function ProjectsPage() {
         )}
 
         {/* ── Grid proiecte ── */}
-        {!error && projects && projects.length > 0 ? (
+        {loading ? (
+          <div style={{ fontSize: 14, color: '#6B6860' }}>Se încarcă proiectele…</div>
+        ) : !error && projects && projects.length > 0 ? (
           <div style={{ display: 'grid',
             gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 20 }}>
             {projects.map((project) => (
-              <Link
-                key={project.id}
-                href={`/projects/${project.id}`}
-                style={{ textDecoration: 'none' }}
-              >
-                <div className="project-card">
+              <div key={project.id} className="project-card" style={{ position: 'relative' }}>
+                <button
+                  type="button"
+                  onClick={() => handleDeleteProject(project)}
+                  disabled={deletingId === project.id}
+                  aria-label="Șterge proiect"
+                  style={{
+                    position: 'absolute',
+                    top: 12,
+                    right: 12,
+                    width: 34,
+                    height: 34,
+                    borderRadius: 10,
+                    border: '1px solid #E5E3DE',
+                    background: deletingId === project.id ? '#F3F2EF' : '#FAFAF8',
+                    color: '#C0392B',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: deletingId === project.id ? 'not-allowed' : 'pointer',
+                  }}
+                >
+                  <Trash2 size={16} />
+                </button>
+
+                <Link href={`/projects/${project.id}`} style={{ textDecoration: 'none', display: 'block' }}>
                   {/* Card header */}
                   <div style={{ display: 'flex', justifyContent: 'space-between',
                     alignItems: 'flex-start', marginBottom: 16 }}>
@@ -120,8 +202,8 @@ export default async function ProjectsPage() {
                     </span>
                     <ArrowRight size={15} color="#E8500A" />
                   </div>
-                </div>
-              </Link>
+                </Link>
+              </div>
             ))}
           </div>
         ) : !error && (
