@@ -94,6 +94,24 @@ function consStr(r: Row) {
 export default function Page() {
   const [area, setArea] = useState<number>(1)
   const [prices, setPrices] = useState<Record<string, number>>({ ...defaultPrices })
+  const [included, setIncluded] = useState<Record<string, boolean>>(() => {
+    const init: Record<string, boolean> = {}
+    sections.forEach(sec => {
+      sec.rows.forEach(r => {
+        if (r.optional) init[r.name] = true
+      })
+    })
+    return init
+  })
+  const [manualQty, setManualQty] = useState<Record<string, number>>(() => {
+    const init: Record<string, number> = {}
+    sections.forEach(sec => {
+      sec.rows.forEach(r => {
+        if (r.note) init[r.name] = 0
+      })
+    })
+    return init
+  })
 
   const { rowsComputed, totalReq, totalOpt, grand, grandVat } = useMemo(() => {
     const vatRate = 0.21
@@ -101,21 +119,22 @@ export default function Page() {
     let opt = 0
     const computed = sections.flatMap(sec =>
       sec.rows.map(r => {
+        const isIncluded = !r.optional || included[r.name] !== false
         const cons = midCons(r)
-        const qty = cons * area
+        const qty = cons === 0 ? (manualQty[r.name] ?? 0) : cons * area
         const p = prices[r.name] ?? 0
         const tot = qty * p
-        if (cons !== 0) {
+        if (qty !== 0 && isIncluded) {
           if (r.optional) opt += tot
           else req += tot
         }
-        return { sectionTitle: sec.title, row: r, cons, qty, price: p, tot }
+        return { sectionTitle: sec.title, row: r, cons, qty, price: p, tot, isIncluded }
       }),
     )
 
     const g = req + opt
     return { rowsComputed: computed, totalReq: req, totalOpt: opt, grand: g, grandVat: g * (1 + vatRate) }
-  }, [area, prices])
+  }, [area, prices, included, manualQty])
 
   return (
     <main style={{ padding: '24px', maxWidth: 1100, margin: '0 auto' }}>
@@ -134,6 +153,7 @@ export default function Page() {
         tbody tr { border-bottom: 0.5px solid #e8e7e2; }
         tbody tr:last-child { border-bottom: none; }
         tbody tr.opt td { color: #888780; }
+        tbody tr.excluded td { opacity: 0.45; }
         td { padding: 7px 10px; vertical-align: middle; }
         td.mat { font-size: 13px; color: #1a1a18; max-width: 200px; }
         tbody tr.opt td.mat { color: #5f5e5a; }
@@ -211,14 +231,57 @@ export default function Page() {
                   const qty = item?.qty ?? 0
                   const p = item?.price ?? 0
                   const tot = item?.tot ?? 0
-                  const qtyStr = cons === 0 ? '—' : qty.toFixed(2)
-                  const totStr = cons === 0 ? '—' : `${tot.toFixed(2)} lei`
+                  const isIncluded = item?.isIncluded ?? true
+                  const isManual = cons === 0 && !!r.note
+                  const hasQty = qty !== 0
+                  const qtyStr = isManual ? '' : (cons === 0 ? '—' : qty.toFixed(2))
+                  const totStr = cons === 0 ? (hasQty ? `${tot.toFixed(2)} lei` : '—') : `${tot.toFixed(2)} lei`
                   return (
-                    <tr key={r.name} className={r.optional ? 'opt' : ''}>
-                      <td className="opt-badge"><span className={r.optional ? 'opt-dot' : 'req-dot'} /></td>
+                    <tr key={r.name} className={`${r.optional ? 'opt' : ''}${r.optional && !isIncluded ? ' excluded' : ''}`}>
+                      <td className="opt-badge">
+                        {r.optional ? (
+                          <input
+                            type="checkbox"
+                            checked={isIncluded}
+                            onChange={e => setIncluded(prev => ({ ...prev, [r.name]: e.target.checked }))}
+                            aria-label={`Include ${r.name}`}
+                          />
+                        ) : (
+                          <span className="req-dot" />
+                        )}
+                      </td>
                       <td className="mat">{r.name}</td>
                       <td className="cons">{consStr(r)} {r.unit}</td>
-                      <td className="qty">{qtyStr}{cons === 0 ? '' : ` ${r.unit}`}</td>
+                      <td className="qty">
+                        {isManual ? (
+                          <>
+                            <input
+                              type="number"
+                              min={0}
+                              step={0.1}
+                              value={Number.isFinite(qty) ? qty : 0}
+                              onChange={e => {
+                                const next = Number(e.target.value) || 0
+                                setManualQty(prev => ({ ...prev, [r.name]: next }))
+                              }}
+                              style={{
+                                width: 82,
+                                textAlign: 'right',
+                                fontSize: 13,
+                                border: '0.5px solid #d3d1c7',
+                                borderRadius: 5,
+                                padding: '3px 6px',
+                                background: '#fff',
+                              }}
+                            />
+                            <span style={{ marginLeft: 6, fontWeight: 400, color: '#5f5e5a' }}>{r.unit}</span>
+                          </>
+                        ) : (
+                          <>
+                            {qtyStr}{cons === 0 ? '' : ` ${r.unit}`}
+                          </>
+                        )}
+                      </td>
                       <td className="price-cell">
                         <input
                           type="number"
