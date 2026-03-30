@@ -357,7 +357,7 @@ export default function EstimateEditor({ projectId, initialLines, settings, dime
                               {isCatalogNorm ? (
                                 <span>
                                   {(line.unit_price ?? 0) > 0
-                                    ? `${(line.unit_price!).toFixed(2)} Lei / ${line.unit || '—'}`
+                                    ? `${line.unit_price!.toLocaleString('ro-RO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Lei / ${line.unit || '—'}`
                                     : `Preț necompletat · ${line.unit || '—'} · ${line.category || ''}`
                                   }
                                 </span>
@@ -409,7 +409,7 @@ export default function EstimateEditor({ projectId, initialLines, settings, dime
                                   </div>
                                 </div>
                               ) : (
-                                `${lineCosts.unitDirectCost.toFixed(2)} Lei direct / ${line.items!.um}`
+                                `${lineCosts.unitDirectCost.toLocaleString('ro-RO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Lei direct / ${line.items!.um}`
                               )}
                             </div>
                           </div>

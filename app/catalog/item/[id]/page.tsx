@@ -256,7 +256,7 @@ export default async function CatalogItemPage({
                 Prețul de referință de{' '}
                 <strong>
                   {norm.unit_price > 0
-                    ? `${norm.unit_price.toFixed(2)} lei/${norm.unit}`
+                    ? `${norm.unit_price.toLocaleString('ro-RO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} lei/${norm.unit}`
                     : 'neconfigurat'}
                 </strong>{' '}
                 reprezintă costul estimativ total.

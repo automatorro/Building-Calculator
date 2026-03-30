@@ -157,7 +157,7 @@ export default function OcrPreviewModal({ projectId, initialData, onClose }: Ocr
 
         <div className="bg-slate-100 dark:bg-slate-800 p-4 border-t border-border flex items-center justify-between">
           <span className="text-sm font-bold text-slate-500">
-            Total Oțel Beton: <span className="text-primary">{rows.reduce((sum, r) => sum + (r.totalWeight || 0), 0).toFixed(2)}</span> kg
+            Total Oțel Beton: <span className="text-primary">{rows.reduce((sum, r) => sum + (r.totalWeight || 0), 0).toLocaleString('ro-RO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span> kg
           </span>
           <div className="flex gap-3">
             <button 

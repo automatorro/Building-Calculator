@@ -27,6 +27,8 @@ export default function ProjectDashboard({ financials, projectName, onAddPurchas
 
   const isOverBudget = totalSpent > totalBudget
   const marginPercent = totalEstimatedRevenue > 0 ? (netProfit / totalEstimatedRevenue) * 100 : 0
+  const fmtPct1 = (n: number) => n.toLocaleString('ro-RO', { minimumFractionDigits: 1, maximumFractionDigits: 1 })
+  const fmtDecimalsInText = (s: string) => s.replace(/(\d)\.(\d)/g, '$1,$2')
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
@@ -69,14 +71,14 @@ export default function ProjectDashboard({ financials, projectName, onAddPurchas
         <SummaryCard 
           label="Profit Estimat" 
           value={`${netProfit.toLocaleString('ro-RO')} Lei`}
-          subValue={`${marginPercent.toFixed(1)}% Marjă Profit`}
+          subValue={`${fmtPct1(marginPercent)}% Marjă Profit`}
           icon={<TrendingUp className="text-primary" />}
           trend={marginPercent > 10 ? 'positive' : 'negative'}
         />
         <SummaryCard 
           label="Status Buget" 
           value={isOverBudget ? 'Derapaj' : 'În Grafic'}
-          subValue={`${percentSpent.toFixed(1)}% din plan consumat`}
+          subValue={`${fmtPct1(percentSpent)}% din plan consumat`}
           icon={isOverBudget ? <AlertTriangle className="text-red-500" /> : <BarChart3 className="text-primary" />}
           trend={isOverBudget ? 'negative' : 'positive'}
         />
@@ -90,7 +92,7 @@ export default function ProjectDashboard({ financials, projectName, onAddPurchas
               <div className="flex justify-between items-end mb-4">
                 <div>
                   <h3 className="text-[11px] font-black uppercase tracking-widest text-slate-400">Progres Cheltuieli vs. Buget</h3>
-                  <div className="text-3xl font-black">{percentSpent.toFixed(1)}%</div>
+                  <div className="text-3xl font-black">{fmtPct1(percentSpent)}%</div>
                 </div>
                 <div className="text-right">
                   <div className="text-[10px] font-bold text-slate-400 uppercase">Limită Buget:</div>
@@ -147,7 +149,7 @@ export default function ProjectDashboard({ financials, projectName, onAddPurchas
                       {dev.spent.toLocaleString('ro-RO')} Lei
                     </div>
                     <div className={`text-[9px] font-black uppercase ${dev.diff > 0 ? 'text-red-500' : 'text-green-500'}`}>
-                      {dev.diff > 0 ? `+${dev.percent.toFixed(1)}% Depășire` : `-${Math.abs(dev.percent).toFixed(1)}% sub buget`}
+                      {dev.diff > 0 ? `+${fmtPct1(dev.percent)}% Depășire` : `-${fmtPct1(Math.abs(dev.percent))}% sub buget`}
                     </div>
                   </div>
                 </div>
@@ -168,7 +170,7 @@ export default function ProjectDashboard({ financials, projectName, onAddPurchas
                 <div key={i} className={`text-xs flex gap-3 p-3 rounded-xl ${alert.type === 'danger' ? 'bg-red-500/10 text-red-700 dark:text-red-400' : 'bg-orange-500/10 text-orange-700 dark:text-orange-300'}`}>
                   <div className="shrink-0 mt-0.5">•</div>
                   <div>
-                    <div className="font-bold">{alert.message}</div>
+                    <div className="font-bold">{fmtDecimalsInText(alert.message)}</div>
                     {alert.impact && alert.impact !== 0 && (
                       <div className="mt-1 opacity-80 uppercase text-[9px] font-black tracking-widest">
                         Impact: {alert.impact.toLocaleString('ro-RO')} Lei

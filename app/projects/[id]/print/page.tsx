@@ -58,7 +58,8 @@ export default async function PrintPage({ params }: { params: { id: string } }) 
     totalFinal  += c.totalWithTVA
   })
 
-  const fmt = (n: number) => n.toLocaleString('ro-RO', { maximumFractionDigits: 2 })
+  const fmtLei = (n: number) => n.toLocaleString('ro-RO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+  const fmtQty = (n: number) => n.toLocaleString('ro-RO', { maximumFractionDigits: 2 })
   const today = new Date().toLocaleDateString('ro-RO', { day: '2-digit', month: 'long', year: 'numeric' })
 
   return (
@@ -115,7 +116,7 @@ export default async function PrintPage({ params }: { params: { id: string } }) 
             <div key={stage} style={{ marginBottom: 16, pageBreakInside: 'avoid' }}>
               <div style={{ background: '#1E2329', color: '#fff', padding: '6px 10px', borderRadius: 4, fontSize: 10, fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase', display: 'flex', justifyContent: 'space-between' }}>
                 <span>{idx + 1}. {stage}</span>
-                <span>{fmt(stageTotals.total)} Lei</span>
+                <span>{fmtLei(stageTotals.total)} Lei</span>
               </div>
 
               <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: 4 }}>
@@ -137,9 +138,9 @@ export default async function PrintPage({ params }: { params: { id: string } }) 
                         <td style={{ padding: '4px 8px', fontFamily: 'monospace', fontSize: 9, color: '#A8A59E' }}>{code}</td>
                         <td style={{ padding: '4px 8px', fontSize: 10 }}>{name}</td>
                         <td style={{ padding: '4px 8px', textAlign: 'right', fontSize: 9 }}>{um}</td>
-                        <td style={{ padding: '4px 8px', textAlign: 'right', fontFamily: 'monospace', fontSize: 9 }}>{line.quantity}</td>
-                        <td style={{ padding: '4px 8px', textAlign: 'right', fontFamily: 'monospace', fontSize: 9 }}>{fmt(c.unitDirectCost)}</td>
-                        <td style={{ padding: '4px 8px', textAlign: 'right', fontFamily: 'monospace', fontSize: 9, fontWeight: 700, color: '#E8500A' }}>{fmt(c.totalWithTVA)}</td>
+                        <td style={{ padding: '4px 8px', textAlign: 'right', fontFamily: 'monospace', fontSize: 9 }}>{fmtQty(line.quantity)}</td>
+                        <td style={{ padding: '4px 8px', textAlign: 'right', fontFamily: 'monospace', fontSize: 9 }}>{fmtLei(c.unitDirectCost)}</td>
+                        <td style={{ padding: '4px 8px', textAlign: 'right', fontFamily: 'monospace', fontSize: 9, fontWeight: 700, color: '#E8500A' }}>{fmtLei(c.totalWithTVA)}</td>
                       </tr>
                     )
                   })}
@@ -165,12 +166,12 @@ export default async function PrintPage({ params }: { params: { id: string } }) 
               ].map(row => (
                 <tr key={row.label} style={{ borderBottom: '1px solid #E5E3DE' }}>
                   <td style={{ padding: '6px 14px', fontSize: 10, fontWeight: row.bold ? 700 : 400, color: '#6B6860' }}>{row.label}</td>
-                  <td style={{ padding: '6px 14px', textAlign: 'right', fontFamily: 'monospace', fontSize: 10, fontWeight: row.bold ? 700 : 400 }}>{fmt(row.value)} Lei</td>
+                  <td style={{ padding: '6px 14px', textAlign: 'right', fontFamily: 'monospace', fontSize: 10, fontWeight: row.bold ? 700 : 400 }}>{fmtLei(row.value)} Lei</td>
                 </tr>
               ))}
               <tr style={{ background: '#FFF0E8' }}>
                 <td style={{ padding: '10px 14px', fontSize: 12, fontWeight: 700, color: '#1E2329' }}>TOTAL GENERAL (incl. TVA)</td>
-                <td style={{ padding: '10px 14px', textAlign: 'right', fontFamily: 'monospace', fontSize: 14, fontWeight: 900, color: '#E8500A' }}>{fmt(totalFinal)} Lei</td>
+                <td style={{ padding: '10px 14px', textAlign: 'right', fontFamily: 'monospace', fontSize: 14, fontWeight: 900, color: '#E8500A' }}>{fmtLei(totalFinal)} Lei</td>
               </tr>
             </tbody>
           </table>
