@@ -215,9 +215,47 @@ export default function SmartCalculator({
 
   const handleSaveLines = async () => {
     setSaving(true)
-    const toInsert = lines
-      .filter(l => l.include)
-      .map(l => ({
+    const included = lines.filter(l => l.include)
+    const symbols = Array.from(new Set(included.map(l => l.symbol).filter(Boolean))) as string[]
+    const normsBySymbol = new Map<string, { id: number; symbol: string; name: string; unit: string; category: string; unit_price: number | null }>()
+
+    if (symbols.length > 0) {
+      const { data: norms, error: normsError } = await supabase
+        .from('catalog_norms')
+        .select('id, symbol, name, unit, category, unit_price')
+        .in('symbol', symbols)
+
+      if (normsError) {
+        toast.error('Eroare la încărcarea normelor: ' + normsError.message)
+        console.error(normsError)
+      } else {
+        ;(norms || []).forEach(n => normsBySymbol.set(n.symbol, n))
+      }
+    }
+
+    const toInsert = included.map(l => {
+      const norm = l.symbol ? normsBySymbol.get(l.symbol) : undefined
+
+      if (norm) {
+        return {
+          project_id: projectId,
+          item_id: null,
+          quantity: l.quantity,
+          stage_name: l.stage,
+          custom_prices: {},
+          excluded_resources: [],
+          resources_override: [],
+          metadata: { source: 'smart_calc', catalog_norm_symbol: norm.symbol },
+          catalog_norm_id: norm.id,
+          name: norm.name,
+          code: norm.symbol,
+          unit: norm.unit,
+          unit_price: norm.unit_price ?? 0,
+          category: norm.category,
+        }
+      }
+
+      return {
         project_id: projectId,
         item_id: null,
         manual_name: l.name,
@@ -228,8 +266,9 @@ export default function SmartCalculator({
         custom_prices: {},
         excluded_resources: [],
         resources_override: [],
-        metadata: l.symbol ? { catalog_norm_symbol: l.symbol } : {},
-      }))
+        metadata: l.symbol ? { source: 'smart_calc', catalog_norm_symbol: l.symbol } : { source: 'smart_calc' },
+      }
+    })
 
     const { error } = await supabase.from('estimate_lines').insert(toInsert)
 
