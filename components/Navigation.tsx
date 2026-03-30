@@ -43,6 +43,7 @@ function LogoMark({ size = 30 }: { size?: number }) {
 const NAV_LINKS = [
   { label: 'Proiecte',          href: '/projects' },
   { label: 'Catalog norme',     href: '/catalog' },
+  { label: 'Calculatoare rapide', href: '/calculatoare-rapide' },
   { label: 'Cum funcționează',  href: '/cum-functioneaza.html' },
 ]
 

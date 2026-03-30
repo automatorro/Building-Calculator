@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Calculator Termosistem EPS</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, sans-serif; background: #f5f5f2; color: #1a1a18; padding: 1.5rem; }
+  h1 { font-size: 18px; font-weight: 500; margin-bottom: 1.5rem; color: #1a1a18; }
+  .area-row { display: flex; align-items: center; gap: 12px; margin-bottom: 1.5rem; padding: 12px 16px; background: #fff; border-radius: 12px; border: 0.5px solid #d3d1c7; }
+  .area-row label { font-size: 14px; color: #5f5e5a; white-space: nowrap; }
+  .area-row input[type=number] { width: 90px; font-size: 15px; font-weight: 500; border: 0.5px solid #d3d1c7; border-radius: 6px; padding: 4px 8px; }
+  .area-row span { font-size: 14px; color: #5f5e5a; }
+  .area-note { margin-left: auto; font-size: 12px; color: #888780; }
+  .section-title { font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: #888780; margin: 1.5rem 0 0.5rem; padding: 0 4px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; background: #fff; border-radius: 12px; overflow: hidden; border: 0.5px solid #d3d1c7; margin-bottom: 0.5rem; }
+  thead th { font-size: 11px; font-weight: 500; color: #888780; text-align: left; padding: 8px 10px; border-bottom: 0.5px solid #d3d1c7; letter-spacing: 0.04em; background: #f9f8f5; }
+  thead th.num { text-align: right; }
+  tbody tr { border-bottom: 0.5px solid #e8e7e2; }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr.opt td { color: #888780; }
+  td { padding: 7px 10px; vertical-align: middle; }
+  td.mat { font-size: 13px; color: #1a1a18; max-width: 200px; }
+  tbody tr.opt td.mat { color: #5f5e5a; }
+  td.unit { font-size: 12px; color: #888780; white-space: nowrap; }
+  td.cons { text-align: right; font-size: 12px; color: #5f5e5a; white-space: nowrap; }
+  td.qty { text-align: right; font-size: 12px; font-weight: 500; white-space: nowrap; }
+  td.price-cell { text-align: right; width: 95px; }
+  td.price-cell input { width: 82px; text-align: right; font-size: 13px; border: 0.5px solid #d3d1c7; border-radius: 5px; padding: 3px 6px; }
+  td.total-cell { text-align: right; font-weight: 500; font-size: 13px; white-space: nowrap; }
+  td.opt-badge { width: 20px; text-align: center; }
+  .opt-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #d3d1c7; }
+  .req-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #378add; }
+  .summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 1.5rem; }
+  .metric { background: #fff; border-radius: 8px; padding: 12px 14px; border: 0.5px solid #d3d1c7; }
+  .metric .lbl { font-size: 11px; color: #888780; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.06em; }
+  .metric .val { font-size: 20px; font-weight: 500; color: #1a1a18; }
+  .metric .sub { font-size: 11px; color: #888780; margin-top: 2px; }
+  .legend { display: flex; gap: 16px; margin-top: 1rem; font-size: 11px; color: #888780; }
+  .legend span { display: flex; align-items: center; gap: 5px; }
+  @media (max-width: 600px) {
+    .summary { grid-template-columns: 1fr 1fr; }
+    table { font-size: 12px; }
+    td { padding: 6px 6px; }
+  }
+</style>
+</head>
+<body>
+<h1>Calculator materiale — termosistem EPS</h1>
+
+<div class="area-row">
+  <label>Suprafață totală</label>
+  <input type="number" id="area" value="1" min="1" step="1" />
+  <span>m²</span>
+  <span class="area-note">Prețuri în RON (fără TVA)</span>
+</div>
+
+<div id="content"></div>
+<div class="summary" id="summary"></div>
+
+<div class="legend">
+  <span><span class="req-dot"></span> obligatoriu</span>
+  <span><span class="opt-dot"></span> opțional / situațional</span>
+</div>
+
+<script>
+const sections = [
+  {
+    title: "Pregătire suprafață",
+    rows: [
+      { name: "Amorsa de contact", unit: "kg", consMin: 0.15, consMax: 0.30, optional: false },
+      { name: "Mortar de reprofilare", unit: "kg/cm", consMin: 1.5, consMax: 2.0, optional: true },
+    ]
+  },
+  {
+    title: "Lipire și fixare polistiren",
+    rows: [
+      { name: "Adeziv pentru EPS", unit: "kg", consMin: 4, consMax: 6, optional: false },
+      { name: "Polistiren EPS (grosime la alegere)", unit: "m²", consMin: 1.05, consMax: 1.05, optional: false },
+      { name: "Dibluri cu șaibă termică", unit: "buc", consMin: 6, consMax: 8, optional: false },
+    ]
+  },
+  {
+    title: "Armare (tencuială de bază)",
+    rows: [
+      { name: "Mortar de armare (masă șpaclu)", unit: "kg", consMin: 4, consMax: 6, optional: false },
+      { name: "Plasă fibră de sticlă 160 g/mp", unit: "m²", consMin: 1.10, consMax: 1.20, optional: false },
+      { name: "Profil de colț PVC cu plasă", unit: "ml", consMin: 0, consMax: 0, optional: true, note: "per ml colț" },
+      { name: "Profil de soclu (start)", unit: "ml", consMin: 0, consMax: 0, optional: true, note: "per ml soclu" },
+      { name: "Profil fereastră cu picurător", unit: "ml", consMin: 0, consMax: 0, optional: true, note: "per ml gol" },
+      { name: "Bandă etanșare expandabilă", unit: "ml", consMin: 0, consMax: 0, optional: true, note: "per ml rost" },
+    ]
+  },
+  {
+    title: "Finisaj exterior",
+    rows: [
+      { name: "Grund pentru tencuială decorativă", unit: "kg", consMin: 0.20, consMax: 0.30, optional: false },
+      { name: "Tencuială decorativă (2mm)", unit: "kg", consMin: 2.0, consMax: 3.5, optional: false },
+    ]
+  },
+  {
+    title: "Soclu (diferit față de perete curent)",
+    rows: [
+      { name: "XPS în loc de EPS la soclu", unit: "m²", consMin: 1.05, consMax: 1.05, optional: true },
+      { name: "Plasă dublă la soclu", unit: "m²", consMin: 2.20, consMax: 2.40, optional: true },
+      { name: "Tencuială dură soclu / mozaic", unit: "kg", consMin: 3.0, consMax: 5.0, optional: true },
+    ]
+  }
+];
+
+const defaultPrices = {
+  "Amorsa de contact": 8,
+  "Mortar de reprofilare": 4,
+  "Adeziv pentru EPS": 3.5,
+  "Polistiren EPS (grosime la alegere)": 35,
+  "Dibluri cu șaibă termică": 1.2,
+  "Mortar de armare (masă șpaclu)": 4,
+  "Plasă fibră de sticlă 160 g/mp": 6,
+  "Profil de colț PVC cu plasă": 4,
+  "Profil de soclu (start)": 6,
+  "Profil fereastră cu picurător": 5,
+  "Bandă etanșare expandabilă": 8,
+  "Grund pentru tencuială decorativă": 12,
+  "Tencuială decorativă (2mm)": 9,
+  "XPS în loc de EPS la soclu": 55,
+  "Plasă dublă la soclu": 6,
+  "Tencuială dură soclu / mozaic": 7,
+};
+
+const prices = { ...defaultPrices };
+
+function consStr(r) {
+  if (r.note) return r.note;
+  if (r.consMin === r.consMax) return r.consMin.toFixed(2);
+  return r.consMin.toFixed(2) + " – " + r.consMax.toFixed(2);
+}
+
+function midCons(r) {
+  if (r.consMin === 0 && r.consMax === 0) return 0;
+  return (r.consMin + r.consMax) / 2;
+}
+
+function render() {
+  const area = parseFloat(document.getElementById('area').value) || 1;
+  let html = '';
+  let totalReq = 0, totalOpt = 0;
+
+  sections.forEach(sec => {
+    html += `<div class="section-title">${sec.title}</div>`;
+    html += `<table><thead><tr>
+      <th style="width:10px"></th>
+      <th>Material</th>
+      <th class="num">Consum/m²</th>
+      <th class="num">Cantitate (${area} m²)</th>
+      <th class="num" style="width:100px">Preț/unitate</th>
+      <th class="num">Total</th>
+    </tr></thead><tbody>`;
+
+    sec.rows.forEach(r => {
+      const cons = midCons(r);
+      const qty = cons * area;
+      const p = prices[r.name] || 0;
+      const tot = qty * p;
+      if (r.optional) totalOpt += tot; else totalReq += tot;
+
+      const qtyStr = cons === 0 ? '—' : qty.toFixed(2);
+      const totStr = cons === 0 ? '—' : tot.toFixed(2) + ' lei';
+
+      html += `<tr class="${r.optional ? 'opt' : ''}">
+        <td class="opt-badge"><span class="${r.optional ? 'opt-dot' : 'req-dot'}"></span></td>
+        <td class="mat">${r.name}</td>
+        <td class="cons">${consStr(r)} ${r.unit}</td>
+        <td class="qty">${qtyStr} ${cons === 0 ? '' : r.unit}</td>
+        <td class="price-cell"><input type="number" min="0" step="0.1" value="${p.toFixed(2)}" data-name="${r.name}" /></td>
+        <td class="total-cell">${totStr}</td>
+      </tr>`;
+    });
+
+    html += '</tbody></table>';
+  });
+
+  document.getElementById('content').innerHTML = html;
+
+  document.querySelectorAll('td.price-cell input').forEach(inp => {
+    inp.addEventListener('input', e => {
+      prices[e.target.dataset.name] = parseFloat(e.target.value) || 0;
+      render();
+    });
+  });
+
+  const grand = totalReq + totalOpt;
+  const perSqm = area > 1;
+  document.getElementById('summary').innerHTML = `
+    <div class="metric">
+      <div class="lbl">Obligatoriu / m²</div>
+      <div class="val">${perSqm ? (totalReq/area).toFixed(2) : totalReq.toFixed(2)} lei</div>
+      <div class="sub">${perSqm ? 'total: ' + totalReq.toFixed(2) + ' lei' : 'fără opționale'}</div>
+    </div>
+    <div class="metric">
+      <div class="lbl">Cu opționale / m²</div>
+      <div class="val">${perSqm ? (grand/area).toFixed(2) : grand.toFixed(2)} lei</div>
+      <div class="sub">${perSqm ? 'total: ' + grand.toFixed(2) + ' lei' : 'toate materialele'}</div>
+    </div>
+    <div class="metric">
+      <div class="lbl">Suprafață</div>
+      <div class="val">${area} m²</div>
+      <div class="sub">modifică sus</div>
+    </div>
+  `;
+}
+
+document.getElementById('area').addEventListener('input', render);
+render();
+</script>
+</body>
+</html>
