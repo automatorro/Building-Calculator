@@ -535,7 +535,7 @@ export default function EstimateEditor({ projectId, initialLines, settings, dime
                               </button>
                               <button 
                                 onClick={() => handleDeleteLine(line.id)}
-                                className="p-2 text-slate-300 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
+                                className="p-2 text-slate-400 hover:text-red-500 transition-colors"
                               >
                                 <Trash2 size={16} />
                               </button>
