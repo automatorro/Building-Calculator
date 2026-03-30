@@ -24,8 +24,16 @@ export default function ProjectActions({ projectId, initialDimensions, initialSt
   const [showShops,     setShowShops]       = useState(false)
   const [showDropdown,  setShowDropdown]    = useState(false)
   const [showOcrModal,  setShowOcrModal]    = useState(false)
+  const [showTemplateModal, setShowTemplateModal] = useState(false)
+  const [templateName, setTemplateName] = useState('')
+  const [templateSaving, setTemplateSaving] = useState(false)
+  const [showShareModal, setShowShareModal] = useState(false)
+  const [shareUrl, setShareUrl] = useState('')
   const [ocrResults,    setOcrResults]      = useState<any[]>([])
   const dropdownRef = useRef<HTMLDivElement>(null)
+  const dropdownTriggerRef = useRef<HTMLButtonElement>(null)
+  const dropdownMenuRef = useRef<HTMLDivElement>(null)
+  const [dropdownPos, setDropdownPos] = useState<{ left: number; top: number } | null>(null)
   const router   = useRouter()
   const supabase = createClient()
 
@@ -39,6 +47,40 @@ export default function ProjectActions({ projectId, initialDimensions, initialSt
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
+
+  useEffect(() => {
+    if (!showDropdown) {
+      setDropdownPos(null)
+      return
+    }
+
+    const update = () => {
+      const trigger = dropdownTriggerRef.current
+      if (!trigger) return
+      const rect = trigger.getBoundingClientRect()
+
+      const menu = dropdownMenuRef.current
+      const menuWidth = menu?.offsetWidth ?? 230
+      const minLeft = 8
+      const maxLeft = Math.max(minLeft, window.innerWidth - menuWidth - 8)
+      const preferredLeft = rect.right - menuWidth
+      const left = Math.min(Math.max(preferredLeft, minLeft), maxLeft)
+      const top = rect.bottom + 6
+
+      setDropdownPos(prev => {
+        if (prev && prev.left === left && prev.top === top) return prev
+        return { left, top }
+      })
+    }
+
+    update()
+    window.addEventListener('resize', update)
+    window.addEventListener('scroll', update, true)
+    return () => {
+      window.removeEventListener('resize', update)
+      window.removeEventListener('scroll', update, true)
+    }
+  }, [showDropdown])
 
   const handleSaveDimensions = async (dimensions: any) => {
     const { error } = await supabase
@@ -81,9 +123,10 @@ export default function ProjectActions({ projectId, initialDimensions, initialSt
     const shareUrl = `${window.location.origin}/share/${data.public_token}`
     try {
       await navigator.clipboard.writeText(shareUrl)
-      alert(`✅ Link copiat!\n\n${shareUrl}\n\nTrimite-l beneficiarului — nu necesită cont.`)
+      toast.success('✅ Link copiat în clipboard!')
     } catch {
-      prompt('Copiază link-ul:', shareUrl)
+      setShareUrl(shareUrl)
+      setShowShareModal(true)
     }
   }
 
@@ -91,21 +134,39 @@ export default function ProjectActions({ projectId, initialDimensions, initialSt
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return alert('Te rugăm să te autentifici!')
 
+    setTemplateName(`Șablon Modificat - ${new Date().toLocaleDateString()}`)
+    setShowTemplateModal(true)
+  }
+
+  const confirmSaveAsTemplate = async () => {
+    const name = templateName.trim()
+    if (!name) return
+
+    setTemplateSaving(true)
+
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) {
+      setTemplateSaving(false)
+      alert('Te rugăm să te autentifici!')
+      return
+    }
+
     const { data: lines, error: linesError } = await supabase
       .from('estimate_lines')
       .select('*, items(*, normatives(code))')
       .eq('project_id', projectId)
 
-    if (linesError || !lines) return alert('Eroare la preluarea datelor proiectului')
-
-    const templateName = prompt('Nume Șablon:', `Șablon Modificat - ${new Date().toLocaleDateString()}`)
-    if (!templateName) return
+    if (linesError || !lines) {
+      setTemplateSaving(false)
+      alert('Eroare la preluarea datelor proiectului')
+      return
+    }
 
     const { error } = await supabase
       .from('project_templates')
       .insert([{
         user_id: user.id,
-        name: templateName,
+        name,
         stages: initialStages,
         lines_snapshot: lines.map(l => ({
           manual_name: l.manual_name || l.items?.name,
@@ -118,8 +179,12 @@ export default function ProjectActions({ projectId, initialDimensions, initialSt
         })),
       }])
 
+    setTemplateSaving(false)
     if (error) alert('Eroare: ' + error.message)
-    else alert('✅ Proiect salvat ca șablon cu succes!')
+    else {
+      setShowTemplateModal(false)
+      toast.success('✅ Proiect salvat ca șablon cu succes!')
+    }
   }
 
   /* ─── Stiluri comune ─────────────────────────────────────────────────── */
@@ -138,6 +203,7 @@ export default function ProjectActions({ projectId, initialDimensions, initialSt
         {/* ── Dropdown "Operații ▾" ─────────────────────────────────────── */}
         <div style={{ position: 'relative' }} ref={dropdownRef}>
           <button
+            ref={dropdownTriggerRef}
             onClick={() => setShowDropdown(v => !v)}
             style={{
               display: 'flex', alignItems: 'center', gap: 6,
@@ -154,12 +220,17 @@ export default function ProjectActions({ projectId, initialDimensions, initialSt
           </button>
 
           {showDropdown && (
-            <div style={{
-              position: 'absolute', right: 0, top: 'calc(100% + 6px)',
+            <div
+              ref={dropdownMenuRef}
+              style={{
+              position: 'fixed',
+              left: dropdownPos?.left ?? 8,
+              top: dropdownPos?.top ?? 0,
               background: 'white', border: '1px solid #E5E3DE',
               borderRadius: 10, boxShadow: '0 8px 28px rgba(0,0,0,0.1)',
               minWidth: 230, zIndex: 50, padding: '6px',
-            }}>
+            }}
+            >
 
               <DropdownBtn
                 icon={<ClipboardList size={15} />} label="Etape Proiect"
@@ -277,6 +348,190 @@ export default function ProjectActions({ projectId, initialDimensions, initialSt
           initialData={ocrResults}
           onClose={() => setShowOcrModal(false)}
         />
+      )}
+
+      {showTemplateModal && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0,0,0,0.45)',
+            zIndex: 80,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 16,
+          }}
+          onClick={() => { if (!templateSaving) setShowTemplateModal(false) }}
+        >
+          <div
+            style={{
+              width: 'min(520px, 100%)',
+              background: 'white',
+              borderRadius: 14,
+              border: '1px solid #E5E3DE',
+              boxShadow: '0 18px 60px rgba(0,0,0,0.25)',
+              padding: 16,
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ fontSize: 14, fontWeight: 700, color: '#1E2329', marginBottom: 10 }}>
+              Salvează ca Șablon
+            </div>
+
+            <div style={{ fontSize: 12, color: '#6B6860', marginBottom: 10, lineHeight: 1.5 }}>
+              Alege un nume pentru șablonul proiectului.
+            </div>
+
+            <input
+              value={templateName}
+              onChange={(e) => setTemplateName(e.target.value)}
+              placeholder="Nume șablon"
+              autoFocus
+              style={{
+                width: '100%',
+                border: '1px solid #E5E3DE',
+                borderRadius: 10,
+                padding: '10px 12px',
+                fontSize: 13,
+                outline: 'none',
+              }}
+            />
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: 14 }}>
+              <button
+                type="button"
+                onClick={() => setShowTemplateModal(false)}
+                disabled={templateSaving}
+                style={{
+                  padding: '9px 12px',
+                  borderRadius: 10,
+                  border: '1px solid #E5E3DE',
+                  background: '#FAFAF8',
+                  fontSize: 13,
+                  fontWeight: 600,
+                  color: '#6B6860',
+                  cursor: templateSaving ? 'not-allowed' : 'pointer',
+                }}
+              >
+                Anulează
+              </button>
+              <button
+                type="button"
+                onClick={confirmSaveAsTemplate}
+                disabled={templateSaving || !templateName.trim()}
+                style={{
+                  padding: '9px 12px',
+                  borderRadius: 10,
+                  border: '1px solid #E5E3DE',
+                  background: '#E8500A',
+                  fontSize: 13,
+                  fontWeight: 700,
+                  color: 'white',
+                  cursor: (templateSaving || !templateName.trim()) ? 'not-allowed' : 'pointer',
+                  opacity: (templateSaving || !templateName.trim()) ? 0.7 : 1,
+                }}
+              >
+                {templateSaving ? 'Se salvează…' : 'Salvează'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showShareModal && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0,0,0,0.45)',
+            zIndex: 80,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 16,
+          }}
+          onClick={() => setShowShareModal(false)}
+        >
+          <div
+            style={{
+              width: 'min(520px, 100%)',
+              background: 'white',
+              borderRadius: 14,
+              border: '1px solid #E5E3DE',
+              boxShadow: '0 18px 60px rgba(0,0,0,0.25)',
+              padding: 16,
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ fontSize: 14, fontWeight: 700, color: '#1E2329', marginBottom: 10 }}>
+              Link de partajare
+            </div>
+
+            <div style={{ fontSize: 12, color: '#6B6860', marginBottom: 10, lineHeight: 1.5 }}>
+              Copiază link-ul de mai jos și trimite-l beneficiarului — nu necesită cont.
+            </div>
+
+            <div style={{ display: 'flex', gap: 10 }}>
+              <input
+                value={shareUrl}
+                readOnly
+                style={{
+                  flex: 1,
+                  border: '1px solid #E5E3DE',
+                  borderRadius: 10,
+                  padding: '10px 12px',
+                  fontSize: 13,
+                  outline: 'none',
+                }}
+              />
+              <button
+                type="button"
+                onClick={async () => {
+                  try {
+                    await navigator.clipboard.writeText(shareUrl)
+                    toast.success('✅ Link copiat în clipboard!')
+                    setShowShareModal(false)
+                  } catch {
+                    toast.error('Nu pot copia automat. Selectează și copiază manual.')
+                  }
+                }}
+                style={{
+                  padding: '9px 12px',
+                  borderRadius: 10,
+                  border: '1px solid #E5E3DE',
+                  background: '#E8500A',
+                  fontSize: 13,
+                  fontWeight: 700,
+                  color: 'white',
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                Copiază
+              </button>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 14 }}>
+              <button
+                type="button"
+                onClick={() => setShowShareModal(false)}
+                style={{
+                  padding: '9px 12px',
+                  borderRadius: 10,
+                  border: '1px solid #E5E3DE',
+                  background: '#FAFAF8',
+                  fontSize: 13,
+                  fontWeight: 600,
+                  color: '#6B6860',
+                  cursor: 'pointer',
+                }}
+              >
+                Închide
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </>
   )

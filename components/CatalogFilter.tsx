@@ -128,7 +128,7 @@ export default function CatalogFilter({
         <div className="text-center py-16 text-slate-400">
           <Search className="w-16 h-16 mx-auto mb-6 opacity-20" />
           <p className="text-xl font-semibold text-slate-600 dark:text-slate-300 mb-2">
-            {totalCount.toLocaleString('ro-RO')} norme disponibile
+            Peste 27 000 de norme
           </p>
           <p className="text-base">
             Caută o normă sau alege o categorie din stânga

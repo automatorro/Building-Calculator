@@ -109,24 +109,6 @@ export default async function CatalogPage({
               )}
             </ul>
           </section>
-
-          <section className="glass-card p-6">
-            <h2 className="text-xl font-semibold mb-3 border-b border-border pb-2">
-              Statistici
-            </h2>
-            <div className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
-              <div className="flex justify-between">
-                <span>Total norme</span>
-                <span className="font-bold text-primary">
-                  {totalNorms.toLocaleString('ro-RO')}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span>Categorii</span>
-                <span className="font-bold">{categories.length}</span>
-              </div>
-            </div>
-          </section>
         </div>
 
         {/* Filtru și rezultate */}

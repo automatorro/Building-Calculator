@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect } from 'react'
 import Link from 'next/link'
 import HeroCalculator from '@/components/HeroCalculator'
 import FaqSection from '@/components/FaqSection'
@@ -50,6 +51,21 @@ function Check({ orange = false }: { orange?: boolean }) {
 }
 
 export default function HomePage() {
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    if (!('IntersectionObserver' in window)) return
+
+    const obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) e.target.classList.add('visible')
+      })
+    }, { threshold: 0.1 })
+
+    document.querySelectorAll('.reveal').forEach(function (el) { obs.observe(el) })
+
+    return () => obs.disconnect()
+  }, [])
+
   return (
     <>
       {/* ── Scroll + pulse animations ── */}
@@ -835,14 +851,6 @@ export default function HomePage() {
           </div>
         </div>
       </footer>
-
-      {/* Scroll reveal script */}
-      <script dangerouslySetInnerHTML={{ __html: `
-        var obs = new IntersectionObserver(function(entries){
-          entries.forEach(function(e){ if(e.isIntersecting) e.target.classList.add('visible'); });
-        },{threshold:.1});
-        document.querySelectorAll('.reveal').forEach(function(el){ obs.observe(el); });
-      `}} />
     </>
   )
 }
