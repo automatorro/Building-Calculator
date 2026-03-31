@@ -6,7 +6,7 @@ export default function CumFunctioneazaPage() {
         src="/cum-functioneaza.html?embed=1"
         style={{
           width: '100%',
-          height: '100vh',
+          height: 'calc(100vh - 60px)',
           border: 'none',
           display: 'block',
           background: 'transparent',

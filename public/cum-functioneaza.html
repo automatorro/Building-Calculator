@@ -30,17 +30,7 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
 body { font-family: var(--sans); background: var(--white); color: var(--black); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
-
-/* NAV */
-.doc-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 0 32px; height: 56px; background: var(--black); backdrop-filter: blur(12px); }
-.nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-.logo-mark { width: 28px; height: 28px; background: var(--orange); border-radius: 6px; display: flex; align-items: center; justify-content: center; }
-.logo-mark svg { width: 16px; height: 16px; }
-.logo-text { font-family: var(--serif); font-size: 18px; color: #fff; }
-.logo-text span { color: var(--orange); }
-.nav-links { display: flex; gap: 8px; list-style: none; }
-.nav-links a { color: rgba(255,255,255,0.5); text-decoration: none; font-size: 13px; font-weight: 400; padding: 6px 12px; border-radius: 6px; transition: all .2s; }
-.nav-links a:hover, .nav-links a.active { color: #fff; background: rgba(255,255,255,0.08); }
+html.embed .hero { padding: 72px 32px 64px; }
 
 /* HERO */
 .hero { padding: 120px 32px 64px; text-align: center; background: var(--black); color: #fff; }
@@ -128,24 +118,6 @@ body { font-family: var(--sans); background: var(--white); color: var(--black); 
 </style>
 </head>
 <body>
-
-<!-- NAV -->
-  <a href="/" class="nav-logo">
-    <div class="logo-mark">
-      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M3 18h18" />
-        <path d="M5 18v-1a7 7 0 0 1 14 0v1" />
-        <path d="M10 11V7a2 2 0 0 1 4 0v4" />
-      </svg>
-    </div>
-    <span class="logo-text">Santi<span>er</span></span>
-  </a>
-  <ul class="nav-links">
-    <li><a href="/">Acasă</a></li>
-    <li><a href="#flux" class="active">Cum funcționează</a></li>
-    <li><a href="/#preturi">Prețuri</a></li>
-  </ul>
-</nav>
 
 <!-- HERO -->
 <section class="hero">
@@ -697,6 +669,7 @@ body { font-family: var(--sans); background: var(--white); color: var(--black); 
 </footer>
 
 <script>
+(function(){try{var p=new URLSearchParams(window.location.search);if(p.get('embed')==='1'){document.documentElement.classList.add('embed')}}catch(e){}})();
 function fmt(n){return Math.round(n).toLocaleString('ro-RO')}
 function fmt2(n){return n.toFixed(2).replace('.',',')}
 

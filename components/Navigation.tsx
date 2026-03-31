@@ -44,7 +44,7 @@ const NAV_LINKS = [
   { label: 'Proiecte',          href: '/projects' },
   { label: 'Catalog norme',     href: '/catalog' },
   { label: 'Calculatoare rapide', href: '/calculatoare-rapide' },
-  { label: 'Cum funcționează',  href: '/cum-functioneaza.html' },
+  { label: 'Cum funcționează',  href: '/cum-functioneaza' },
 ]
 
 export default function Navigation() {
