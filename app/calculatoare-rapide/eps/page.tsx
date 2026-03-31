@@ -113,7 +113,7 @@ export default function Page() {
     return init
   })
 
-  const { rowsComputed, totalReq, totalOpt, grand, grandVat } = useMemo(() => {
+  const { rowsComputed, totalReq, totalOpt, grand, grandVat, totalReqVat } = useMemo(() => {
     const vatRate = 0.21
     let req = 0
     let opt = 0
@@ -133,7 +133,7 @@ export default function Page() {
     )
 
     const g = req + opt
-    return { rowsComputed: computed, totalReq: req, totalOpt: opt, grand: g, grandVat: g * (1 + vatRate) }
+    return { rowsComputed: computed, totalReq: req, totalOpt: opt, grand: g, grandVat: g * (1 + vatRate), totalReqVat: req * (1 + vatRate) }
   }, [area, prices, included, manualQty])
 
   return (
@@ -164,12 +164,16 @@ export default function Page() {
         td.total-cell { text-align: right; font-weight: 500; font-size: 13px; white-space: nowrap; }
         td.opt-badge { width: 20px; text-align: center; }
         .opt-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #d3d1c7; }
-        .req-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #378add; }
+        .req-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #e28b30; }
         .summary { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 1.5rem; }
         .metric { background: #fff; border-radius: 8px; padding: 12px 14px; border: 0.5px solid #d3d1c7; }
         .metric .lbl { font-size: 11px; color: #888780; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.06em; }
         .metric .val { font-size: 20px; font-weight: 500; color: #1a1a18; }
         .metric .sub { font-size: 11px; color: #888780; margin-top: 2px; }
+        .metric.vat-total { background: #e9f7ed; border-color: #a9dcb6; }
+        .metric.vat-total .lbl { color: #2f6d3a; font-weight: 700; }
+        .metric.vat-total .val { font-weight: 700; }
+        .metric.vat-total .sub { color: #2f6d3a; }
         .legend { display: flex; gap: 16px; margin-top: 1rem; font-size: 11px; color: #888780; }
         .legend span { display: flex; align-items: center; gap: 5px; }
         @media (max-width: 600px) {
@@ -314,6 +318,11 @@ export default function Page() {
             <div className="val">{totalReq.toFixed(2)} lei</div>
             <div className="sub">{area} m²</div>
           </div>
+          <div className="metric vat-total">
+            <div className="lbl">Obligatoriu cu TVA (21%) / total</div>
+            <div className="val">{totalReqVat.toFixed(2)} lei</div>
+            <div className="sub">{area} m²</div>
+          </div>
           <div className="metric">
             <div className="lbl">Cu opționale / m²</div>
             <div className="val">{(grand / area).toFixed(2)} lei</div>
@@ -329,7 +338,7 @@ export default function Page() {
             <div className="val">{(grandVat / area).toFixed(2)} lei</div>
             <div className="sub">incl. TVA 21%</div>
           </div>
-          <div className="metric">
+          <div className="metric vat-total">
             <div className="lbl">Total cu TVA (21%) / total</div>
             <div className="val">{grandVat.toFixed(2)} lei</div>
             <div className="sub">{area} m²</div>

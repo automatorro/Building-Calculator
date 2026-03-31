@@ -1,6 +1,6 @@
 # Master Implementation Plan: BuildingCalc (Adevărul Absolut)
 
-Acest document este sursa unică de adevăr (Single Source of Truth) pentru finalizarea aplicației **BuildingCalc**. El îmbină reparațiile tehnice esențiale (fundația MVP-ului) cu arhitectura pe termen lung (Comparatorul de Furnizori), asigurând că nicio muncă nu este aruncată și arhitectura de bază nu este compromisă.
+Acest document este sursa unică de adevăr (Single Source of Truth) pentru finalizarea aplicației **santier.app**. El îmbină reparațiile tehnice esențiale (fundația MVP-ului) cu arhitectura pe termen lung (Comparatorul de Furnizori), asigurând că nicio muncă nu este aruncată și arhitectura de bază nu este compromisă.
 
 ### Filosofia Arhitecturală Asumată
 - **Devizul (Centralizatorul) Rămâne Sfințenia Proiectului:** Este componenta esențială unde se importă rețete, se defalcă materiale și se ajustează cantitățile fizice ale lucrării (`resources_override`). Rămâne neschimbat la nivel structural.

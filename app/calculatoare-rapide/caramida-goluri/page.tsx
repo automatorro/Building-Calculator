@@ -178,7 +178,7 @@ export default function Page() {
     return init
   })
 
-  const { volumeM3, piecesRaw, piecesCeil, faceAreaM2, rowsComputed, totalReq, totalOpt, grand, grandVat } = useMemo(() => {
+  const { volumeM3, piecesRaw, piecesCeil, faceAreaM2, rowsComputed, totalReq, totalOpt, grand, grandVat, totalReqVat } = useMemo(() => {
     const vatRate = 0.21
     const thicknessM = thicknessCm / 100
     const vM3 = area * thicknessM
@@ -214,7 +214,7 @@ export default function Page() {
     )
 
     const g = req + opt
-    return { volumeM3: vM3, piecesRaw: raw, piecesCeil: ceil, faceAreaM2: faceM2, rowsComputed: computed, totalReq: req, totalOpt: opt, grand: g, grandVat: g * (1 + vatRate) }
+    return { volumeM3: vM3, piecesRaw: raw, piecesCeil: ceil, faceAreaM2: faceM2, rowsComputed: computed, totalReq: req, totalOpt: opt, grand: g, grandVat: g * (1 + vatRate), totalReqVat: req * (1 + vatRate) }
   }, [area, thicknessCm, format.heightMm, format.lengthMm, layingType, prices, included, manualQty])
 
   return (
@@ -250,12 +250,16 @@ export default function Page() {
         td.total-cell { text-align: right; font-weight: 500; font-size: 13px; white-space: nowrap; }
         td.opt-badge { width: 20px; text-align: center; }
         .opt-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #d3d1c7; }
-        .req-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #378add; }
+        .req-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #e28b30; }
         .summary { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 1.5rem; }
         .metric { background: #fff; border-radius: 8px; padding: 12px 14px; border: 0.5px solid #d3d1c7; }
         .metric .lbl { font-size: 11px; color: #888780; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.06em; }
         .metric .val { font-size: 20px; font-weight: 500; color: #1a1a18; }
         .metric .sub { font-size: 11px; color: #888780; margin-top: 2px; }
+        .metric.vat-total { background: #e9f7ed; border-color: #a9dcb6; }
+        .metric.vat-total .lbl { color: #2f6d3a; font-weight: 700; }
+        .metric.vat-total .val { font-weight: 700; }
+        .metric.vat-total .sub { color: #2f6d3a; }
         .legend { display: flex; gap: 16px; margin-top: 1rem; font-size: 11px; color: #888780; }
         .legend span { display: flex; align-items: center; gap: 5px; }
         @media (max-width: 700px) {
@@ -498,6 +502,11 @@ export default function Page() {
             <div className="val">{n2(totalReq)} lei</div>
             <div className="sub">{n0(area)} m²</div>
           </div>
+          <div className="metric vat-total">
+            <div className="lbl">Obligatoriu cu TVA (21%) / total</div>
+            <div className="val">{n2(totalReqVat)} lei</div>
+            <div className="sub">{n0(area)} m²</div>
+          </div>
           <div className="metric">
             <div className="lbl">Cu opționale / m²</div>
             <div className="val">{n2(grand / area)} lei</div>
@@ -513,20 +522,15 @@ export default function Page() {
             <div className="val">{n2(grandVat / area)} lei</div>
             <div className="sub">incl. TVA 21%</div>
           </div>
-          <div className="metric">
+          <div className="metric vat-total">
             <div className="lbl">Total cu TVA (21%) / total</div>
             <div className="val">{n2(grandVat)} lei</div>
             <div className="sub">{n0(area)} m²</div>
           </div>
           <div className="metric">
-            <div className="lbl">Suprafață</div>
-            <div className="val">{n0(area)} m²</div>
-            <div className="sub">modifică sus</div>
-          </div>
-          <div className="metric">
-            <div className="lbl">Volum</div>
-            <div className="val">{n2(volumeM3)} m³</div>
-            <div className="sub">{thicknessCm} cm</div>
+            <div className="lbl">Grosime zid</div>
+            <div className="val">{thicknessCm} cm</div>
+            <div className="sub">{fmt(format, thicknessCm)}</div>
           </div>
         </div>
 
