@@ -146,10 +146,54 @@ export default function ProjectClientContainer({
   )
 
   /* ── Înregistrare achiziție cu alertă depășire buget ────────────────── */
-  const handleAddPurchase = async (newPurchase: Omit<Purchase, 'id' | 'project_id'>) => {
+  const handleAddPurchase = async (newPurchase: any) => {
+    const photosFiles: File[] = Array.isArray(newPurchase?.photosFiles) ? newPurchase.photosFiles : []
+    const uploadBucket = 'purchase-photos'
+    let photos: string[] = []
+
+    if (photosFiles.length > 0) {
+      try {
+        for (const file of photosFiles.slice(0, 3)) {
+          const safeName = (file.name || 'photo')
+            .toLowerCase()
+            .replace(/[^\w.\-]+/g, '-')
+            .replace(/-+/g, '-')
+            .slice(0, 120)
+
+          let uid = ''
+          try {
+            uid = crypto.randomUUID()
+          } catch {
+            uid = `${Date.now()}-${Math.random().toString(16).slice(2)}`
+          }
+
+          const path = `${projectId}/${Date.now()}-${uid}-${safeName}`
+
+          const { error: uploadError } = await supabase.storage
+            .from(uploadBucket)
+            .upload(path, file, { contentType: file.type || 'application/octet-stream' })
+
+          if (uploadError) {
+            toast.error('Eroare la upload poze: ' + uploadError.message)
+            return
+          }
+
+          const publicUrl = supabase.storage.from(uploadBucket).getPublicUrl(path).data.publicUrl
+          if (publicUrl) photos.push(publicUrl)
+        }
+      } catch (e: any) {
+        toast.error('Eroare la upload poze: ' + (e?.message || 'Eroare necunoscută'))
+        return
+      }
+    }
+
+    const toInsert = { ...newPurchase }
+    delete toInsert.photosFiles
+    if (photos.length > 0) toInsert.photos = photos
+
     const { data, error } = await supabase
       .from('purchases')
-      .insert([{ ...newPurchase, project_id: projectId }])
+      .insert([{ ...toInsert, project_id: projectId }])
       .select()
       .single()
 
@@ -367,7 +411,7 @@ export default function ProjectClientContainer({
                 <table style={{ width:'100%', borderCollapse:'collapse', fontSize:13 }}>
                   <thead>
                     <tr style={{ background:'#F3F2EF', borderBottom:'1px solid #E5E3DE' }}>
-                      {['Dată', 'Articol / Notă', 'Etapă', 'Categorie', 'Sumă'].map(h => (
+                      {['Dată', 'Articol / Notă', 'Poze', 'Etapă', 'Categorie', 'Sumă'].map(h => (
                         <th key={h} style={{ padding:'10px 20px', textAlign: h === 'Sumă' ? 'right' : 'left',
                           fontSize:11, fontWeight:600, color:'#6B6860',
                           textTransform:'uppercase', letterSpacing:'.04em' }}>
@@ -379,7 +423,7 @@ export default function ProjectClientContainer({
                   <tbody>
                     {purchases.length === 0 ? (
                       <tr>
-                        <td colSpan={5} style={{ padding:'40px', textAlign:'center',
+                        <td colSpan={6} style={{ padding:'40px', textAlign:'center',
                           color:'#A8A59E', fontStyle:'italic', fontSize:13 }}>
                           Nu există achiziții înregistrate.
                         </td>
@@ -392,6 +436,23 @@ export default function ProjectClientContainer({
                           </td>
                           <td style={{ padding:'12px 20px', fontWeight:500, color:'#1E2329' }}>
                             {p.name}
+                          </td>
+                          <td style={{ padding:'12px 20px' }}>
+                            {Array.isArray((p as any).photos) && (p as any).photos.length > 0 ? (
+                              <div style={{ display:'flex', gap:6, alignItems:'center' }}>
+                                {((p as any).photos as string[]).slice(0, 3).map((url) => (
+                                  <a key={url} href={url} target="_blank" rel="noreferrer">
+                                    <img
+                                      src={url}
+                                      alt=""
+                                      style={{ width:32, height:32, borderRadius:8, objectFit:'cover', border:'1px solid #E5E3DE' }}
+                                    />
+                                  </a>
+                                ))}
+                              </div>
+                            ) : (
+                              <span style={{ color:'#A8A59E' }}>—</span>
+                            )}
                           </td>
                           <td style={{ padding:'12px 20px', fontSize:12, color:'#6B6860' }}>
                             {p.stage_name || '—'}
@@ -447,6 +508,7 @@ function PurchaseFormModal({
     category: 'Material',
     date: new Date().toISOString().split('T')[0],
   })
+  const [photosFiles, setPhotosFiles] = useState<File[]>([])
 
   const inputStyle: React.CSSProperties = {
     width:'100%', padding:'11px 14px', background:'#F3F2EF',
@@ -503,6 +565,37 @@ function PurchaseFormModal({
             </div>
           </div>
 
+          <div>
+            <label style={{ display:'block', fontSize:12, fontWeight:500,
+              color:'#6B6860', textTransform:'uppercase', letterSpacing:'.04em', marginBottom:6 }}>
+              Poze (max 3)
+            </label>
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={e => {
+                const files = Array.from(e.target.files || []).slice(0, 3)
+                setPhotosFiles(files)
+              }}
+            />
+            {photosFiles.length > 0 && (
+              <div style={{ display:'flex', gap:8, marginTop:10, flexWrap:'wrap' }}>
+                {photosFiles.map((file) => {
+                  const url = URL.createObjectURL(file)
+                  return (
+                    <img
+                      key={`${file.name}-${file.size}-${file.lastModified}`}
+                      src={url}
+                      alt=""
+                      style={{ width:56, height:56, borderRadius:10, objectFit:'cover', border:'1px solid #E5E3DE' }}
+                    />
+                  )
+                })}
+              </div>
+            )}
+          </div>
+
           <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(140px, 1fr))', gap:12 }}>
             <div>
               <label style={{ display:'block', fontSize:12, fontWeight:500,
@@ -543,7 +636,7 @@ function PurchaseFormModal({
             Anulează
           </button>
           <button
-            onClick={() => onSave({...formData, amount_total: parseFloat(formData.amount_total) || 0})}
+            onClick={() => onSave({ ...formData, amount_total: parseFloat(formData.amount_total) || 0, photosFiles })}
             disabled={!formData.name || !formData.amount_total}
             style={{ flex:1, padding:'12px', background:'#E8500A', border:'none',
               borderRadius:8, fontSize:14, fontWeight:500, color:'white',
