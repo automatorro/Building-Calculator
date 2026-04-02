@@ -18,12 +18,14 @@ interface CatalogNorm {
 export default function CatalogFilter({
   initialNorms,
   projectId,
+  projectName,
   initialSearch = '',
   initialCategory = '',
   totalCount = 0,
 }: {
   initialNorms: CatalogNorm[]
   projectId?: string | null
+  projectName?: string | null
   initialSearch?: string
   initialCategory?: string
   totalCount?: number
@@ -88,6 +90,38 @@ export default function CatalogFilter({
 
   return (
     <div className="lg:col-span-2 space-y-6">
+      <div id="results" className="h-0 scroll-mt-28" />
+      {projectId ? (
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-white dark:bg-slate-900 px-4 py-3">
+          <div className="flex items-center gap-3">
+            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+              Mod adăugare în deviz
+            </span>
+            <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+              {projectName ? projectName : `Proiect ${projectId.slice(0, 8).toUpperCase()}`}
+            </span>
+          </div>
+          <a
+            href={`/projects/${projectId}`}
+            className="text-xs font-semibold text-slate-500 hover:text-primary transition-colors"
+          >
+            Înapoi la proiect →
+          </a>
+        </div>
+      ) : (
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-2xl border border-border bg-slate-50 dark:bg-slate-900/40 px-4 py-3">
+          <div className="text-sm text-slate-600 dark:text-slate-300">
+            Mod vizualizare. Pentru a adăuga norme în deviz, deschide un proiect și apasă „Catalog”.
+          </div>
+          <a
+            href="/projects"
+            className="inline-flex items-center justify-center rounded-xl bg-primary px-4 py-2 text-xs font-bold text-white hover:bg-primary/90 transition-colors"
+          >
+            Alege proiect
+          </a>
+        </div>
+      )}
+
       {/* Search */}
       <div className="relative group">
         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
@@ -191,7 +225,7 @@ export default function CatalogFilter({
                     onClick={() => handleAddNorm(norm)}
                     disabled={addingId === norm.id}
                     title="Adaugă în deviz"
-                    className={`flex-shrink-0 p-2 rounded-lg transition-all ${
+                    className={`flex-shrink-0 px-3 py-2 rounded-lg transition-all flex items-center gap-2 ${
                       addedId === norm.id
                         ? 'bg-green-100 text-green-600'
                         : addingId === norm.id
@@ -200,6 +234,9 @@ export default function CatalogFilter({
                     }`}
                   >
                     {addedId === norm.id ? <Check className="w-5 h-5" /> : <PlusCircle className="w-5 h-5" />}
+                    <span className="hidden sm:inline text-xs font-semibold">
+                      {addedId === norm.id ? 'Adăugat' : 'Adaugă'}
+                    </span>
                   </button>
                 )}
               </div>

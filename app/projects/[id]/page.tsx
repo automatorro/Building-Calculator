@@ -67,7 +67,7 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
         display: 'flex', flexDirection: 'column', gap: 16,
       }}>
         {/* Rândul 1: breadcrumb + acțiuni */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
           <Link href="/projects"
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
@@ -77,11 +77,6 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
             <ArrowLeft size={12} />
             Proiecte
           </Link>
-          <ProjectActions
-            projectId={id}
-            initialDimensions={project.dimensions || {}}
-            initialStages={stages}
-          />
         </div>
 
         {/* Rândul 2: titlu + meta */}
@@ -107,6 +102,14 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
               </span>
             )}
           </div>
+        </div>
+
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <ProjectActions
+            projectId={id}
+            initialDimensions={project.dimensions || {}}
+            initialStages={stages}
+          />
         </div>
       </div>
 

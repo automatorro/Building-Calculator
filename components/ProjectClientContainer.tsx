@@ -246,10 +246,10 @@ export default function ProjectClientContainer({
 
   /* ── Tab config ────────────────────────────────────────────────────────── */
   const TABS: Array<{ id: Tab; label: string; icon: React.ElementType }> = [
-    { id: 'dashboard', label: 'Dashboard',    icon: LayoutDashboard },
+    { id: 'dashboard', label: 'Status',       icon: LayoutDashboard },
     { id: 'planning',  label: 'Planificare',  icon: ClipboardList   },
     { id: 'deviz',     label: 'Deviz',        icon: ListTree        },
-    { id: 'timeline',  label: 'Timeline',     icon: CalendarDays    },
+    { id: 'timeline',  label: 'Cronologie',   icon: CalendarDays    },
     { id: 'purchases', label: 'Achiziții',    icon: Wallet          },
   ]
 

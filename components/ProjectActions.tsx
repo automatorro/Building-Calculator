@@ -320,7 +320,7 @@ export default function ProjectActions({ projectId, initialDimensions, initialSt
           }}
         >
           <Plus size={15} />
-          <span>Catalog</span>
+          <span>Adaugă norme</span>
         </Link>
       </div>
 
