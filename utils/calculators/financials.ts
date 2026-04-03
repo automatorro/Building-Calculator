@@ -54,7 +54,7 @@ export function calculateFinancials(
 
   lines.forEach(line => {
     const costs = calculateLineCosts(line, settings)
-    const stage = line.stage_name || 'Alte Lucrări'
+    const stage = line.stage_name || 'Lucrări Generale'
     
     totalPlannedDirect += costs.totalDirectCost
     totalBudget += costs.totalWithTVA
@@ -72,7 +72,7 @@ export function calculateFinancials(
 
   purchases.forEach(p => {
     const amount = Number(p.amount_total) || 0
-    const stage = p.stage_name || 'Alte Lucrări'
+    const stage = p.stage_name || 'Lucrări Generale'
     
     totalSpent += amount
     stageSpent[stage] = (stageSpent[stage] || 0) + amount

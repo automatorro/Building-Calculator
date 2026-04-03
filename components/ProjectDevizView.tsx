@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { ListTree, ChevronDown, ChevronUp, Download, FileText, CheckCircle2, Sheet } from 'lucide-react'
+import { ListTree, ChevronDown, ChevronUp, Download, FileText, CheckCircle2, Sheet, Save } from 'lucide-react'
 import {
   EstimateLine,
   ProjectSettings,
@@ -17,6 +17,9 @@ interface ProjectDevizViewProps {
   onExportPDF: () => void
   onExportCSV: () => void
   onExportExcel?: () => void
+  onUpdateLine: (id: string, updates: Partial<EstimateLine>) => void
+  onSave?: () => void
+  isSaving?: boolean
 }
 
 /* Formatare număr în lei */
@@ -53,6 +56,9 @@ export default function ProjectDevizView({
   onExportPDF,
   onExportCSV,
   onExportExcel,
+  onUpdateLine,
+  onSave,
+  isSaving,
 }: ProjectDevizViewProps) {
   const [expandedStage, setExpandedStage] = useState<string | null>(null)
   const [discountB2B, setDiscountB2B] = useState(0)
@@ -62,7 +68,7 @@ export default function ProjectDevizView({
   const grouped = useMemo(() => {
     const map: Record<string, EstimateLine[]> = {}
     for (const line of lines) {
-      const stage = line.stage_name || 'Alte Lucrări'
+      const stage = line.stage_name || 'Lucrări Generale'
       if (!map[stage]) map[stage] = []
       map[stage].push(line)
     }
@@ -162,6 +168,19 @@ export default function ProjectDevizView({
             onMouseLeave={e=>{e.currentTarget.style.background='#E8500A'}}>
             <FileText size={14} /> Generează PDF
           </button>
+          
+          {onSave && (
+            <button 
+              onClick={onSave}
+              disabled={isSaving}
+              style={{ display:'flex', alignItems:'center', gap:7, padding:'9px 18px',
+                background: isSaving ? '#6B6860' : '#2A7D4F', border:'none', borderRadius:8,
+                fontSize:13, fontWeight:700, color:'white', cursor: isSaving ? 'wait' : 'pointer',
+                fontFamily:'inherit', transition:'all .15s', textTransform: 'uppercase', letterSpacing: '.05em' }}
+            >
+              <Save size={14} /> {isSaving ? 'Se salvează...' : 'Salvează Tot'}
+            </button>
+          )}
         </div>
       </div>
 
@@ -325,23 +344,66 @@ export default function ProjectDevizView({
                                   {code.trim() || '—'}
                                 </td>
                                 <td style={{ padding:'8px 12px', color:'#1E2329', maxWidth:240 }}>
-                                  {name}
+                                  {isManual ? (
+                                    <input
+                                      value={name}
+                                      onChange={(e) => onUpdateLine(line.id, { manual_name: e.target.value })}
+                                      style={{ width:'100%', border:'none', background:'transparent',
+                                        fontFamily:'inherit', fontSize:'inherit', color:'inherit',
+                                        outline:'none', borderBottom:'1px dashed transparent' }}
+                                      onFocus={(e) => e.target.style.borderBottomColor = '#E8500A'}
+                                      onBlur={(e) => e.target.style.borderBottomColor = 'transparent'}
+                                    />
+                                  ) : (
+                                    name
+                                  )}
                                 </td>
                                 <td style={{ padding:'8px 12px', textAlign:'right', color:'#6B6860' }}>
-                                  {um}
+                                  {isManual ? (
+                                    <input
+                                      value={um}
+                                      onChange={(e) => onUpdateLine(line.id, { manual_um: e.target.value })}
+                                      style={{ width:40, border:'none', background:'transparent',
+                                        textAlign:'right', fontFamily:'inherit', fontSize:'inherit',
+                                        color:'inherit', outline:'none' }}
+                                    />
+                                  ) : (
+                                    um
+                                  )}
                                 </td>
                                 <td style={{ padding:'8px 12px', textAlign:'right', color:'#1E2329', fontWeight:500 }}>
-                                  {includePierderi ? (
-                                    <span title={`+${(getPierderi(name) * 100).toFixed(0)}% pierderi`}>
-                                      {(line.quantity * (1 + getPierderi(name))).toLocaleString('ro-RO', { maximumFractionDigits: 2 })}
-                                      <span style={{ fontSize:10, color:'#E8500A', marginLeft:3 }}>
+                                  <div style={{ display:'inline-flex', alignItems:'center', gap:4 }}>
+                                    <input
+                                      type="number"
+                                      value={line.quantity}
+                                      onChange={(e) => onUpdateLine(line.id, { quantity: parseFloat(e.target.value) || 0 })}
+                                      style={{ width:60, border:'none', background:'transparent',
+                                        textAlign:'right', fontFamily:'inherit', fontSize:'inherit',
+                                        fontWeight:500, color:'#1E2329', outline:'none',
+                                        borderBottom:'1px dashed #E5E3DE' }}
+                                      onFocus={(e) => e.target.style.borderBottomColor = '#E8500A'}
+                                      onBlur={(e) => e.target.style.borderBottomColor = '#E5E3DE'}
+                                    />
+                                    {includePierderi && (
+                                      <span style={{ fontSize:10, color:'#E8500A' }} title={`+${(getPierderi(name) * 100).toFixed(0)}% pierderi`}>
                                         +{(getPierderi(name) * 100).toFixed(0)}%
                                       </span>
-                                    </span>
-                                  ) : line.quantity.toLocaleString('ro-RO')}
+                                    )}
+                                  </div>
                                 </td>
                                 <td style={{ padding:'8px 12px', textAlign:'right', color:'#6B6860' }}>
-                                  {lei(costs.unitDirectCost)}
+                                  {isManual ? (
+                                    <input
+                                      type="number"
+                                      value={line.manual_price}
+                                      onChange={(e) => onUpdateLine(line.id, { manual_price: parseFloat(e.target.value) || 0 })}
+                                      style={{ width:80, border:'none', background:'transparent',
+                                        textAlign:'right', fontFamily:'inherit', fontSize:'inherit',
+                                        color:'#E8500A', fontWeight: 600, outline:'none' }}
+                                    />
+                                  ) : (
+                                    lei(costs.unitDirectCost)
+                                  )}
                                 </td>
                                 <td style={{ padding:'8px 12px', textAlign:'right', color:'#1E2329' }}>
                                   {lei(costs.totalDirectCost)}

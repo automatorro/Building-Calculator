@@ -113,6 +113,9 @@ export function calculateLineCosts(line: EstimateLine, settings: ProjectSettings
 }
 
 export function calculateProjectTotals(lines: EstimateLine[], settings: ProjectSettings) {
+  if (!lines || !Array.isArray(lines)) {
+    return { totalDirect: 0, totalOfertat: 0, totalWithTVA: 0 }
+  }
   return lines.reduce((acc, line) => {
     const costs = calculateLineCosts(line, settings)
     return {

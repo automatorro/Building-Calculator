@@ -45,7 +45,7 @@ export default async function SharePage({ params }: { params: { token: string } 
   let totalFaraTVA = 0
 
   for (const line of lines) {
-    const stage = line.stage_name || 'Alte Lucrări'
+    const stage = line.stage_name || 'Lucrări Generale'
     const costs = calculateLineCosts(line, settings)
     if (!grouped[stage]) grouped[stage] = { total: 0, count: 0 }
     grouped[stage].total += costs.totalOfertatWithoutTVA

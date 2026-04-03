@@ -46,8 +46,16 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
   const formattedLines = (estimateLines || []).map((line: any) => {
     const item = Array.isArray(line.items) ? line.items[0] : line.items
     const norm = item && Array.isArray(item.normatives) ? item.normatives[0] : item?.normatives
+    
+    // Scrub db legacy naming
+    let safeStageName = line.stage_name;
+    if (safeStageName === 'Alte Lucrări' || safeStageName === 'Alte lucrari') {
+      safeStageName = '';
+    }
+
     return {
       ...line,
+      stage_name: safeStageName,
       items: item ? { ...item, normatives: norm || null, resources: item.resources || [] } : null,
     }
   })

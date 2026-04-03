@@ -10,67 +10,38 @@ import VendorOfferPicker from './VendorOfferPicker'
 
 interface EstimateEditorProps {
   projectId: string
-  initialLines: EstimateLine[]
+  lines: EstimateLine[]
   settings: ProjectSettings
   dimensions: any
+  onUpdateLine: (id: string, updates: Partial<EstimateLine>) => void
+  onAddLine: (stageName?: string) => void
+  onDeleteLine: (id: string) => void
+  onDuplicateLine: (line: EstimateLine) => void
+  isSaving: boolean
+  isSaved: boolean
 }
 
-export default function EstimateEditor({ projectId, initialLines, settings, dimensions }: EstimateEditorProps) {
-  const [lines, setLines] = useState<EstimateLine[]>(initialLines)
+export default function EstimateEditor({ 
+  projectId, 
+  lines, 
+  settings, 
+  dimensions,
+  onUpdateLine,
+  onAddLine,
+  onDeleteLine,
+  onDuplicateLine,
+  isSaving,
+  isSaved
+}: EstimateEditorProps) {
   const [expandedId, setExpandedId] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
-  const [isSaved, setIsSaved] = useState(false)
   const [activeOfferPicker, setActiveOfferPicker] = useState<{ resourceId: string, resourceName: string, lineId: string } | null>(null)
-  const [openLineMenuId, setOpenLineMenuId] = useState<string | null>(null)
   const [collapsedStages, setCollapsedStages] = useState<Record<string, boolean>>({})
   const [didInitCollapse, setDidInitCollapse] = useState(false)
   const supabase = createClient()
 
-  // Calculăm valorile "Smart" disponibile bazate pe dimensiuni
-  const smartValues = useMemo(() => {
-    const d = {
-      length: 10, width: 8, height: 3, 
-      foundation_depth: 0.8, foundation_width: 0.6, 
-      slab_thickness: 0.15, wall_thickness: 0.25,
-      ...dimensions
-    }
-    const area = d.length * d.width
-    const perimeter = (d.length + d.width) * 2
-    
-    return {
-      'foundation_concrete': perimeter * d.foundation_depth * d.foundation_width,
-      'slab_concrete': area * d.slab_thickness,
-      'wall_volume': perimeter * d.height * d.wall_thickness,
-      'formwork_area': (perimeter * 0.5) + (perimeter * d.height),
-      'excavation_volume': perimeter * d.foundation_depth * d.foundation_width * 1.2,
-      'floor_area': area
-    }
-  }, [dimensions])
-
-  const smartValueLabels: Record<string, string> = useMemo(() => ({
-    foundation_concrete: 'Beton fundații (m³)',
-    slab_concrete: 'Beton placă (m³)',
-    wall_volume: 'Volum pereți (m³)',
-    formwork_area: 'Cofraj (m²)',
-    excavation_volume: 'Excavație (m³)',
-    floor_area: 'Suprafață (m²)',
-  }), [])
-
-  useEffect(() => {
-    if (!openLineMenuId) return
-    const onPointerDown = (e: PointerEvent) => {
-      const target = e.target as HTMLElement | null
-      if (!target) return
-      if (target.closest(`[data-line-menu-root="${openLineMenuId}"]`)) return
-      setOpenLineMenuId(null)
-    }
-    window.addEventListener('pointerdown', onPointerDown)
-    return () => window.removeEventListener('pointerdown', onPointerDown)
-  }, [openLineMenuId])
-
   useEffect(() => {
     if (didInitCollapse) return
-    const stageOrder = Array.from(new Set(lines.map(l => l.stage_name || 'Alte Lucrări')))
+    const stageOrder = Array.from(new Set(lines.map(l => l.stage_name || 'Lucrări Generale')))
     if (stageOrder.length === 0) return
     const next: Record<string, boolean> = {}
     stageOrder.forEach((s, idx) => { next[s] = idx !== 0 })
@@ -80,56 +51,28 @@ export default function EstimateEditor({ projectId, initialLines, settings, dime
 
   const totals = useMemo(() => calculateProjectTotals(lines, settings), [lines, settings])
 
-  const handleUpdateQuantity = (id: string, val: string) => {
+    const handleUpdateQuantity = (id: string, val: string) => {
     const num = parseFloat(val) || 0
-    setLines(lines.map(l => l.id === id ? { ...l, quantity: num } : l))
-    setIsSaved(false)
+    onUpdateLine(id, { quantity: num })
   }
 
   const handleUpdateManualField = (id: string, field: 'manual_name' | 'manual_um' | 'manual_price' | 'manual_labor_price' | 'manual_equipment_price' | 'manual_transport_price', val: string) => {
-    setLines(lines.map(l => {
-      if (l.id !== id) return l
-      const isNumeric = field !== 'manual_name' && field !== 'manual_um'
-      const newVal = isNumeric ? parseFloat(val) || 0 : val
-      return { ...l, [field]: newVal }
-    }))
-    setIsSaved(false)
+    const isNumeric = field !== 'manual_name' && field !== 'manual_um'
+    const newVal = isNumeric ? parseFloat(val) || 0 : val
+    onUpdateLine(id, { [field]: newVal })
   }
 
   const handleAddManualLine = (stageName?: string) => {
-    const newLine: EstimateLine = {
-      id: crypto.randomUUID(),
-      quantity: 1,
-      custom_prices: {},
-      excluded_resources: [],
-      metadata: { source: 'manual' },
-      stage_name: stageName || '',
-      manual_name: 'Articol nou',
-      manual_um: 'buc',
-      manual_price: 0,
-      manual_labor_price: 0,
-      manual_equipment_price: 0,
-      manual_transport_price: 0,
-      items: null
-    }
-    setLines([...lines, newLine])
-    setIsSaved(false)
+    onAddLine(stageName)
   }
 
   const handleDeleteLine = (id: string) => {
-    setLines(lines.filter(l => l.id !== id))
-    setIsSaved(false)
+    onDeleteLine(id)
     toast.success('Rând șters.')
   }
 
-  const handleDuplicateLine = (line: EstimateLine) => {
-    const newLine = {
-      ...line,
-      id: crypto.randomUUID(),
-    }
-    setLines([...lines, newLine])
-    setIsSaved(false)
-    toast.success('Rând duplicat cu succes!')
+    const handleDuplicateLine = (line: EstimateLine) => {
+    onDuplicateLine(line)
   }
 
   const ensureResourcesOverride = (line: EstimateLine) => {
@@ -138,105 +81,55 @@ export default function EstimateEditor({ projectId, initialLines, settings, dime
   }
 
   const handleUpdateResourceField = (lineId: string, resId: string, field: string, val: any) => {
-    setLines(lines.map(l => {
-      if (l.id !== lineId) return l
-      const currentResources = ensureResourcesOverride(l)
-      const newResources = currentResources.map((r: any) => {
-        if (r.id !== resId) return r
-        const isNumeric = ['consumption', 'unit_price', 'waste_percent'].includes(field)
-        return { ...r, [field]: isNumeric ? parseFloat(val) || 0 : val }
-      })
-      return { ...l, resources_override: newResources }
-    }))
-    setIsSaved(false)
+    const line = lines.find(l => l.id === lineId)
+    if (!line) return
+    const currentResources = ensureResourcesOverride(line)
+    const newResources = currentResources.map((r: any) => {
+      if (r.id !== resId) return r
+      const isNumeric = ['consumption', 'unit_price', 'waste_percent'].includes(field)
+      return { ...r, [field]: isNumeric ? parseFloat(val) || 0 : val }
+    })
+    onUpdateLine(lineId, { resources_override: newResources })
   }
 
   const handleAddResource = (lineId: string) => {
-    setLines(lines.map(l => {
-      if (l.id !== lineId) return l
-      const currentResources = ensureResourcesOverride(l)
-      const newRes = {
-        id: crypto.randomUUID(),
-        name: 'Resursă nouă',
-        type: 'material' as const,
-        um: 'buc',
-        consumption: 1,
-        unit_price: 0,
-        waste_percent: 0
-      }
-      return { ...l, resources_override: [...currentResources, newRes] }
-    }))
-    setIsSaved(false)
+    const line = lines.find(l => l.id === lineId)
+    if (!line) return
+    const currentResources = ensureResourcesOverride(line)
+    const newRes = {
+      id: crypto.randomUUID(),
+      name: 'Resursă nouă',
+      type: 'material' as const,
+      um: 'buc',
+      consumption: 1,
+      unit_price: 0,
+      waste_percent: 0
+    }
+    onUpdateLine(lineId, { resources_override: [...currentResources, newRes] })
   }
 
   const handleDeleteResource = (lineId: string, resId: string) => {
-    setLines(lines.map(l => {
-      if (l.id !== lineId) return l
-      const currentResources = ensureResourcesOverride(l)
-      const newResources = currentResources.filter((r: any) => r.id !== resId)
-      return { ...l, resources_override: newResources }
-    }))
-    setIsSaved(false)
+    const line = lines.find(l => l.id === lineId)
+    if (!line) return
+    const currentResources = ensureResourcesOverride(line)
+    const newResources = currentResources.filter((r: any) => r.id !== resId)
+    onUpdateLine(lineId, { resources_override: newResources })
   }
 
   const handleToggleResource = (lineId: string, resId: string) => {
-    setLines(lines.map(l => {
-      if (l.id !== lineId) return l
-      const excluded = l.excluded_resources.includes(resId)
-        ? l.excluded_resources.filter(id => id !== resId)
-        : [...l.excluded_resources, resId]
-      return { ...l, excluded_resources: excluded }
-    }))
-    setIsSaved(false)
+    const line = lines.find(l => l.id === lineId)
+    if (!line) return
+    const excluded = line.excluded_resources.includes(resId)
+      ? line.excluded_resources.filter(id => id !== resId)
+      : [...line.excluded_resources, resId]
+    onUpdateLine(lineId, { excluded_resources: excluded })
   }
 
   const handleUpdatePrice = (lineId: string, resId: string, val: string) => {
+    const line = lines.find(l => l.id === lineId)
+    if (!line) return
     const num = parseFloat(val) || 0
-    setLines(lines.map(l => {
-      if (l.id !== lineId) return l
-      return { ...l, custom_prices: { ...l.custom_prices, [resId]: num } }
-    }))
-    setIsSaved(false)
-  }
-
-  const handleSave = async () => {
-    setLoading(true)
-    for (const line of lines) {
-      const isCatalogNorm = !!line.catalog_norm_id
-      const { error } = await supabase
-        .from('estimate_lines')
-        .upsert({
-          id: line.id.includes('-') ? line.id : undefined,
-          project_id: projectId,
-          quantity: line.quantity,
-          custom_prices: line.custom_prices,
-          excluded_resources: line.excluded_resources,
-          stage_name: line.stage_name,
-          sort_order: line.sort_order ?? 0,
-          notes: line.notes,
-          // Câmpuri catalog norms (sau fallback manual)
-          catalog_norm_id: line.catalog_norm_id ?? null,
-          name:       isCatalogNorm ? line.name       : (line.manual_name  ?? line.name),
-          code:       isCatalogNorm ? line.code       : null,
-          unit:       isCatalogNorm ? line.unit       : (line.manual_um    ?? line.unit),
-          unit_price: isCatalogNorm ? line.unit_price : (line.manual_price ?? line.unit_price ?? 0),
-          category:   line.category ?? null,
-        })
-      if (error) console.error('Error saving line:', error)
-    }
-    setLoading(false)
-    setIsSaved(true)
-    setTimeout(() => setIsSaved(false), 2000)
-  }
-
-  const handleSmartLink = (lineId: string, formulaKey: string | null) => {
-    setLines(lines.map(l => {
-      if (l.id !== lineId) return l
-      const newMetadata = { ...l.metadata, smart_link: formulaKey }
-      const newQuantity = formulaKey ? (smartValues as any)[formulaKey] : l.quantity
-      return { ...l, metadata: newMetadata, quantity: newQuantity }
-    }))
-    setIsSaved(false)
+    onUpdateLine(lineId, { custom_prices: { ...line.custom_prices, [resId]: num } })
   }
 
   const handleSaveToLibrary = async (line: EstimateLine) => {
@@ -322,8 +215,8 @@ export default function EstimateEditor({ projectId, initialLines, settings, dime
           </div>
 
           <button 
-            onClick={handleSave}
-            disabled={loading}
+            onClick={() => {}}
+            disabled={isSaving}
             className={`
               w-full py-4 rounded-xl font-black uppercase text-sm tracking-widest flex items-center justify-center gap-2 transition-all active:scale-95
               ${isSaved 
@@ -332,7 +225,7 @@ export default function EstimateEditor({ projectId, initialLines, settings, dime
               }
             `}
           >
-            {loading ? 'Se salvează...' : isSaved ? <><CheckCircle2 size={18} /> Salvat!</> : <><Save size={18} /> Salvează Deviz</>}
+            {isSaving ? "Se salvează..." : isSaved ? <><CheckCircle2 size={18} /> Salvat!</> : <><Save size={18} /> Salvează Deviz</>}
           </button>
         </div>
       </div>
@@ -351,7 +244,7 @@ export default function EstimateEditor({ projectId, initialLines, settings, dime
           </div>
 
           <div className="divide-y divide-border/50">
-            {Array.from(new Set(lines.map(l => l.stage_name || 'Alte Lucrări'))).map(stage => (
+            {Array.from(new Set(lines.map(l => l.stage_name || 'Lucrări Generale'))).map(stage => (
               <div key={stage} className="bg-slate-50/30 dark:bg-white/[0.02]">
                 <div className="px-6 py-2 bg-slate-100/50 dark:bg-slate-800/40 border-y border-border/30 flex justify-between items-center">
                   <div className="flex items-center gap-2">
@@ -370,7 +263,7 @@ export default function EstimateEditor({ projectId, initialLines, settings, dime
                   </button>
                 </div>
                 
-                {!collapsedStages[stage] && lines.filter(l => (l.stage_name || 'Alte Lucrări') === stage).map((line) => {
+                {!collapsedStages[stage] && lines.filter(l => (l.stage_name || 'Lucrări Generale') === stage).map((line) => {
                   const lineCosts = calculateLineCosts(line, settings)
                   const isExpanded = expandedId === line.id
                   const isCatalogNorm = !!(line.catalog_norm_id || (line.code && !line.items))
@@ -460,62 +353,16 @@ export default function EstimateEditor({ projectId, initialLines, settings, dime
 
                           <div className="flex items-center gap-4 md:gap-8 shrink-0">
                             <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800/50 p-1 rounded-xl border border-border/30">
-                              <div className="relative" data-line-menu-root={line.id}>
-                                <button
-                                  type="button"
-                                  onClick={() => setOpenLineMenuId(prev => prev === line.id ? null : line.id)}
-                                  className="p-2 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg text-slate-400 hover:text-primary transition-colors cursor-pointer"
-                                  aria-label="Acțiuni rând"
-                                >
-                                  <MoreVertical size={16} className={line.metadata?.smart_link ? 'text-primary' : ''} />
-                                </button>
-                                {openLineMenuId === line.id && (
-                                  <div className="absolute bottom-full right-0 mb-2 w-56 bg-white dark:bg-slate-900 border border-border shadow-2xl rounded-xl p-2 transition-all z-30">
-                                    <div className="text-[10px] font-black uppercase text-slate-400 mb-2 px-2 tracking-widest">Acțiuni rând</div>
-                                    <button
-                                      type="button"
-                                      onClick={() => { handleDuplicateLine(line); setOpenLineMenuId(null) }}
-                                      className="w-full text-left p-2 text-xs rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex items-center gap-2 font-bold"
-                                    >
-                                      <Copy size={14} /> Duplică rând
-                                    </button>
-                                    <button
-                                      type="button"
-                                      onClick={() => { handleDeleteLine(line.id); setOpenLineMenuId(null) }}
-                                      className="w-full text-left p-2 text-xs rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors flex items-center gap-2 border-b border-border/50 pb-3 mb-2 font-bold"
-                                    >
-                                      <Trash2 size={14} /> Șterge rând
-                                    </button>
                                     
-                                    <div className="text-[10px] font-black uppercase text-slate-400 mb-2 px-2 tracking-widest">Leagă cantitatea (Smart)</div>
-                                    {Object.keys(smartValues).map((key) => (
-                                      <button 
-                                        key={key}
-                                        type="button"
-                                        onClick={() => { handleSmartLink(line.id, key); setOpenLineMenuId(null) }}
-                                        className={`w-full text-left p-2 text-xs rounded-lg transition-colors ${line.metadata?.smart_link === key ? 'bg-primary text-white' : 'hover:bg-slate-100 dark:hover:bg-slate-800'}`}
-                                      >
-                                        {smartValueLabels[key] || key.replace(/_/g, ' ')}
-                                      </button>
-                                    ))}
-                                    {line.metadata?.smart_link && (
-                                      <button
-                                        type="button"
-                                        onClick={() => { handleSmartLink(line.id, null); setOpenLineMenuId(null) }}
-                                        className="w-full text-left p-2 text-xs rounded-lg text-red-500 hover:bg-red-50 transition-colors border-t border-border mt-1 font-bold"
-                                      >
-                                        Elimină legătura (Manual)
-                                      </button>
-                                    )}
-                                  </div>
-                                )}
+                              <div className="relative group/quantity">
+                                <input 
+                                  type="number" 
+                                  className="w-24 bg-transparent text-center font-black text-lg outline-none text-slate-900 dark:text-white p-2 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 focus:bg-white dark:focus:bg-slate-900 rounded-lg cursor-pointer transition-colors border border-transparent focus:border-border"
+                                  value={line.quantity}
+                                  onChange={(e) => handleUpdateQuantity(line.id, e.target.value)}
+                                />
+
                               </div>
-                              <input 
-                                type="number" 
-                                className="w-24 bg-transparent text-center font-black text-lg outline-none text-slate-900 dark:text-white p-2 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 focus:bg-white dark:focus:bg-slate-900 rounded-lg cursor-pointer transition-colors border border-transparent focus:border-border"
-                                value={line.quantity}
-                                onChange={(e) => handleUpdateQuantity(line.id, e.target.value)}
-                              />
                               <span className="text-xs font-bold text-slate-400 pr-2">{line.unit || (isManual ? line.manual_um : line.items!.um)}</span>
                             </div>
 
@@ -526,18 +373,27 @@ export default function EstimateEditor({ projectId, initialLines, settings, dime
                               </div>
                             </div>
 
-                            <div className="flex flex-col gap-1">
+                            <div className="flex flex-col gap-1 items-center">
                               <button 
                                 onClick={() => setExpandedId(isExpanded ? null : line.id)}
-                                className={`p-2 rounded-lg transition-colors ${isExpanded ? 'bg-primary/10 text-primary' : 'text-slate-400 hover:text-primary'}`}
+                                className={`p-1.5 rounded-lg transition-colors ${isExpanded ? 'bg-primary/10 text-primary' : 'text-slate-400 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-800'}`}
+                                title={isExpanded ? "Restrânge detalii" : "Extinde detalii"}
                               >
-                                {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                                {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                              </button>
+                              <button
+                                onClick={() => handleDuplicateLine(line)}
+                                className="p-1.5 rounded-lg text-slate-400 hover:text-primary hover:bg-primary/10 transition-colors"
+                                title="Duplică rând"
+                              >
+                                <Copy size={14} />
                               </button>
                               <button 
                                 onClick={() => handleDeleteLine(line.id)}
-                                className="p-2 text-slate-400 hover:text-red-500 transition-colors"
+                                className="p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
+                                title="Șterge rând"
                               >
-                                <Trash2 size={16} />
+                                <Trash2 size={14} />
                               </button>
                             </div>
                           </div>
@@ -612,13 +468,16 @@ export default function EstimateEditor({ projectId, initialLines, settings, dime
                                           </div>
                                           <div className="flex flex-wrap items-center gap-4 text-[10px] text-slate-400 font-bold uppercase tracking-tight">
                                             <div className="flex items-center gap-1">
-                                              Consum: 
-                                              <input 
-                                                type="number"
-                                                className="w-12 bg-transparent border-b border-border/30 text-slate-600 dark:text-slate-300 outline-none"
-                                                value={res.consumption}
-                                                onChange={(e) => handleUpdateResourceField(line.id, res.id, 'consumption', e.target.value)}
-                                              />
+                                              Necesar pt. 1 {line.unit || (isManual ? line.manual_um : line.items!.um)}: 
+                                               <input 
+                                                 type="number"
+                                                 className="w-12 bg-transparent border-b border-border/30 text-primary outline-none font-bold"
+                                                 value={res.consumption}
+                                                 onChange={(e) => handleUpdateResourceField(line.id, res.id, 'consumption', e.target.value)}
+                                               />
+                                               <span className="italic text-slate-400 font-normal ml-1">
+                                                 (Total necesar: {(res.consumption * line.quantity).toLocaleString('ro-RO')} {res.um})
+                                               </span>
                                               <input 
                                                 className="w-8 bg-transparent border-b border-border/30 outline-none"
                                                 value={res.um}
@@ -643,6 +502,9 @@ export default function EstimateEditor({ projectId, initialLines, settings, dime
                                       <div className="flex items-center justify-end gap-3 pl-8 sm:pl-0 border-t sm:border-0 pt-3 sm:pt-0 border-slate-100 dark:border-slate-800">
                                         <div className="text-right">
                                           <div className="text-[9px] text-slate-400 uppercase font-black">Preț Unitar (Lei)</div>
+                                           <div className="text-[10px] text-primary font-bold">
+                                             Cost total: {(res.consumption * line.quantity * (customPrice ?? res.unit_price) * (1 + (res.waste_percent || 0) / 100)).toLocaleString('ro-RO')} lei
+                                           </div>
                                           <div className="flex items-center gap-2">
                                             <input 
                                               type="number"

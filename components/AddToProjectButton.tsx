@@ -37,7 +37,7 @@ export default function AddToProjectButton({ norm, projectId }: { norm: any, pro
       toast.success('Normă adăugată în Deviz!')
       setTimeout(() => {
         setAdding(false)
-        router.push(`/projects/${projectId}`)
+        router.push(`/projects/${projectId}?tab=planning`)
       }, 800)
     } else {
       toast.error('Eroare la adăugarea în deviz.')

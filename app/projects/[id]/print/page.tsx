@@ -42,7 +42,7 @@ export default async function PrintPage({ params }: { params: { id: string } }) 
   // Group by stage
   const grouped = new Map<string, EstimateLine[]>()
   lines.forEach(line => {
-    const stage = line.stage_name || 'Alte Lucrări'
+    const stage = line.stage_name || 'Lucrări Generale'
     if (!grouped.has(stage)) grouped.set(stage, [])
     grouped.get(stage)!.push(line)
   })
