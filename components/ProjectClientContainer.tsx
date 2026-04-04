@@ -150,6 +150,14 @@ export default function ProjectClientContainer({
   const [isSaved, setIsSaved] = useState(true)
   const [loading, setLoading] = useState(false)
 
+  useEffect(() => {
+    if (isSaved) {
+      setLines(initialLines)
+      setPurchases(initialPurchases)
+      setRevenue(initialRevenue)
+    }
+  }, [initialLines, initialPurchases, initialRevenue, isSaved])
+
   const handleAddManualLine = (stageName?: string) => {
     const newLine: EstimateLine = {
       id: crypto.randomUUID(),

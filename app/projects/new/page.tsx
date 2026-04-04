@@ -13,6 +13,7 @@ export default function NewProjectPage() {
   const supabase = createClient()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [startMode, setStartMode] = useState<'manual' | 'smart'>('manual')
 
   const [formData, setFormData] = useState({
     name: '',
@@ -45,7 +46,7 @@ export default function NewProjectPage() {
     let finalStages = DEFAULT_STAGES
     let templateLines: any[] = []
 
-    if (selectedTemplateId) {
+    if (startMode === 'manual' && selectedTemplateId) {
       const t = templates.find(tpl => tpl.id === selectedTemplateId)
       if (t) {
         finalStages = t.stages
@@ -95,7 +96,11 @@ export default function NewProjectPage() {
     }
 
     if (project) {
-      router.push(`/projects/${project.id}`)
+      if (startMode === 'smart') {
+        router.push(`/projects/${project.id}?tab=planning&openSmartCalc=1`)
+      } else {
+        router.push(`/projects/${project.id}?tab=planning`)
+      }
       router.refresh()
     }
   }
@@ -152,8 +157,55 @@ export default function NewProjectPage() {
           </div>
         </div>
 
-        {/* Sectiune Alegere Sablon */}
         <div className="glass-card p-5 sm:p-8">
+          <div className="flex items-center gap-3 mb-6">
+            <div style={{ width: 30, height: 30, borderRadius: 10, background: '#FFF0E8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Info className="w-4 h-4" style={{ color: '#E8500A' }} />
+            </div>
+            <h2 style={{ fontSize: 18, fontWeight: 600, color: '#1E2329' }}>Cum vrei să începi?</h2>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <button
+              type="button"
+              onClick={() => setStartMode('smart')}
+              style={{
+                padding: 16, borderRadius: 10, textAlign: 'left', transition: 'all .15s',
+                border: startMode === 'smart' ? '2px solid #E8500A' : '2px solid #E5E3DE',
+                background: startMode === 'smart' ? '#FFF0E8' : '#FAFAF8',
+                cursor: 'pointer', fontFamily: 'inherit',
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
+                <div style={{ padding: 6, background: '#F3F2EF', borderRadius: 7 }}><TrendingUp size={16} color="#A8A59E" /></div>
+                {startMode === 'smart' && <Check size={18} color="#E8500A" />}
+              </div>
+              <h4 style={{ fontSize: 13, fontWeight: 600, color: '#1E2329', marginBottom: 4 }}>Deviz rapid (Smart Calc)</h4>
+              <p style={{ fontSize: 11, color: '#A8A59E' }}>Generează automat articolele și cantitățile din câțiva parametri.</p>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setStartMode('manual')}
+              style={{
+                padding: 16, borderRadius: 10, textAlign: 'left', transition: 'all .15s',
+                border: startMode === 'manual' ? '2px solid #E8500A' : '2px solid #E5E3DE',
+                background: startMode === 'manual' ? '#FFF0E8' : '#FAFAF8',
+                cursor: 'pointer', fontFamily: 'inherit',
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
+                <div style={{ padding: 6, background: '#F3F2EF', borderRadius: 7 }}><LayoutTemplate size={16} color="#A8A59E" /></div>
+                {startMode === 'manual' && <Check size={18} color="#E8500A" />}
+              </div>
+              <h4 style={{ fontSize: 13, fontWeight: 600, color: '#1E2329', marginBottom: 4 }}>Deviz manual (Catalog / Șablon)</h4>
+              <p style={{ fontSize: 11, color: '#A8A59E' }}>Adaugi norme din Catalog sau pornești dintr-un șablon salvat.</p>
+            </button>
+          </div>
+        </div>
+
+        {/* Sectiune Alegere Sablon */}
+        <div className={`glass-card p-5 sm:p-8 ${startMode === 'smart' ? 'opacity-60 pointer-events-none' : ''}`}>
           <div className="flex items-center gap-3 mb-6" style={{ color: '#E8500A' }}>
             <LayoutTemplate className="w-6 h-6" />
             <h2 style={{ fontSize: 18, fontWeight: 600, color: '#1E2329' }}>Alege un Șablon</h2>
@@ -301,7 +353,7 @@ export default function NewProjectPage() {
           {loading ? 'Se creează...' : (
             <>
               <Save className="w-6 h-6" />
-              Salvează și Începe Devizul
+              {startMode === 'smart' ? 'Salvează și Pornește Smart Calc' : 'Salvează și Începe Devizul'}
             </>
           )}
         </button>

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { X, Lightbulb, ArrowRight, ArrowLeft, Check, Plus, Minus, Save, Loader2 } from 'lucide-react'
 import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
@@ -30,56 +30,69 @@ interface GeneratedLine {
   stage: string
   symbol?: string
   include: boolean
+  calc?: string
 }
 
 /* ─── Generare linii din parametri ─────────────────────────────────────────── */
 function generateLines(type: ProjectType, params: Record<string, number>): GeneratedLine[] {
-  const { suprafata = 0, niveluri = 1, perimetru, adancime, latime, inaltime = 3 } = params
+  const { suprafata = 0, niveluri = 1, perimetru, adancime, latime, inaltime = 3, slab_thickness, wall_thickness, goluri_percent } = params
   const perim = perimetru || Math.sqrt(suprafata) * 4
   const desfasurata = suprafata * niveluri
 
   switch (type) {
     case 'house': {
-      const wallArea = perim * inaltime * niveluri
+      const wallAreaGross = perim * inaltime * niveluri
+      const openingsPercent = goluri_percent || 0
+      const wallAreaNet = wallAreaGross * (1 - (openingsPercent / 100))
+      const wallThickness = wall_thickness || 0.25
+      const slabThickness = slab_thickness || 0.15
       return [
-        { name: 'Săpătură fundații cu excavatorul', unit: 'mc', quantity: +(suprafata * 0.8).toFixed(1), stage: 'Fundație', symbol: 'TsA02A1', include: true },
-        { name: 'Umplutură cu piatră spartă/balast sub fundații', unit: 'mc', quantity: +(suprafata * 0.15).toFixed(1), stage: 'Fundație', symbol: 'TsA07A1', include: true },
-        { name: 'Beton simplu fundații continue B150 (C12/15)', unit: 'mc', quantity: +(perim * 0.4 * 0.6).toFixed(1), stage: 'Fundație', symbol: 'BcA01B1', include: true },
-        { name: 'Beton armat fundații C20/25', unit: 'mc', quantity: +(suprafata * 0.12).toFixed(1), stage: 'Fundație', symbol: 'BcA02A1', include: true },
-        { name: 'Armătură OB37 fundații', unit: 'kg', quantity: +(suprafata * 0.12 * 80).toFixed(0), stage: 'Fundație', symbol: 'BcC01A1', include: true },
-        { name: 'Hidroizolație fundații cu bitum aplicat la cald', unit: 'mp', quantity: +(perim * (adancime || 0.8) * 2).toFixed(1), stage: 'Fundație', symbol: 'IzA04A1', include: true },
+        { name: 'Săpătură fundații cu excavatorul', unit: 'mc', quantity: +(suprafata * 0.8).toFixed(1), stage: 'Fundație', symbol: 'TsA02A1', include: true, calc: `${suprafata} * 0.8 = ${(suprafata * 0.8).toFixed(1)} mc` },
+        { name: 'Umplutură cu piatră spartă/balast sub fundații', unit: 'mc', quantity: +(suprafata * 0.15).toFixed(1), stage: 'Fundație', symbol: 'TsA07A1', include: true, calc: `${suprafata} * 0.15 = ${(suprafata * 0.15).toFixed(1)} mc` },
+        { name: 'Beton simplu fundații continue B150 (C12/15)', unit: 'mc', quantity: +(perim * (latime || 0.6) * (adancime || 0.8)).toFixed(1), stage: 'Fundație', symbol: 'BcA01B1', include: true, calc: `${perim.toFixed(1)} * ${(latime || 0.6).toFixed(2)} * ${(adancime || 0.8).toFixed(2)} = ${(perim * (latime || 0.6) * (adancime || 0.8)).toFixed(1)} mc` },
+        { name: 'Beton armat fundații C20/25', unit: 'mc', quantity: +(suprafata * 0.12).toFixed(1), stage: 'Fundație', symbol: 'BcA02A1', include: true, calc: `${suprafata} * 0.12 = ${(suprafata * 0.12).toFixed(1)} mc` },
+        { name: 'Armătură OB37 fundații', unit: 'kg', quantity: +(suprafata * 0.12 * 80).toFixed(0), stage: 'Fundație', symbol: 'BcC01A1', include: true, calc: `${suprafata} * 0.12 * 80 = ${(suprafata * 0.12 * 80).toFixed(0)} kg` },
+        { name: 'Hidroizolație fundații cu bitum aplicat la cald', unit: 'mp', quantity: +(perim * (adancime || 0.8) * 2).toFixed(1), stage: 'Fundație', symbol: 'IzA04A1', include: true, calc: `${perim.toFixed(1)} * ${(adancime || 0.8).toFixed(1)} * 2 = ${(perim * (adancime || 0.8) * 2).toFixed(1)} mp` },
 
-        { name: 'Beton armat planșee C20/25 (15 cm)', unit: 'mc', quantity: +(desfasurata * 0.15).toFixed(1), stage: 'Structură', symbol: 'BcA05A1', include: true },
-        { name: 'Cofraje planșee', unit: 'mp', quantity: +(desfasurata).toFixed(1), stage: 'Structură', symbol: 'BcB04A1', include: true },
-        { name: 'Beton armat stâlpi C25/30', unit: 'mc', quantity: +(desfasurata * 0.03).toFixed(1), stage: 'Structură', symbol: 'BcA03A1', include: true },
-        { name: 'Cofraje stâlpi', unit: 'mp', quantity: +(desfasurata * 0.03 / 0.25 * 4).toFixed(1), stage: 'Structură', symbol: 'BcB02A1', include: true },
-        { name: 'Plasă sudată STNB planșee', unit: 'mp', quantity: +(desfasurata * 1.1).toFixed(1), stage: 'Structură', symbol: 'BcC02A1', include: true },
+        { name: `Beton armat planșee C20/25 (${Math.round(slabThickness * 100)} cm)`, unit: 'mc', quantity: +(desfasurata * slabThickness).toFixed(1), stage: 'Structură', symbol: 'BcA05A1', include: true, calc: `${desfasurata} * ${slabThickness.toFixed(2)} = ${(desfasurata * slabThickness).toFixed(1)} mc` },
+        { name: 'Cofraje planșee', unit: 'mp', quantity: +(desfasurata).toFixed(1), stage: 'Structură', symbol: 'BcB04A1', include: true, calc: `${desfasurata} = ${desfasurata.toFixed(1)} mp` },
+        { name: 'Beton armat stâlpi C25/30', unit: 'mc', quantity: +(desfasurata * 0.03).toFixed(1), stage: 'Structură', symbol: 'BcA03A1', include: true, calc: `${desfasurata} * 0.03 = ${(desfasurata * 0.03).toFixed(1)} mc` },
+        { name: 'Cofraje stâlpi', unit: 'mp', quantity: +(desfasurata * 0.03 / 0.25 * 4).toFixed(1), stage: 'Structură', symbol: 'BcB02A1', include: true, calc: `${desfasurata} * 0.03 / 0.25 * 4 = ${(desfasurata * 0.03 / 0.25 * 4).toFixed(1)} mp` },
+        { name: 'Plasă sudată STNB planșee', unit: 'mp', quantity: +(desfasurata * 1.1).toFixed(1), stage: 'Structură', symbol: 'BcC02A1', include: true, calc: `${desfasurata} * 1.1 = ${(desfasurata * 1.1).toFixed(1)} mp` },
 
-        { name: 'Zidărie din blocuri BCA 25 cm', unit: 'mc', quantity: +(wallArea * 0.25).toFixed(1), stage: 'Zidărie', symbol: 'ZdA02A1', include: true },
-        { name: 'Pereți despărțitori gips-carton simplu', unit: 'mp', quantity: +(suprafata * 0.8).toFixed(1), stage: 'Zidărie', symbol: 'ZdA05A1', include: true },
-        { name: 'Centuri din beton armat', unit: 'ml', quantity: +(perim * niveluri).toFixed(1), stage: 'Zidărie', symbol: 'ZdB02A1', include: true },
+        { name: `Zidărie din blocuri BCA ${Math.round(wallThickness * 100)} cm`, unit: 'mc', quantity: +(wallAreaNet * wallThickness).toFixed(1), stage: 'Zidărie', symbol: 'ZdA02A1', include: true, calc: `${wallAreaGross.toFixed(1)} * (1 - ${(openingsPercent).toFixed(0)}%) * ${wallThickness.toFixed(2)} = ${(wallAreaNet * wallThickness).toFixed(1)} mc` },
+        { name: 'Pereți despărțitori gips-carton simplu', unit: 'mp', quantity: +(suprafata * 0.8).toFixed(1), stage: 'Zidărie', symbol: 'ZdA05A1', include: true, calc: `${suprafata} * 0.8 = ${(suprafata * 0.8).toFixed(1)} mp` },
+        { name: 'Centuri din beton armat', unit: 'ml', quantity: +(perim * niveluri).toFixed(1), stage: 'Zidărie', symbol: 'ZdB02A1', include: true, calc: `${perim.toFixed(1)} * ${niveluri} = ${(perim * niveluri).toFixed(1)} ml` },
 
-        { name: 'Șarpantă din lemn ecarisat cu astereală (2 pante)', unit: 'mp', quantity: +(suprafata * 1.3).toFixed(1), stage: 'Acoperiș', symbol: 'CvA01A1', include: true },
-        { name: 'Învelitoare din țiglă ceramică', unit: 'mp', quantity: +(suprafata * 1.3).toFixed(1), stage: 'Acoperiș', symbol: 'CvA03A1', include: true },
-        { name: 'Jgheaburi și burlane PVC', unit: 'ml', quantity: +(perim * 0.6).toFixed(1), stage: 'Acoperiș', symbol: 'CvA05A1', include: true },
+        { name: 'Șarpantă din lemn ecarisat cu astereală (2 pante)', unit: 'mp', quantity: +(suprafata * 1.3).toFixed(1), stage: 'Acoperiș', symbol: 'CvA01A1', include: true, calc: `${suprafata} * 1.3 = ${(suprafata * 1.3).toFixed(1)} mp` },
+        { name: 'Învelitoare din țiglă ceramică', unit: 'mp', quantity: +(suprafata * 1.3).toFixed(1), stage: 'Acoperiș', symbol: 'CvA03A1', include: true, calc: `${suprafata} * 1.3 = ${(suprafata * 1.3).toFixed(1)} mp` },
+        { name: 'Jgheaburi și burlane PVC', unit: 'ml', quantity: +(perim * 0.6).toFixed(1), stage: 'Acoperiș', symbol: 'CvA05A1', include: true, calc: `${perim.toFixed(1)} * 0.6 = ${(perim * 0.6).toFixed(1)} ml` },
 
-        { name: 'Tencuială interioară drișcuită', unit: 'mp', quantity: +(wallArea * 1.8).toFixed(1), stage: 'Finisaje', symbol: 'TcA01A1', include: true },
-        { name: 'Tencuială exterioară drișcuită', unit: 'mp', quantity: +(wallArea * 0.85).toFixed(1), stage: 'Finisaje', symbol: 'TcA02A1', include: true },
-        { name: 'Glet de ipsos interior', unit: 'mp', quantity: +(wallArea * 1.8).toFixed(1), stage: 'Finisaje', symbol: 'TcA03A1', include: true },
-        { name: 'Șapă ciment M150 armată (5 cm)', unit: 'mp', quantity: +(desfasurata).toFixed(1), stage: 'Finisaje', symbol: 'TcB05A1', include: true },
-        { name: 'Vopsire lavabilă interior 2 straturi', unit: 'mp', quantity: +(wallArea * 1.8).toFixed(1), stage: 'Finisaje', symbol: 'ZgA02A1', include: true },
-        { name: 'Termoizolație fațade polistiren 10 cm', unit: 'mp', quantity: +(wallArea * 0.85).toFixed(1), stage: 'Finisaje', symbol: 'IzA01A1', include: true },
+        { name: 'Tencuială interioară drișcuită', unit: 'mp', quantity: +(wallAreaNet * 1.8).toFixed(1), stage: 'Finisaje', symbol: 'TcA01A1', include: true, calc: `${wallAreaGross.toFixed(1)} * (1 - ${(openingsPercent).toFixed(0)}%) * 1.8 = ${(wallAreaNet * 1.8).toFixed(1)} mp` },
+        { name: 'Tencuială exterioară drișcuită', unit: 'mp', quantity: +(wallAreaNet * 0.85).toFixed(1), stage: 'Finisaje', symbol: 'TcA02A1', include: true, calc: `${wallAreaGross.toFixed(1)} * (1 - ${(openingsPercent).toFixed(0)}%) * 0.85 = ${(wallAreaNet * 0.85).toFixed(1)} mp` },
+        { name: 'Glet de ipsos interior', unit: 'mp', quantity: +(wallAreaNet * 1.8).toFixed(1), stage: 'Finisaje', symbol: 'TcA03A1', include: true, calc: `${wallAreaGross.toFixed(1)} * (1 - ${(openingsPercent).toFixed(0)}%) * 1.8 = ${(wallAreaNet * 1.8).toFixed(1)} mp` },
+        { name: 'Șapă ciment M150 armată (5 cm)', unit: 'mp', quantity: +(desfasurata).toFixed(1), stage: 'Finisaje', symbol: 'TcB05A1', include: true, calc: `${desfasurata} = ${desfasurata.toFixed(1)} mp` },
+        { name: 'Vopsire lavabilă interior 2 straturi', unit: 'mp', quantity: +(wallAreaNet * 1.8).toFixed(1), stage: 'Finisaje', symbol: 'ZgA02A1', include: true, calc: `${wallAreaGross.toFixed(1)} * (1 - ${(openingsPercent).toFixed(0)}%) * 1.8 = ${(wallAreaNet * 1.8).toFixed(1)} mp` },
+        { name: 'Termoizolație fațade polistiren 10 cm', unit: 'mp', quantity: +(wallAreaNet * 0.85).toFixed(1), stage: 'Finisaje', symbol: 'IzA01A1', include: true, calc: `${wallAreaGross.toFixed(1)} * (1 - ${(openingsPercent).toFixed(0)}%) * 0.85 = ${(wallAreaNet * 0.85).toFixed(1)} mp` },
 
-        { name: 'Ferestre PVC cu geam termoizolant', unit: 'buc', quantity: Math.ceil(suprafata / 15), stage: 'Tâmplărie', symbol: 'TmA01B1', include: true },
-        { name: 'Uși interioare (standard)', unit: 'buc', quantity: Math.ceil(suprafata / 20), stage: 'Tâmplărie', symbol: 'TmA02A1', include: true },
-        { name: 'Ușă exterioară metalică', unit: 'buc', quantity: 1, stage: 'Tâmplărie', symbol: 'TmA03A1', include: true },
+        { name: 'Ferestre PVC cu geam termoizolant', unit: 'buc', quantity: Math.ceil(suprafata / 15), stage: 'Tâmplărie', symbol: 'TmA01B1', include: true, calc: `ceil(${suprafata} / 15) = ${Math.ceil(suprafata / 15)} buc` },
+        { name: 'Uși interioare (standard)', unit: 'buc', quantity: Math.ceil(suprafata / 20), stage: 'Tâmplărie', symbol: 'TmA02A1', include: true, calc: `ceil(${suprafata} / 20) = ${Math.ceil(suprafata / 20)} buc` },
+        { name: 'Ușă exterioară metalică', unit: 'buc', quantity: 1, stage: 'Tâmplărie', symbol: 'TmA03A1', include: true, calc: `1 buc` },
 
-        { name: 'Instalație apă rece PP Ø20', unit: 'ml', quantity: +(suprafata * 0.8).toFixed(1), stage: 'Instalații', symbol: 'IsA01A1', include: true },
-        { name: 'Instalație apă caldă PP Ø20', unit: 'ml', quantity: +(suprafata * 0.6).toFixed(1), stage: 'Instalații', symbol: 'IsA02A1', include: true },
-        { name: 'Canalizare PVC Ø110', unit: 'ml', quantity: +(suprafata * 0.4).toFixed(1), stage: 'Instalații', symbol: 'IsA03B1', include: true },
-        { name: 'Centrală termică în condensație 24 kW', unit: 'buc', quantity: 1, stage: 'Instalații', symbol: 'IsC01A1', include: true },
-        { name: 'Instalație electrică cablu 2.5 mm²', unit: 'ml', quantity: +(suprafata * 4).toFixed(0), stage: 'Instalații', symbol: 'IeA01B1', include: true },
-        { name: 'Tablou electric 8 circuite', unit: 'buc', quantity: 1, stage: 'Instalații', symbol: 'IeA04A1', include: true },
+        { name: 'Instalație apă rece PP Ø20', unit: 'ml', quantity: +(suprafata * 0.8).toFixed(1), stage: 'Instalații', symbol: 'IsA01A1', include: true, calc: `${suprafata} * 0.8 = ${(suprafata * 0.8).toFixed(1)} ml` },
+        { name: 'Instalație apă caldă PP Ø20', unit: 'ml', quantity: +(suprafata * 0.6).toFixed(1), stage: 'Instalații', symbol: 'IsA02A1', include: true, calc: `${suprafata} * 0.6 = ${(suprafata * 0.6).toFixed(1)} ml` },
+        { name: 'Canalizare PVC Ø110', unit: 'ml', quantity: +(suprafata * 0.4).toFixed(1), stage: 'Instalații', symbol: 'IsA03B1', include: true, calc: `${suprafata} * 0.4 = ${(suprafata * 0.4).toFixed(1)} ml` },
+        { name: 'Centrală termică în condensație 24 kW', unit: 'buc', quantity: 1, stage: 'Instalații', symbol: 'IsC01A1', include: true, calc: `1 buc` },
+        { name: 'Instalație electrică cablu 2.5 mm²', unit: 'ml', quantity: +(suprafata * 4).toFixed(0), stage: 'Instalații', symbol: 'IeA01B1', include: true, calc: `${suprafata} * 4 = ${(suprafata * 4).toFixed(0)} ml` },
+        { name: 'Tablou electric 8 circuite', unit: 'buc', quantity: 1, stage: 'Instalații', symbol: 'IeA04A1', include: true, calc: `1 buc` },
+
+        { name: 'Organizare de șantier (mobilizare/demobilizare)', unit: 'ls', quantity: 1, stage: 'Organizare șantier', include: false, calc: `1 ls` },
+        { name: 'Împrejmuire provizorie șantier (estimare)', unit: 'ml', quantity: +perim.toFixed(1), stage: 'Organizare șantier', include: false, calc: `${perim.toFixed(1)} ml` },
+        { name: 'Container deșeuri/evacuare moloz (estimare)', unit: 'ls', quantity: 1, stage: 'Organizare șantier', include: false, calc: `1 ls` },
+        { name: 'Utilități provizorii șantier (apă/energie)', unit: 'ls', quantity: 1, stage: 'Racorduri & Avize', include: false, calc: `1 ls` },
+        { name: 'Taxe avize/autorizații (estimare)', unit: 'ls', quantity: 1, stage: 'Racorduri & Avize', include: false, calc: `1 ls` },
+        { name: 'Trotuar de protecție perimetral (1.0 m lățime)', unit: 'mp', quantity: +(perim * 1.0).toFixed(1), stage: 'Amenajări exterioare', include: false, calc: `${perim.toFixed(1)} * 1.0 = ${(perim * 1.0).toFixed(1)} mp` },
+        { name: 'Alee acces (estimare)', unit: 'mp', quantity: +(Math.max(0, suprafata * 0.08)).toFixed(1), stage: 'Amenajări exterioare', include: false, calc: `${suprafata} * 0.08 = ${(Math.max(0, suprafata * 0.08)).toFixed(1)} mp` },
       ]
     }
 
@@ -162,9 +175,13 @@ export default function SmartCalculator({
     adancime: initialDimensions.foundation_depth || 0.8,
     latime: initialDimensions.foundation_width || 0.6,
     perimetru: 0,
+    slab_thickness: initialDimensions.slab_thickness || 0.15,
+    wall_thickness: initialDimensions.wall_thickness || 0.25,
+    goluri_percent: 15,
   })
   const [lines, setLines] = useState<GeneratedLine[]>([])
   const [saving, setSaving] = useState(false)
+  const [showDetails, setShowDetails] = useState(true)
 
   const supabase = createClient()
   const router = useRouter()
@@ -189,6 +206,12 @@ export default function SmartCalculator({
       { key: 'suprafata', label: 'Suprafață parter (mp)', unit: 'mp', min: 20, step: 5 },
       { key: 'niveluri', label: 'Nr. niveluri (P=1, P+E=2)', unit: '', min: 1, step: 1 },
       { key: 'inaltime', label: 'Înălțime etaj (m)', unit: 'm', min: 2.5, step: 0.1 },
+      { key: 'perimetru', label: 'Perimetru casă (ml, opțional)', unit: 'ml', min: 0, step: 1 },
+      { key: 'adancime', label: 'Adâncime fundație (m)', unit: 'm', min: 0.5, step: 0.05 },
+      { key: 'latime', label: 'Lățime fundație (m)', unit: 'm', min: 0.3, step: 0.05 },
+      { key: 'wall_thickness', label: 'Grosime zid exterior (m)', unit: 'm', min: 0.1, step: 0.01 },
+      { key: 'slab_thickness', label: 'Grosime planșeu (m)', unit: 'm', min: 0.08, step: 0.01 },
+      { key: 'goluri_percent', label: 'Goluri fațadă (%, ferestre/usi)', unit: '%', min: 0, step: 1 },
     ],
     apartment: [
       { key: 'suprafata', label: 'Suprafață utilă (mp)', unit: 'mp', min: 20, step: 5 },
@@ -213,16 +236,31 @@ export default function SmartCalculator({
     setStep(3)
   }
 
+  const derived = useMemo(() => {
+    const suprafata = params.suprafata || 0
+    const niveluri = params.niveluri || 1
+    const inaltime = params.inaltime || 3
+    const perimetru = params.perimetru || 0
+    const perim = perimetru || Math.sqrt(suprafata) * 4
+    const desfasurata = suprafata * niveluri
+    const wallAreaGross = perim * inaltime * niveluri
+    const openingsPercent = params.goluri_percent || 0
+    const wallAreaNet = wallAreaGross * (1 - (openingsPercent / 100))
+    const wallThickness = params.wall_thickness || 0.25
+    const slabThickness = params.slab_thickness || 0.15
+    return { suprafata, niveluri, inaltime, perimetru, perim, desfasurata, wallAreaGross, wallAreaNet, openingsPercent, wallThickness, slabThickness }
+  }, [params.inaltime, params.niveluri, params.perimetru, params.suprafata, params.goluri_percent, params.wall_thickness, params.slab_thickness])
+
   const handleSaveLines = async () => {
     setSaving(true)
     const included = lines.filter(l => l.include)
     const symbols = Array.from(new Set(included.map(l => l.symbol).filter(Boolean))) as string[]
-    const normsBySymbol = new Map<string, { id: number; symbol: string; name: string; unit: string; category: string; unit_price: number | null }>()
+    const normsBySymbol = new Map<string, { id: number; symbol: string; name: string; unit: string; category: string; unit_price: number | null; has_components: boolean | null }>()
 
     if (symbols.length > 0) {
       const { data: norms, error: normsError } = await supabase
         .from('catalog_norms')
-        .select('id, symbol, name, unit, category, unit_price')
+        .select('id, symbol, name, unit, category, unit_price, has_components')
         .in('symbol', symbols)
 
       if (normsError) {
@@ -233,10 +271,62 @@ export default function SmartCalculator({
       }
     }
 
+    const normIdsWithComponents = Array.from(normsBySymbol.values())
+      .filter(n => n.has_components)
+      .map(n => n.id)
+
+    const resourcesByNormId = new Map<number, Array<{
+      id: string
+      type: 'material' | 'labor' | 'equipment' | 'transport'
+      name: string
+      um: string
+      consumption: number
+      unit_price: number
+      waste_percent?: number
+    }>>()
+
+    if (normIdsWithComponents.length > 0) {
+      const { data: comps, error: compsError } = await supabase
+        .from('norm_components')
+        .select('id, norm_id, name, unit, qty_per_unit, unit_price, component_type, is_optional, sort_order')
+        .in('norm_id', normIdsWithComponents)
+        .order('norm_id')
+        .order('component_type')
+        .order('is_optional')
+        .order('sort_order')
+
+      if (compsError) {
+        toast.error('Eroare la încărcarea rețetelor: ' + compsError.message)
+        console.error(compsError)
+      } else {
+        ;(comps || []).forEach((c: any) => {
+          if (c.is_optional) return
+          const compType = String(c.component_type || '').toLowerCase()
+          const type = compType === 'material'
+            ? 'material'
+            : (compType === 'manopera' ? 'labor'
+              : (compType === 'transport' ? 'transport'
+                : (compType === 'equipment' || compType === 'utilaj' ? 'equipment' : 'material')))
+          const normId = Number(c.norm_id)
+          const list = resourcesByNormId.get(normId) || []
+          list.push({
+            id: `nc_${String(c.id)}`,
+            type,
+            name: c.name || 'Componentă',
+            um: c.unit || 'buc',
+            consumption: Number(c.qty_per_unit) || 0,
+            unit_price: Number(c.unit_price) || 0,
+          })
+          resourcesByNormId.set(normId, list)
+        })
+      }
+    }
+
     const toInsert = included.map(l => {
       const norm = l.symbol ? normsBySymbol.get(l.symbol) : undefined
 
       if (norm) {
+        const resources_override = resourcesByNormId.get(norm.id) || []
         return {
           project_id: projectId,
           item_id: null,
@@ -244,8 +334,13 @@ export default function SmartCalculator({
           stage_name: l.stage,
           custom_prices: {},
           excluded_resources: [],
-          resources_override: [],
-          metadata: { source: 'smart_calc', catalog_norm_symbol: norm.symbol },
+          resources_override,
+          metadata: {
+            source: 'smart_calc',
+            catalog_norm_symbol: norm.symbol,
+            has_components: !!norm.has_components,
+            components_attached: resources_override.length,
+          },
           catalog_norm_id: norm.id,
           name: norm.name,
           code: norm.symbol,
@@ -283,8 +378,8 @@ export default function SmartCalculator({
         height: params.inaltime || 3,
         foundation_depth: params.adancime || 0.8,
         foundation_width: params.latime || 0.6,
-        slab_thickness: 0.15,
-        wall_thickness: 0.25,
+        slab_thickness: params.slab_thickness || 0.15,
+        wall_thickness: params.wall_thickness || 0.25,
       })
       toast.success('Devizul Smart a fost generat și adăugat!')
       router.refresh()
@@ -429,9 +524,50 @@ export default function SmartCalculator({
                 color: S.black, marginBottom: 6 }}>
                 Previzualizare deviz generat
               </h2>
-              <p style={{ fontSize: 14, color: S.gray600, marginBottom: 20 }}>
-                {lines.filter(l => l.include).length} articole selectate. Bifează/debifează orice linie.
-              </p>
+              <div style={{
+                border: `1px solid ${S.gray200}`, background: S.gray100, borderRadius: 12,
+                padding: '12px 14px', marginBottom: 14,
+              }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: S.black, marginBottom: 6 }}>
+                  Cum sunt calculate cantitățile
+                </div>
+                <div style={{ fontSize: 12, color: S.gray600, lineHeight: 1.4 }}>
+                  Cantitățile sunt estimări din parametrii introduși. Simbolul (ex: TsA02A1) leagă articolul de catalogul de norme; prețul vine din catalog dacă există.
+                </div>
+                {projectType === 'house' && (
+                  <div style={{ marginTop: 10, display: 'grid', gap: 6 }}>
+                    <div style={{ fontSize: 11, color: S.gray600 }}>
+                      Suprafață parter: <span style={{ fontWeight: 700, color: S.black }}>{derived.suprafata.toLocaleString('ro-RO')}</span> mp · Niveluri: <span style={{ fontWeight: 700, color: S.black }}>{derived.niveluri}</span> · Înălțime etaj: <span style={{ fontWeight: 700, color: S.black }}>{derived.inaltime.toLocaleString('ro-RO')}</span> m
+                    </div>
+                    <div style={{ fontSize: 11, color: S.gray600 }}>
+                      Perimetru: <span style={{ fontWeight: 700, color: S.black }}>{derived.perim.toLocaleString('ro-RO', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</span> ml <span style={{ color: S.gray400 }}>
+                        ({derived.perimetru ? 'introdus' : 'estimat: √suprafață × 4'})
+                      </span>
+                    </div>
+                    <div style={{ fontSize: 11, color: S.gray600 }}>
+                      Suprafață desfășurată: <span style={{ fontWeight: 700, color: S.black }}>{derived.desfasurata.toLocaleString('ro-RO')}</span> mp · Pereți: <span style={{ fontWeight: 700, color: S.black }}>{derived.wallAreaNet.toLocaleString('ro-RO', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</span> mp <span style={{ color: S.gray400 }}>
+                        (brut {derived.wallAreaGross.toLocaleString('ro-RO', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} mp, goluri {derived.openingsPercent.toFixed(0)}%)
+                      </span>
+                    </div>
+                  </div>
+                )}
+                <div style={{ marginTop: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+                  <div style={{ fontSize: 12, color: S.gray600 }}>
+                    {lines.filter(l => l.include).length} articole selectate. Bifează/debifează orice linie.
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setShowDetails(v => !v)}
+                    style={{
+                      padding: '6px 10px', borderRadius: 10, border: `1px solid ${S.gray200}`,
+                      background: S.white, cursor: 'pointer', fontSize: 12, fontWeight: 600,
+                      color: showDetails ? S.orange : S.gray600, fontFamily: S.sans,
+                    }}
+                  >
+                    {showDetails ? 'Ascunde explicații' : 'Arată explicații'}
+                  </button>
+                </div>
+              </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                 {[...new Set(lines.map(l => l.stage))].map(stage => (
                   <div key={stage}>
@@ -465,6 +601,11 @@ export default function SmartCalculator({
                             {line.symbol && (
                               <div style={{ fontSize: 10, color: S.orange, fontFamily: 'monospace' }}>
                                 {line.symbol}
+                              </div>
+                            )}
+                            {showDetails && line.calc && (
+                              <div style={{ fontSize: 11, color: S.gray600 }}>
+                                {line.calc}
                               </div>
                             )}
                           </div>

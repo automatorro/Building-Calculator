@@ -8,7 +8,7 @@ import ProjectStagesManager from './ProjectStagesManager'
 import ShopManager from './ShopManager'
 import OcrPreviewModal from './OcrPreviewModal'
 import { createClient } from '@/utils/supabase/client'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { processReinforcementTable } from '@/utils/ocr'
 import { toast } from 'sonner'
 
@@ -35,7 +35,19 @@ export default function ProjectActions({ projectId, initialDimensions, initialSt
   const dropdownMenuRef = useRef<HTMLDivElement>(null)
   const [dropdownPos, setDropdownPos] = useState<{ left: number; top: number } | null>(null)
   const router   = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
   const supabase = createClient()
+
+  useEffect(() => {
+    if (searchParams.get('openSmartCalc') === '1') {
+      setShowSmartCalc(true)
+      const next = new URLSearchParams(searchParams.toString())
+      next.delete('openSmartCalc')
+      const qs = next.toString()
+      router.replace(qs ? `${pathname}?${qs}` : pathname)
+    }
+  }, [pathname, router, searchParams])
 
   /* Închide dropdown la click în afara lui */
   useEffect(() => {
