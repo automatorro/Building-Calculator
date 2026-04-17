@@ -70,7 +70,9 @@ export default function EstimateEditor({
   const handleUpdateManualField = (id: string, field: 'manual_name' | 'manual_um' | 'manual_price' | 'manual_labor_price' | 'manual_equipment_price' | 'manual_transport_price', val: string) => {
     const isNumeric = field !== 'manual_name' && field !== 'manual_um'
     const newVal = isNumeric ? parseFloat(val) || 0 : val
-    onUpdateLine(id, { [field]: newVal })
+    
+    // Clear autoExpand if we're manually editing
+    onUpdateLine(id, { [field]: newVal, metadata: { ...lines.find(l => l.id === id)?.metadata, autoExpand: false } })
   }
 
   const handleAddManualLine = (stageName?: string) => {
@@ -335,79 +337,112 @@ export default function EstimateEditor({
                                   <span className="text-[10px] font-bold bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full shrink-0">Personalizat</span>
                                 )}
                                 {isCatalogNorm ? (
-                                  <h4 className="font-bold text-lg md:text-xl leading-snug">{line.name || line.manual_name || '—'}</h4>
+                                  <div className="flex flex-col">
+                                    <h4 className="font-bold text-lg md:text-xl leading-tight break-words">{line.name || line.manual_name || '—'}</h4>
+                                    <div className="flex items-center gap-2 text-[11px] text-slate-400 font-bold uppercase tracking-wider mt-1">
+                                      <span>Cost Direct: {line.unit_price?.toLocaleString('ro-RO')} lei / {line.unit || '—'}</span>
+                                      <span className="text-primary/50">→</span>
+                                      <span className="text-primary">Preț Final: {(lineCosts.totalWithTVA / line.quantity).toLocaleString('ro-RO')} lei / {line.unit || '—'}</span>
+                                    </div>
+                                  </div>
                                 ) : isManual ? (
-                                  <input
-                                    className="font-bold text-lg md:text-xl leading-snug bg-transparent border-b border-dashed border-transparent hover:border-border/50 focus:border-primary outline-none transition-all w-full max-w-xl"
-                                    value={line.manual_name ?? ''}
-                                    onChange={(e) => handleUpdateManualField(line.id, 'manual_name', e.target.value)}
-                                  />
-                                ) : (
-                                  <h4 className="font-bold text-lg md:text-xl leading-snug">{line.items!.name}</h4>
-                                )}
-                              </div>
-                              <div className="text-[12px] text-slate-400 font-bold uppercase tracking-wider">
-                                {isCatalogNorm ? (
-                                  <span>
-                                    {(line.unit_price ?? 0) > 0
-                                      ? `${line.unit_price!.toLocaleString('ro-RO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Lei / ${line.unit || '—'}`
-                                      : `Preț necompletat · ${line.unit || '—'} · ${line.category || ''}`
-                                    }
-                                  </span>
-                                ) : isManual ? (
-                                  <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mt-3">
-                                    <div className="flex flex-col gap-1">
-                                      <span className="text-[10px] font-black uppercase tracking-widest text-sky-600 dark:text-sky-400 px-1">Material:</span>
-                                      <input
-                                        type="number"
-                                        className="w-full px-3 py-2 bg-sky-50 dark:bg-sky-950/20 border border-sky-200 dark:border-sky-800/50 hover:border-sky-400 rounded-lg font-mono text-sky-700 dark:text-sky-400 outline-none text-base font-bold focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition-all"
-                                        value={line.manual_price ?? 0}
-                                        onFocus={(e) => e.currentTarget.select()}
-                                        onChange={(e) => handleUpdateManualField(line.id, 'manual_price', e.target.value)}
-                                      />
-                                    </div>
-                                    <div className="flex flex-col gap-1">
-                                      <span className="text-[10px] font-black uppercase tracking-widest text-orange-600 dark:text-orange-400 px-1">Manoperă:</span>
-                                      <input
-                                        type="number"
-                                        className="w-full px-3 py-2 bg-orange-50 dark:bg-orange-950/20 border border-orange-200 dark:border-orange-800/50 hover:border-orange-400 rounded-lg font-mono text-orange-700 dark:text-orange-400 outline-none text-base font-bold focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all"
-                                        value={line.manual_labor_price ?? 0}
-                                        onFocus={(e) => e.currentTarget.select()}
-                                        onChange={(e) => handleUpdateManualField(line.id, 'manual_labor_price', e.target.value)}
-                                      />
-                                    </div>
-                                    <div className="flex flex-col gap-1">
-                                      <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400 px-1">Utilaje:</span>
-                                      <input
-                                        type="number"
-                                        className="w-full px-3 py-2 bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800/50 hover:border-emerald-400 rounded-lg font-mono text-emerald-700 dark:text-emerald-400 outline-none text-base font-bold focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
-                                        value={line.manual_equipment_price ?? 0}
-                                        onFocus={(e) => e.currentTarget.select()}
-                                        onChange={(e) => handleUpdateManualField(line.id, 'manual_equipment_price', e.target.value)}
-                                      />
-                                    </div>
-                                    <div className="flex flex-col gap-1">
-                                      <span className="text-[10px] font-black uppercase tracking-widest text-purple-600 dark:text-purple-400 px-1">Transport:</span>
-                                      <input
-                                        type="number"
-                                        className="w-full px-3 py-2 bg-purple-50 dark:bg-purple-950/20 border border-purple-200 dark:border-purple-800/50 hover:border-purple-400 rounded-lg font-mono text-purple-700 dark:text-purple-400 outline-none text-base font-bold focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all"
-                                        value={line.manual_transport_price ?? 0}
-                                        onFocus={(e) => e.currentTarget.select()}
-                                        onChange={(e) => handleUpdateManualField(line.id, 'manual_transport_price', e.target.value)}
-                                      />
-                                    </div>
-                                    <div className="flex flex-col gap-1">
-                                      <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 px-1 border-l-2 border-slate-200 ml-1">Unitate:</span>
-                                      <input
-                                        className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 hover:border-slate-400 rounded-lg outline-none text-base font-mono font-bold text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all ml-1"
-                                        value={line.manual_um ?? ''}
-                                        onChange={(e) => handleUpdateManualField(line.id, 'manual_um', e.target.value)}
-                                      />
+                                  <div className="flex-1">
+                                    <textarea
+                                      rows={1}
+                                      className="font-bold text-lg md:text-xl leading-snug bg-transparent border-b border-dashed border-slate-200 dark:border-slate-700 hover:border-primary focus:border-primary outline-none transition-all w-full resize-none overflow-hidden text-slate-900 dark:text-white pb-1"
+                                      value={line.manual_name ?? ''}
+                                      placeholder="Nume reper (clic pentru a edita)..."
+                                      onChange={(e) => {
+                                        handleUpdateManualField(line.id, 'manual_name', e.target.value);
+                                        e.target.style.height = 'auto';
+                                        e.target.style.height = e.target.scrollHeight + 'px';
+                                      }}
+                                      onFocus={(e) => {
+                                        e.target.style.height = 'auto';
+                                        e.target.style.height = e.target.scrollHeight + 'px';
+                                      }}
+                                    />
+                                    <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mt-4">
+                                      {[
+                                        { label: 'Mat.', field: 'manual_price', color: 'sky', calcValue: lineCosts.directMaterialUnit },
+                                        { label: 'Man.', field: 'manual_labor_price', color: 'orange', calcValue: lineCosts.directLaborUnit },
+                                        { label: 'Util.', field: 'manual_equipment_price', color: 'emerald', calcValue: lineCosts.directEquipmentUnit },
+                                        { label: 'Trans.', field: 'manual_transport_price', color: 'purple', calcValue: lineCosts.directTransportUnit }
+                                      ].map(p => {
+                                        const actualValue = hasCustomResources ? p.calcValue : ((line as any)[p.field] ?? 0)
+                                        const finalValue = actualValue * (1 + settings.regie/100) * (1 + settings.profit/100) * (1 + settings.tva/100)
+                                        
+                                        return (
+                                          <div key={p.field} className="flex flex-col gap-1">
+                                            <span className={`text-[10px] font-black uppercase tracking-widest text-slate-500 px-1 flex justify-between`}>
+                                              <span>{p.label}</span>
+                                              {hasCustomResources && <span className="text-[8px] text-primary/50">CALC</span>}
+                                            </span>
+                                            <div className="relative">
+                                              <input
+                                                type="number"
+                                                readOnly={hasCustomResources}
+                                                className={`w-full px-3 py-2 ${hasCustomResources ? 'bg-slate-100 dark:bg-slate-800 cursor-not-allowed opacity-80' : `bg-${p.color}-50/50 dark:bg-${p.color}-900/10 border-${p.color}-200/50 dark:border-${p.color}-800/30 hover:border-${p.color}-400/50`} border rounded-lg font-mono text-slate-900 dark:text-slate-200 outline-none text-base font-black focus:ring-2 focus:ring-${p.color}-500/20 focus:border-${p.color}-500 transition-all`}
+                                                value={actualValue}
+                                                onFocus={(e) => !hasCustomResources && e.currentTarget.select()}
+                                                onChange={(e) => !hasCustomResources && handleUpdateManualField(line.id, p.field as any, e.target.value)}
+                                              />
+                                              {actualValue > 0 && (
+                                                <span className="absolute -bottom-4 left-1 text-[9px] font-bold text-slate-400 whitespace-nowrap">
+                                                  Ofertat: {finalValue.toLocaleString('ro-RO', {maximumFractionDigits: 2})}
+                                                </span>
+                                              )}
+                                            </div>
+                                          </div>
+                                        )
+                                      })}
+                                      <div className="flex flex-col gap-1">
+                                        <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 px-1 border-l-2 border-slate-200 ml-1">U.M.:</span>
+                                        <input
+                                          className="w-full px-3 py-2 bg-slate-100/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 hover:border-slate-400 rounded-lg outline-none text-base font-mono font-bold text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all ml-1"
+                                          value={line.manual_um ?? line.unit ?? (line.items?.um || '')}
+                                          onChange={(e) => handleUpdateManualField(line.id, 'manual_um', e.target.value)}
+                                        />
+                                      </div>
                                     </div>
                                   </div>
                                 ) : (
-                                  `${lineCosts.unitDirectCost.toLocaleString('ro-RO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Lei direct / ${line.items!.um}`
+                                  <div className="flex flex-col">
+                                    <h4 className="font-bold text-lg md:text-xl leading-tight break-words">{line.items!.name}</h4>
+                                    <div className="flex items-center gap-2 text-[11px] text-slate-400 font-bold uppercase tracking-wider mt-1">
+                                      <span>Cost Direct: {lineCosts.unitDirectCost.toLocaleString('ro-RO', { minimumFractionDigits: 2 })} lei / {line.items!.um}</span>
+                                      <span className="text-primary/50">→</span>
+                                      <span className="text-primary font-black">Preț Final: {(lineCosts.totalWithTVA / line.quantity).toLocaleString('ro-RO', { minimumFractionDigits: 2 })} lei / {line.items!.um}</span>
+                                    </div>
+                                  </div>
                                 )}
+                              </div>
+
+                              {/* Transparency Ribbon - Receipt Style */}
+                              <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 p-3 bg-slate-100/50 dark:bg-slate-950/20 rounded-xl border border-border/30 text-[11px] font-bold uppercase tracking-tight text-slate-500">
+                                <span className="text-slate-400">Desfășurare Preț Final:</span>
+                                <div className="flex items-center gap-1.5 bg-white dark:bg-slate-900 px-2 py-1 rounded-md border border-border/50">
+                                  <span>Bază: {(lineCosts.unitDirectCost).toLocaleString('ro-RO', { minimumFractionDigits: 2 })}</span>
+                                </div>
+                                <span>+</span>
+                                <div className="flex items-center gap-1.5">
+                                  <span>Regie ({settings.regie}%):</span>
+                                  <span className="text-amber-600">{(lineCosts.regieAmount / line.quantity).toLocaleString('ro-RO', { minimumFractionDigits: 2 })}</span>
+                                </div>
+                                <span>+</span>
+                                <div className="flex items-center gap-1.5">
+                                  <span>Profit ({settings.profit}%):</span>
+                                  <span className="text-emerald-600">{(lineCosts.profitAmount / line.quantity).toLocaleString('ro-RO', { minimumFractionDigits: 2 })}</span>
+                                </div>
+                                <span>+</span>
+                                <div className="flex items-center gap-1.5">
+                                  <span>TVA ({settings.tva}%):</span>
+                                  <span className="text-indigo-600">{(lineCosts.tvaAmount / line.quantity).toLocaleString('ro-RO', { minimumFractionDigits: 2 })}</span>
+                                </div>
+                                <span className="text-primary">=</span>
+                                <div className="bg-primary/10 text-primary px-2 py-1 rounded-md border border-primary/20 font-black">
+                                  {(lineCosts.totalWithTVA / line.quantity).toLocaleString('ro-RO', { minimumFractionDigits: 2 })} lei / {line.unit || (isManual ? line.manual_um : line.items!.um)}
+                                </div>
                               </div>
                               {resSummary && (
                                 <button
