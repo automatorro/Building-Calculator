@@ -5,7 +5,7 @@ export const dynamic = 'force-dynamic'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/utils/supabase/client'
-import { ArrowLeft, Save, Building2, MapPin, Percent, TrendingUp, Info, LayoutTemplate, Check } from 'lucide-react'
+import { ArrowLeft, Save, Building2, MapPin, Percent, TrendingUp, Info, LayoutTemplate, Check, ChevronDown } from 'lucide-react'
 import Link from 'next/link'
 
 export default function NewProjectPage() {
@@ -14,6 +14,7 @@ export default function NewProjectPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [startMode, setStartMode] = useState<'manual' | 'smart'>('manual')
+  const [showAdvanced, setShowAdvanced] = useState(false)
 
   const [formData, setFormData] = useState({
     name: '',
@@ -281,11 +282,12 @@ export default function NewProjectPage() {
                   onChange={(e) => setFormData({ ...formData, profit: parseFloat(e.target.value) })}
                 />
               </div>
+              <p className="text-[10px] text-slate-400 mt-2 leading-relaxed">Procentul tău de câștig peste costul direct. Constructorii mici: 5-10%. Firmele mari: 10-15%.</p>
             </div>
 
             <div className="p-4 bg-white dark:bg-slate-950 border border-border rounded-xl">
               <label className="block text-[10px] sm:text-xs font-black text-slate-400 mb-2 uppercase tracking-widest">
-                Cheltuieli Indirecte (%)
+                Cheltuieli Indirecte — Regie (%)
               </label>
               <div className="flex items-center gap-3">
                 <Percent className="w-4 h-4 text-primary shrink-0" />
@@ -297,6 +299,7 @@ export default function NewProjectPage() {
                   onChange={(e) => setFormData({ ...formData, regie: parseFloat(e.target.value) })}
                 />
               </div>
+              <p className="text-[10px] text-slate-400 mt-2 leading-relaxed">Cheltuieli de firmă: chirie, contabilitate, asigurări, uzura sculelor. Uzual: 7-12%.</p>
             </div>
 
             <div className="p-4 bg-white dark:bg-slate-950 border border-border rounded-xl">
@@ -312,25 +315,57 @@ export default function NewProjectPage() {
                   onChange={(e) => setFormData({ ...formData, tva: parseFloat(e.target.value) })}
                 />
               </div>
-            </div>
-
-            <div className="p-4 bg-white dark:bg-slate-950 border border-border rounded-xl ring-2 ring-primary/20">
-              <label className="block text-[10px] sm:text-xs font-black text-primary mb-2 uppercase tracking-widest">
-                Venit Estimat Proiect (Vânzare)
-              </label>
-              <div className="flex items-center gap-3">
-                <TrendingUp className="w-4 h-4 text-primary shrink-0" />
-                <input
-                  type="number"
-                  placeholder="ex: 500000"
-                  className="w-full text-xl sm:text-2xl font-black bg-transparent focus:outline-none"
-                  value={formData.total_estimated_revenue}
-                  onChange={(e) => setFormData({ ...formData, total_estimated_revenue: parseFloat(e.target.value) || 0 })}
-                />
-              </div>
-              <p className="text-[9px] text-slate-400 mt-1 italic">Crucial pentru calculul ROI și Cashflow</p>
+              <p className="text-[10px] text-slate-400 mt-2 leading-relaxed">TVA conform legislației în vigoare. Din 2025: 21% cota standard.</p>
             </div>
           </div>
+
+          {/* Setări avansate — collapsed */}
+          <button
+            type="button"
+            onClick={() => setShowAdvanced(!showAdvanced)}
+            className="flex items-center gap-2 mt-4 text-xs font-bold text-slate-400 hover:text-primary transition-colors"
+          >
+            <ChevronDown size={14} className={`transition-transform ${showAdvanced ? 'rotate-180' : ''}`} />
+            Setări avansate
+          </button>
+
+          {showAdvanced && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mt-4">
+              <div className="p-4 bg-white dark:bg-slate-950 border border-border rounded-xl">
+                <label className="block text-[10px] sm:text-xs font-black text-slate-400 mb-2 uppercase tracking-widest">
+                  Taxe manoperă (%)
+                </label>
+                <div className="flex items-center gap-3">
+                  <Percent className="w-4 h-4 text-primary shrink-0" />
+                  <input
+                    type="number"
+                    step="0.01"
+                    className="w-full text-xl sm:text-2xl font-bold bg-transparent focus:outline-none"
+                    value={formData.taxe_manopera}
+                    onChange={(e) => setFormData({ ...formData, taxe_manopera: parseFloat(e.target.value) })}
+                  />
+                </div>
+                <p className="text-[10px] text-slate-400 mt-2 leading-relaxed">CAS, CASS și impozit pe manoperă. Se aplică automat la calculul costurilor de manoperă.</p>
+              </div>
+
+              <div className="p-4 bg-white dark:bg-slate-950 border border-border rounded-xl ring-2 ring-primary/20">
+                <label className="block text-[10px] sm:text-xs font-black text-primary mb-2 uppercase tracking-widest">
+                  Venit Estimat Proiect (Vânzare)
+                </label>
+                <div className="flex items-center gap-3">
+                  <TrendingUp className="w-4 h-4 text-primary shrink-0" />
+                  <input
+                    type="number"
+                    placeholder="ex: 500000"
+                    className="w-full text-xl sm:text-2xl font-black bg-transparent focus:outline-none"
+                    value={formData.total_estimated_revenue}
+                    onChange={(e) => setFormData({ ...formData, total_estimated_revenue: parseFloat(e.target.value) || 0 })}
+                  />
+                </div>
+                <p className="text-[9px] text-slate-400 mt-1 italic">Prețul pe care îl negociezi cu beneficiarul. Folosit pentru calculul ROI și marjă profit reală.</p>
+              </div>
+            </div>
+          )}
         </div>
 
         {error && (

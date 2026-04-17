@@ -28,10 +28,13 @@ function LogoMark({ size = 28 }: { size?: number }) {
   return (
     <div style={{ width:size, height:size, background:C.orange, borderRadius:7,
       display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-      <svg width={Math.round(size*.55)} height={Math.round(size*.55)} viewBox="0 0 24 24"
-        fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
-        <polyline points="9 22 9 12 15 12 15 22"/>
+      <svg width={Math.round(size*0.7)} height={Math.round(size*0.7)} viewBox="0 0 24 24"
+        fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M3 18h18" />
+        <path d="M19 18v-1a7 7 0 0 0-14 0v1" />
+        <path d="M12 10V7" />
+        <path d="M9 11V9" />
+        <path d="M15 11V9" />
       </svg>
     </div>
   )
@@ -40,7 +43,7 @@ function LogoMark({ size = 28 }: { size?: number }) {
 /* Avantaje afișate pe panoul stânga */
 const BENEFITS = [
   'Deviz complet în mai puțin de 5 minute',
-  'Catalog cu 80+ norme tehnice românești',
+  'Catalog cu 1.100+ norme tehnice românești',
   'Export PDF profesional instant',
   'Link de vizualizare pentru beneficiar',
   'Alertă automată la depășire buget',
@@ -146,7 +149,7 @@ export default function RegisterPage() {
         <Link href="/" style={{ display:'flex', alignItems:'center', gap:10, textDecoration:'none' }}>
           <LogoMark />
           <span style={{ fontFamily:C.sans, fontWeight:600, fontSize:15, color:C.white, letterSpacing:'-0.02em' }}>
-            Building<span style={{ color:C.orange }}>Calc</span>
+            Șanti<span style={{ color:C.orange }}>er</span>
           </span>
         </Link>
 
@@ -191,7 +194,7 @@ export default function RegisterPage() {
             style={{ display:'none', alignItems:'center', gap:10, textDecoration:'none', marginBottom:36 }}>
             <LogoMark />
             <span style={{ fontFamily:C.sans, fontWeight:600, fontSize:15, color:C.black, letterSpacing:'-0.02em' }}>
-              Building<span style={{ color:C.orange }}>Calc</span>
+              Șanti<span style={{ color:C.orange }}>er</span>
             </span>
           </Link>
 

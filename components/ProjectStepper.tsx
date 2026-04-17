@@ -13,7 +13,7 @@ export default function ProjectStepper({ globalPhase, activePhase, onPhaseClick 
   const phases = [
     { 
       id: 'setup' as const, 
-      label: 'Planificare', 
+      label: 'Editare', 
       desc: 'Centralizator Lucrări', 
       icon: ClipboardList,
       color: '#A8A59E'

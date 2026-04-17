@@ -4,7 +4,8 @@ import { useEffect, useMemo, useState } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Plus, MapPin, Calendar, ArrowRight, Briefcase, Trash2 } from 'lucide-react'
+import { Plus, MapPin, Calendar, ArrowRight, Briefcase, Trash2, Rocket } from 'lucide-react'
+import { toast } from 'sonner'
 
 export const dynamic = 'force-dynamic'
 
@@ -70,6 +71,53 @@ export default function ProjectsPage() {
     setProjects(prev => (prev || []).filter(p => p.id !== project.id))
     setDeletingId(null)
     router.refresh()
+  }
+
+  const handleCreateDemo = async () => {
+    setLoading(true)
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) {
+      toast.error('Trebuie să fii autentificat pentru a crea un proiect demo.')
+      setLoading(false)
+      return
+    }
+
+    // 1. Create project
+    const { data: project, error: pError } = await supabase
+      .from('projects')
+      .insert([{
+        name: '📘 PROIECT DEMO - Vilă P+1 (Exemplu)',
+        location: 'Cluj-Napoca (Demo)',
+        user_id: user.id,
+        stages: ['Infrastructură', 'Suprastructură', 'Finisaje', 'Instalații']
+      }])
+      .select()
+      .single()
+
+    if (pError) {
+      toast.error('Eroare proiect demo: ' + pError.message)
+      setLoading(false)
+      return
+    }
+
+    // 2. Create sample lines
+    const demoLines = [
+      { project_id: project.id, stage_name: 'Infrastructură', manual_name: 'Săpătură manuală de pământ în spații înguste', manual_um: 'mc', quantity: 24, manual_labor_price: 85, user_id: user.id },
+      { project_id: project.id, stage_name: 'Infrastructură', manual_name: 'Fundații continue din beton C16/20', manual_um: 'mc', quantity: 18, manual_price: 450, manual_labor_price: 120, user_id: user.id },
+      { project_id: project.id, stage_name: 'Suprastructură', manual_name: 'Zidărie din blocuri BCA 25cm', manual_um: 'mc', quantity: 42, manual_price: 580, manual_labor_price: 180, user_id: user.id },
+      { project_id: project.id, stage_name: 'Suprastructură', manual_name: 'Beton în stâlpi, grinzi și centuri', manual_um: 'mc', quantity: 12, manual_price: 480, manual_labor_price: 350, manual_equipment_price: 45, user_id: user.id },
+      { project_id: project.id, stage_name: 'Finisaje', manual_name: 'Tencuială interior (manuală)', manual_um: 'mp', quantity: 180, manual_price: 15, manual_labor_price: 35, user_id: user.id },
+      { project_id: project.id, stage_name: 'Finisaje', manual_name: 'Glet de ipsos (2 straturi)', manual_um: 'mp', quantity: 180, manual_price: 12, manual_labor_price: 25, user_id: user.id }
+    ]
+
+    const { error: lError } = await supabase.from('estimate_lines').insert(demoLines)
+    
+    if (lError) {
+      toast.error('Eroare linii demo: ' + lError.message)
+    } else {
+      toast.success('Proiect Demo creat cu succes!')
+      router.push(`/projects/${project.id}`)
+    }
   }
 
   const S = {
@@ -225,15 +273,31 @@ export default function ProjectsPage() {
               Începe prin a crea primul tău proiect pentru a genera devize
               și a calcula costurile de construcție.
             </p>
-            <Link href="/projects/new" style={{
-              display: 'inline-flex', alignItems: 'center', gap: 8,
-              background: '#E8500A', color: '#FAFAF8',
-              padding: '12px 24px', borderRadius: 9,
-              fontSize: 14, fontWeight: 500, textDecoration: 'none',
-            }}>
-              <Plus size={16} />
-              Creează Primul Proiect
-            </Link>
+            <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
+              <Link href="/projects/new" style={{
+                display: 'inline-flex', alignItems: 'center', gap: 8,
+                background: '#E8500A', color: '#FAFAF8',
+                padding: '12px 24px', borderRadius: 9,
+                fontSize: 14, fontWeight: 500, textDecoration: 'none',
+              }}>
+                <Plus size={16} />
+                Creează Primul Proiect
+              </Link>
+              <button 
+                onClick={handleCreateDemo}
+                disabled={loading}
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 8,
+                  background: '#F3F2EF', color: '#1E2329',
+                  padding: '12px 24px', borderRadius: 9,
+                  fontSize: 14, fontWeight: 500, border: '1px solid #E5E3DE',
+                  cursor: loading ? 'not-allowed' : 'pointer',
+                }}
+              >
+                <Rocket size={16} />
+                {loading ? 'Se generează...' : 'Creează Proiect Demo'}
+              </button>
+            </div>
           </div>
         )}
       </main>

@@ -29,8 +29,8 @@ const C = {
 /* ─── Statistici afișate pe panoul stânga ─────────────────────────────────── */
 const STATS = [
   { num: '3 min',  label: 'să creezi un deviz complet' },
-  { num: '49 lei', label: 'pe lună, fără contract' },
-  { num: '80+',    label: 'norme tehnice în catalog' },
+  { num: '69 lei', label: 'pe lună, fără contract' },
+  { num: '1.100+',    label: 'norme tehnice în catalog' },
 ]
 
 /* ─── Logo ─────────────────────────────────────────────────────────────────── */

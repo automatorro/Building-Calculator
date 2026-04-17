@@ -10,7 +10,7 @@ import { EstimateLine, ProjectSettings } from '@/utils/calculators/estimate'
 import { Purchase, calculateFinancials } from '@/utils/calculators/financials'
 import {
   LayoutDashboard, ClipboardList, Wallet,
-  Settings as SettingsIcon, Plus, CalendarDays, ListTree, CheckCircle2,
+  Settings as SettingsIcon, Plus, CalendarDays, ListTree, CheckCircle2, MessageSquare,
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { createClient } from '@/utils/supabase/client'
@@ -150,13 +150,9 @@ export default function ProjectClientContainer({
   const [isSaved, setIsSaved] = useState(true)
   const [loading, setLoading] = useState(false)
 
-  useEffect(() => {
-    if (isSaved) {
-      setLines(initialLines)
-      setPurchases(initialPurchases)
-      setRevenue(initialRevenue)
-    }
-  }, [initialLines, initialPurchases, initialRevenue, isSaved])
+  // Note: Removed the useEffect that synced state from initialLines when isSaved is true.
+  // This was causing local additions to disappear during auto-save because initialLines (props) 
+  // were not yet updated with the newly added items. State is already initialized from props.
 
   const handleAddManualLine = (stageName?: string) => {
     const newLine: EstimateLine = {
@@ -164,14 +160,36 @@ export default function ProjectClientContainer({
       quantity: 1,
       custom_prices: {},
       excluded_resources: [],
-      metadata: { source: 'manual' },
+      metadata: { source: 'manual', autoExpand: true },
       stage_name: stageName || '',
-      manual_name: 'Articol nou',
-      manual_um: 'buc',
+      manual_name: 'Rețetă Nouă',
+      manual_um: 'mc',
       manual_price: 0,
       manual_labor_price: 0,
       manual_equipment_price: 0,
       manual_transport_price: 0,
+      resources_override: [
+        {
+          id: crypto.randomUUID(),
+          name: 'Resursă Material (exemplu)',
+          type: 'material',
+          um: 'buc',
+          consumption: 1,
+          unit_price: 0,
+          waste_percent: 0,
+          note: 'Introduceți numele materialului...'
+        },
+        {
+          id: crypto.randomUUID(),
+          name: 'Resursă Manoperă (exemplu)',
+          type: 'labor',
+          um: 'ore',
+          consumption: 1,
+          unit_price: 0,
+          waste_percent: 0,
+          note: 'Introduceți tipul de manoperă...'
+        }
+      ],
       items: null
     }
     setLines([...lines, newLine])
@@ -364,14 +382,24 @@ export default function ProjectClientContainer({
   /* ── Export Excel ─────────────────────────────────────────────────────── */
   const handleExportExcel = () => exportExcel(lines, settings, projectName)
 
-  /* ── Tab config ────────────────────────────────────────────────────────── */
-  const TABS: Array<{ id: Tab; label: string; icon: React.ElementType }> = [
-    { id: 'dashboard', label: 'Status', icon: LayoutDashboard },
-    { id: 'planning', label: 'Planificare', icon: ClipboardList },
-    { id: 'deviz', label: 'Deviz', icon: ListTree },
-    { id: 'timeline', label: 'Cronologie', icon: CalendarDays },
-    { id: 'purchases', label: 'Achiziții', icon: Wallet },
-  ]
+  /* ── Tab config (Progressive Disclosure) ────────────────────────────────── */
+  const TABS = useMemo(() => {
+    const allTabs: Array<{ id: Tab; label: string; icon: React.ElementType }> = [
+      { id: 'planning', label: 'Editor Deviz', icon: ClipboardList },
+      { id: 'deviz', label: 'Vizualizare & Export', icon: ListTree },
+      { id: 'timeline', label: 'Cronologie', icon: CalendarDays },
+      { id: 'purchases', label: 'Achiziții', icon: Wallet },
+      { id: 'dashboard', label: 'Status', icon: LayoutDashboard },
+    ]
+
+    // 1. Dacă nu avem niciun rând în deviz, arătăm doar editorul pentru simplitate
+    if (lines.length === 0) return allTabs.filter(t => t.id === 'planning')
+
+    // 2. Dacă avem deviz dar nu avem achiziții, nu arătăm încă Dashboard-ul (Status)
+    if (purchases.length === 0) return allTabs.filter(t => t.id !== 'dashboard')
+
+    return allTabs
+  }, [lines.length, purchases.length])
 
   return (
     <div className="space-y-8">
@@ -469,23 +497,39 @@ export default function ProjectClientContainer({
           </div>
           <div style={{ flex: 1 }}>
             <p style={{ fontWeight: 600, color: '#791F1F', marginBottom: 4, fontSize: 14 }}>
-              Depășire buget — etapa <em>{budgetAlert.stage}</em>
+              Atenție! Depășire buget — etapa <em>{budgetAlert.stage}</em>
             </p>
             <p style={{ fontSize: 13, color: '#C0392B', lineHeight: 1.5 }}>
-              Etapa a depășit bugetul planificat cu{' '}
+              S-a depășit bugetul planificat cu{' '}
               <strong>{budgetAlert.exceeded.toLocaleString('ro-RO', { maximumFractionDigits: 0 })} lei</strong>.
               {budgetAlert.impact < 0 && (
-                <> Impact estimat asupra profitului: <strong>{budgetAlert.impact.toLocaleString('ro-RO', { maximumFractionDigits: 0 })} lei</strong>.</>
+                <> Impact profit: <strong>{budgetAlert.impact.toLocaleString('ro-RO', { maximumFractionDigits: 0 })} lei</strong>.</>
               )}
             </p>
           </div>
-          <button onClick={() => setBudgetAlert(null)}
-            style={{
-              background: 'transparent', border: 'none', cursor: 'pointer',
-              color: '#C0392B', fontSize: 18, padding: 4, lineHeight: 1, flexShrink: 0
-            }}>
-            ×
-          </button>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'flex-end' }}>
+            <button onClick={() => setBudgetAlert(null)}
+              style={{
+                background: 'transparent', border: 'none', cursor: 'pointer',
+                color: '#C0392B', fontSize: 18, padding: 4, lineHeight: 1, flexShrink: 0
+              }}>
+              ×
+            </button>
+            <button 
+              onClick={() => {
+                const msg = `⚠️ Atenție: Etapa "${budgetAlert.stage}" de la proiectul "${projectName}" a depășit bugetul cu ${budgetAlert.exceeded.toLocaleString('ro-RO')} lei. Verifică aici: ${window.location.href}`;
+                window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+              }}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 6,
+                background: '#25D366', color: 'white', border: 'none',
+                padding: '6px 12px', borderRadius: 8, fontSize: 11, fontWeight: 800,
+                cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.05em'
+              }}
+            >
+              <MessageSquare size={14} /> Anunță pe WhatsApp
+            </button>
+          </div>
         </div>
       )}
 

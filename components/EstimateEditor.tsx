@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
-import { Plus, Trash2, Save, Info, ChevronDown, ChevronUp, Settings2, CheckCircle2, Lightbulb, Store, Link as LinkIcon, BookPlus, MoreVertical, Copy } from 'lucide-react'
+import { Plus, Trash2, Save, Info, ChevronDown, ChevronUp, Settings2, CheckCircle2, Lightbulb, Store, Link as LinkIcon, BookPlus, MoreVertical, Copy, Search } from 'lucide-react'
 import { toast } from 'sonner'
 import { createClient } from '@/utils/supabase/client'
 import { calculateLineCosts, EstimateLine, ProjectSettings, calculateProjectTotals } from '@/utils/calculators/estimate'
@@ -37,6 +37,7 @@ export default function EstimateEditor({
   const [activeOfferPicker, setActiveOfferPicker] = useState<{ resourceId: string, resourceName: string, lineId: string } | null>(null)
   const [collapsedStages, setCollapsedStages] = useState<Record<string, boolean>>({})
   const [didInitCollapse, setDidInitCollapse] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
   const supabase = createClient()
 
   useEffect(() => {
@@ -48,6 +49,16 @@ export default function EstimateEditor({
     setCollapsedStages(next)
     setDidInitCollapse(true)
   }, [didInitCollapse, lines])
+
+  // Auto-expand new manual lines
+  useEffect(() => {
+    const lastManualLine = lines.find(l => l.metadata?.autoExpand)
+    if (lastManualLine && expandedId !== lastManualLine.id) {
+      setExpandedId(lastManualLine.id)
+      // Remove the flag so it doesn't keep expanding on every render
+      onUpdateLine(lastManualLine.id, { metadata: { ...lastManualLine.metadata, autoExpand: false } })
+    }
+  }, [lines, expandedId, onUpdateLine])
 
   const totals = useMemo(() => calculateProjectTotals(lines, settings), [lines, settings])
 
@@ -243,305 +254,378 @@ export default function EstimateEditor({
             </button>
           </div>
 
-          <div className="divide-y divide-border/50">
-            {Array.from(new Set(lines.map(l => l.stage_name || 'Lucrări Generale'))).map(stage => (
-              <div key={stage} className="bg-slate-50/30 dark:bg-white/[0.02]">
-                <div className="px-6 py-2 bg-slate-100/50 dark:bg-slate-800/40 border-y border-border/30 flex justify-between items-center">
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setCollapsedStages(prev => ({ ...prev, [stage]: !prev[stage] }))}
-                      className="p-1 rounded bg-white/60 dark:bg-slate-900/30 hover:bg-slate-200/60 dark:hover:bg-slate-700/40 text-slate-600 hover:text-primary transition-colors ring-1 ring-border/40"
-                      aria-label={collapsedStages[stage] ? 'Extinde categoria' : 'Restrânge categoria'}
+          <div className="p-4 border-b border-border/50">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
+              <input 
+                type="text"
+                placeholder="Caută în deviz (nume rând, cod sau resursă)..."
+                className="w-full bg-slate-100/50 dark:bg-slate-800/50 border border-border/50 rounded-xl py-3 pl-11 pr-4 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-sans"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className="divide-y divide-border/50 font-sans">
+            {Array.from(new Set(lines.map(l => l.stage_name || 'Lucrări Generale'))).map(stage => {
+              const stageLines = lines.filter(l => (l.stage_name || 'Lucrări Generale') === stage)
+              const filteredStageLines = stageLines.filter(line => {
+                if (!searchQuery.trim()) return true
+                const q = searchQuery.toLowerCase()
+                const nameMatch = (line.manual_name || line.name || '').toLowerCase().includes(q)
+                const codeMatch = (line.code || (line.items?.normatives?.code || '')).toLowerCase().includes(q)
+                const resourcesMatch = ensureResourcesOverride(line).some((r: any) => r.name.toLowerCase().includes(q))
+                return nameMatch || codeMatch || resourcesMatch
+              })
+
+              if (filteredStageLines.length === 0 && searchQuery.trim()) return null
+
+              const isCollapsed = collapsedStages[stage] && !searchQuery.trim()
+              
+              return (
+                <div key={stage} className="bg-slate-50/30 dark:bg-white/[0.02]">
+                  <div className="px-6 py-2 bg-slate-100/50 dark:bg-slate-800/40 border-y border-border/30 flex justify-between items-center">
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setCollapsedStages(prev => ({ ...prev, [stage]: !prev[stage] }))}
+                        className="p-1 rounded bg-white/60 dark:bg-slate-900/30 hover:bg-slate-200/60 dark:hover:bg-slate-700/40 text-slate-600 hover:text-primary transition-colors ring-1 ring-border/40"
+                        aria-label={isCollapsed ? 'Extinde categoria' : 'Restrânge categoria'}
+                      >
+                        {isCollapsed ? <ChevronDown size={18} /> : <ChevronUp size={18} />}
+                      </button>
+                      <span className="text-xs font-black uppercase tracking-widest text-slate-500">{stage}</span>
+                      <span className="text-xs font-bold text-slate-400">({filteredStageLines.length})</span>
+                    </div>
+                    <button 
+                      onClick={() => handleAddManualLine(stage)} 
+                      className="text-xs font-black text-primary bg-primary/10 hover:bg-primary/20 border border-primary/20 px-4 py-2 rounded-xl transition-all shadow-sm active:scale-95 flex items-center gap-2"
                     >
-                      {collapsedStages[stage] ? <ChevronDown size={18} strokeWidth={3} /> : <ChevronUp size={18} strokeWidth={3} />}
+                      <Plus size={14} /> <span>Rețetă nouă în {stage}</span>
                     </button>
-                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">{stage}</span>
                   </div>
-                  <button onClick={() => handleAddManualLine(stage)} className="text-[9px] font-bold text-primary/70 hover:text-primary uppercase tracking-tighter hover:bg-primary/10 px-2 py-1 rounded">
-                    + Rețetă nouă în {stage}
-                  </button>
-                </div>
-                
-                {!collapsedStages[stage] && lines.filter(l => (l.stage_name || 'Lucrări Generale') === stage).map((line) => {
-                  const lineCosts = calculateLineCosts(line, settings)
-                  const isExpanded = expandedId === line.id
-                  const isCatalogNorm = !!(line.catalog_norm_id || (line.code && !line.items))
-                  const isManual = !line.items && !isCatalogNorm
+                  
+                  {!isCollapsed && filteredStageLines.map((line) => {
+                    const lineCosts = calculateLineCosts(line, settings)
+                    const isExpanded = expandedId === line.id
+                    const isCatalogNorm = !!(line.catalog_norm_id || (line.code && !line.items))
+                    const isManual = !line.items && !isCatalogNorm
+                    const hasCustomResources = (line.resources_override && line.resources_override.length > 0)
+                    const allResources = ensureResourcesOverride(line)
+                    const resSummary = allResources.length > 0 ? (() => {
+                      const counts: Record<string, number> = {}
+                      allResources.forEach((r: any) => {
+                        const t = r.type === 'material' ? 'materiale' : r.type === 'labor' ? 'manoperă' : r.type === 'equipment' ? 'utilaj' : 'transport'
+                        counts[t] = (counts[t] || 0) + 1
+                      })
+                      return Object.entries(counts).map(([k, v]) => `${v} ${k}`).join(' · ')
+                    })() : null
 
-                  return (
-                    <div key={line.id} className="group border-b border-border/10 last:border-0">
-                      <div className="p-4 md:p-6 hover:bg-slate-50/30 dark:hover:bg-slate-800/10 transition-colors">
-                        <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
-                          <div className="space-y-1 flex-1">
-                            <div className="flex flex-wrap items-center gap-2">
-                              <span className="text-[10px] font-mono font-bold bg-primary/10 text-primary px-1.5 py-0.5 rounded shrink-0">
-                                {line.code || line.metadata?.catalog_norm_symbol || (isManual ? 'MANUAL' : line.items!.normatives?.code || 'N/A')}
-                              </span>
-                              {isCatalogNorm ? (
-                                <h4 className="font-bold text-base md:text-lg leading-tight">{line.name || line.manual_name || '—'}</h4>
-                              ) : isManual ? (
-                                <input
-                                  className="font-bold text-base md:text-lg leading-tight bg-transparent border-b border-dashed border-transparent hover:border-border/50 focus:border-primary outline-none transition-all w-full max-w-md"
-                                  value={line.manual_name ?? ''}
-                                  onChange={(e) => handleUpdateManualField(line.id, 'manual_name', e.target.value)}
-                                />
-                              ) : (
-                                <h4 className="font-bold text-base md:text-lg leading-tight">{line.items!.name}</h4>
-                              )}
-                            </div>
-                            <div className="text-[11px] text-slate-400 font-bold uppercase tracking-wider">
-                              {isCatalogNorm ? (
-                                <span>
-                                  {(line.unit_price ?? 0) > 0
-                                    ? `${line.unit_price!.toLocaleString('ro-RO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Lei / ${line.unit || '—'}`
-                                    : `Preț necompletat · ${line.unit || '—'} · ${line.category || ''}`
-                                  }
+                    return (
+                      <div key={line.id} className="group border-b border-border/10 last:border-0">
+                        <div className="p-4 md:p-6 hover:bg-slate-50/30 dark:hover:bg-slate-800/10 transition-colors">
+                          <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
+                            <div className="space-y-2 flex-1">
+                              <div className="flex flex-wrap items-center gap-2">
+                                <span className="text-[11px] font-mono font-bold bg-primary/10 text-primary px-2 py-0.5 rounded shrink-0">
+                                  {line.code || line.metadata?.catalog_norm_symbol || (isManual ? 'MANUAL' : line.items!.normatives?.code || 'N/A')}
                                 </span>
-                              ) : isManual ? (
-                                <div className="flex flex-wrap items-center gap-3 mt-1">
-                                  <div className="flex items-center gap-1">
-                                    <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest text-slate-500">Material:</span>
-                                    <input
-                                      type="number"
-                                      className="w-16 px-2 py-1 bg-slate-50 dark:bg-slate-950/40 border border-primary/30 hover:border-primary/50 rounded-lg font-mono text-primary outline-none text-[11px] sm:text-[12px] font-bold focus:ring-2 focus:ring-primary/20 focus:border-primary/60 transition-all"
-                                      value={line.manual_price ?? 0}
-                                      onChange={(e) => handleUpdateManualField(line.id, 'manual_price', e.target.value)}
-                                    />
+                                {hasCustomResources && (
+                                  <span className="text-[10px] font-bold bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full shrink-0">Personalizat</span>
+                                )}
+                                {isCatalogNorm ? (
+                                  <h4 className="font-bold text-lg md:text-xl leading-snug">{line.name || line.manual_name || '—'}</h4>
+                                ) : isManual ? (
+                                  <input
+                                    className="font-bold text-lg md:text-xl leading-snug bg-transparent border-b border-dashed border-transparent hover:border-border/50 focus:border-primary outline-none transition-all w-full max-w-xl"
+                                    value={line.manual_name ?? ''}
+                                    onChange={(e) => handleUpdateManualField(line.id, 'manual_name', e.target.value)}
+                                  />
+                                ) : (
+                                  <h4 className="font-bold text-lg md:text-xl leading-snug">{line.items!.name}</h4>
+                                )}
+                              </div>
+                              <div className="text-[12px] text-slate-400 font-bold uppercase tracking-wider">
+                                {isCatalogNorm ? (
+                                  <span>
+                                    {(line.unit_price ?? 0) > 0
+                                      ? `${line.unit_price!.toLocaleString('ro-RO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Lei / ${line.unit || '—'}`
+                                      : `Preț necompletat · ${line.unit || '—'} · ${line.category || ''}`
+                                    }
+                                  </span>
+                                ) : isManual ? (
+                                  <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mt-3">
+                                    <div className="flex flex-col gap-1">
+                                      <span className="text-[10px] font-black uppercase tracking-widest text-sky-600 dark:text-sky-400 px-1">Material:</span>
+                                      <input
+                                        type="number"
+                                        className="w-full px-3 py-2 bg-sky-50 dark:bg-sky-950/20 border border-sky-200 dark:border-sky-800/50 hover:border-sky-400 rounded-lg font-mono text-sky-700 dark:text-sky-400 outline-none text-base font-bold focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition-all"
+                                        value={line.manual_price ?? 0}
+                                        onFocus={(e) => e.currentTarget.select()}
+                                        onChange={(e) => handleUpdateManualField(line.id, 'manual_price', e.target.value)}
+                                      />
+                                    </div>
+                                    <div className="flex flex-col gap-1">
+                                      <span className="text-[10px] font-black uppercase tracking-widest text-orange-600 dark:text-orange-400 px-1">Manoperă:</span>
+                                      <input
+                                        type="number"
+                                        className="w-full px-3 py-2 bg-orange-50 dark:bg-orange-950/20 border border-orange-200 dark:border-orange-800/50 hover:border-orange-400 rounded-lg font-mono text-orange-700 dark:text-orange-400 outline-none text-base font-bold focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all"
+                                        value={line.manual_labor_price ?? 0}
+                                        onFocus={(e) => e.currentTarget.select()}
+                                        onChange={(e) => handleUpdateManualField(line.id, 'manual_labor_price', e.target.value)}
+                                      />
+                                    </div>
+                                    <div className="flex flex-col gap-1">
+                                      <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400 px-1">Utilaje:</span>
+                                      <input
+                                        type="number"
+                                        className="w-full px-3 py-2 bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800/50 hover:border-emerald-400 rounded-lg font-mono text-emerald-700 dark:text-emerald-400 outline-none text-base font-bold focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
+                                        value={line.manual_equipment_price ?? 0}
+                                        onFocus={(e) => e.currentTarget.select()}
+                                        onChange={(e) => handleUpdateManualField(line.id, 'manual_equipment_price', e.target.value)}
+                                      />
+                                    </div>
+                                    <div className="flex flex-col gap-1">
+                                      <span className="text-[10px] font-black uppercase tracking-widest text-purple-600 dark:text-purple-400 px-1">Transport:</span>
+                                      <input
+                                        type="number"
+                                        className="w-full px-3 py-2 bg-purple-50 dark:bg-purple-950/20 border border-purple-200 dark:border-purple-800/50 hover:border-purple-400 rounded-lg font-mono text-purple-700 dark:text-purple-400 outline-none text-base font-bold focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all"
+                                        value={line.manual_transport_price ?? 0}
+                                        onFocus={(e) => e.currentTarget.select()}
+                                        onChange={(e) => handleUpdateManualField(line.id, 'manual_transport_price', e.target.value)}
+                                      />
+                                    </div>
+                                    <div className="flex flex-col gap-1">
+                                      <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 px-1 border-l-2 border-slate-200 ml-1">Unitate:</span>
+                                      <input
+                                        className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 hover:border-slate-400 rounded-lg outline-none text-base font-mono font-bold text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all ml-1"
+                                        value={line.manual_um ?? ''}
+                                        onChange={(e) => handleUpdateManualField(line.id, 'manual_um', e.target.value)}
+                                      />
+                                    </div>
                                   </div>
-                                  <div className="flex items-center gap-1">
-                                    <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest text-slate-500">Manoperă:</span>
-                                    <input
-                                      type="number"
-                                      className="w-16 px-2 py-1 bg-slate-50 dark:bg-slate-950/40 border border-primary/30 hover:border-primary/50 rounded-lg font-mono text-orange-500 outline-none text-[11px] sm:text-[12px] font-bold focus:ring-2 focus:ring-primary/20 focus:border-primary/60 transition-all"
-                                      value={line.manual_labor_price ?? 0}
-                                      onChange={(e) => handleUpdateManualField(line.id, 'manual_labor_price', e.target.value)}
-                                    />
-                                  </div>
-                                  <div className="flex items-center gap-1">
-                                    <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest text-slate-500">Utilaje:</span>
-                                    <input
-                                      type="number"
-                                      className="w-16 px-2 py-1 bg-slate-50 dark:bg-slate-950/40 border border-primary/30 hover:border-primary/50 rounded-lg font-mono text-blue-500 outline-none text-[11px] sm:text-[12px] font-bold focus:ring-2 focus:ring-primary/20 focus:border-primary/60 transition-all"
-                                      value={line.manual_equipment_price ?? 0}
-                                      onChange={(e) => handleUpdateManualField(line.id, 'manual_equipment_price', e.target.value)}
-                                    />
-                                  </div>
-                                  <div className="flex items-center gap-1">
-                                    <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest text-slate-500">Transport:</span>
-                                    <input
-                                      type="number"
-                                      className="w-16 px-2 py-1 bg-slate-50 dark:bg-slate-950/40 border border-primary/30 hover:border-primary/50 rounded-lg font-mono text-purple-500 outline-none text-[11px] sm:text-[12px] font-bold focus:ring-2 focus:ring-primary/20 focus:border-primary/60 transition-all"
-                                      value={line.manual_transport_price ?? 0}
-                                      onChange={(e) => handleUpdateManualField(line.id, 'manual_transport_price', e.target.value)}
-                                    />
-                                  </div>
-                                  <div className="flex items-center gap-1 border-l pl-2 border-border/30 ml-1">
-                                    <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest text-slate-500">Unitate:</span>
-                                    <input
-                                      className="w-16 px-2 py-1 bg-slate-50 dark:bg-slate-950/40 border border-primary/30 hover:border-primary/50 rounded-lg outline-none text-[11px] sm:text-[12px] font-mono font-bold text-slate-600 dark:text-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary/60 transition-all"
-                                      value={line.manual_um ?? ''}
-                                      onChange={(e) => handleUpdateManualField(line.id, 'manual_um', e.target.value)}
-                                    />
-                                  </div>
-                                </div>
-                              ) : (
-                                `${lineCosts.unitDirectCost.toLocaleString('ro-RO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Lei direct / ${line.items!.um}`
+                                ) : (
+                                  `${lineCosts.unitDirectCost.toLocaleString('ro-RO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Lei direct / ${line.items!.um}`
+                                )}
+                              </div>
+                              {resSummary && (
+                                <button
+                                  onClick={() => setExpandedId(isExpanded ? null : line.id)}
+                                  className="text-[10px] text-slate-400 hover:text-primary transition-colors cursor-pointer mt-1"
+                                >
+                                  {resSummary}
+                                </button>
                               )}
                             </div>
-                          </div>
 
-                          <div className="flex items-center gap-4 md:gap-8 shrink-0">
-                            <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800/50 p-1 rounded-xl border border-border/30">
-                                    
-                              <div className="relative group/quantity">
-                                <input 
-                                  type="number" 
-                                  className="w-24 bg-transparent text-center font-black text-lg outline-none text-slate-900 dark:text-white p-2 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 focus:bg-white dark:focus:bg-slate-900 rounded-lg cursor-pointer transition-colors border border-transparent focus:border-border"
-                                  value={line.quantity}
-                                  onChange={(e) => handleUpdateQuantity(line.id, e.target.value)}
-                                />
+                            <div className="flex items-center gap-4 md:gap-8 shrink-0">
+                              <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800/50 p-1 rounded-xl border border-border/30">
+                                      
+                                <div className="relative group/quantity">
+                                  <input 
+                                    type="number" 
+                                    className="w-28 bg-transparent text-center font-black text-xl outline-none text-slate-900 dark:text-white p-2 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 focus:bg-white dark:focus:bg-slate-900 rounded-lg cursor-pointer transition-colors border border-transparent focus:border-border"
+                                    value={line.quantity}
+                                    onFocus={(e) => e.currentTarget.select()}
+                                    onChange={(e) => handleUpdateQuantity(line.id, e.target.value)}
+                                  />
 
+                                </div>
+                                <span className="text-sm font-bold text-slate-400 pr-2">{line.unit || (isManual ? line.manual_um : line.items!.um)}</span>
                               </div>
-                              <span className="text-xs font-bold text-slate-400 pr-2">{line.unit || (isManual ? line.manual_um : line.items!.um)}</span>
-                            </div>
 
-                            <div className="text-right min-w-[100px] md:min-w-[120px]">
-                              <label className="block text-[10px] text-slate-400 mb-1 uppercase tracking-widest font-black">Total</label>
-                              <div className="font-mono text-lg md:text-xl font-black text-slate-900 dark:text-white">
-                                {lineCosts.totalOfertatWithoutTVA.toLocaleString('ro-RO', { minimumFractionDigits: 2 })}
+                              <div className="text-right min-w-[120px] md:min-w-[150px]">
+                                <label className="block text-xs text-slate-400 mb-1 uppercase tracking-widest font-black">Total</label>
+                                <div className="font-mono text-xl md:text-2xl font-black text-slate-900 dark:text-white">
+                                  {lineCosts.totalOfertatWithoutTVA.toLocaleString('ro-RO', { minimumFractionDigits: 2 })}
+                                </div>
                               </div>
-                            </div>
 
-                            <div className="flex flex-col gap-1 items-center">
-                              <button 
-                                onClick={() => setExpandedId(isExpanded ? null : line.id)}
-                                className={`p-1.5 rounded-lg transition-colors ${isExpanded ? 'bg-primary/10 text-primary' : 'text-slate-400 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-800'}`}
-                                title={isExpanded ? "Restrânge detalii" : "Extinde detalii"}
-                              >
-                                {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-                              </button>
-                              <button
-                                onClick={() => handleDuplicateLine(line)}
-                                className="p-1.5 rounded-lg text-slate-400 hover:text-primary hover:bg-primary/10 transition-colors"
-                                title="Duplică rând"
-                              >
-                                <Copy size={14} />
-                              </button>
-                              <button 
-                                onClick={() => handleDeleteLine(line.id)}
-                                className="p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
-                                title="Șterge rând"
-                              >
-                                <Trash2 size={14} />
-                              </button>
+                              <div className="flex flex-col gap-2 items-center">
+                                <button 
+                                  onClick={() => setExpandedId(isExpanded ? null : line.id)}
+                                  className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-black transition-all border ring-1 ring-inset ${isExpanded ? 'bg-primary/10 text-primary border-primary/30 ring-primary/20 shadow-inner' : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border-border shadow-sm hover:text-primary hover:border-primary/50'}`}
+                                  title={isExpanded ? "Restrânge rețeta" : "Editează rețeta"}
+                                >
+                                  {isExpanded ? <ChevronUp size={16} /> : <Settings2 size={16} />}
+                                  <span>Rețetă</span>
+                                </button>
+                                <button
+                                  onClick={() => handleDuplicateLine(line)}
+                                  className="p-1.5 rounded-lg text-slate-400 hover:text-primary hover:bg-primary/10 transition-colors"
+                                  title="Duplică rând"
+                                >
+                                  <Copy size={14} />
+                                </button>
+                                <button 
+                                  onClick={() => handleDeleteLine(line.id)}
+                                  className="p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
+                                  title="Șterge rând"
+                                >
+                                  <Trash2 size={14} />
+                                </button>
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
 
-                      <AnimatePresence>
-                        {isExpanded && (
-                          <motion.div 
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: 'auto', opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            className="overflow-hidden bg-slate-50/50 dark:bg-slate-800/20 border-t border-border/30"
-                          >
-                            <div className="p-4 md:p-6 space-y-4">
-                              <div className="flex items-center justify-between mb-2">
-                                <div className="flex items-center gap-2 text-primary">
-                                  <Settings2 size={16} />
-                                  <h5 className="text-[11px] font-black uppercase tracking-widest">Rețetă Resurse & Consumuri</h5>
-                                </div>
-                                <div className="flex items-center gap-4">
-                                  <button 
-                                    onClick={() => handleSaveToLibrary(line)}
-                                    className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-primary flex items-center gap-1.5 transition-colors border border-border/50 px-3 py-1.5 rounded-lg"
-                                    title="Salvează această variantă optimizată în Catalog"
-                                  >
-                                    <BookPlus size={12} /> Salvează în Bibliotecă
-                                  </button>
-                                  <button 
-                                    onClick={() => handleAddResource(line.id)}
-                                    className="text-[10px] font-bold text-primary hover:underline flex items-center gap-1"
-                                  >
-                                    <Plus size={12} /> Adaugă Resursă
-                                  </button>
-                                </div>
-                              </div>
-                              
-                              <div className="grid gap-3">
-                                {ensureResourcesOverride(line).map((res: any) => {
-                                  const isExcluded = line.excluded_resources.includes(res.id)
-                                  const customPrice = line.custom_prices[res.id]
-                                  
-                                  return (
-                                    <div 
-                                      key={res.id} 
-                                      className={`flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-2xl border transition-all gap-4 ${isExcluded ? 'opacity-40 grayscale bg-slate-100 dark:bg-slate-900/50 border-transparent' : 'bg-white dark:bg-slate-900 border-border shadow-sm group/res'}`}
+                        <AnimatePresence>
+                          {isExpanded && (
+                            <motion.div 
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: 'auto', opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              className="overflow-hidden bg-slate-50/50 dark:bg-slate-800/20 border-t border-border/30"
+                            >
+                              <div className="bg-slate-100/30 dark:bg-white/[0.03] p-4 md:p-8 space-y-8">
+                                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-border/50 pb-6">
+                                  <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
+                                      <Settings2 size={24} />
+                                    </div>
+                                    <div>
+                                      <h5 className="text-sm font-black uppercase tracking-widest text-primary">Rețetă Resurse & Consumuri</h5>
+                                      <p className="text-xs text-slate-400 font-bold">Configurează materialele și manopera pentru acest rând</p>
+                                    </div>
+                                  </div>
+                                  <div className="flex items-center gap-3">
+                                    <button
+                                      onClick={() => handleSaveToLibrary(line)}
+                                      className="inline-flex items-center gap-2 bg-white dark:bg-slate-900 border border-border px-4 py-2.5 rounded-xl text-xs font-black text-slate-600 dark:text-slate-400 hover:text-primary hover:border-primary/50 shadow-sm transition-all"
                                     >
-                                      <div className="flex items-center gap-4 flex-1">
-                                        <input 
-                                          type="checkbox" 
-                                          checked={!isExcluded}
-                                          onChange={() => handleToggleResource(line.id, res.id)}
-                                          className="w-5 h-5 rounded border-slate-300 text-primary focus:ring-primary shrink-0"
-                                        />
-                                        <div className="flex-1 space-y-2">
-                                          <div className="flex items-center gap-2">
-                                            <select 
-                                              value={res.type}
-                                              onChange={(e) => handleUpdateResourceField(line.id, res.id, 'type', e.target.value)}
-                                              className="text-[9px] font-black uppercase tracking-tighter bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded border-none outline-none"
-                                            >
-                                              <option value="material">Mat</option>
-                                              <option value="labor">Man</option>
-                                              <option value="equipment">Util</option>
-                                              <option value="transport">Trans</option>
-                                            </select>
-                                            <input 
-                                              className="text-sm font-bold bg-transparent border-b border-border/30 focus:border-primary outline-none flex-1"
-                                              value={res.name}
-                                              onChange={(e) => handleUpdateResourceField(line.id, res.id, 'name', e.target.value)}
-                                            />
-                                          </div>
-                                          <div className="flex flex-wrap items-center gap-4 text-[10px] text-slate-400 font-bold uppercase tracking-tight">
-                                            <div className="flex items-center gap-1">
-                                              Necesar pt. 1 {line.unit || (isManual ? line.manual_um : line.items!.um)}: 
-                                               <input 
-                                                 type="number"
-                                                 className="w-12 bg-transparent border-b border-border/30 text-primary outline-none font-bold"
-                                                 value={res.consumption}
-                                                 onChange={(e) => handleUpdateResourceField(line.id, res.id, 'consumption', e.target.value)}
-                                               />
-                                               <span className="italic text-slate-400 font-normal ml-1">
-                                                 (Total necesar: {(res.consumption * line.quantity).toLocaleString('ro-RO')} {res.um})
-                                               </span>
+                                      <Save size={16} /> SALVEAZĂ ÎN BIBLIOTECĂ
+                                    </button>
+                                    <button
+                                      onClick={() => handleAddResource(line.id)}
+                                      className="inline-flex items-center gap-2 bg-primary text-white px-5 py-2.5 rounded-xl text-xs font-black shadow-lg shadow-primary/25 hover:bg-primary-dark transition-all active:scale-95"
+                                    >
+                                      <Plus size={18} /> ADAUGĂ RESURSĂ
+                                    </button>
+                                  </div>
+                                </div>
+                                
+                                <div className="grid gap-3">
+                                  {ensureResourcesOverride(line).map((res: any) => {
+                                    const isExcluded = line.excluded_resources.includes(res.id)
+                                    const customPrice = line.custom_prices[res.id]
+                                    
+                                    return (
+                                      <div 
+                                        key={res.id} 
+                                        className={`flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-2xl border transition-all gap-4 ${isExcluded ? 'opacity-40 grayscale bg-slate-100 dark:bg-slate-900/50 border-transparent' : 'bg-white dark:bg-slate-900 border-border shadow-sm group/res'}`}
+                                      >
+                                        <div className="flex items-center gap-4 flex-1">
+                                          <input 
+                                            type="checkbox" 
+                                            checked={!isExcluded}
+                                            onChange={() => handleToggleResource(line.id, res.id)}
+                                            className="w-5 h-5 rounded border-slate-300 text-primary focus:ring-primary shrink-0"
+                                          />
+                                          <div className="flex-1 space-y-2">
+                                            <div className="flex items-center gap-3">
+                                              <select 
+                                                value={res.type}
+                                                onChange={(e) => handleUpdateResourceField(line.id, res.id, 'type', e.target.value)}
+                                                className="text-xs font-black uppercase tracking-widest bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-lg border-none outline-none ring-1 ring-slate-200 dark:ring-slate-700"
+                                              >
+                                                <option value="material">MAT</option>
+                                                <option value="labor">MAN</option>
+                                                <option value="equipment">UTIL</option>
+                                                <option value="transport">TRANS</option>
+                                              </select>
                                               <input 
-                                                className="w-8 bg-transparent border-b border-border/30 outline-none"
-                                                value={res.um}
-                                                onChange={(e) => handleUpdateResourceField(line.id, res.id, 'um', e.target.value)}
+                                                className="text-lg md:text-xl font-black bg-transparent border-b border-border/30 focus:border-primary outline-none flex-1 py-1"
+                                                value={res.name}
+                                                onChange={(e) => handleUpdateResourceField(line.id, res.id, 'name', e.target.value)}
                                               />
                                             </div>
-                                            {res.type === 'material' && (
-                                              <div className="flex items-center gap-1 text-orange-500">
-                                                Pierderi: 
-                                                <input 
-                                                  type="number"
-                                                  className="w-8 bg-transparent border-b border-orange-500/30 text-orange-500 outline-none font-mono"
-                                                  value={res.waste_percent || 0}
-                                                  onChange={(e) => handleUpdateResourceField(line.id, res.id, 'waste_percent', e.target.value)}
-                                                /> %
-                                              </div>
-                                            )}
-                                          </div>
-                                        </div>
-                                      </div>
-
-                                      <div className="flex items-center justify-end gap-3 pl-8 sm:pl-0 border-t sm:border-0 pt-3 sm:pt-0 border-slate-100 dark:border-slate-800">
-                                        <div className="text-right">
-                                          <div className="text-[9px] text-slate-400 uppercase font-black">Preț Unitar (Lei)</div>
-                                           <div className="text-[10px] text-primary font-bold">
-                                             Cost total: {(res.consumption * line.quantity * (customPrice ?? res.unit_price) * (1 + (res.waste_percent || 0) / 100)).toLocaleString('ro-RO')} lei
-                                           </div>
-                                          <div className="flex items-center gap-2">
                                             <input 
-                                              type="number"
-                                              disabled={isExcluded}
-                                              className={`w-24 p-1.5 text-sm text-right bg-slate-50 dark:bg-slate-800 rounded font-mono focus:ring-1 focus:ring-primary/20 outline-none transition-all ${customPrice ? 'text-primary font-bold border-primary/30' : 'border-transparent'}`}
-                                              value={customPrice ?? res.unit_price}
-                                              onChange={(e) => handleUpdatePrice(line.id, res.id, e.target.value)}
+                                              className="text-sm text-slate-500 bg-transparent border-b border-border/30 focus:border-primary outline-none w-full italic font-medium py-1"
+                                              placeholder="Introduceți numele resursei aici..."
+                                              value={res.note || ''}
+                                              onChange={(e) => handleUpdateResourceField(line.id, res.id, 'note', e.target.value)}
                                             />
-                                            <button 
-                                              onClick={() => setActiveOfferPicker({ resourceId: res.id, resourceName: res.name, lineId: line.id })}
-                                              className={`p-1.5 rounded bg-slate-100 dark:bg-slate-700 hover:text-primary transition-all ${customPrice ? 'text-primary' : 'text-slate-400'}`}
-                                              title="Compară prețuri magazine"
-                                            >
-                                              <Store size={14} />
-                                            </button>
-                                            <button 
-                                              onClick={() => handleDeleteResource(line.id, res.id)}
-                                              className="p-1.5 rounded bg-slate-100 dark:bg-slate-700 text-slate-300 hover:text-red-500 transition-all opacity-0 group-hover/res:opacity-100"
-                                            >
-                                              <Trash2 size={12} />
-                                            </button>
+                                            <div className="flex flex-wrap items-center gap-x-6 gap-y-3 text-[13px] text-slate-500 font-black uppercase tracking-widest py-1">
+                                              <div className="flex items-center gap-2">
+                                                <span>Necesar pt. 1 {line.unit || (isManual ? line.manual_um : line.items!.um)}:</span> 
+                                                 <input 
+                                                   type="number"
+                                                   className="w-16 bg-slate-100 dark:bg-slate-800 border-b border-primary/30 text-primary outline-none font-black text-center py-1 rounded-md text-base"
+                                                   value={res.consumption}
+                                                   onFocus={(e) => e.currentTarget.select()}
+                                                   onChange={(e) => handleUpdateResourceField(line.id, res.id, 'consumption', e.target.value)}
+                                                 />
+                                                 <span className="italic text-slate-400 font-bold normal-case lowercase ml-1 whitespace-nowrap">
+                                                   (total: {(res.consumption * line.quantity).toLocaleString('ro-RO')} {res.um})
+                                                 </span>
+                                                <input 
+                                                  className="w-12 bg-transparent border-b border-border/30 outline-none text-center font-bold lowercase"
+                                                  value={res.um}
+                                                  onChange={(e) => handleUpdateResourceField(line.id, res.id, 'um', e.target.value)}
+                                                />
+                                              </div>
+                                              {res.type === 'material' && (
+                                                <div className="flex items-center gap-2 text-orange-600 whitespace-nowrap">
+                                                  <span>Pierderi:</span> 
+                                                  <input 
+                                                    type="number"
+                                                    className="w-14 bg-orange-50 dark:bg-orange-950/20 border-b border-orange-500/30 text-orange-600 outline-none font-black text-center py-1 rounded-md text-base"
+                                                    value={res.waste_percent || 0}
+                                                    onFocus={(e) => e.currentTarget.select()}
+                                                    onChange={(e) => handleUpdateResourceField(line.id, res.id, 'waste_percent', e.target.value)}
+                                                  /> <span className="text-orange-400">%</span>
+                                                </div>
+                                              )}
+                                            </div>
+                                          </div>
+                                        </div>
+
+                                        <div className="flex items-center justify-end gap-6 pl-8 sm:pl-0 border-t sm:border-0 pt-4 sm:pt-0 border-slate-100 dark:border-slate-800">
+                                          <div className="text-right">
+                                            <div className="text-[11px] text-slate-400 uppercase font-black tracking-widest mb-1">Preț Unitar (Lei)</div>
+                                             <div className="text-xs text-primary font-black mb-2">
+                                               Cost rând: {(res.consumption * line.quantity * (customPrice ?? res.unit_price) * (1 + (res.waste_percent || 0) / 100)).toLocaleString('ro-RO')} lei
+                                             </div>
+                                            <div className="flex items-center gap-3">
+                                              <input 
+                                                type="number"
+                                                disabled={isExcluded}
+                                                className={`w-32 p-3 text-lg text-right bg-white dark:bg-slate-900 border-2 rounded-xl font-black focus:ring-4 focus:ring-primary/10 outline-none transition-all ${customPrice ? 'text-primary border-primary/40' : 'border-border/50 text-slate-900 dark:text-white'}`}
+                                                value={customPrice ?? res.unit_price}
+                                                onFocus={(e) => e.currentTarget.select()}
+                                                onChange={(e) => handleUpdatePrice(line.id, res.id, e.target.value)}
+                                              />
+                                              <button 
+                                                onClick={() => setActiveOfferPicker({ resourceId: res.id, resourceName: res.name, lineId: line.id })}
+                                                className={`p-1.5 rounded bg-slate-100 dark:bg-slate-700 hover:text-primary transition-all ${customPrice ? 'text-primary' : 'text-slate-400'}`}
+                                                title="Compară prețuri magazine"
+                                              >
+                                                <Store size={14} />
+                                              </button>
+                                              <button 
+                                                onClick={() => handleDeleteResource(line.id, res.id)}
+                                                className="p-1.5 rounded bg-slate-100 dark:bg-slate-700 text-slate-300 hover:text-red-500 transition-all opacity-0 group-hover/res:opacity-100"
+                                              >
+                                                <Trash2 size={12} />
+                                              </button>
+                                            </div>
                                           </div>
                                         </div>
                                       </div>
-                                    </div>
-                                  )
-                                })}
+                                    )
+                                  })}
+                                </div>
                               </div>
-                            </div>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </div>
-                  )
-                })}
-              </div>
-            ))}
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                    )
+                  })}
+                </div>
+              )
+            })}
           </div>
         </div>
       </div>
