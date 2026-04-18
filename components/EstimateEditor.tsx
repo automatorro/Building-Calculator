@@ -93,6 +93,33 @@ export default function EstimateEditor({
     return line.items?.resources ? JSON.parse(JSON.stringify(line.items.resources)) : []
   }
 
+  const getResourceCostBreakdown = (line: EstimateLine) => {
+    const breakdown = {
+      directMaterialUnit: 0,
+      directLaborUnit: 0,
+      directEquipmentUnit: 0,
+      directTransportUnit: 0,
+    }
+
+    const resourcesToUse = ensureResourcesOverride(line)
+    if (resourcesToUse.length === 0) return breakdown
+
+    resourcesToUse.forEach((res: any) => {
+      if (line.excluded_resources.includes(res.id)) return
+
+      const price = line.custom_prices[res.id] ?? res.unit_price
+      const wasteMultiplier = 1 + ((res.waste_percent || 0) / 100)
+      const cost = (res.consumption || 0) * price * wasteMultiplier
+
+      if (res.type === 'material') breakdown.directMaterialUnit += cost
+      else if (res.type === 'labor') breakdown.directLaborUnit += cost
+      else if (res.type === 'equipment') breakdown.directEquipmentUnit += cost
+      else if (res.type === 'transport') breakdown.directTransportUnit += cost
+    })
+
+    return breakdown
+  }
+
   const handleUpdateResourceField = (lineId: string, resId: string, field: string, val: any) => {
     const line = lines.find(l => l.id === lineId)
     if (!line) return
@@ -314,6 +341,7 @@ export default function EstimateEditor({
                     const isCatalogNorm = !!(line.catalog_norm_id || (line.code && !line.items))
                     const isManual = !line.items && !isCatalogNorm
                     const hasCustomResources = (line.resources_override && line.resources_override.length > 0)
+                    const resourceCostBreakdown = hasCustomResources ? getResourceCostBreakdown(line) : null
                     const allResources = ensureResourcesOverride(line)
                     const resSummary = allResources.length > 0 ? (() => {
                       const counts: Record<string, number> = {}
@@ -364,10 +392,10 @@ export default function EstimateEditor({
                                     />
                                     <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 mt-4 mt-2">
                                       {[
-                                        { label: 'Mat.', field: 'manual_price', color: 'sky', calcValue: lineCosts.directMaterialUnit },
-                                        { label: 'Man.', field: 'manual_labor_price', color: 'orange', calcValue: lineCosts.directLaborUnit },
-                                        { label: 'Util.', field: 'manual_equipment_price', color: 'emerald', calcValue: lineCosts.directEquipmentUnit },
-                                        { label: 'Trans.', field: 'manual_transport_price', color: 'purple', calcValue: lineCosts.directTransportUnit }
+                                        { label: 'Mat.', field: 'manual_price', color: 'sky', calcValue: resourceCostBreakdown?.directMaterialUnit ?? 0 },
+                                        { label: 'Man.', field: 'manual_labor_price', color: 'orange', calcValue: resourceCostBreakdown?.directLaborUnit ?? 0 },
+                                        { label: 'Util.', field: 'manual_equipment_price', color: 'emerald', calcValue: resourceCostBreakdown?.directEquipmentUnit ?? 0 },
+                                        { label: 'Trans.', field: 'manual_transport_price', color: 'purple', calcValue: resourceCostBreakdown?.directTransportUnit ?? 0 }
                                       ].map(p => {
                                         const actualValue = hasCustomResources ? p.calcValue : ((line as any)[p.field] ?? 0)
                                         const finalValue = actualValue * (1 + settings.regie/100) * (1 + settings.profit/100) * (1 + settings.tva/100)

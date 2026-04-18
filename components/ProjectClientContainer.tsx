@@ -176,8 +176,7 @@ export default function ProjectClientContainer({
           um: 'buc',
           consumption: 1,
           unit_price: 0,
-          waste_percent: 0,
-          note: 'Introduceți numele materialului...'
+          waste_percent: 0
         },
         {
           id: crypto.randomUUID(),
@@ -186,8 +185,7 @@ export default function ProjectClientContainer({
           um: 'ore',
           consumption: 1,
           unit_price: 0,
-          waste_percent: 0,
-          note: 'Introduceți tipul de manoperă...'
+          waste_percent: 0
         }
       ],
       items: null
