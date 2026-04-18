@@ -554,10 +554,13 @@ export default function ProjectClientContainer({
                 </div>
                 <div style={{ flex: 1 }}>
                   <p style={{
-                    fontSize: 12, fontWeight: 600, color: '#A8A59E',
-                    textTransform: 'uppercase', letterSpacing: '.06em', marginBottom: 6
+                    fontSize: 14, fontWeight: 800, color: '#4A4744',
+                    textTransform: 'uppercase', letterSpacing: '.04em', marginBottom: 6
                   }}>
-                    Venit estimat proiect (vânzare)
+                    Valoare finală contract semnat (Vânzare)
+                  </p>
+                  <p style={{ fontSize: 12, color: '#6B6860', marginTop: 0, marginBottom: 16, lineHeight: 1.4, fontWeight: 500 }}>
+                    Dacă lași valoarea 0, sistemul va folosi automat ca preț de vânzare <strong>Totalul Devizului Ofertat</strong>. <br/>Dacă ai negociat sau semnat o altă sumă clară cu clientul, introdu-o fix aici.
                   </p>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <input type="number"

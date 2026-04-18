@@ -348,7 +348,7 @@ export default function EstimateEditor({
                                 ) : isManual ? (
                                   <div className="flex-1">
                                     <textarea
-                                      rows={1}
+                                      rows={2}
                                       className="font-bold text-lg md:text-xl leading-snug bg-transparent border-b border-dashed border-slate-200 dark:border-slate-700 hover:border-primary focus:border-primary outline-none transition-all w-full resize-none overflow-hidden text-slate-900 dark:text-white pb-1"
                                       value={line.manual_name ?? ''}
                                       placeholder="Nume reper (clic pentru a edita)..."
@@ -362,7 +362,7 @@ export default function EstimateEditor({
                                         e.target.style.height = e.target.scrollHeight + 'px';
                                       }}
                                     />
-                                    <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mt-4">
+                                    <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 mt-4 mt-2">
                                       {[
                                         { label: 'Mat.', field: 'manual_price', color: 'sky', calcValue: lineCosts.directMaterialUnit },
                                         { label: 'Man.', field: 'manual_labor_price', color: 'orange', calcValue: lineCosts.directLaborUnit },
@@ -382,7 +382,7 @@ export default function EstimateEditor({
                                               <input
                                                 type="number"
                                                 readOnly={hasCustomResources}
-                                                className={`w-full px-3 py-2 ${hasCustomResources ? 'bg-slate-100 dark:bg-slate-800 cursor-not-allowed opacity-80' : `bg-${p.color}-50/50 dark:bg-${p.color}-900/10 border-${p.color}-200/50 dark:border-${p.color}-800/30 hover:border-${p.color}-400/50`} border rounded-lg font-mono text-slate-900 dark:text-slate-200 outline-none text-base font-black focus:ring-2 focus:ring-${p.color}-500/20 focus:border-${p.color}-500 transition-all`}
+                                                className={`w-full px-2 py-1.5 ${hasCustomResources ? 'bg-slate-100 dark:bg-slate-800 cursor-not-allowed opacity-80' : `bg-${p.color}-50/50 dark:bg-${p.color}-900/10 border-${p.color}-200/50 dark:border-${p.color}-800/30 hover:border-${p.color}-400/50`} border rounded-lg font-mono text-slate-900 dark:text-slate-200 outline-none text-base font-black focus:ring-2 focus:ring-${p.color}-500/20 focus:border-${p.color}-500 transition-all`}
                                                 value={actualValue}
                                                 onFocus={(e) => !hasCustomResources && e.currentTarget.select()}
                                                 onChange={(e) => !hasCustomResources && handleUpdateManualField(line.id, p.field as any, e.target.value)}
@@ -399,7 +399,7 @@ export default function EstimateEditor({
                                       <div className="flex flex-col gap-1">
                                         <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 px-1 border-l-2 border-slate-200 ml-1">U.M.:</span>
                                         <input
-                                          className="w-full px-3 py-2 bg-slate-100/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 hover:border-slate-400 rounded-lg outline-none text-base font-mono font-bold text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all ml-1"
+                                          className="w-full px-2 py-1.5 bg-slate-100/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 hover:border-slate-400 rounded-lg outline-none text-base font-mono font-bold text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all ml-1"
                                           value={line.manual_um ?? line.unit ?? (line.items?.um || '')}
                                           onChange={(e) => handleUpdateManualField(line.id, 'manual_um', e.target.value)}
                                         />
@@ -454,13 +454,13 @@ export default function EstimateEditor({
                               )}
                             </div>
 
-                            <div className="flex items-center gap-4 md:gap-8 shrink-0">
-                              <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800/50 p-1 rounded-xl border border-border/30">
+                            <div className="flex items-center gap-3 md:gap-4 shrink-0">
+                              <div className="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800/50 p-1 rounded-xl border border-border/30">
                                       
                                 <div className="relative group/quantity">
                                   <input 
                                     type="number" 
-                                    className="w-28 bg-transparent text-center font-black text-xl outline-none text-slate-900 dark:text-white p-2 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 focus:bg-white dark:focus:bg-slate-900 rounded-lg cursor-pointer transition-colors border border-transparent focus:border-border"
+                                    className="w-20 pr-1 bg-transparent text-center font-black text-xl outline-none text-slate-900 dark:text-white py-2 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 focus:bg-white dark:focus:bg-slate-900 rounded-lg cursor-pointer transition-colors border border-transparent focus:border-border"
                                     value={line.quantity}
                                     onFocus={(e) => e.currentTarget.select()}
                                     onChange={(e) => handleUpdateQuantity(line.id, e.target.value)}
@@ -470,7 +470,7 @@ export default function EstimateEditor({
                                 <span className="text-sm font-bold text-slate-400 pr-2">{line.unit || (isManual ? line.manual_um : line.items!.um)}</span>
                               </div>
 
-                              <div className="text-right min-w-[120px] md:min-w-[150px]">
+                              <div className="text-right min-w-[90px] md:min-w-[110px]">
                                 <label className="block text-xs text-slate-400 mb-1 uppercase tracking-widest font-black">Total</label>
                                 <div className="font-mono text-xl md:text-2xl font-black text-slate-900 dark:text-white">
                                   {lineCosts.totalOfertatWithoutTVA.toLocaleString('ro-RO', { minimumFractionDigits: 2 })}

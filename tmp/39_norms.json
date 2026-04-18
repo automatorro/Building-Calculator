@@ -1,0 +1,275 @@
+[
+  {
+    "symbol": "CN13C1",
+    "name": "Vopsitorii la instalaţii cu vopsea de ulei, pe conducte având diametrul exterior peste 34 mm;",
+    "category": "Finisaje interioare",
+    "has_components": false,
+    "unit": "mp"
+  },
+  {
+    "symbol": "CN13A1",
+    "name": "Vopsitorii la instalaţii obişnuite, cu vopsea de ulei, pe conducte având diametrul exterior până la 34 mm inclusiv;",
+    "category": "Finisaje interioare",
+    "has_components": false,
+    "unit": "m"
+  },
+  {
+    "symbol": "CN13B1",
+    "name": "Vopsitorii la instalaţii superioare, cu vopsea de ulei, pe conducte având diametrul exterior până la 34 mm inclusiv;",
+    "category": "Finisaje interioare",
+    "has_components": false,
+    "unit": "m"
+  },
+  {
+    "symbol": "CN01A1",
+    "name": "Zugrăveli interioare şi exterioare executate simplu cu lapte de var sau cu adaos de coloranţi şi grăsimi la interior sau exterior, pe orice fel de suprafaţă suport, cu două straturi de lapte de var (spoieli) ;",
+    "category": "Finisaje interioare",
+    "has_components": false,
+    "unit": "mp"
+  },
+  {
+    "symbol": "CN01B1",
+    "name": "Zugrăveli interioare şi exterioare executate simplu cu lapte de var sau cu adaos de coloranţi şi grăsimi la interior, la pereţi şi tavane, cu două straturi de zugrăveală în culori de apă cu adaos de coloranţi şi grăsimi, pe suprafeţe de beton",
+    "category": "Finisaje interioare",
+    "has_components": false,
+    "unit": "mp"
+  },
+  {
+    "symbol": "CN01C1",
+    "name": "Zugrăveli interioare şi exterioare executate simplu cu lapte de var sau cu adaos de coloranţi şi grăsimi la interior, la pereţi şi tavane, cu două straturi de zugrăveală în culori de apă cu adaos de coloranţi şi grăsimi, pe suprafeţe drişcuite sau gletuite",
+    "category": "Finisaje interioare",
+    "has_components": false,
+    "unit": "mp"
+  },
+  {
+    "symbol": "CN01D1",
+    "name": "Zugrăveli interioare şi exterioare executate simplu cu lapte de var sau cu adaos de coloranţi şi grăsimi la faţade, cu două straturi de zugrăveală în culori de apă şi adaos de coloranţi şi grăsimi, pe suprafeţe de beton",
+    "category": "Finisaje interioare",
+    "has_components": false,
+    "unit": "mp"
+  },
+  {
+    "symbol": "CN01E1",
+    "name": "Zugrăveli interioare şi exterioare executate simplu cu lapte de var sau cu adaos de coloranţi şi grăsimi la faţade, cu două straturi de zugrăveală în culori de apă şi adaos de coloranţi şi grăsimi, pe suprafeţe drişcuite sau gletuite.",
+    "category": "Finisaje interioare",
+    "has_components": false,
+    "unit": "mp"
+  },
+  {
+    "symbol": "CN04H1",
+    "name": "Vopsitorii la interior şi exterior, la pereţi şi tavane, executate manual, cu vopsea pe bază de acetat CPMB, aplicate în două straturi, pe suprafeţele elementelor prefabricate din beton celular autoclavizat, pe glet de netezire existent;",
+    "category": "Finisaje interioare",
+    "has_components": false,
+    "unit": "mp"
+  },
+  {
+    "symbol": "CN04P1",
+    "name": "Vopsitorii la interior şi exterior, la pereţi şi tavane, executate mecanizat, cu vopsea pe bază de acetat CPMB, aplicate în două straturi, pe suprafeţele elementelor prefabricate din beton celular autoclavizat, pe glet de netezire existent;",
+    "category": "Finisaje interioare",
+    "has_components": false,
+    "unit": "mp"
+  },
+  {
+    "symbol": "CN13F1",
+    "name": "Vopsitorii la instalaţii obişnuite, cu email alchidic (Termolux), pe conducte avind diametrul exterior până la 34 mm inclusiv;",
+    "category": "Finisaje interioare",
+    "has_components": false,
+    "unit": "m"
+  },
+  {
+    "symbol": "CN13G1",
+    "name": "Vopsitorii la instalaţii superioare, cu email alchidic (Termolux), pe conducte având diametrul exterior până la 34 mm inclusiv;",
+    "category": "Finisaje interioare",
+    "has_components": false,
+    "unit": "m"
+  },
+  {
+    "symbol": "CN13H1",
+    "name": "Vopsitorii la instalaţii cu email alchidic (Termolux), pe conducte având diametrul exterior peste 34 mm",
+    "category": "Finisaje interioare",
+    "has_components": false,
+    "unit": "mp"
+  },
+  {
+    "symbol": "RPCR27A1",
+    "name": "Vopsitorii în culori de ulei pe tâmplărie pe lemn la interior şi exterior executate în 2 straturi   ",
+    "category": "Tâmplărie",
+    "has_components": false,
+    "unit": "mp"
+  },
+  {
+    "symbol": "RPCR27B1",
+    "name": "Vopsitorii în culori de ulei pe tâmplărie pe lemn la interior şi exterior executate în 3 straturi   ",
+    "category": "Tâmplărie",
+    "has_components": false,
+    "unit": "mp"
+  },
+  {
+    "symbol": "RPCR28A1",
+    "name": "Vopsitul in culori de ulei intr-un strat peste vopseaua existentă a tâmplăriei de lemn, la interior şi exterior",
+    "category": "Tâmplărie",
+    "has_components": false,
+    "unit": "mp"
+  },
+  {
+    "symbol": "RPCR31A1",
+    "name": "Vopsitorie cu email alchidal pe timplarie de lemn la interior si exterioare cu un strat   ",
+    "category": "Tâmplărie",
+    "has_components": false,
+    "unit": "mp"
+  },
+  {
+    "symbol": "RPCR31B1",
+    "name": "Vopsitorie cu email alchidal pe timplarie de lemn la interior si exterioare cu două straturi   ",
+    "category": "Tâmplărie",
+    "has_components": false,
+    "unit": "mp"
+  },
+  {
+    "symbol": "RPCR42A1",
+    "name": "Vopsirea in culori de ulei a tâmplăriei metalice la exterior si inteior, gata grunduită cu miniu de plumb în construcţii existente, executate în 2 straturi",
+    "category": "Tâmplărie",
+    "has_components": false,
+    "unit": "mp"
+  },
+  {
+    "symbol": "RPCR42B1",
+    "name": "Vopsirea in culori de ulei a tâmplăriei metalice la exterior si inteior, gata grunduită cu miniu de plumb în construcţii existente, executate în 3 straturi",
+    "category": "Tâmplărie",
+    "has_components": false,
+    "unit": "mp"
+  },
+  {
+    "symbol": "RPCR44A1",
+    "name": "Vopsitul cu email alchidal pe tâmplărie metalică executată în interior si exterior în construcţii existente cu  1 strat",
+    "category": "Tâmplărie",
+    "has_components": false,
+    "unit": "mp"
+  },
+  {
+    "symbol": "RPCR44B1",
+    "name": "Vopsitul cu email alchidal pe tâmplărie metalică executată în interior si exterior în construcţii existente cu  2 straturi",
+    "category": "Tâmplărie",
+    "has_components": false,
+    "unit": "mp"
+  },
+  {
+    "symbol": "RPCR52B1",
+    "name": "Revopsitul conductelor la instalaţii cu vopsele de ulei, la conducte cu diametrul exterior peste 60 mm",
+    "category": "Finisaje interioare",
+    "has_components": false,
+    "unit": "mp"
+  },
+  {
+    "symbol": "RPCR52C1",
+    "name": "Revopsitul conductelor la instalaţii cu email alchidic, la conducte cu diametrul exterior până la 60 mm",
+    "category": "Finisaje interioare",
+    "has_components": false,
+    "unit": "m"
+  },
+  {
+    "symbol": "RPCR52A1",
+    "name": "Revopsitul conductelor la instalaţii cu vopsele de ulei, la conducte cu diametrul exterior până la 60 mm",
+    "category": "Finisaje interioare",
+    "has_components": false,
+    "unit": "m"
+  },
+  {
+    "symbol": "RPCR51A1",
+    "name": "Vopsitul conductelor la instalaţii cu vopsele de ulei, la conducte cu diametrul exterior până la 60 mm",
+    "category": "Finisaje interioare",
+    "has_components": false,
+    "unit": "m"
+  },
+  {
+    "symbol": "RPCR51B1",
+    "name": "Vopsitul conductelor la instalaţii cu vopsele de ulei, la conducte cu diametrul exterior peste 60 mm",
+    "category": "Finisaje interioare",
+    "has_components": false,
+    "unit": "mp"
+  },
+  {
+    "symbol": "RPCR51C1",
+    "name": "Vopsitul conductelor la instalaţii cu email alchidic, la conducte cu diametrul exterior până la 60 mm",
+    "category": "Finisaje interioare",
+    "has_components": false,
+    "unit": "m"
+  },
+  {
+    "symbol": "RPCR51D1",
+    "name": "Vopsitul conductelor la instalaţii cu email alchidic, la conducte cu diametrul exterior peste 60 mm",
+    "category": "Finisaje interioare",
+    "has_components": false,
+    "unit": "mp"
+  },
+  {
+    "symbol": "RPCR52D1",
+    "name": "Revopsitul conductelor la instalaţii cu email alchidic, la conducte cu diametrul exterior peste 60 mm",
+    "category": "Finisaje interioare",
+    "has_components": false,
+    "unit": "mp"
+  },
+  {
+    "symbol": "CD03A1",
+    "name": "Zidărie din piatră cioplită, gata prelucrată, aşezată în mozaic (opus încertum) inclusiv rostuirea fetelor vazute cu mortar marca M 100-T",
+    "category": "Zidărie",
+    "has_components": false,
+    "unit": "mc"
+  },
+  {
+    "symbol": "CD04A1",
+    "name": "Zidărie din cărămidă presată arsă pentru protecţia hidroizolatiilor din pereţii subsolurilor, inclusiv aplicarea unei tencuieli de 0,5 - 1,0 cm grosime, executată cu cărămizi calitatea 1 şi mortar marca ...1), în ziduri cu o grosime de 7,5 cm şi o înălţime peste 3 m",
+    "category": "Zidărie",
+    "has_components": false,
+    "unit": "mc"
+  },
+  {
+    "symbol": "CD04B1",
+    "name": "Zidărie din cărămidă presată arsă pentru protecţia hidroizolatiilor din pereţii subsolurilor, inclusiv aplicarea unei tencuieli de 0,5 - 1,0 cm grosime, executată cu cărămizi calitatea 1 şi mortar marca ...1), în ziduri cu o grosime de 7,5 cm şi o înălţime până la 3 m inclusiv;",
+    "category": "Zidărie",
+    "has_components": false,
+    "unit": "mc"
+  },
+  {
+    "symbol": "CD04C1",
+    "name": "Zidărie din cărămidă presată arsă la coşuri de fum izolate, executată obişnuit cu cărămizi calitatea 1, în pod şi aparent la exterior, inclusiv rostuirea;",
+    "category": "Zidărie",
+    "has_components": false,
+    "unit": "mc"
+  },
+  {
+    "symbol": "CD04D1",
+    "name": "Zidărie din cărămidă presată arsă executată cu cărămizi calitatea 1, în ziduri cu o grosime de grosime de 12,5 cm pentru parapete la balcoane, terase, garduri etc, inclusiv rostuirea",
+    "category": "Zidărie",
+    "has_components": false,
+    "unit": "mc"
+  },
+  {
+    "symbol": "CD01A1",
+    "name": "Zidărie din piatră brută de carieră pentru construcţii sau din bolovani de râu in fundatii cu piatra de cariera,roca eruptiva  ",
+    "category": "Zidărie",
+    "has_components": false,
+    "unit": "mc"
+  },
+  {
+    "symbol": "CD01B1",
+    "name": "Zidărie din piatră brută de carieră pentru construcţii sau din bolovani de râu ,roca eruptivain ziduri,stalpi si cotraforti cu grosime peste 50cm",
+    "category": "Zidărie",
+    "has_components": false,
+    "unit": "mc"
+  },
+  {
+    "symbol": "CD02A1",
+    "name": "Zidărie din moloane grosimea pana la 50 cm",
+    "category": "Zidărie",
+    "has_components": false,
+    "unit": "mc"
+  },
+  {
+    "symbol": "CD04E1",
+    "name": "Zidărie din cărămidă presată arsă executată cu cărămizi calitatea 1 şi armătură din oţel be - 7,5 cm la închiderea căzilor de baie",
+    "category": "Zidărie",
+    "has_components": false,
+    "unit": "mc"
+  }
+]

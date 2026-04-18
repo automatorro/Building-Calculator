@@ -66,7 +66,7 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
     : ['Fundație', 'Structură', 'Zidărie', 'Acoperiș', 'Instalații', 'Finisaje']
 
   return (
-    <main className="min-h-screen max-w-7xl mx-auto px-4 md:px-8 py-6 md:py-8 space-y-6">
+    <main className="min-h-screen w-full max-w-[1600px] 2xl:max-w-[1800px] mx-auto px-4 md:px-8 py-6 md:py-8 space-y-6">
 
       {/* ── Header ── */}
       <div style={{

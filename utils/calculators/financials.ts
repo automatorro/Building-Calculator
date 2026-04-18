@@ -46,6 +46,8 @@ export function calculateFinancials(
   totalEstimatedRevenue: number = 0
 ): FinancialsSummary {
   // 1. Calculate Budget from Estimate Lines
+  let totalCostBudget = 0 // Cheltuielile estimate (fără profit)
+  let totalSalePrice = 0  // Totalul devizului (inclusiv profit și TVA)
   let totalPlannedDirect = 0
   let totalBudget = 0
   
@@ -57,9 +59,18 @@ export function calculateFinancials(
     const stage = line.stage_name || 'Lucrări Generale'
     
     totalPlannedDirect += costs.totalDirectCost
-    totalBudget += costs.totalWithTVA
     
-    stagePlanned[stage] = (stagePlanned[stage] || 0) + costs.totalWithTVA
+    // Costul cu regie reprezintă limita maximă de cheltuieli (fără profit) la care adăugăm TVA
+    const costWithRegie = costs.totalDirectCost + costs.regieAmount
+    const expectedTvaForCost = costWithRegie * (settings.tva / 100)
+    const costBudgetForLine = costWithRegie + expectedTvaForCost
+
+    totalCostBudget += costBudgetForLine
+    totalSalePrice += costs.totalWithTVA
+    totalBudget += costs.totalWithTVA // Menținem ca referință legacy dacă e nevoie
+    
+    // Alocăm bugetul de cheltuieli (nu devizul cu profit) pentru etapă
+    stagePlanned[stage] = (stagePlanned[stage] || 0) + costBudgetForLine
     
     if (!stageItems[stage]) stageItems[stage] = []
     const itemName = line.manual_name || line.items?.name || 'Articol'
@@ -122,11 +133,14 @@ export function calculateFinancials(
     }
   })
 
-  // Alertă profitabilitate
-  const netProfit = totalEstimatedRevenue - totalSpent - Math.max(0, totalBudget - totalSpent)
-  const marginPercent = totalEstimatedRevenue > 0 ? (netProfit / totalEstimatedRevenue) * 100 : 0
+  // Dacă utilizatorul nu a introdus un venit ferm (sau l-a lăsat 0), venitul estimat este egal cu devizul (Sale Price)
+  const effectiveRevenue = totalEstimatedRevenue > 0 ? totalEstimatedRevenue : totalSalePrice
   
-  if (marginPercent < 5 && totalEstimatedRevenue > 0) {
+  // Profitul este Venitul (efectiv) minus totalul cheltuit minus estimatul de cheltuit rămas (din totalCostBudget)
+  const netProfit = effectiveRevenue - totalSpent - Math.max(0, totalCostBudget - totalSpent)
+  const marginPercent = effectiveRevenue > 0 ? (netProfit / effectiveRevenue) * 100 : 0
+  
+  if (marginPercent < 5 && effectiveRevenue > 0) {
     alerts.push({
       type: 'danger',
       message: `Profitabilitate critică: Marja a scăzut sub 5% (${marginPercent.toFixed(1)}%)`,
@@ -134,15 +148,15 @@ export function calculateFinancials(
     })
   }
 
-  const percentSpent = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0
+  const percentSpent = totalCostBudget > 0 ? (totalSpent / totalCostBudget) * 100 : 0
 
   return {
-    totalBudget,
+    totalBudget: totalCostBudget, // Limita reală de cheltuieli
     totalPlannedDirect,
     totalSpent,
-    remainingBudget: Math.max(0, totalBudget - totalSpent),
-    projectedMargin: totalBudget - totalPlannedDirect,
-    totalEstimatedRevenue,
+    remainingBudget: Math.max(0, totalCostBudget - totalSpent),
+    projectedMargin: totalSalePrice - totalCostBudget,
+    totalEstimatedRevenue: effectiveRevenue,
     netProfit,
     percentSpent,
     deviations,
