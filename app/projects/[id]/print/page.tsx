@@ -130,8 +130,8 @@ export default async function PrintPage({ params }: { params: { id: string } }) 
                 <tbody>
                   {stageLines.map((line, i) => {
                     const c = calculateLineCosts(line, settings)
-                    const name = line.manual_name || line.items?.name || '—'
-                    const um   = line.manual_um   || line.items?.um   || '—'
+                    const name = line.name || line.manual_name || line.items?.name || '—'
+                    const um   = line.unit || line.manual_um   || line.items?.um   || '—'
                     const code = line.items?.normatives?.code || line.items?.code || '—'
                     return (
                       <tr key={line.id} style={{ background: i % 2 === 0 ? '#fff' : '#FAFAF8', borderBottom: '1px solid #E5E3DE' }}>

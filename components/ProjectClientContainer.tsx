@@ -162,32 +162,11 @@ export default function ProjectClientContainer({
       excluded_resources: [],
       metadata: { source: 'manual', autoExpand: true },
       stage_name: stageName || '',
-      manual_name: 'Rețetă Nouă',
-      manual_um: 'mc',
-      manual_price: 0,
-      manual_labor_price: 0,
-      manual_equipment_price: 0,
-      manual_transport_price: 0,
-      resources_override: [
-        {
-          id: crypto.randomUUID(),
-          name: 'Resursă Material (exemplu)',
-          type: 'material',
-          um: 'buc',
-          consumption: 1,
-          unit_price: 0,
-          waste_percent: 0
-        },
-        {
-          id: crypto.randomUUID(),
-          name: 'Resursă Manoperă (exemplu)',
-          type: 'labor',
-          um: 'ore',
-          consumption: 1,
-          unit_price: 0,
-          waste_percent: 0
-        }
-      ],
+      name: 'Rețetă Nouă',
+      code: 'MANUAL',
+      unit: 'mc',
+      unit_price: 0,
+      resources_override: [],
       items: null
     }
     setLines([...lines, newLine])
@@ -338,10 +317,10 @@ export default function ProjectClientContainer({
             sort_order: line.sort_order ?? 0,
             notes: line.notes,
             catalog_norm_id: line.catalog_norm_id ?? null,
-            name: isCatalogNorm ? line.name : (line.manual_name ?? line.name),
-            code: isCatalogNorm ? line.code : (line.metadata?.catalog_norm_symbol || null),
-            unit: isCatalogNorm ? line.unit : (line.manual_um ?? line.unit),
-            unit_price: isCatalogNorm ? line.unit_price : (line.manual_price ?? line.unit_price ?? 0),
+            name: line.name || line.manual_name || 'Articol',
+            code: line.code || line.metadata?.catalog_norm_symbol || 'MANUAL',
+            unit: line.unit || line.manual_um || 'buc',
+            unit_price: line.unit_price || line.manual_price || 0,
             category: line.category ?? null,
             resources_override: line.resources_override ?? null
           })

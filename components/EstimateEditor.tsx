@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { Plus, Trash2, Save, Info, ChevronDown, ChevronUp, Settings2, CheckCircle2, Lightbulb, Store, Link as LinkIcon, BookPlus, MoreVertical, Copy, Search } from 'lucide-react'
 import { toast } from 'sonner'
 import { createClient } from '@/utils/supabase/client'
-import { calculateLineCosts, EstimateLine, ProjectSettings, calculateProjectTotals } from '@/utils/calculators/estimate'
+import { calculateLineCosts, EstimateLine, ProjectSettings, calculateProjectTotals, analyzeEstimateLine } from '@/utils/calculators/estimate'
 import { motion, AnimatePresence } from 'framer-motion'
 import VendorOfferPicker from './VendorOfferPicker'
 
@@ -67,8 +67,8 @@ export default function EstimateEditor({
     onUpdateLine(id, { quantity: num })
   }
 
-  const handleUpdateManualField = (id: string, field: 'manual_name' | 'manual_um' | 'manual_price' | 'manual_labor_price' | 'manual_equipment_price' | 'manual_transport_price', val: string) => {
-    const isNumeric = field !== 'manual_name' && field !== 'manual_um'
+  const handleUpdateManualField = (id: string, field: 'name' | 'unit' | 'unit_price', val: string) => {
+    const isNumeric = field === 'unit_price'
     const newVal = isNumeric ? parseFloat(val) || 0 : val
     
     // Clear autoExpand if we're manually editing
@@ -180,8 +180,8 @@ export default function EstimateEditor({
     }
 
     const resourcesToSave = ensureResourcesOverride(line)
-    const itemName = line.manual_name || line.items?.name || 'Articol fără nume'
-    const itemUM = line.manual_um || line.items?.um || 'buc'
+    const itemName = line.name || line.manual_name || line.items?.name || 'Articol fără nume'
+    const itemUM = line.unit || line.manual_um || line.items?.um || 'buc'
     
     const { data: newItem, error: itemError } = await supabase
       .from('items')
@@ -284,6 +284,24 @@ export default function EstimateEditor({
           </div>
 
           <div className="p-4 border-b border-border/50">
+            {(() => {
+              const invalidCount = lines.filter(l => !analyzeEstimateLine(l).isCalculable).length;
+              if (invalidCount === 0) return null;
+              return (
+                <div className="mb-4 p-4 bg-red-50 dark:bg-red-950/20 border-2 border-red-200 dark:border-red-900/30 rounded-2xl flex items-center justify-between animate-pulse">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-red-100 dark:bg-red-900/50 rounded-full flex items-center justify-center text-red-600">
+                      <Info size={24} />
+                    </div>
+                    <div>
+                      <h4 className="font-black text-red-900 dark:text-red-400 uppercase tracking-tight text-sm">Atenție: {invalidCount} articole neconfigurate</h4>
+                      <p className="text-xs font-bold text-red-700/70 dark:text-red-500/70">Acestea vor apărea cu preț zero în oferta finală PDF.</p>
+                    </div>
+                  </div>
+                  <span className="text-[10px] font-black bg-red-600 text-white px-3 py-1 rounded-full uppercase tracking-widest">Urgent</span>
+                </div>
+              );
+            })()}
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
               <input 
@@ -313,8 +331,8 @@ export default function EstimateEditor({
               const isCollapsed = collapsedStages[stage] && !searchQuery.trim()
               
               return (
-                <div key={stage} className="bg-slate-50/30 dark:bg-white/[0.02]">
-                  <div className="px-6 py-2 bg-slate-100/50 dark:bg-slate-800/40 border-y border-border/30 flex justify-between items-center">
+                <div key={stage} className="bg-slate-200/50 dark:bg-white/[0.02]">
+                  <div className="px-6 py-3 bg-slate-300/40 dark:bg-slate-800/60 border-y border-slate-400/20 flex justify-between items-center">
                     <div className="flex items-center gap-2">
                       <button
                         type="button"
@@ -337,9 +355,10 @@ export default function EstimateEditor({
                   
                   {!isCollapsed && filteredStageLines.map((line) => {
                     const lineCosts = calculateLineCosts(line, settings)
+                    const analysis = analyzeEstimateLine(line)
                     const isExpanded = expandedId === line.id
                     const isCatalogNorm = !!(line.catalog_norm_id || (line.code && !line.items))
-                    const isManual = !line.items && !isCatalogNorm
+                    const isManual = analysis.origin === 'Adăugat manual'
                     const hasCustomResources = (line.resources_override && line.resources_override.length > 0)
                     const resourceCostBreakdown = hasCustomResources ? getResourceCostBreakdown(line) : null
                     const allResources = ensureResourcesOverride(line)
@@ -353,8 +372,8 @@ export default function EstimateEditor({
                     })() : null
 
                     return (
-                      <div key={line.id} className="group border-b border-border/10 last:border-0">
-                        <div className="p-4 md:p-6 hover:bg-slate-50/30 dark:hover:bg-slate-800/10 transition-colors">
+                      <div key={line.id} className={`group transition-all duration-300 ${isExpanded ? 'my-6 bg-white dark:bg-slate-900 border border-primary/20 shadow-2xl rounded-2xl ring-4 ring-primary/5 z-10 relative' : 'border-b border-slate-300/30 last:border-0 hover:bg-slate-200/20'}`}>
+                        <div className={`p-4 md:p-6 transition-colors ${isExpanded ? 'rounded-t-2xl bg-white dark:bg-slate-900' : 'bg-slate-100/30'}`}>
                           <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
                             <div className="space-y-2 flex-1">
                               <div className="flex flex-wrap items-center gap-2">
@@ -364,24 +383,32 @@ export default function EstimateEditor({
                                 {hasCustomResources && (
                                   <span className="text-[10px] font-bold bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full shrink-0">Personalizat</span>
                                 )}
+                                <span className="text-[10px] font-bold bg-slate-100 text-slate-500 border border-slate-200 px-2 py-0.5 rounded-full shrink-0">{analysis.origin}</span>
+                                <span className="text-[10px] font-bold bg-slate-100 text-slate-500 border border-slate-200 px-2 py-0.5 rounded-full shrink-0">{analysis.source}</span>
                                 {isCatalogNorm ? (
-                                  <div className="flex flex-col">
-                                    <h4 className="font-bold text-lg md:text-xl leading-tight break-words">{line.name || line.manual_name || '—'}</h4>
-                                    <div className="flex items-center gap-2 text-[11px] text-slate-400 font-bold uppercase tracking-wider mt-1">
-                                      <span>Cost Direct: {line.unit_price?.toLocaleString('ro-RO')} lei / {line.unit || '—'}</span>
-                                      <span className="text-primary/50">→</span>
-                                      <span className="text-primary">Preț Final: {(lineCosts.totalWithTVA / line.quantity).toLocaleString('ro-RO')} lei / {line.unit || '—'}</span>
+                                  <div className="flex flex-col w-full mt-1">
+                                    <h4 className="font-black text-xl md:text-2xl leading-tight break-words text-slate-900 dark:text-white">{line.name || line.manual_name || '—'}</h4>
+                                    <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider mt-1">
+                                      {!analysis.isCalculable ? (
+                                        <span className="text-red-500 bg-red-50 px-2 py-0.5 rounded border border-red-100">{analysis.issueMessage}</span>
+                                      ) : (
+                                        <>
+                                          <span className="text-slate-400">Cost Direct: {line.unit_price?.toLocaleString('ro-RO')} lei / {line.unit || '—'}</span>
+                                          <span className="text-primary/50">→</span>
+                                          <span className="text-primary">Preț Final: {(lineCosts.totalWithTVA / line.quantity).toLocaleString('ro-RO')} lei / {line.unit || '—'}</span>
+                                        </>
+                                      )}
                                     </div>
                                   </div>
                                 ) : isManual ? (
                                   <div className="flex-1">
-                                    <textarea
-                                      rows={2}
-                                      className="font-bold text-lg md:text-xl leading-snug bg-transparent border-b border-dashed border-slate-200 dark:border-slate-700 hover:border-primary focus:border-primary outline-none transition-all w-full resize-none overflow-hidden text-slate-900 dark:text-white pb-1"
-                                      value={line.manual_name ?? ''}
+                                      <textarea
+                                        rows={2}
+                                        className="font-black text-xl md:text-2xl leading-tight bg-transparent border-b border-dashed border-slate-300 dark:border-slate-700 hover:border-primary focus:border-primary outline-none transition-all w-full resize-none overflow-hidden text-slate-900 dark:text-white pb-2 shadow-sm focus:shadow-md"
+                                      value={line.name ?? line.manual_name ?? ''}
                                       placeholder="Nume reper (clic pentru a edita)..."
                                       onChange={(e) => {
-                                        handleUpdateManualField(line.id, 'manual_name', e.target.value);
+                                        handleUpdateManualField(line.id, 'name', e.target.value);
                                         e.target.style.height = 'auto';
                                         e.target.style.height = e.target.scrollHeight + 'px';
                                       }}
@@ -390,88 +417,79 @@ export default function EstimateEditor({
                                         e.target.style.height = e.target.scrollHeight + 'px';
                                       }}
                                     />
-                                    <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 mt-4 mt-2">
-                                      {[
-                                        { label: 'Mat.', field: 'manual_price', color: 'sky', calcValue: resourceCostBreakdown?.directMaterialUnit ?? 0 },
-                                        { label: 'Man.', field: 'manual_labor_price', color: 'orange', calcValue: resourceCostBreakdown?.directLaborUnit ?? 0 },
-                                        { label: 'Util.', field: 'manual_equipment_price', color: 'emerald', calcValue: resourceCostBreakdown?.directEquipmentUnit ?? 0 },
-                                        { label: 'Trans.', field: 'manual_transport_price', color: 'purple', calcValue: resourceCostBreakdown?.directTransportUnit ?? 0 }
-                                      ].map(p => {
-                                        const actualValue = hasCustomResources ? p.calcValue : ((line as any)[p.field] ?? 0)
-                                        const finalValue = actualValue * (1 + settings.regie/100) * (1 + settings.profit/100) * (1 + settings.tva/100)
-                                        
-                                        return (
-                                          <div key={p.field} className="flex flex-col gap-1">
-                                            <span className={`text-[10px] font-black uppercase tracking-widest text-slate-500 px-1 flex justify-between`}>
-                                              <span>{p.label}</span>
-                                              {hasCustomResources && <span className="text-[8px] text-primary/50">CALC</span>}
-                                            </span>
-                                            <div className="relative">
-                                              <input
-                                                type="number"
-                                                readOnly={hasCustomResources}
-                                                className={`w-full px-2 py-1.5 ${hasCustomResources ? 'bg-slate-100 dark:bg-slate-800 cursor-not-allowed opacity-80' : `bg-${p.color}-50/50 dark:bg-${p.color}-900/10 border-${p.color}-200/50 dark:border-${p.color}-800/30 hover:border-${p.color}-400/50`} border rounded-lg font-mono text-slate-900 dark:text-slate-200 outline-none text-base font-black focus:ring-2 focus:ring-${p.color}-500/20 focus:border-${p.color}-500 transition-all`}
-                                                value={actualValue}
-                                                onFocus={(e) => !hasCustomResources && e.currentTarget.select()}
-                                                onChange={(e) => !hasCustomResources && handleUpdateManualField(line.id, p.field as any, e.target.value)}
-                                              />
-                                              {actualValue > 0 && (
-                                                <span className="absolute -bottom-4 left-1 text-[9px] font-bold text-slate-400 whitespace-nowrap">
-                                                  Ofertat: {finalValue.toLocaleString('ro-RO', {maximumFractionDigits: 2})}
-                                                </span>
-                                              )}
-                                            </div>
-                                          </div>
-                                        )
-                                      })}
-                                      <div className="flex flex-col gap-1">
+                                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-4 mt-2">
+                                      <div className="flex flex-col gap-1 col-span-2">
+                                        <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 px-1 border-l-2 border-slate-200 ml-1">Preț Unitar Direct (Total / UM):</span>
+                                        <div className="relative flex items-center">
+                                          <input
+                                            type="number"
+                                            readOnly={hasCustomResources}
+                                            className={`w-full px-3 py-2 ${hasCustomResources ? 'bg-slate-100 dark:bg-slate-800 cursor-not-allowed opacity-80' : 'bg-slate-100/50 dark:bg-slate-800/50 border-2 border-slate-200 dark:border-slate-700 hover:border-slate-400'} rounded-xl outline-none text-lg md:text-xl font-mono font-black text-slate-900 dark:text-white focus:ring-4 focus:ring-primary/20 focus:border-primary transition-all`}
+                                            value={hasCustomResources ? lineCosts.unitDirectCost : (line.unit_price ?? line.manual_price ?? 0)}
+                                            onFocus={(e) => !hasCustomResources && e.currentTarget.select()}
+                                            onChange={(e) => {
+                                              if (!hasCustomResources) {
+                                                handleUpdateManualField(line.id, 'unit_price', e.target.value)
+                                              }
+                                            }}
+                                          />
+                                        </div>
+                                      </div>
+                                      <div className="flex flex-col gap-1 col-span-2">
                                         <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 px-1 border-l-2 border-slate-200 ml-1">U.M.:</span>
-                                        <input
-                                          className="w-full px-2 py-1.5 bg-slate-100/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 hover:border-slate-400 rounded-lg outline-none text-base font-mono font-bold text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all ml-1"
-                                          value={line.manual_um ?? line.unit ?? (line.items?.um || '')}
-                                          onChange={(e) => handleUpdateManualField(line.id, 'manual_um', e.target.value)}
+                                          <input
+                                            className="w-full px-3 py-3 bg-slate-100/60 dark:bg-slate-800/60 border-2 border-slate-200 dark:border-slate-700 hover:border-slate-400 rounded-xl outline-none text-xl md:text-2xl font-mono font-black text-slate-900 dark:text-white focus:ring-4 focus:ring-primary/20 focus:border-primary transition-all"
+                                          value={line.unit ?? line.manual_um ?? (line.items?.um || '')}
+                                          onChange={(e) => handleUpdateManualField(line.id, 'unit', e.target.value)}
                                         />
                                       </div>
                                     </div>
                                   </div>
                                 ) : (
-                                  <div className="flex flex-col">
-                                    <h4 className="font-bold text-lg md:text-xl leading-tight break-words">{line.items!.name}</h4>
-                                    <div className="flex items-center gap-2 text-[11px] text-slate-400 font-bold uppercase tracking-wider mt-1">
-                                      <span>Cost Direct: {lineCosts.unitDirectCost.toLocaleString('ro-RO', { minimumFractionDigits: 2 })} lei / {line.items!.um}</span>
-                                      <span className="text-primary/50">→</span>
-                                      <span className="text-primary font-black">Preț Final: {(lineCosts.totalWithTVA / line.quantity).toLocaleString('ro-RO', { minimumFractionDigits: 2 })} lei / {line.items!.um}</span>
+                                  <div className="flex flex-col w-full mt-1">
+                                    <h4 className="font-black text-xl md:text-2xl leading-tight break-words text-slate-900 dark:text-white">{line.items!.name}</h4>
+                                    <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider mt-1">
+                                      {!analysis.isCalculable ? (
+                                        <span className="text-red-500 bg-red-50 px-2 py-0.5 rounded border border-red-100">{analysis.issueMessage}</span>
+                                      ) : (
+                                        <>
+                                          <span className="text-slate-400">Cost Direct: {lineCosts.unitDirectCost.toLocaleString('ro-RO', { minimumFractionDigits: 2 })} lei / {line.items!.um}</span>
+                                          <span className="text-primary/50">→</span>
+                                          <span className="text-primary font-black">Preț Final: {(lineCosts.totalWithTVA / line.quantity).toLocaleString('ro-RO', { minimumFractionDigits: 2 })} lei / {line.items!.um}</span>
+                                        </>
+                                      )}
                                     </div>
                                   </div>
                                 )}
                               </div>
 
-                              {/* Transparency Ribbon - Receipt Style */}
-                              <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 p-3 bg-slate-100/50 dark:bg-slate-950/20 rounded-xl border border-border/30 text-[11px] font-bold uppercase tracking-tight text-slate-500">
-                                <span className="text-slate-400">Desfășurare Preț Final:</span>
-                                <div className="flex items-center gap-1.5 bg-white dark:bg-slate-900 px-2 py-1 rounded-md border border-border/50">
-                                  <span>Bază: {(lineCosts.unitDirectCost).toLocaleString('ro-RO', { minimumFractionDigits: 2 })}</span>
+                              {analysis.isCalculable && (
+                                <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 p-3 bg-slate-100/50 dark:bg-slate-950/20 rounded-xl border border-border/30 text-[11px] font-bold uppercase tracking-tight text-slate-500">
+                                  <span className="text-slate-400">Desfășurare Preț Final:</span>
+                                  <div className="flex items-center gap-1.5 bg-white dark:bg-slate-900 px-2 py-1 rounded-md border border-border/50">
+                                    <span>Bază: {(lineCosts.unitDirectCost).toLocaleString('ro-RO', { minimumFractionDigits: 2 })}</span>
+                                  </div>
+                                  <span>+</span>
+                                  <div className="flex items-center gap-1.5">
+                                    <span>Regie ({settings.regie}%):</span>
+                                    <span className="text-amber-600">{(lineCosts.regieAmount / line.quantity).toLocaleString('ro-RO', { minimumFractionDigits: 2 })}</span>
+                                  </div>
+                                  <span>+</span>
+                                  <div className="flex items-center gap-1.5">
+                                    <span>Profit ({settings.profit}%):</span>
+                                    <span className="text-emerald-600">{(lineCosts.profitAmount / line.quantity).toLocaleString('ro-RO', { minimumFractionDigits: 2 })}</span>
+                                  </div>
+                                  <span>+</span>
+                                  <div className="flex items-center gap-1.5">
+                                    <span>TVA ({settings.tva}%):</span>
+                                    <span className="text-indigo-600">{(lineCosts.tvaAmount / line.quantity).toLocaleString('ro-RO', { minimumFractionDigits: 2 })}</span>
+                                  </div>
+                                  <span className="text-primary">=</span>
+                                  <div className="bg-primary/10 text-primary px-2 py-1 rounded-md border border-primary/20 font-black">
+                                    {(lineCosts.totalWithTVA / line.quantity).toLocaleString('ro-RO', { minimumFractionDigits: 2 })} lei / {line.unit || (isManual ? line.manual_um : line.items!.um)}
+                                  </div>
                                 </div>
-                                <span>+</span>
-                                <div className="flex items-center gap-1.5">
-                                  <span>Regie ({settings.regie}%):</span>
-                                  <span className="text-amber-600">{(lineCosts.regieAmount / line.quantity).toLocaleString('ro-RO', { minimumFractionDigits: 2 })}</span>
-                                </div>
-                                <span>+</span>
-                                <div className="flex items-center gap-1.5">
-                                  <span>Profit ({settings.profit}%):</span>
-                                  <span className="text-emerald-600">{(lineCosts.profitAmount / line.quantity).toLocaleString('ro-RO', { minimumFractionDigits: 2 })}</span>
-                                </div>
-                                <span>+</span>
-                                <div className="flex items-center gap-1.5">
-                                  <span>TVA ({settings.tva}%):</span>
-                                  <span className="text-indigo-600">{(lineCosts.tvaAmount / line.quantity).toLocaleString('ro-RO', { minimumFractionDigits: 2 })}</span>
-                                </div>
-                                <span className="text-primary">=</span>
-                                <div className="bg-primary/10 text-primary px-2 py-1 rounded-md border border-primary/20 font-black">
-                                  {(lineCosts.totalWithTVA / line.quantity).toLocaleString('ro-RO', { minimumFractionDigits: 2 })} lei / {line.unit || (isManual ? line.manual_um : line.items!.um)}
-                                </div>
-                              </div>
+                              )}
                               {resSummary && (
                                 <button
                                   onClick={() => setExpandedId(isExpanded ? null : line.id)}
@@ -487,8 +505,7 @@ export default function EstimateEditor({
                                       
                                 <div className="relative group/quantity">
                                   <input 
-                                    type="number" 
-                                    className="w-20 pr-1 bg-transparent text-center font-black text-xl outline-none text-slate-900 dark:text-white py-2 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 focus:bg-white dark:focus:bg-slate-900 rounded-lg cursor-pointer transition-colors border border-transparent focus:border-border"
+                                    type="number"                                    className="w-24 px-2 bg-white dark:bg-slate-900 text-center font-black text-2xl md:text-3xl outline-none text-slate-900 dark:text-white py-3 shadow-sm hover:shadow-md focus:shadow-lg rounded-xl cursor-pointer transition-all border-2 border-slate-200 focus:border-primary"
                                     value={line.quantity}
                                     onFocus={(e) => e.currentTarget.select()}
                                     onChange={(e) => handleUpdateQuantity(line.id, e.target.value)}
@@ -500,9 +517,17 @@ export default function EstimateEditor({
 
                               <div className="text-right min-w-[90px] md:min-w-[110px]">
                                 <label className="block text-xs text-slate-400 mb-1 uppercase tracking-widest font-black">Total</label>
-                                <div className="font-mono text-xl md:text-2xl font-black text-slate-900 dark:text-white">
-                                  {lineCosts.totalOfertatWithoutTVA.toLocaleString('ro-RO', { minimumFractionDigits: 2 })}
-                                </div>
+                                {!analysis.isCalculable ? (
+                                  <div className="inline-flex flex-col items-end animate-bounce">
+                                    <span className="text-[11px] uppercase font-black px-3 py-1.5 bg-red-600 text-white rounded-lg border-2 border-red-200 shadow-lg shadow-red-500/20 whitespace-nowrap">
+                                      {analysis.status}
+                                    </span>
+                                  </div>
+                                ) : (
+                                  <div className="font-mono text-2xl md:text-3xl font-black text-slate-900 dark:text-white">
+                                    {lineCosts.totalOfertatWithoutTVA.toLocaleString('ro-RO', { minimumFractionDigits: 2 })}
+                                  </div>
+                                )}
                               </div>
 
                               <div className="flex flex-col gap-2 items-center">
@@ -513,6 +538,11 @@ export default function EstimateEditor({
                                 >
                                   {isExpanded ? <ChevronUp size={16} /> : <Settings2 size={16} />}
                                   <span>Rețetă</span>
+                                  {allResources.length > 0 && (
+                                    <span className="bg-primary text-white text-[10px] px-1.5 py-0.5 rounded-full ml-1">
+                                      {allResources.length}
+                                    </span>
+                                  )}
                                 </button>
                                 <button
                                   onClick={() => handleDuplicateLine(line)}
@@ -568,7 +598,25 @@ export default function EstimateEditor({
                                   </div>
                                 </div>
                                 
-                                <div className="grid gap-3">
+                                <div className="grid gap-3 mt-4">
+                                  {ensureResourcesOverride(line).length === 0 ? (
+                                    <div className="flex flex-col items-center justify-center p-8 bg-white/50 dark:bg-slate-900/50 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 text-center">
+                                      <div className="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center text-slate-400 mb-4 ring-8 ring-white dark:ring-slate-950">
+                                        <Plus size={24} />
+                                      </div>
+                                      <h6 className="font-black text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-wide">Acest articol nu are încă o rețetă definită</h6>
+                                      <p className="text-sm font-bold text-slate-500 dark:text-slate-400 max-w-md mx-auto mb-6">
+                                        Poți folosi prețul unitar direct sau poți adăuga materiale și manoperă pentru a calcula automat costul real.
+                                      </p>
+                                      <button
+                                        onClick={() => handleAddResource(line.id)}
+                                        className="inline-flex items-center gap-2 bg-primary/10 text-primary px-6 py-3 rounded-xl text-xs font-black hover:bg-primary/20 transition-all border border-primary/20"
+                                      >
+                                        <Plus size={16} /> ÎNCEPE REȚETA NOUĂ
+                                      </button>
+                                    </div>
+                                  ) : null}
+                                  
                                   {ensureResourcesOverride(line).map((res: any) => {
                                     const isExcluded = line.excluded_resources.includes(res.id)
                                     const customPrice = line.custom_prices[res.id]
@@ -598,29 +646,29 @@ export default function EstimateEditor({
                                                 <option value="transport">TRANS</option>
                                               </select>
                                               <input 
-                                                className="text-lg md:text-xl font-black bg-transparent border-b border-border/30 focus:border-primary outline-none flex-1 py-1"
+                                                className="text-xl md:text-2xl font-black bg-transparent border-b-2 border-primary/20 focus:border-primary outline-none flex-1 py-1 text-slate-900 dark:text-white"
                                                 value={res.name}
                                                 onChange={(e) => handleUpdateResourceField(line.id, res.id, 'name', e.target.value)}
                                               />
                                             </div>
                                             <input 
                                               className="text-sm text-slate-500 bg-transparent border-b border-border/30 focus:border-primary outline-none w-full italic font-medium py-1"
-                                              placeholder="Introduceți numele resursei aici..."
+                                              placeholder="Note / Detalii adiționale..."
                                               value={res.note || ''}
                                               onChange={(e) => handleUpdateResourceField(line.id, res.id, 'note', e.target.value)}
                                             />
                                             <div className="flex flex-wrap items-center gap-x-6 gap-y-3 text-[13px] text-slate-500 font-black uppercase tracking-widest py-1">
                                               <div className="flex items-center gap-2">
-                                                <span>Necesar pt. 1 {line.unit || (isManual ? line.manual_um : line.items!.um)}:</span> 
+                                                <span>Consum per 1 {line.unit || (isManual ? line.manual_um : line.items!.um)}:</span> 
                                                  <input 
                                                    type="number"
-                                                   className="w-16 bg-slate-100 dark:bg-slate-800 border-b border-primary/30 text-primary outline-none font-black text-center py-1 rounded-md text-base"
+                                                   className="w-20 bg-slate-100 dark:bg-slate-800 border-b-2 border-primary/30 text-primary outline-none font-black text-center py-2 rounded-xl text-xl"
                                                    value={res.consumption}
                                                    onFocus={(e) => e.currentTarget.select()}
                                                    onChange={(e) => handleUpdateResourceField(line.id, res.id, 'consumption', e.target.value)}
                                                  />
                                                  <span className="italic text-slate-400 font-bold normal-case lowercase ml-1 whitespace-nowrap">
-                                                   (total: {(res.consumption * line.quantity).toLocaleString('ro-RO')} {res.um})
+                                                   (total proiect: {(res.consumption * line.quantity).toLocaleString('ro-RO')} {res.um})
                                                  </span>
                                                 <input 
                                                   className="w-12 bg-transparent border-b border-border/30 outline-none text-center font-bold lowercase"
@@ -646,15 +694,12 @@ export default function EstimateEditor({
 
                                         <div className="flex items-center justify-end gap-6 pl-8 sm:pl-0 border-t sm:border-0 pt-4 sm:pt-0 border-slate-100 dark:border-slate-800">
                                           <div className="text-right">
-                                            <div className="text-[11px] text-slate-400 uppercase font-black tracking-widest mb-1">Preț Unitar (Lei)</div>
-                                             <div className="text-xs text-primary font-black mb-2">
-                                               Cost rând: {(res.consumption * line.quantity * (customPrice ?? res.unit_price) * (1 + (res.waste_percent || 0) / 100)).toLocaleString('ro-RO')} lei
-                                             </div>
-                                            <div className="flex items-center gap-3">
+                                            <div className="text-[11px] text-slate-400 uppercase font-black tracking-widest mb-1">Preț Unitar de bază (Lei / {res.um})</div>
+                                            <div className="flex items-center justify-end gap-3 mb-2">
                                               <input 
                                                 type="number"
                                                 disabled={isExcluded}
-                                                className={`w-32 p-3 text-lg text-right bg-white dark:bg-slate-900 border-2 rounded-xl font-black focus:ring-4 focus:ring-primary/10 outline-none transition-all ${customPrice ? 'text-primary border-primary/40' : 'border-border/50 text-slate-900 dark:text-white'}`}
+                                                className={`w-40 p-4 text-2xl text-right bg-white dark:bg-slate-900 border-2 rounded-2xl font-black focus:ring-8 focus:ring-primary/10 outline-none transition-all ${customPrice ? 'text-primary border-primary/40' : 'border-slate-200 text-slate-900 dark:text-white'}`}
                                                 value={customPrice ?? res.unit_price}
                                                 onFocus={(e) => e.currentTarget.select()}
                                                 onChange={(e) => handleUpdatePrice(line.id, res.id, e.target.value)}
@@ -672,6 +717,9 @@ export default function EstimateEditor({
                                               >
                                                 <Trash2 size={12} />
                                               </button>
+                                            </div>
+                                            <div className="text-sm text-primary font-black mt-2 bg-primary/5 px-3 py-1 rounded-lg border border-primary/10 inline-block">
+                                              Total: {(res.consumption * line.quantity * (customPrice ?? res.unit_price) * (1 + (res.waste_percent || 0) / 100)).toLocaleString('ro-RO', {maximumFractionDigits: 2})} lei
                                             </div>
                                           </div>
                                         </div>

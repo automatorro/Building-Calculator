@@ -7,6 +7,7 @@ import {
   ProjectSettings,
   calculateLineCosts,
   calculateProjectTotals,
+  analyzeEstimateLine,
 } from '@/utils/calculators/estimate'
 
 interface ProjectDevizViewProps {
@@ -101,10 +102,18 @@ export default function ProjectDevizView({
   const fAraTVA       = totals.totalOfertat
   const tvaAmount     = totals.totalWithTVA - fAraTVA
 
-  /* Ajustări discount B2B + pierderi */
-  const discountFactor  = 1 - discountB2B / 100
-  const totalCuDiscount = fAraTVA * discountFactor
-  const economieLei     = fAraTVA - totalCuDiscount
+  /* Articole cu probleme */
+  const invalidLines = useMemo(() => 
+    lines.filter(l => !analyzeEstimateLine(l).isCalculable),
+  [lines])
+
+  const handleExportPDFWithGuardrail = () => {
+    if (invalidLines.length > 0) {
+      const confirmMsg = `Atenție: Există ${invalidLines.length} articole neconfigurate sau cu preț zero. Acestea vor apărea cu 0 Lei în PDF.\n\nEști sigur că vrei să generezi PDF-ul așa?`
+      if (!window.confirm(confirmMsg)) return
+    }
+    onExportPDF()
+  }
 
   if (lines.length === 0) {
     return (
@@ -159,14 +168,18 @@ export default function ProjectDevizView({
               <Sheet size={14} /> Export Excel
             </button>
           )}
-          <button onClick={onExportPDF}
+          <button onClick={handleExportPDFWithGuardrail}
             style={{ display:'flex', alignItems:'center', gap:7, padding:'9px 18px',
-              background:'#E8500A', border:'none', borderRadius:8,
-              fontSize:13, fontWeight:500, color:'white', cursor:'pointer',
-              fontFamily:'inherit', transition:'background .15s' }}
-            onMouseEnter={e=>{e.currentTarget.style.background='#C43F06'}}
-            onMouseLeave={e=>{e.currentTarget.style.background='#E8500A'}}>
-            <FileText size={14} /> Generează PDF
+              background: invalidLines.length > 0 ? '#FEF2F2' : '#E8500A', 
+              border: invalidLines.length > 0 ? '1px solid #FCA5A5' : 'none', 
+              borderRadius:8,
+              fontSize:13, fontWeight:600, 
+              color: invalidLines.length > 0 ? '#991B1B' : 'white', 
+              cursor:'pointer',
+              fontFamily:'inherit', transition:'all .15s' }}
+            onMouseEnter={e=>{if(invalidLines.length === 0) e.currentTarget.style.background='#C43F06'}}
+            onMouseLeave={e=>{if(invalidLines.length === 0) e.currentTarget.style.background='#E8500A'}}>
+            <FileText size={14} /> {invalidLines.length > 0 ? 'Generează PDF (cu erori)' : 'Generează PDF'}
           </button>
           
           {onSave && (
@@ -327,8 +340,9 @@ export default function ProjectDevizView({
                         <tbody>
                           {stageLines.map((line, i) => {
                             const costs = calculateLineCosts(line, settings)
+                            const analysis = analyzeEstimateLine(line)
                             const isCatalogNorm = !!(line.catalog_norm_id || line.metadata?.catalog_norm_id)
-                            const isManual = !line.items && !isCatalogNorm
+                            const isManual = analysis.origin === 'Adăugat manual'
                             const name = line.name || line.manual_name || line.items?.name || '—'
                             const code = line.code || line.metadata?.catalog_norm_symbol ||
                               (line.items
@@ -347,7 +361,7 @@ export default function ProjectDevizView({
                                   {isManual ? (
                                     <input
                                       value={name}
-                                      onChange={(e) => onUpdateLine(line.id, { manual_name: e.target.value })}
+                                      onChange={(e) => onUpdateLine(line.id, { name: e.target.value })}
                                       style={{ width:'100%', border:'none', background:'transparent',
                                         fontFamily:'inherit', fontSize:'inherit', color:'inherit',
                                         outline:'none', borderBottom:'1px dashed transparent' }}
@@ -362,7 +376,7 @@ export default function ProjectDevizView({
                                   {isManual ? (
                                     <input
                                       value={um}
-                                      onChange={(e) => onUpdateLine(line.id, { manual_um: e.target.value })}
+                                      onChange={(e) => onUpdateLine(line.id, { unit: e.target.value })}
                                       style={{ width:40, border:'none', background:'transparent',
                                         textAlign:'right', fontFamily:'inherit', fontSize:'inherit',
                                         color:'inherit', outline:'none' }}
@@ -395,8 +409,8 @@ export default function ProjectDevizView({
                                   {isManual ? (
                                     <input
                                       type="number"
-                                      value={line.manual_price}
-                                      onChange={(e) => onUpdateLine(line.id, { manual_price: parseFloat(e.target.value) || 0 })}
+                                      value={line.unit_price ?? line.manual_price ?? 0}
+                                      onChange={(e) => onUpdateLine(line.id, { unit_price: parseFloat(e.target.value) || 0 })}
                                       style={{ width:80, border:'none', background:'transparent',
                                         textAlign:'right', fontFamily:'inherit', fontSize:'inherit',
                                         color:'#E8500A', fontWeight: 600, outline:'none' }}
@@ -406,11 +420,17 @@ export default function ProjectDevizView({
                                   )}
                                 </td>
                                 <td style={{ padding:'8px 12px', textAlign:'right', color:'#1E2329' }}>
-                                  {lei(costs.totalDirectCost)}
+                                  {!analysis.isCalculable ? (
+                                    <span style={{ fontSize: 9, fontWeight: 700, color: '#DC2626', background: '#FEE2E2', padding: '3px 6px', borderRadius: 4, textTransform: 'uppercase', whiteSpace: 'nowrap' }} title={analysis.issueMessage}>
+                                      {analysis.status}
+                                    </span>
+                                  ) : (
+                                    lei(costs.totalDirectCost)
+                                  )}
                                 </td>
                                 <td style={{ padding:'8px 12px', textAlign:'right',
                                   fontWeight:600, color:'#E8500A' }}>
-                                  {lei(costs.totalOfertatWithoutTVA)}
+                                  {!analysis.isCalculable ? <span style={{ color: '#A8A59E' }}>—</span> : lei(costs.totalOfertatWithoutTVA)}
                                 </td>
                               </tr>
                             )
@@ -475,6 +495,24 @@ export default function ProjectDevizView({
                 label={`TVA (${settings.tva}%)`}
                 value={lei(tvaAmount)} unit="lei"
                 sub />
+
+              {invalidLines.length > 0 && (
+                <div style={{ marginTop: 16, padding: '12px', background: 'rgba(220, 38, 38, 0.1)', border: '1px solid rgba(220, 38, 38, 0.3)', borderRadius: 10 }}>
+                  <div style={{ fontSize: 10, color: '#FCA5A5', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '.05em', marginBottom: 4 }}>
+                    ⚠️ Articole incomplete (0 Lei în deviz)
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                    {invalidLines.map(l => (
+                      <div key={l.id} style={{ fontSize: 11, color: '#FECACA', display: 'flex', justifyContent: 'space-between' }}>
+                        <span style={{ maxWidth: '180px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          • {l.name || l.manual_name || l.items?.name || 'Articol fără nume'}
+                        </span>
+                        <span style={{ fontWeight: 800 }}>{analyzeEstimateLine(l).status}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             <div style={{ borderTop:'1px solid rgba(255,255,255,0.12)', marginTop:16, paddingTop:16 }}>

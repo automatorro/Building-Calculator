@@ -353,9 +353,10 @@ export default function SmartCalculator({
       return {
         project_id: projectId,
         item_id: null,
-        manual_name: l.name,
-        manual_um: l.unit,
-        manual_price: 0,
+        name: l.name,
+        unit: l.unit,
+        unit_price: 0,
+        code: l.symbol || 'MANUAL',
         quantity: l.quantity,
         stage_name: l.stage,
         custom_prices: {},

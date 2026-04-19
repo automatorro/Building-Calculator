@@ -73,7 +73,7 @@ export function calculateFinancials(
     stagePlanned[stage] = (stagePlanned[stage] || 0) + costBudgetForLine
     
     if (!stageItems[stage]) stageItems[stage] = []
-    const itemName = line.manual_name || line.items?.name || 'Articol'
+    const itemName = line.name || line.items?.name || 'Articol'
     if (!stageItems[stage].includes(itemName)) stageItems[stage].push(itemName)
   })
 

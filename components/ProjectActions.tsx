@@ -181,8 +181,9 @@ export default function ProjectActions({ projectId, initialDimensions, initialSt
         name,
         stages: initialStages,
         lines_snapshot: lines.map(l => ({
-          manual_name: l.manual_name || l.items?.name,
-          manual_um:   l.manual_um   || l.items?.um,
+          name: l.name || l.manual_name || l.items?.name,
+          unit: l.unit || l.manual_um || l.items?.um,
+          unit_price: l.unit_price || l.manual_price || 0,
           quantity:    l.quantity,
           stage_name:  l.stage_name,
           resources:   (l.resources_override && l.resources_override.length > 0) ? l.resources_override : (l.items?.resources || []),

@@ -85,8 +85,9 @@ export default function NewProjectPage() {
         .from('estimate_lines')
         .insert(templateLines.map(l => ({
           project_id: project.id,
-          manual_name: l.manual_name,
-          manual_um: l.manual_um,
+          name: l.name || l.manual_name,
+          unit: l.unit || l.manual_um,
+          unit_price: l.unit_price || l.manual_price || 0,
           quantity: l.quantity,
           stage_name: l.stage_name,
           resources_override: l.resources || [],
