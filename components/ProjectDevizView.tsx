@@ -102,6 +102,11 @@ export default function ProjectDevizView({
   const fAraTVA       = totals.totalOfertat
   const tvaAmount     = totals.totalWithTVA - fAraTVA
 
+  /* Ajustări discount B2B + pierderi */
+  const discountFactor  = 1 - discountB2B / 100
+  const totalCuDiscount = fAraTVA * discountFactor
+  const economieLei     = fAraTVA - totalCuDiscount
+
   /* Articole cu probleme */
   const invalidLines = useMemo(() => 
     lines.filter(l => !analyzeEstimateLine(l).isCalculable),
