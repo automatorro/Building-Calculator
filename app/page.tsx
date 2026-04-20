@@ -19,20 +19,6 @@ function IconArrow() {
   )
 }
 
-function LogoMark({ size = 30 }: { size?: number }) {
-  return (
-    <div style={{ width:size, height:size, background:'#E8500A', borderRadius:7,
-      display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-      <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" width={size*0.7} height={size*0.7}>
-        <path d="M3 18h18" />
-        <path d="M19 18v-1a7 7 0 0 0-14 0v1" />
-        <path d="M12 10V7" />
-        <path d="M9 11V9" />
-        <path d="M15 11V9" />
-      </svg>
-    </div>
-  )
-}
 
 /* ─── Check icon pentru pricing/features ─────────────────────────────────── */
 function Check({ orange = false }: { orange?: boolean }) {
@@ -107,14 +93,12 @@ export default function HomePage() {
           .terrain-grid { grid-template-columns:1fr !important; }
           .testi-grid { grid-template-columns:1fr !important; }
           .pricing-grid { grid-template-columns:1fr !important; }
-          .footer-inner { grid-template-columns:1fr 1fr !important; }
           .hero-h1 { font-size:40px !important; }
           .section-title { font-size:32px !important; }
         }
         @media (max-width:600px) {
           .hero-section { padding:100px 20px 64px !important; }
           .section-pad { padding:64px 20px !important; }
-          .footer-inner { grid-template-columns:1fr !important; gap:28px !important; }
           .features-grid { grid-template-columns:1fr !important; }
           .final-h2 { font-size:32px !important; }
         }
@@ -122,14 +106,13 @@ export default function HomePage() {
         .btn-ghost:hover { background:rgba(255,255,255,0.05) !important; color:#FAFAF8 !important; }
         .btn-link-orange:hover { background:#C43F06 !important; }
         .btn-cta-white:hover { transform:translateY(-2px); }
-        .footer-link:hover { color:rgba(255,255,255,0.8) !important; }
       `}</style>
 
       {/* ══════════════════════════════════════════════════════════════
           HERO
       ══════════════════════════════════════════════════════════════ */}
       <section className="hero-section" style={{
-        background:'#1E2329', minHeight:'100vh',
+        background:'#374151', minHeight:'100vh',
         display:'flex', flexDirection:'column',
         padding:'120px 32px 80px', position:'relative', overflow:'hidden',
         fontFamily: sans,
@@ -163,15 +146,15 @@ export default function HomePage() {
 
             <h1 className="hero-h1" style={{
               fontFamily: serif, fontSize:58, lineHeight:1.08,
-              color:'#FAFAF8', marginBottom:20, letterSpacing:'-.02em',
+              color:'#FFFFFF', marginBottom:20, letterSpacing:'-.02em',
             }}>
               Știi <em style={{ fontStyle:'italic', color:'#E8500A' }}>exact cât costă</em>{' '}
               înainte să semnezi.
             </h1>
 
             <p style={{
-              fontSize:17, lineHeight:1.65, color:'rgba(255,255,255,0.5)',
-              marginBottom:40, maxWidth:420, fontWeight:300,
+              fontSize:18, lineHeight:1.65, color:'#FFFFFF',
+              marginBottom:40, maxWidth:420, fontWeight:400,
             }}>
               Devize precise, urmărire cheltuieli reale și oferte pentru beneficiari — de pe telefon,
               de pe șantier. Fără instalare, fără Excel, fără surprize.
@@ -180,17 +163,17 @@ export default function HomePage() {
             <div style={{ display:'flex', gap:14, flexWrap:'wrap' }}>
               <a href="#calculator" className="btn-primary" style={{
                 display:'inline-flex', alignItems:'center', gap:8,
-                background:'#E8500A', color:'#FAFAF8', padding:'14px 28px',
-                borderRadius:8, fontSize:15, fontWeight:500, textDecoration:'none',
+                background:'#E8500A', color:'#FFFFFF', padding:'14px 28px',
+                borderRadius:8, fontSize:15, fontWeight:600, textDecoration:'none',
                 border:'none', cursor:'pointer', transition:'background .2s, transform .15s',
               }}>
                 Calculează acum — gratuit <IconArrow />
               </a>
               <a href="#cum-functioneaza" className="btn-ghost" style={{
                 display:'inline-flex', alignItems:'center', gap:8,
-                background:'transparent', color:'rgba(255,255,255,0.6)',
-                padding:'14px 24px', borderRadius:8, fontSize:15, fontWeight:400,
-                textDecoration:'none', border:'1px solid rgba(255,255,255,0.12)',
+                background:'transparent', color:'#FFFFFF',
+                padding:'14px 24px', borderRadius:8, fontSize:15, fontWeight:500,
+                textDecoration:'none', border:'1px solid rgba(255,255,255,0.4)',
                 transition:'all .2s',
               }}>
                 Cum funcționează
@@ -200,8 +183,8 @@ export default function HomePage() {
             <div style={{ marginTop:40, display:'flex', alignItems:'center', gap:20 }}>
               {['Fără card la înregistrare','Deviz complet în 5 minute'].map(t => (
                 <div key={t} style={{ display:'flex', alignItems:'center', gap:7,
-                  fontSize:13, color:'rgba(255,255,255,0.35)' }}>
-                  <div style={{ width:5, height:5, borderRadius:'50%', background:'#2A7D4F' }} />
+                  fontSize:14, color:'rgba(255,255,255,0.8)' }}>
+                  <div style={{ width:6, height:6, borderRadius:'50%', background:'#2A7D4F' }} />
                   {t}
                 </div>
               ))}
@@ -241,16 +224,16 @@ export default function HomePage() {
       {/* ══════════════════════════════════════════════════════════════
           CONTRAST — DE CE E DIFERIT
       ══════════════════════════════════════════════════════════════ */}
-      <section className="section-pad" style={{ background:'#1E2329', padding:'96px 32px', fontFamily:sans }}>
+      <section className="section-pad" style={{ background:'#374151', padding:'96px 32px', fontFamily:sans }}>
         <div style={{ maxWidth:1160, margin:'0 auto' }}>
-          <p style={{ fontSize:12, fontWeight:600, letterSpacing:'.1em', textTransform:'uppercase',
+          <p style={{ fontSize:13, fontWeight:700, letterSpacing:'.1em', textTransform:'uppercase',
             color:'#E8500A', marginBottom:14 }}>De ce e diferit</p>
           <h2 className="section-title" style={{ fontFamily:serif, fontSize:44, lineHeight:1.1,
-            letterSpacing:'-.02em', color:'#FAFAF8', marginBottom:18 }}>
+            letterSpacing:'-.02em', color:'#FFFFFF', marginBottom:18 }}>
             Nu e un alt program<br />de devize pentru birou.
           </h2>
-          <p style={{ fontSize:17, color:'rgba(255,255,255,0.45)', lineHeight:1.65,
-            maxWidth:520, fontWeight:300 }}>
+          <p style={{ fontSize:18, color:'#FFFFFF', lineHeight:1.65,
+            maxWidth:520, fontWeight:400 }}>
             Programele clasice au fost construite pentru proiectanți autorizați care stau la birou.
             Noi am construit pentru tine — pe teren, cu telefonul în buzunar.
           </p>
@@ -276,10 +259,10 @@ export default function HomePage() {
                 'Construit pentru a participa la licitații, nu pentru a lucra',
               ].map(item => (
                 <div key={item} style={{ display:'flex', alignItems:'flex-start', gap:12,
-                  marginBottom:18, fontSize:15, color:'rgba(255,255,255,0.4)', lineHeight:1.5 }}>
+                  marginBottom:18, fontSize:15, color:'#FFFFFF', lineHeight:1.5 }}>
                   <div style={{ width:20, height:20, borderRadius:'50%', flexShrink:0, marginTop:2,
-                    background:'rgba(192,57,43,0.2)', color:'#E57373',
-                    display:'flex', alignItems:'center', justifyContent:'center', fontSize:11 }}>✕</div>
+                    background:'rgba(192,57,43,0.35)', color:'#FFCDD2',
+                    display:'flex', alignItems:'center', justifyContent:'center', fontSize:11, fontWeight:700 }}>✕</div>
                   {item}
                 </div>
               ))}
@@ -301,10 +284,10 @@ export default function HomePage() {
                 'Construit pentru constructorul cu 3–15 angajați care execută lucrări',
               ].map(item => (
                 <div key={item} style={{ display:'flex', alignItems:'flex-start', gap:12,
-                  marginBottom:18, fontSize:15, color:'rgba(255,255,255,0.85)', lineHeight:1.5 }}>
+                  marginBottom:18, fontSize:15, color:'#FFFFFF', lineHeight:1.5 }}>
                   <div style={{ width:20, height:20, borderRadius:'50%', flexShrink:0, marginTop:2,
-                    background:'rgba(42,125,79,0.25)', color:'#66BB6A',
-                    display:'flex', alignItems:'center', justifyContent:'center', fontSize:11 }}>✓</div>
+                    background:'rgba(42,125,79,0.3)', color:'#A5D6A7',
+                    display:'flex', alignItems:'center', justifyContent:'center', fontSize:11, fontWeight:700 }}>✓</div>
                   {item}
                 </div>
               ))}
@@ -351,10 +334,10 @@ export default function HomePage() {
             ].map((step, i) => (
               <div key={step.n} className={`reveal ${i > 0 ? `reveal-d${i*2}` : ''}`}>
                 <div style={{
-                  width:48, height:48, borderRadius:'50%',
-                  background: step.active ? '#E8500A' : '#1E2329',
-                  color:'#FAFAF8', display:'flex', alignItems:'center', justifyContent:'center',
-                  fontFamily:serif, fontSize:20, marginBottom:24, position:'relative', zIndex:1,
+                  width:52, height:52, borderRadius:'50%',
+                  background: step.active ? '#E8500A' : '#374151',
+                  color:'#FFFFFF', display:'flex', alignItems:'center', justifyContent:'center',
+                  fontFamily:serif, fontSize:22, marginBottom:24, position:'relative', zIndex:1,
                 }}>
                   {step.n}
                 </div>
@@ -405,12 +388,12 @@ export default function HomePage() {
                 <div key={item.time} className="tt-item-line"
                   style={{ display:'flex', gap:20, paddingBottom:28, position:'relative' }}>
                   <div style={{
-                    width:38, height:38, borderRadius:'50%', flexShrink:0,
+                    width:42, height:42, borderRadius:'50%', flexShrink:0,
                     background: item.active ? '#E8500A' : '#F3F2EF',
                     border: item.active ? '2px solid #E8500A' : '2px solid #E5E3DE',
                     display:'flex', alignItems:'center', justifyContent:'center',
-                    fontSize:10, fontWeight:600,
-                    color: item.active ? '#FAFAF8' : '#6B6860',
+                    fontSize:12, fontWeight:700,
+                    color: item.active ? '#FFFFFF' : '#6B6860',
                     letterSpacing:'-.02em',
                   }}>
                     {item.time}
@@ -430,10 +413,10 @@ export default function HomePage() {
 
             {/* Phone mockup */}
             <div className="reveal reveal-d2">
-              <div style={{ background:'#1E2329', borderRadius:32, padding:24,
+              <div style={{ background:'#374151', borderRadius:32, padding:24,
                 maxWidth:300, margin:'0 auto', boxShadow:'0 40px 80px rgba(0,0,0,0.25)' }}>
                 <div style={{ display:'flex', justifyContent:'center', marginBottom:20 }}>
-                  <div style={{ width:80, height:6, background:'rgba(255,255,255,0.15)', borderRadius:3 }} />
+                  <div style={{ width:80, height:6, background:'rgba(255,255,255,0.25)', borderRadius:3 }} />
                 </div>
                 {/* Alert */}
                 <div style={{ background:'rgba(232,80,10,0.15)', border:'1px solid rgba(232,80,10,0.3)',
@@ -452,32 +435,32 @@ export default function HomePage() {
                   { label:'Cheltuit azi', val:'12.400 lei' },
                   { label:'Profit estimat', val:'38.200 lei', green:true },
                 ].map(c => (
-                  <div key={c.label} style={{ background:'rgba(255,255,255,0.06)', borderRadius:8,
+                  <div key={c.label} style={{ background:'rgba(255,255,255,0.12)', borderRadius:8,
                     padding:'14px 16px', marginBottom:8 }}>
-                    <div style={{ fontSize:11, color:'rgba(255,255,255,0.3)', marginBottom:3 }}>
+                    <div style={{ fontSize:12, color:'rgba(255,255,255,0.5)', marginBottom:3 }}>
                       {c.label}
                     </div>
-                    <div style={{ fontSize:15, fontWeight:600, color: c.green ? '#66BB6A' : '#FAFAF8' }}>
+                    <div style={{ fontSize:16, fontWeight:600, color: c.green ? '#81C784' : '#FFFFFF' }}>
                       {c.val}
                     </div>
                   </div>
                 ))}
                 {/* Progress */}
-                <div style={{ background:'rgba(255,255,255,0.06)', borderRadius:8, padding:'14px 16px' }}>
-                  <div style={{ display:'flex', justifyContent:'space-between', marginBottom:8, fontSize:12 }}>
-                    <span style={{ color:'rgba(255,255,255,0.45)' }}>Progres deviz</span>
-                    <span style={{ color:'#FAFAF8', fontWeight:500 }}>67%</span>
+                <div style={{ background:'rgba(255,255,255,0.12)', borderRadius:8, padding:'14px 16px' }}>
+                  <div style={{ display:'flex', justifyContent:'space-between', marginBottom:8, fontSize:13 }}>
+                    <span style={{ color:'rgba(255,255,255,0.8)' }}>Progres deviz</span>
+                    <span style={{ color:'#FFFFFF', fontWeight:600 }}>67%</span>
                   </div>
-                  <div style={{ height:4, background:'rgba(255,255,255,0.1)', borderRadius:2 }}>
+                  <div style={{ height:4, background:'rgba(255,255,255,0.15)', borderRadius:2 }}>
                     <div style={{ height:'100%', width:'67%', background:'#E8500A', borderRadius:2 }} />
                   </div>
                 </div>
-                <div style={{ marginTop:12, background:'rgba(255,255,255,0.06)', borderRadius:8,
+                <div style={{ marginTop:12, background:'rgba(255,255,255,0.12)', borderRadius:8,
                   padding:'12px 16px' }}>
-                  <div style={{ fontSize:11, color:'rgba(255,255,255,0.3)', marginBottom:3 }}>
+                  <div style={{ fontSize:12, color:'rgba(255,255,255,0.5)', marginBottom:3 }}>
                     Link beneficiar trimis
                   </div>
-                  <div style={{ fontSize:14, fontWeight:600, color:'#66BB6A' }}>
+                  <div style={{ fontSize:15, fontWeight:600, color:'#81C784' }}>
                     Văzut · Acum 12 min
                   </div>
                 </div>
@@ -547,7 +530,7 @@ export default function HomePage() {
               <div key={f.title}
                 className={`feat-card reveal ${i % 3 > 0 ? `reveal-d${i % 3}` : ''}`}
                 style={{
-                  background: f.highlight ? '#1E2329' : '#FAFAF8',
+                  background: f.highlight ? '#374151' : '#FAFAF8',
                   border: f.highlight ? 'none' : '1px solid #E5E3DE',
                   borderRadius:14, padding:28,
                   transition:'box-shadow .2s, transform .2s',
@@ -561,11 +544,11 @@ export default function HomePage() {
                   </svg>
                 </div>
                 <div style={{ fontSize:16, fontWeight:600, letterSpacing:'-.01em', marginBottom:8,
-                  color: f.highlight ? '#FAFAF8' : '#1E2329' }}>
+                  color: f.highlight ? '#FFFFFF' : '#1E2329' }}>
                   {f.title}
                 </div>
-                <div style={{ fontSize:14, lineHeight:1.6, fontWeight:300,
-                  color: f.highlight ? 'rgba(255,255,255,0.45)' : '#6B6860' }}>
+                <div style={{ fontSize:14, lineHeight:1.6, fontWeight:400,
+                  color: f.highlight ? '#FFFFFF' : '#6B6860' }}>
                   {f.desc}
                 </div>
                 {f.badgeText && (
@@ -584,16 +567,16 @@ export default function HomePage() {
       {/* ══════════════════════════════════════════════════════════════
           TESTIMONIALE
       ══════════════════════════════════════════════════════════════ */}
-      <section className="section-pad" style={{ background:'#1E2329', padding:'96px 32px', fontFamily:sans }}>
+      <section className="section-pad" style={{ background:'#374151', padding:'96px 32px', fontFamily:sans }}>
         <div style={{ maxWidth:1160, margin:'0 auto' }}>
-          <p style={{ fontSize:12, fontWeight:600, letterSpacing:'.1em', textTransform:'uppercase',
+          <p style={{ fontSize:13, fontWeight:700, letterSpacing:'.1em', textTransform:'uppercase',
             color:'#E8500A', marginBottom:14 }}>Ce spun constructorii</p>
           <h2 className="section-title" style={{ fontFamily:serif, fontSize:44, lineHeight:1.1,
-            letterSpacing:'-.02em', color:'#FAFAF8', marginBottom:18 }}>
+            letterSpacing:'-.02em', color:'#FFFFFF', marginBottom:18 }}>
             Din teren, nu din<br />prezentări de vânzări.
           </h2>
-          <p style={{ fontSize:17, color:'rgba(255,255,255,0.4)', lineHeight:1.65,
-            maxWidth:520, fontWeight:300 }}>
+          <p style={{ fontSize:18, color:'#FFFFFF', lineHeight:1.65,
+            maxWidth:520, fontWeight:400 }}>
             Feedback real de la constructori care lucrează cu aplicația.
           </p>
 
@@ -617,19 +600,19 @@ export default function HomePage() {
                       clipPath:'polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)' }} />
                   ))}
                 </div>
-                <p style={{ fontSize:15, color:'rgba(255,255,255,0.7)', lineHeight:1.65,
-                  marginBottom:20, fontWeight:300, fontStyle:'italic' }}>
+                <p style={{ fontSize:16, color:'#FFFFFF', lineHeight:1.65,
+                  marginBottom:20, fontWeight:400, fontStyle:'italic' }}>
                   {t.quote}
                 </p>
                 <div style={{ display:'flex', alignItems:'center', gap:12 }}>
-                  <div style={{ width:36, height:36, borderRadius:'50%', background:'#E8500A',
+                  <div style={{ width:38, height:38, borderRadius:'50%', background:'#E8500A',
                     display:'flex', alignItems:'center', justifyContent:'center',
-                    fontSize:14, fontWeight:600, color:'#FAFAF8', flexShrink:0 }}>
+                    fontSize:15, fontWeight:700, color:'#FFFFFF', flexShrink:0 }}>
                     {t.initials}
                   </div>
                   <div>
-                    <div style={{ fontSize:14, fontWeight:500, color:'#FAFAF8' }}>{t.name}</div>
-                    <div style={{ fontSize:12, color:'rgba(255,255,255,0.3)', marginTop:2 }}>{t.role}</div>
+                    <div style={{ fontSize:15, fontWeight:600, color:'#FFFFFF' }}>{t.name}</div>
+                    <div style={{ fontSize:13, color:'rgba(255,255,255,0.6)', marginTop:2 }}>{t.role}</div>
                   </div>
                 </div>
               </div>
@@ -690,39 +673,39 @@ export default function HomePage() {
 
             {/* Constructor — featured */}
             <div className="reveal reveal-d2" style={{
-              background:'#1E2329', border:'none', borderRadius:14,
+              background:'#374151', border:'none', borderRadius:14,
               padding:32, position:'relative',
             }}>
               <div style={{ position:'absolute', top:-12, left:'50%', transform:'translateX(-50%)',
-                background:'#E8500A', color:'#FAFAF8', fontSize:11, fontWeight:600,
+                background:'#E8500A', color:'#FFFFFF', fontSize:12, fontWeight:700,
                 padding:'4px 16px', borderRadius:100, whiteSpace:'nowrap', letterSpacing:'.04em' }}>
                 Cel mai ales
               </div>
-              <div style={{ fontSize:13, fontWeight:600, color:'rgba(255,255,255,0.45)',
+              <div style={{ fontSize:14, fontWeight:700, color:'#FFFFFF',
                 letterSpacing:'.06em', textTransform:'uppercase', marginBottom:20 }}>Constructor</div>
-              <div style={{ fontFamily:serif, fontSize:48, color:'#FAFAF8', lineHeight:1, marginBottom:4 }}>
+              <div style={{ fontFamily:serif, fontSize:48, color:'#FFFFFF', lineHeight:1, marginBottom:4 }}>
                 69 <sup style={{ fontSize:24, verticalAlign:'top', marginTop:10, display:'inline-block' }}>lei</sup>
               </div>
-              <div style={{ fontSize:13, color:'rgba(255,255,255,0.35)', marginBottom:28 }}>
+              <div style={{ fontSize:14, color:'rgba(255,255,255,0.7)', marginBottom:28 }}>
                 / lună · facturat lunar
               </div>
-              <div style={{ height:1, background:'rgba(255,255,255,0.1)', marginBottom:24 }} />
+              <div style={{ height:1, background:'rgba(255,255,255,0.15)', marginBottom:24 }} />
               <ul style={{ listStyle:'none', marginBottom:28 }}>
                 {['Proiecte nelimitate','Catalog complet 1.100+ articole',
                   'Urmărire cheltuieli reale + alerte','Fotografii la achiziții',
                   'Link read-only pentru beneficiar','Import extras cantități Excel',
                   'Comparator prețuri furnizori','Export Excel și PDF profesional'].map(f => (
                   <li key={f} style={{ display:'flex', alignItems:'flex-start', gap:10,
-                    fontSize:14, color:'rgba(255,255,255,0.65)', marginBottom:12,
-                    lineHeight:1.45, fontWeight:300 }}>
+                    fontSize:15, color:'#FFFFFF', marginBottom:12,
+                    lineHeight:1.45, fontWeight:400 }}>
                     <Check orange /> {f}
                   </li>
                 ))}
               </ul>
               <Link href="/auth/register" className="btn-link-orange" style={{
-                display:'block', width:'100%', padding:13, borderRadius:8, fontSize:14,
-                fontWeight:600, cursor:'pointer', fontFamily:sans, textAlign:'center',
-                textDecoration:'none', background:'#E8500A', color:'#FAFAF8',
+                display:'block', width:'100%', padding:13, borderRadius:8, fontSize:15,
+                fontWeight:700, cursor:'pointer', fontFamily:sans, textAlign:'center',
+                textDecoration:'none', background:'#E8500A', color:'#FFFFFF',
                 border:'none', transition:'background .2s',
               }}>
                 14 zile gratuit, apoi 69 lei/lună
@@ -770,24 +753,26 @@ export default function HomePage() {
       {/* ══════════════════════════════════════════════════════════════
           FAQ
       ══════════════════════════════════════════════════════════════ */}
-      <FaqSection />
+      <div id="faq">
+        <FaqSection />
+      </div>
 
       {/* ══════════════════════════════════════════════════════════════
           FINAL CTA
       ══════════════════════════════════════════════════════════════ */}
       <section style={{ background:'#E8500A', padding:'80px 32px', textAlign:'center', fontFamily:sans }}>
         <div style={{ maxWidth:600, margin:'0 auto' }}>
-          <h2 className="final-h2" style={{ fontFamily:serif, fontSize:48, color:'#FAFAF8',
+          <h2 className="final-h2" style={{ fontFamily:serif, fontSize:48, color:'#FFFFFF',
             lineHeight:1.1, marginBottom:16, letterSpacing:'-.02em' }}>
             Primul deviz, gratuit.<br />Acum, de pe telefon.
           </h2>
-          <p style={{ fontSize:17, color:'rgba(255,255,255,0.7)', marginBottom:36, fontWeight:300 }}>
+          <p style={{ fontSize:18, color:'#FFFFFF', marginBottom:36, fontWeight:400 }}>
             Fără instalare. Fără card. Fără să citești un manual.<br />Deviz complet în 5 minute.
           </p>
           <Link href="/auth/register" className="btn-cta-white" style={{
             display:'inline-flex', alignItems:'center', gap:8,
-            background:'#FAFAF8', color:'#E8500A', padding:'16px 32px',
-            borderRadius:8, fontSize:16, fontWeight:600, textDecoration:'none',
+            background:'#FFFFFF', color:'#E8500A', padding:'16px 32px',
+            borderRadius:8, fontSize:16, fontWeight:700, textDecoration:'none',
             border:'none', fontFamily:sans, transition:'transform .15s',
           }}>
             Creează cont gratuit <IconArrow />
@@ -798,59 +783,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════════════════════════
-          FOOTER
-      ══════════════════════════════════════════════════════════════ */}
-      <footer style={{ background:'#1E2329', padding:'48px 32px', fontFamily:sans }}>
-        <div className="footer-inner" style={{
-          maxWidth:1160, margin:'0 auto',
-          display:'grid', gridTemplateColumns:'2fr 1fr 1fr 1fr', gap:48,
-        }}>
-          <div>
-            <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-              <LogoMark />
-              <span style={{ fontFamily:sans, fontWeight:600, fontSize:16, color:'#FAFAF8',
-                letterSpacing:'-.02em' }}>
-                Șanti<span style={{ color:'#E8500A' }}>er</span>
-              </span>
-            </div>
-            <p style={{ fontSize:14, color:'rgba(255,255,255,0.35)', lineHeight:1.65,
-              marginTop:16, fontWeight:300, maxWidth:260 }}>
-              Devize de construcții pentru oamenii care execută lucrări,
-              nu pentru cei care stau la birou.
-            </p>
-          </div>
-          {[
-            { title:'Produs', links:['Funcționalități','Prețuri','Catalog norme','Actualizări'] },
-            { title:'Suport', links:['Ghid utilizare','Întrebări frecvente','Contact'] },
-            { title:'Legal', links:['Termeni și condiții','Politică confidențialitate','GDPR'] },
-          ].map(col => (
-            <div key={col.title}>
-              <div style={{ fontSize:12, fontWeight:600, color:'rgba(255,255,255,0.45)',
-                letterSpacing:'.08em', textTransform:'uppercase', marginBottom:16 }}>
-                {col.title}
-              </div>
-              {col.links.map(l => (
-                <a key={l} href="#" className="footer-link" style={{
-                  display:'block', fontSize:14, color:'rgba(255,255,255,0.4)',
-                  textDecoration:'none', marginBottom:10, transition:'color .15s' }}>
-                  {l}
-                </a>
-              ))}
-            </div>
-          ))}
-        </div>
-        <div style={{ maxWidth:1160, margin:'40px auto 0', paddingTop:24,
-          borderTop:'1px solid rgba(255,255,255,0.06)',
-          display:'flex', justifyContent:'space-between', alignItems:'center' }}>
-          <div style={{ fontSize:13, color:'rgba(255,255,255,0.2)' }}>
-            © 2026 Șantier.app. Toate drepturile rezervate.
-          </div>
-          <div style={{ fontSize:13, color:'rgba(255,255,255,0.2)' }}>
-            Construit în România, pentru România
-          </div>
-        </div>
-      </footer>
     </>
   )
 }

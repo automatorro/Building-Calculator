@@ -125,7 +125,7 @@ export function Sidebar() {
           color: '#1E2329',
           letterSpacing: '-0.02em',
         }}>
-          Șanti<span style={{ color: '#E8500A' }}>er</span>
+          Șantier
         </span>
       </div>
 

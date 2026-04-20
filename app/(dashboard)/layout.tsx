@@ -1,5 +1,6 @@
 import { Sidebar } from "@/components/sidebar"
 import { Topbar } from "@/components/topbar"
+import Footer from "@/components/Footer"
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -14,6 +15,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <Topbar />
         <main className="flex-1 p-4 md:p-8 overflow-y-auto">
           {children}
+          <Footer variant="dashboard" />
         </main>
       </div>
     </div>

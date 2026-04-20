@@ -27,7 +27,7 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   /* Rute protejate */
-  const PROTECTED = ['/projects', '/catalog', '/settings']
+  const PROTECTED = ['/projects', '/catalog', '/settings', '/admin']
   const isProtected = PROTECTED.some(p => pathname.startsWith(p))
 
   /* Pagini auth (login, register etc.) */

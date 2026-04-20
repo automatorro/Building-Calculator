@@ -36,9 +36,9 @@ export default function HeroCalculator() {
     } as React.CSSProperties,
 
     label: {
-      fontSize: 12,
-      fontWeight: 500,
-      color: '#6B6860',
+      fontSize: 13,
+      fontWeight: 700,
+      color: '#1E2329',
       marginBottom: 8,
       letterSpacing: '.02em',
       textTransform: 'uppercase',
@@ -58,8 +58,8 @@ export default function HeroCalculator() {
       borderRadius: 8,
       fontSize: 13,
       fontWeight: active ? 500 : 400,
-      color: active ? '#FAFAF8' : '#6B6860',
-      background: active ? '#E8500A' : '#FAFAF8',
+      color: active ? '#FFFFFF' : '#1E2329',
+      background: active ? '#E8500A' : '#FFFFFF',
       cursor: 'pointer',
       textAlign: 'center',
       transition: 'all .15s',
@@ -124,18 +124,18 @@ export default function HeroCalculator() {
       </div>
 
       {/* Result display */}
-      <div style={{ background:'#1E2329', borderRadius:8, padding:20, margin:'20px 0 16px' }}>
-        <div style={{ fontSize:11, color:'rgba(255,255,255,0.4)', fontWeight:500,
+      <div style={{ background:'#374151', borderRadius:8, padding:20, margin:'20px 0 16px' }}>
+        <div style={{ fontSize:12, color:'#FFFFFF', fontWeight:700,
           letterSpacing:'.06em', textTransform:'uppercase', marginBottom:8 }}>
           Cost estimat total
         </div>
         <div style={{
           fontFamily:'var(--font-dm-serif,"DM Serif Display",Georgia,serif)',
-          fontSize:38, color:'#FAFAF8', lineHeight:1, marginBottom:4,
+          fontSize:38, color:'#FFFFFF', lineHeight:1, marginBottom:4,
         }}>
           {fmt(total)} lei
         </div>
-        <div style={{ fontSize:13, color:'rgba(255,255,255,0.4)' }}>
+        <div style={{ fontSize:14, color:'#FFFFFF', fontWeight:500 }}>
           {fmt(perMp)} lei / mp · ~{perMpEur.toLocaleString('ro-RO')} EUR/mp · fără TVA
         </div>
       </div>
@@ -147,8 +147,8 @@ export default function HeroCalculator() {
           { label:'Finisaje',   value: fmt(finCost)  },
           { label:'Instalații', value: fmt(inst)     },
         ].map(({ label, value }) => (
-          <div key={label} style={{ background:'#F3F2EF', borderRadius:8, padding:'10px 12px' }}>
-            <div style={{ fontSize:11, color:'#A8A59E', marginBottom:3 }}>{label}</div>
+          <div key={label} style={{ background:'#E5E3DE', borderRadius:8, padding:'10px 12px' }}>
+            <div style={{ fontSize:12, color:'#4A4744', marginBottom:3, fontWeight:700 }}>{label}</div>
             <div style={{ fontSize:13, fontWeight:600, color:'#1E2329' }}>{value}</div>
           </div>
         ))}
@@ -156,8 +156,8 @@ export default function HeroCalculator() {
 
       {/* CTA */}
       <Link href="/auth/register" style={{
-        display:'block', width:'100%', background:'#E8500A', color:'#FAFAF8',
-        border:'none', borderRadius:8, padding:14, fontSize:14, fontWeight:600,
+        display:'block', width:'100%', background:'#E8500A', color:'#FFFFFF',
+        border:'none', borderRadius:8, padding:14, fontSize:15, fontWeight:700,
         cursor:'pointer', fontFamily:'inherit', letterSpacing:'-.01em',
         textAlign:'center', textDecoration:'none', transition:'background .2s',
       }}

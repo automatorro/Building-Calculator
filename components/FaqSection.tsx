@@ -26,16 +26,16 @@ function FaqItem({ q, a }: { q: string; a: string }) {
         {q}
         <div style={{
           width:24, height:24, borderRadius:'50%', flexShrink:0,
-          background: open ? '#1E2329' : '#F3F2EF',
-          color: open ? '#FAFAF8' : '#A8A59E',
+          background: open ? '#374151' : '#F3F2EF',
+          color: open ? '#FFFFFF' : '#6B6860',
           display:'flex', alignItems:'center', justifyContent:'center',
           fontSize:16, transition:'all .2s',
           transform: open ? 'rotate(45deg)' : 'none',
         }}>+</div>
       </div>
       {open && (
-        <div style={{ fontSize:15, color:'#6B6860', lineHeight:1.65,
-          fontWeight:300, paddingTop:14 }}>
+        <div style={{ fontSize:16, color:'#374151', lineHeight:1.65,
+          fontWeight:400, paddingTop:14 }}>
           {a}
         </div>
       )}

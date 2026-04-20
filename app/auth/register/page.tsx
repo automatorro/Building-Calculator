@@ -149,7 +149,7 @@ export default function RegisterPage() {
         <Link href="/" style={{ display:'flex', alignItems:'center', gap:10, textDecoration:'none' }}>
           <LogoMark />
           <span style={{ fontFamily:C.sans, fontWeight:600, fontSize:15, color:C.white, letterSpacing:'-0.02em' }}>
-            Șanti<span style={{ color:C.orange }}>er</span>
+            Șantier
           </span>
         </Link>
 
@@ -194,7 +194,7 @@ export default function RegisterPage() {
             style={{ display:'none', alignItems:'center', gap:10, textDecoration:'none', marginBottom:36 }}>
             <LogoMark />
             <span style={{ fontFamily:C.sans, fontWeight:600, fontSize:15, color:C.black, letterSpacing:'-0.02em' }}>
-              Șanti<span style={{ color:C.orange }}>er</span>
+              Șantier
             </span>
           </Link>
 

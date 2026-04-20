@@ -6,45 +6,14 @@ import { useState, useEffect } from 'react'
 import { Menu, X, LogOut } from 'lucide-react'
 import { createClient } from '@/utils/supabase/client'
 
-function LogoMark({ size = 30 }: { size?: number }) {
-  return (
-    <div
-      style={{
-        width: size,
-        height: size,
-        background: '#E8500A',
-        borderRadius: 7,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexShrink: 0,
-      }}
-    >
-      <svg
-        width={Math.round(size * 0.7)}
-        height={Math.round(size * 0.7)}
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="white"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M3 18h18" />
-        <path d="M19 18v-1a7 7 0 0 0-14 0v1" />
-        <path d="M12 10V7" />
-        <path d="M9 11V9" />
-        <path d="M15 11V9" />
-      </svg>
-    </div>
-  )
-}
+import LogoMark from './LogoMark'
 
 const NAV_LINKS = [
   { label: 'Proiecte',          href: '/projects' },
   { label: 'Catalog norme',     href: '/catalog' },
   { label: 'Calculatoare rapide', href: '/calculatoare-rapide' },
   { label: 'Cum funcționează',  href: '/cum-functioneaza' },
+  { label: 'Blog',              href: '/blog' },
 ]
 
 export default function Navigation() {
@@ -87,15 +56,15 @@ export default function Navigation() {
       justifyContent: 'space-between',
       padding: '0 32px',
       height: 60,
-      background: 'rgba(14,16,19,0.96)',
+      background: 'rgba(55,65,81,0.95)',
       backdropFilter: 'blur(12px)',
       WebkitBackdropFilter: 'blur(12px)',
-      borderBottom: '1px solid rgba(255,255,255,0.07)',
+      borderBottom: '1px solid rgba(255,255,255,0.12)',
       fontFamily: 'var(--font-dm-sans,"DM Sans",system-ui,sans-serif)',
     } as React.CSSProperties,
 
     link: (active: boolean): React.CSSProperties => ({
-      color: active ? '#FAFAF8' : 'rgba(255,255,255,0.55)',
+      color: active ? '#FFFFFF' : '#FFFFFF',
       textDecoration: 'none',
       fontSize: 14,
       fontWeight: active ? 500 : 400,
@@ -118,8 +87,8 @@ export default function Navigation() {
 
     ghostBtn: {
       background: 'transparent',
-      border: '1px solid rgba(255,255,255,0.12)',
-      color: 'rgba(255,255,255,0.55)',
+      border: '1px solid rgba(255,255,255,0.3)',
+      color: '#FFFFFF',
       padding: '7px 10px',
       borderRadius: 8,
       cursor: 'pointer',
@@ -130,7 +99,7 @@ export default function Navigation() {
     } as React.CSSProperties,
 
     loginLink: {
-      color: 'rgba(255,255,255,0.55)',
+      color: '#FFFFFF',
       textDecoration: 'none',
       fontSize: 14,
       transition: 'color .2s',
@@ -146,7 +115,7 @@ export default function Navigation() {
         <Link href="/" style={{ display:'flex', alignItems:'center', gap:10, textDecoration:'none' }}>
           <LogoMark />
           <span style={{ fontWeight:600, fontSize:15, color:'#FAFAF8', letterSpacing:'-0.02em' }}>
-            Șanti<span style={{ color:'#E8500A' }}>er</span>
+            Șantier
           </span>
         </Link>
 
@@ -156,8 +125,8 @@ export default function Navigation() {
           {NAV_LINKS.map(l => (
             <li key={l.href}>
               <Link href={l.href} style={S.link(pathname.startsWith(l.href))}
-                onMouseEnter={e => (e.currentTarget.style.color = '#FAFAF8')}
-                onMouseLeave={e => (e.currentTarget.style.color = pathname.startsWith(l.href) ? '#FAFAF8' : 'rgba(255,255,255,0.55)')}>
+                onMouseEnter={e => (e.currentTarget.style.color = '#E8500A')}
+                onMouseLeave={e => (e.currentTarget.style.color = '#FFFFFF')}>
                 {l.label}
               </Link>
             </li>
@@ -174,16 +143,16 @@ export default function Navigation() {
                 + Proiect nou
               </Link>
               <button style={S.ghostBtn} onClick={logout} title="Ieşi din cont"
-                onMouseEnter={e=>{e.currentTarget.style.color='#FAFAF8';e.currentTarget.style.borderColor='rgba(255,255,255,0.3)'}}
-                onMouseLeave={e=>{e.currentTarget.style.color='rgba(255,255,255,0.55)';e.currentTarget.style.borderColor='rgba(255,255,255,0.12)'}}>
+                onMouseEnter={e=>{e.currentTarget.style.color='#E8500A';e.currentTarget.style.borderColor='#E8500A'}}
+                onMouseLeave={e=>{e.currentTarget.style.color='#FFFFFF';e.currentTarget.style.borderColor='rgba(255,255,255,0.3)'}}>
                 <LogOut size={16} />
               </button>
             </>
           ) : (
             <>
               <Link href="/auth/login" style={S.loginLink}
-                onMouseEnter={e=>(e.currentTarget.style.color='#FAFAF8')}
-                onMouseLeave={e=>(e.currentTarget.style.color='rgba(255,255,255,0.55)')}>
+                onMouseEnter={e=>(e.currentTarget.style.color='#E8500A')}
+                onMouseLeave={e=>(e.currentTarget.style.color='#FFFFFF')}>
                 Intră în cont
               </Link>
               <Link href="/auth/register" style={S.ctaBtn as any}
@@ -206,10 +175,10 @@ export default function Navigation() {
       {/* ── Mobile drawer ─────────────────────────────────────────────────── */}
       {open && (
         <>
-          <div onClick={()=>setOpen(false)} style={{ position:'fixed', inset:0, zIndex:200, background:'rgba(14,16,19,0.75)', backdropFilter:'blur(4px)' }} />
+          <div onClick={()=>setOpen(false)} style={{ position:'fixed', inset:0, zIndex:200, background:'rgba(55,65,81,0.75)', backdropFilter:'blur(4px)' }} />
           <div style={{
             position:'fixed', top:0, right:0, bottom:0, width:280, zIndex:201,
-            background:'#1E2329', borderLeft:'1px solid rgba(255,255,255,0.07)',
+            background:'#374151', borderLeft:'1px solid rgba(255,255,255,0.12)',
             display:'flex', flexDirection:'column', padding:'24px 24px 32px',
             fontFamily:'var(--font-dm-sans,"DM Sans",system-ui,sans-serif)',
           }}>
@@ -218,7 +187,7 @@ export default function Navigation() {
               <Link href="/" onClick={()=>setOpen(false)} style={{ display:'flex', alignItems:'center', gap:10, textDecoration:'none' }}>
                 <LogoMark />
                 <span style={{ fontWeight:600, fontSize:15, color:'#FAFAF8', letterSpacing:'-0.02em' }}>
-                  Șanti<span style={{ color:'#E8500A' }}>er</span>
+                  Șantier
                 </span>
               </Link>
               <button onClick={()=>setOpen(false)} style={{ background:'rgba(255,255,255,0.06)', border:'none', borderRadius:8, color:'rgba(255,255,255,0.55)', cursor:'pointer', padding:8, display:'flex' }}>
@@ -233,8 +202,8 @@ export default function Navigation() {
                 return (
                   <Link key={l.href} href={l.href} onClick={()=>setOpen(false)} style={{
                     display:'block', padding:'14px 16px', borderRadius:10,
-                    color: active ? '#FAFAF8' : 'rgba(255,255,255,0.55)',
-                    textDecoration:'none', fontSize:16, fontWeight: active ? 500 : 400,
+                    color: '#FFFFFF',
+                    textDecoration:'none', fontSize:16, fontWeight: active ? 600 : 400,
                     background: active ? 'rgba(232,80,10,0.12)' : 'transparent', marginBottom:4,
                   }}>
                     {l.label}
@@ -254,8 +223,8 @@ export default function Navigation() {
                   }}>+ Proiect nou</Link>
                   <button onClick={logout} style={{
                     display:'flex', alignItems:'center', justifyContent:'center', gap:8,
-                    background:'transparent', border:'1px solid rgba(255,255,255,0.12)',
-                    color:'rgba(255,255,255,0.55)', padding:'12px 20px', borderRadius:8,
+                    background:'transparent', border:'1px solid rgba(255,255,255,0.3)',
+                    color:'#FFFFFF', padding:'12px 20px', borderRadius:8,
                     fontSize:14, cursor:'pointer', fontFamily:'inherit',
                   }}>
                     <LogOut size={15} /> Ieşi din cont
@@ -270,8 +239,8 @@ export default function Navigation() {
                   }}>Încearcă gratuit</Link>
                   <Link href="/auth/login" onClick={()=>setOpen(false)} style={{
                     display:'block', background:'transparent',
-                    border:'1px solid rgba(255,255,255,0.12)',
-                    color:'rgba(255,255,255,0.55)', padding:'13px 20px',
+                    border: '1px solid rgba(255,255,255,0.3)',
+                    color: '#FFFFFF', padding:'13px 20px',
                     borderRadius:8, fontSize:14, textDecoration:'none', textAlign:'center',
                   }}>Intră în cont</Link>
                 </>

@@ -8,15 +8,15 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --black: #1E2329;
+  --black: #374151;
   --orange: #E8500A;
   --orange-dark: #C43F06;
   --orange-light: #FFF0E8;
   --white: #FAFAF8;
   --gray-100: #F3F2EF;
   --gray-200: #E5E3DE;
-  --gray-400: #A8A59E;
-  --gray-600: #6B6860;
+  --gray-400: #4A4744;
+  --gray-600: #1E2329;
   --gray-800: #2E2D2A;
   --green: #2A7D4F;
   --green-light: #E8F5EE;
@@ -36,7 +36,7 @@ html.embed .hero { padding: 72px 32px 64px; }
 .hero { padding: 120px 32px 64px; text-align: center; background: var(--black); color: #fff; }
 .hero h1 { font-family: var(--serif); font-size: 48px; line-height: 1.15; max-width: 700px; margin: 0 auto 20px; letter-spacing: -.02em; }
 .hero h1 em { color: var(--orange); font-style: normal; }
-.hero p { font-size: 18px; color: rgba(255,255,255,0.5); max-width: 600px; margin: 0 auto; line-height: 1.6; font-weight: 300; }
+.hero p { font-size: 19px; color: #fff; max-width: 600px; margin: 0 auto; line-height: 1.6; font-weight: 500; }
 
 /* SECTIONS */
 .section { padding: 80px 32px; max-width: 900px; margin: 0 auto; }
@@ -44,8 +44,8 @@ html.embed .hero { padding: 72px 32px 64px; }
 .section-dark { background: var(--black); color: #fff; }
 .section-num { font-family: var(--serif); font-size: 14px; color: var(--orange); margin-bottom: 8px; }
 .section-title { font-family: var(--serif); font-size: 32px; line-height: 1.2; letter-spacing: -.02em; margin-bottom: 12px; }
-.section-desc { font-size: 16px; color: var(--gray-600); line-height: 1.7; font-weight: 300; margin-bottom: 32px; max-width: 700px; }
-.section-dark .section-desc { color: rgba(255,255,255,0.45); }
+.section-desc { font-size: 16px; color: var(--gray-600); line-height: 1.7; font-weight: 400; margin-bottom: 32px; max-width: 700px; }
+.section-dark .section-desc { color: #fff; font-weight: 500; }
 
 /* WIDGET CONTAINER */
 .widget { background: #fff; border: 1px solid var(--gray-200); border-radius: var(--radius); overflow: hidden; margin: 24px 0; }
@@ -645,28 +645,6 @@ html.embed .hero { padding: 72px 32px 64px; }
     </div>
   </div>
 </section>
-
-<!-- CTA FINAL -->
-<section style="background:var(--black);padding:80px 32px;text-align:center">
-  <h2 style="font-family:var(--serif);font-size:36px;color:#fff;margin-bottom:16px">Pregătit să-ți organizezi<br><em style="color:var(--orange)">următorul șantier</em>?</h2>
-  <p style="font-size:16px;color:rgba(255,255,255,0.4);margin-bottom:32px">Creează un deviz în câteva minute, urmărește cheltuielile în timp real.</p>
-  <a href="/" style="display:inline-block;background:var(--orange);color:#fff;padding:16px 32px;border-radius:var(--radius-sm);font-size:16px;font-weight:600;text-decoration:none;transition:background .2s" onmouseover="this.style.background='#C43F06'" onmouseout="this.style.background='var(--orange)'">Încearcă gratuit →</a>
-</section>
-
-<!-- FOOTER -->
-<footer style="padding:32px;text-align:center;border-top:1px solid var(--gray-200)">
-  <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:8px;opacity:0.5">
-    <div class="logo-mark" style="width:20px;height:20px;border-radius:4px">
-      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px">
-        <path d="M3 18h18" />
-        <path d="M5 18v-1a7 7 0 0 1 14 0v1" />
-        <path d="M10 11V7a2 2 0 0 1 4 0v4" />
-      </svg>
-    </div>
-    <span style="font-family:var(--serif);font-size:14px">Santi<span style="color:var(--orange)">er</span></span>
-  </div>
-  <p style="font-size:12px;color:var(--gray-400)">© 2026 Santier.app. Toate drepturile rezervate.</p>
-</footer>
 
 <script>
 (function(){try{var p=new URLSearchParams(window.location.search);if(p.get('embed')==='1'){document.documentElement.classList.add('embed')}}catch(e){}})();

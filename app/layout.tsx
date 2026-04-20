@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { DM_Sans, DM_Serif_Display } from 'next/font/google'
 import './globals.css'
 import Navigation from '@/components/Navigation'
+import Footer from '@/components/Footer'
 import { Toaster } from 'sonner'
 
 /* ─── Fonturi ─────────────────────────────────────────────────────────────
@@ -41,6 +42,7 @@ export default function RootLayout({
         <Navigation />
         <Toaster position="top-center" richColors />
         {children}
+        <Footer />
       </body>
     </html>
   )
