@@ -4,8 +4,9 @@ import { useEffect, useMemo, useState } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Plus, MapPin, Calendar, ArrowRight, Briefcase, Trash2, Rocket } from 'lucide-react'
+import { Plus, Briefcase, Rocket } from 'lucide-react'
 import { toast } from 'sonner'
+import ProjectCard from '@/components/ProjectCard'
 
 export const dynamic = 'force-dynamic'
 
@@ -41,11 +42,6 @@ export default function ProjectsPage() {
   }, [supabase])
 
   const handleDeleteProject = async (project: { id: string; name?: string }) => {
-    const confirmed = window.confirm(
-      `Ești sigur că vrei să ștergi proiectul „${project.name || 'fără nume'}”?\n\nȘtergerea este permanentă. Nu vei mai avea acces la nicio dată din acest proiect.`
-    )
-    if (!confirmed) return
-
     setDeletingId(project.id)
     const { data: deletedRows, error } = await supabase
       .from('projects')
@@ -55,15 +51,16 @@ export default function ProjectsPage() {
 
     if (error) {
       setDeletingId(null)
-      window.alert('Eroare la ștergere: ' + error.message)
+      window.alert(`Eroare la ștergere (Server): ${error.message}\n\nDetalii: ${error.details || 'N/A'}\nHint: ${error.hint || 'N/A'}`)
       return
     }
 
     if (!deletedRows || deletedRows.length === 0) {
       setDeletingId(null)
       window.alert(
-        'Ștergerea nu a fost permisă de baza de date (RLS). Proiectul nu a fost șters.\n\n' +
-        'Trebuie adăugată în Supabase o policy de DELETE pe tabela projects (cel puțin pentru rolul authenticated).'
+        'Ștergerea nu a fost permisă de baza de date (RLS).\n\n' +
+        'Am aplicat o nouă migrare SQL pentru a repara acest lucru. Te rugăm să reîncarci complet pagina (Ctrl+F5) și să încerci din nou.\n' +
+        'Dacă eroarea persistă, înseamnă că proiectul a fost creat cu un alt cont sau fără user_id.'
       )
       return
     }
@@ -100,14 +97,87 @@ export default function ProjectsPage() {
       return
     }
 
-    // 2. Create sample lines
+    // 2. Create sample lines using the modern schema
+    // Note: We use resources_override to simulate a real recipe with Material, Labor, etc.
     const demoLines = [
-      { project_id: project.id, stage_name: 'Infrastructură', manual_name: 'Săpătură manuală de pământ în spații înguste', manual_um: 'mc', quantity: 24, manual_labor_price: 85, user_id: user.id },
-      { project_id: project.id, stage_name: 'Infrastructură', manual_name: 'Fundații continue din beton C16/20', manual_um: 'mc', quantity: 18, manual_price: 450, manual_labor_price: 120, user_id: user.id },
-      { project_id: project.id, stage_name: 'Suprastructură', manual_name: 'Zidărie din blocuri BCA 25cm', manual_um: 'mc', quantity: 42, manual_price: 580, manual_labor_price: 180, user_id: user.id },
-      { project_id: project.id, stage_name: 'Suprastructură', manual_name: 'Beton în stâlpi, grinzi și centuri', manual_um: 'mc', quantity: 12, manual_price: 480, manual_labor_price: 350, manual_equipment_price: 45, user_id: user.id },
-      { project_id: project.id, stage_name: 'Finisaje', manual_name: 'Tencuială interior (manuală)', manual_um: 'mp', quantity: 180, manual_price: 15, manual_labor_price: 35, user_id: user.id },
-      { project_id: project.id, stage_name: 'Finisaje', manual_name: 'Glet de ipsos (2 straturi)', manual_um: 'mp', quantity: 180, manual_price: 12, manual_labor_price: 25, user_id: user.id }
+      { 
+        project_id: project.id, 
+        stage_name: 'Infrastructură', 
+        name: 'Săpătură manuală de pământ în spații înguste', 
+        unit: 'mc', 
+        quantity: 24, 
+        user_id: user.id,
+        unit_price: 0,
+        resources_override: [
+          { id: 'res-1', name: 'Manoperă săpătură', type: 'labor', um: 'mc', consumption: 1, unit_price: 85 }
+        ]
+      },
+      { 
+        project_id: project.id, 
+        stage_name: 'Infrastructură', 
+        name: 'Fundații continue din beton C16/20', 
+        unit: 'mc', 
+        quantity: 18, 
+        user_id: user.id,
+        unit_price: 0,
+        resources_override: [
+          { id: 'res-2', name: 'Beton C16/20', type: 'material', um: 'mc', consumption: 1.02, unit_price: 450 },
+          { id: 'res-3', name: 'Manoperă turnare', type: 'labor', um: 'mc', consumption: 1, unit_price: 120 }
+        ]
+      },
+      { 
+        project_id: project.id, 
+        stage_name: 'Suprastructură', 
+        name: 'Zidărie din blocuri BCA 25cm', 
+        unit: 'mc', 
+        quantity: 42, 
+        user_id: user.id,
+        unit_price: 0,
+        resources_override: [
+          { id: 'res-4', name: 'Blocuri BCA 25cm', type: 'material', um: 'mc', consumption: 1.05, unit_price: 580 },
+          { id: 'res-5', name: 'Manoperă zidărie', type: 'labor', um: 'mc', consumption: 1, unit_price: 180 }
+        ]
+      },
+      { 
+        project_id: project.id, 
+        stage_name: 'Suprastructură', 
+        name: 'Beton în stâlpi, grinzi și centuri', 
+        unit: 'mc', 
+        quantity: 12, 
+        user_id: user.id,
+        unit_price: 0,
+        resources_override: [
+          { id: 'res-6', name: 'Beton C20/25', type: 'material', um: 'mc', consumption: 1.05, unit_price: 480 },
+          { id: 'res-7', name: 'Manoperă cofrare/turnare', type: 'labor', um: 'mc', consumption: 1, unit_price: 350 },
+          { id: 'res-8', name: 'Utilaj (pompă beton)', type: 'equipment', um: 'mc', consumption: 1, unit_price: 45 }
+        ]
+      },
+      { 
+        project_id: project.id, 
+        stage_name: 'Finisaje', 
+        name: 'Tencuială interior (manuală)', 
+        unit: 'mp', 
+        quantity: 180, 
+        user_id: user.id,
+        unit_price: 0,
+        resources_override: [
+          { id: 'res-9', name: 'Multibat/Nisip', type: 'material', um: 'mp', consumption: 1, unit_price: 15 },
+          { id: 'res-10', name: 'Manoperă tencuială', type: 'labor', um: 'mp', consumption: 1, unit_price: 35 }
+        ]
+      },
+      { 
+        project_id: project.id, 
+        stage_name: 'Finisaje', 
+        name: 'Glet de ipsos (2 straturi)', 
+        unit: 'mp', 
+        quantity: 180, 
+        user_id: user.id,
+        unit_price: 0,
+        resources_override: [
+          { id: 'res-11', name: 'Glet de ipsos', type: 'material', um: 'mp', consumption: 1, unit_price: 12 },
+          { id: 'res-12', name: 'Manoperă glet', type: 'labor', um: 'mp', consumption: 1, unit_price: 25 }
+        ]
+      }
     ]
 
     const { error: lError } = await supabase.from('estimate_lines').insert(demoLines)
@@ -180,78 +250,11 @@ export default function ProjectsPage() {
           <div style={{ display: 'grid',
             gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 20 }}>
             {projects.map((project) => (
-              <div key={project.id} className="project-card" style={{ position: 'relative' }}>
-                <button
-                  type="button"
-                  onClick={() => handleDeleteProject(project)}
-                  disabled={deletingId === project.id}
-                  aria-label="Șterge proiect"
-                  style={{
-                    position: 'absolute',
-                    top: 12,
-                    right: 12,
-                    width: 34,
-                    height: 34,
-                    borderRadius: 10,
-                    border: '1px solid #E5E3DE',
-                    background: deletingId === project.id ? '#F3F2EF' : '#FAFAF8',
-                    color: '#C0392B',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    cursor: deletingId === project.id ? 'not-allowed' : 'pointer',
-                  }}
-                >
-                  <Trash2 size={16} />
-                </button>
-
-                <Link href={`/projects/${project.id}`} style={{ textDecoration: 'none', display: 'block' }}>
-                  {/* Card header */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between',
-                    alignItems: 'flex-start', marginBottom: 16 }}>
-                    <div style={{ width: 40, height: 40, background: '#FFF0E8',
-                      borderRadius: 9, display: 'flex', alignItems: 'center',
-                      justifyContent: 'center', flexShrink: 0 }}>
-                      <Briefcase size={18} color="#E8500A" />
-                    </div>
-                    <span style={{ fontSize: 11, fontFamily: 'monospace',
-                      color: '#A8A59E', background: '#F3F2EF',
-                      padding: '3px 8px', borderRadius: 6 }}>
-                      ID: {project.id.slice(0, 8)}
-                    </span>
-                  </div>
-
-                  {/* Nume */}
-                  <h3 style={{ fontSize: 17, fontWeight: 600, color: '#1E2329',
-                    marginBottom: 12, lineHeight: 1.3 }}>
-                    {project.name}
-                  </h3>
-
-                  {/* Meta */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 20 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6,
-                      fontSize: 13, color: '#6B6860' }}>
-                      <MapPin size={13} color="#A8A59E" />
-                      {project.location || 'Locație nespecificată'}
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6,
-                      fontSize: 13, color: '#6B6860' }}>
-                      <Calendar size={13} color="#A8A59E" />
-                      Creat la {new Date(project.created_at).toLocaleDateString('ro-RO')}
-                    </div>
-                  </div>
-
-                  {/* Footer card */}
-                  <div style={{ paddingTop: 16, borderTop: '1px solid #F3F2EF',
-                    display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <span style={{ fontSize: 11, fontWeight: 600, color: '#A8A59E',
-                      textTransform: 'uppercase', letterSpacing: '.06em' }}>
-                      Deschide Devizul
-                    </span>
-                    <ArrowRight size={15} color="#E8500A" />
-                  </div>
-                </Link>
-              </div>
+              <ProjectCard 
+                key={project.id} 
+                project={project} 
+                onDelete={handleDeleteProject}
+              />
             ))}
           </div>
         ) : !error && (

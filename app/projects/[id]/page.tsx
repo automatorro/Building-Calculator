@@ -1,6 +1,6 @@
 import { createClient } from '@/utils/supabase/server'
 import Link from 'next/link'
-import { ArrowLeft, FileText } from 'lucide-react'
+import { ArrowLeft, FileText, Maximize, Ruler, Layers, MoveDiagonal2 } from 'lucide-react'
 import { notFound } from 'next/navigation'
 import ProjectClientContainer from '@/components/ProjectClientContainer'
 import ProjectActions from '@/components/ProjectActions'
@@ -112,6 +112,65 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
           </div>
         </div>
 
+        {/* Rândul 3: Dimensiuni proiect */}
+        {project.dimensions && Object.keys(project.dimensions).length > 0 && (
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: 12, 
+            flexWrap: 'wrap',
+            padding: '12px 16px',
+            background: '#FAFAF8',
+            border: '1px solid #E5E3DE',
+            borderRadius: 12,
+          }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#A8A59E', textTransform: 'uppercase', letterSpacing: '.04em', marginRight: 4 }}>
+              Configurație:
+            </div>
+            
+            {project.dimensions.suprafata && (
+              <DimensionChip 
+                icon={<Maximize size={12} />} 
+                label="Suprafață" 
+                value={`${project.dimensions.suprafata.toLocaleString('ro-RO')} mp`} 
+              />
+            )}
+            
+            {(project.dimensions.niveluri || project.dimensions.levels) && (
+              <DimensionChip 
+                icon={<Layers size={12} />} 
+                label="Regim" 
+                value={`${project.dimensions.niveluri || project.dimensions.levels} niv`} 
+              />
+            )}
+            
+            {(project.dimensions.inaltime || project.dimensions.height) && (
+              <DimensionChip 
+                icon={<Ruler size={12} />} 
+                label="Înălțime" 
+                value={`${(project.dimensions.inaltime || project.dimensions.height).toLocaleString('ro-RO')} m`} 
+              />
+            )}
+
+            {project.dimensions.perimetru && (
+              <DimensionChip 
+                icon={<MoveDiagonal2 size={12} />} 
+                label="Perimetru" 
+                value={`${project.dimensions.perimetru.toLocaleString('ro-RO')} ml`} 
+              />
+            )}
+
+            {/* Alte dimensiuni specifice dacă există și sunt relevante */}
+            {project.dimensions.adancime && (
+              <DimensionChip 
+                icon={<ArrowLeft size={10} style={{ transform: 'rotate(-90deg)' }} />} 
+                label="Adâncime" 
+                value={`${project.dimensions.adancime.toLocaleString('ro-RO')} m`} 
+              />
+            )}
+          </div>
+        )}
+
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <ProjectActions
             projectId={id}
@@ -134,5 +193,26 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
         stages={stages}
       />
     </main>
+  )
+}
+
+function DimensionChip({ icon, label, value }: { icon: React.ReactNode, label: string, value: string }) {
+  return (
+    <div style={{ 
+      display: 'inline-flex', 
+      alignItems: 'center', 
+      gap: 6,
+      padding: '4px 10px',
+      background: 'white',
+      border: '1px solid #E5E3DE',
+      borderRadius: 8,
+      boxShadow: '0 1px 2px rgba(0,0,0,0.02)',
+    }}>
+      <span style={{ color: '#E8500A', display: 'flex' }}>{icon}</span>
+      <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1 }}>
+        <span style={{ fontSize: 9, color: '#A8A59E', fontWeight: 600, textTransform: 'uppercase', marginBottom: 2 }}>{label}</span>
+        <span style={{ fontSize: 13, fontWeight: 700, color: '#1E2329' }}>{value}</span>
+      </div>
+    </div>
   )
 }
