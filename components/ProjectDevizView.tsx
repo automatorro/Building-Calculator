@@ -254,7 +254,7 @@ export default function ProjectDevizView({
         )}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-6 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6 lg:gap-8 items-start">
 
         {/* ── Etape ── */}
         <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
@@ -328,15 +328,19 @@ export default function ProjectDevizView({
                     </div>
 
                     {/* Tabel articole */}
-                    <div style={{ overflowX:'auto' }}>
-                      <table style={{ width:'100%', borderCollapse:'collapse', fontSize:13 }}>
-                        <thead>
+                    <div style={{ overflowX:'auto', position: 'relative' }} className="no-scrollbar">
+                      <table style={{ width:'100%', borderCollapse:'separate', borderSpacing: 0, fontSize:13, minWidth: 600 }}>
+                        <thead style={{ position: 'sticky', top: 0, zIndex: 10 }}>
                           <tr style={{ background:'#F3F2EF' }}>
                             {['Cod', 'Descriere', 'UM', 'Cant.', 'Preț unitar', 'Total direct', 'Total ofertat'].map(h => (
-                              <th key={h} style={{ padding:'8px 12px', textAlign: h === 'Descriere' ? 'left' : 'right',
-                                fontSize:11, fontWeight:600, color:'#6B6860',
+                              <th key={h} style={{ 
+                                padding:'10px 12px', 
+                                textAlign: h === 'Descriere' || h === 'Cod' ? 'left' : 'right',
+                                fontSize:10, fontWeight:700, color:'#6B6860',
                                 textTransform:'uppercase', letterSpacing:'.04em',
-                                ...(h === 'Cod' || h === 'Descriere' ? { textAlign:'left' as const } : {}) }}>
+                                borderBottom: '1px solid #E5E3DE',
+                                ...(h === 'Descriere' ? { position: 'sticky', left: 0, background: '#F3F2EF', zIndex: 20, boxShadow: '1px 0 0 #E5E3DE' } : {}) 
+                              }}>
                                 {h}
                               </th>
                             ))}
@@ -362,7 +366,11 @@ export default function ProjectDevizView({
                                   fontSize:11, color:'#A8A59E', whiteSpace:'nowrap' }}>
                                   {code.trim() || '—'}
                                 </td>
-                                <td style={{ padding:'8px 12px', color:'#1E2329', maxWidth:240 }}>
+                                <td style={{ 
+                                  padding:'10px 12px', color:'#1E2329', minWidth: 180,
+                                  position: 'sticky', left: 0, background: i % 2 === 0 ? 'white' : '#FAFAF8',
+                                  zIndex: 5, boxShadow: '1px 0 0 #F3F2EF'
+                                }}>
                                   {isManual ? (
                                     <input
                                       value={name}
@@ -426,7 +434,13 @@ export default function ProjectDevizView({
                                 </td>
                                 <td style={{ padding:'8px 12px', textAlign:'right', color:'#1E2329' }}>
                                   {!analysis.isCalculable ? (
-                                    <span style={{ fontSize: 9, fontWeight: 700, color: '#DC2626', background: '#FEE2E2', padding: '3px 6px', borderRadius: 4, textTransform: 'uppercase', whiteSpace: 'nowrap' }} title={analysis.issueMessage}>
+                                    <span style={{ 
+                                      fontSize: 10, fontWeight: 900, color: 'white', 
+                                      background: '#DC2626', padding: '4px 8px', borderRadius: 6, 
+                                      textTransform: 'uppercase', whiteSpace: 'nowrap',
+                                      display: 'inline-flex', alignItems: 'center', gap: 4,
+                                      boxShadow: '0 2px 4px rgba(220, 38, 38, 0.2)'
+                                    }} title={analysis.issueMessage}>
                                       {analysis.status}
                                     </span>
                                   ) : (
@@ -503,7 +517,7 @@ export default function ProjectDevizView({
 
               {invalidLines.length > 0 && (
                 <div style={{ marginTop: 16, padding: '12px', background: 'rgba(220, 38, 38, 0.1)', border: '1px solid rgba(220, 38, 38, 0.3)', borderRadius: 10 }}>
-                  <div style={{ fontSize: 10, color: '#FCA5A5', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '.05em', marginBottom: 4 }}>
+                  <div style={{ fontSize: 10, color: 'white', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '.05em', marginBottom: 6 }}>
                     ⚠️ Articole incomplete (0 Lei în deviz)
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>

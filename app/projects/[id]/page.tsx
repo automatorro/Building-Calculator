@@ -71,7 +71,7 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
       {/* ── Header ── */}
       <div style={{
         background: 'white', border: '1px solid #E5E3DE',
-        borderRadius: 14, padding: 'clamp(16px, 4vw, 28px)',
+        borderRadius: 14, padding: 'clamp(12px, 4vw, 28px)',
         display: 'flex', flexDirection: 'column', gap: 16,
       }}>
         {/* Rândul 1: breadcrumb + acțiuni */}
@@ -97,13 +97,13 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
             {project.name}
           </h1>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-            <span style={{
-              display: 'inline-flex', alignItems: 'center', gap: 4,
-              background: '#F3F2EF', padding: '3px 10px', borderRadius: 100,
-              fontSize: 11, fontWeight: 600, color: '#A8A59E', fontFamily: 'monospace',
-            }}>
-              <FileText size={11} /> {id.slice(0, 8).toUpperCase()}
-            </span>
+              <span style={{
+                display: 'inline-flex', alignItems: 'center', gap: 4,
+                background: '#F3F2EF', padding: '3px 10px', borderRadius: 100,
+                fontSize: 10, fontWeight: 600, color: '#A8A59E', fontFamily: 'monospace',
+              }}>
+                <FileText size={10} /> {id.slice(0, 8).toUpperCase()}
+              </span>
             {project.location && (
               <span style={{ fontSize: 13, color: '#6B6860', fontWeight: 400 }}>
                 {project.location}
@@ -115,16 +115,15 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
         {/* Rândul 3: Dimensiuni proiect */}
         {project.dimensions && Object.keys(project.dimensions).length > 0 && (
           <div style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: 12, 
-            flexWrap: 'wrap',
-            padding: '12px 16px',
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', 
+            gap: 8, 
+            padding: '12px',
             background: '#FAFAF8',
             border: '1px solid #E5E3DE',
             borderRadius: 12,
           }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: '#A8A59E', textTransform: 'uppercase', letterSpacing: '.04em', marginRight: 4 }}>
+            <div style={{ fontSize: 10, fontWeight: 700, color: '#A8A59E', textTransform: 'uppercase', letterSpacing: '.04em', gridColumn: '1 / -1', marginBottom: 2 }}>
               Configurație:
             </div>
             
@@ -151,7 +150,7 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
                 value={`${(project.dimensions.inaltime || project.dimensions.height).toLocaleString('ro-RO')} m`} 
               />
             )}
-
+ 
             {project.dimensions.perimetru && (
               <DimensionChip 
                 icon={<MoveDiagonal2 size={12} />} 
@@ -159,8 +158,7 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
                 value={`${project.dimensions.perimetru.toLocaleString('ro-RO')} ml`} 
               />
             )}
-
-            {/* Alte dimensiuni specifice dacă există și sunt relevante */}
+ 
             {project.dimensions.adancime && (
               <DimensionChip 
                 icon={<ArrowLeft size={10} style={{ transform: 'rotate(-90deg)' }} />} 
@@ -200,19 +198,19 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
 function DimensionChip({ icon, label, value }: { icon: React.ReactNode, label: string, value: string }) {
   return (
     <div style={{ 
-      display: 'inline-flex', 
+      display: 'flex', 
       alignItems: 'center', 
-      gap: 6,
-      padding: '4px 10px',
+      gap: 8,
+      padding: '6px 10px',
       background: 'white',
       border: '1px solid #E5E3DE',
-      borderRadius: 8,
+      borderRadius: 10,
       boxShadow: '0 1px 2px rgba(0,0,0,0.02)',
     }}>
-      <span style={{ color: '#E8500A', display: 'flex' }}>{icon}</span>
-      <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1 }}>
+      <span style={{ color: '#E8500A', display: 'flex', flexShrink: 0 }}>{icon}</span>
+      <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.1 }}>
         <span style={{ fontSize: 9, color: '#A8A59E', fontWeight: 600, textTransform: 'uppercase', marginBottom: 2 }}>{label}</span>
-        <span style={{ fontSize: 13, fontWeight: 700, color: '#1E2329' }}>{value}</span>
+        <span style={{ fontSize: 13, fontWeight: 700, color: '#1E2329', whiteSpace: 'nowrap' }}>{value}</span>
       </div>
     </div>
   )

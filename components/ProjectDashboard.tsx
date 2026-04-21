@@ -89,14 +89,14 @@ export default function ProjectDashboard({ financials, projectName, onAddPurchas
         <div className="lg:col-span-2 space-y-6">
           <div className="glass-card p-4 md:p-8 bg-white dark:bg-slate-900 border-border/50 shadow-xl overflow-hidden relative">
             <div className="relative z-10">
-              <div className="flex justify-between items-end mb-4">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-4 gap-2">
                 <div>
-                  <h3 className="text-xs font-black uppercase tracking-widest text-slate-400">Progres Cheltuieli vs. Buget</h3>
-                  <div className="text-3xl md:text-4xl font-black mt-1">{fmtPct1(percentSpent)}%</div>
+                  <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400">Progres Cheltuieli vs. Buget</h3>
+                  <div className="text-2xl md:text-3xl lg:text-4xl font-black mt-1">{fmtPct1(percentSpent)}%</div>
                 </div>
-                <div className="text-right">
-                  <div className="text-xs font-bold text-slate-400 uppercase">Limită Cheltuieli (Fără Profit):</div>
-                  <div className="text-xl md:text-2xl font-mono font-bold mt-1 text-slate-700 dark:text-slate-300">{totalBudget.toLocaleString('ro-RO')} Lei</div>
+                <div className="text-left sm:text-right w-full sm:w-auto">
+                  <div className="text-[10px] font-bold text-slate-400 uppercase">Limită Cheltuieli (Fără Profit):</div>
+                  <div className="text-lg md:text-xl lg:text-2xl font-mono font-bold mt-0.5 text-slate-700 dark:text-slate-300">{totalBudget.toLocaleString('ro-RO')} Lei</div>
                 </div>
               </div>
               
@@ -108,14 +108,14 @@ export default function ProjectDashboard({ financials, projectName, onAddPurchas
                 />
               </div>
               
-              <div className="grid grid-cols-2 mt-6 md:mt-8 pt-6 md:pt-8 border-t border-border/30 gap-4 md:gap-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 mt-6 md:mt-8 pt-6 md:pt-8 border-t border-border/30 gap-4 md:gap-8">
                 <div>
-                  <div className="text-xs font-black text-slate-400 uppercase tracking-widest mb-2">Valoare Contract (Ofertată)</div>
-                  <div className="text-2xl md:text-3xl font-bold font-mono text-primary">{totalEstimatedRevenue.toLocaleString('ro-RO')} Lei</div>
+                  <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Valoare Contract (Ofertată)</div>
+                  <div className="text-xl md:text-2xl lg:text-3xl font-bold font-mono text-primary">{totalEstimatedRevenue.toLocaleString('ro-RO')} Lei</div>
                 </div>
                 <div>
-                  <div className="text-xs font-black text-slate-400 uppercase tracking-widest mb-2">Cheltuieli Reale</div>
-                  <div className="text-2xl md:text-3xl font-bold font-mono">{totalSpent.toLocaleString('ro-RO')} Lei</div>
+                  <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Cheltuieli Reale</div>
+                  <div className="text-xl md:text-2xl lg:text-3xl font-bold font-mono">{totalSpent.toLocaleString('ro-RO')} Lei</div>
                 </div>
               </div>
             </div>
@@ -137,19 +137,19 @@ export default function ProjectDashboard({ financials, projectName, onAddPurchas
             </div>
             <div className="divide-y divide-border/50">
               {deviations.slice(0, 5).map((dev, idx) => (
-                <div key={idx} className="p-4 md:p-6 flex items-start justify-between gap-3 hover:bg-slate-50 dark:hover:bg-slate-800/20 transition-colors">
-                  <div className="space-y-1">
-                    <div className="font-black text-base tracking-tight">{dev.stage}</div>
-                    <div className="text-xs font-medium text-slate-400 mt-1">
-                      Rămas: <span className="font-bold text-slate-700 dark:text-slate-300 text-sm">{(dev.planned - dev.spent).toLocaleString('ro-RO')} Lei</span>
+                <div key={idx} className="p-4 md:p-6 flex flex-row items-center justify-between gap-3 hover:bg-slate-50 dark:hover:bg-slate-800/20 transition-colors cursor-pointer" onClick={onViewStages}>
+                  <div className="space-y-0.5 flex-1 min-w-0">
+                    <div className="font-black text-sm md:text-base tracking-tight truncate">{dev.stage}</div>
+                    <div className="text-[10px] font-medium text-slate-400">
+                      Rămas: <span className="font-bold text-slate-700 dark:text-slate-300">{(dev.planned - dev.spent).toLocaleString('ro-RO')} Lei</span>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <div className={`text-lg font-black ${dev.diff > 0 ? 'text-red-500' : 'text-slate-900 dark:text-white'}`}>
+                  <div className="text-right shrink-0">
+                    <div className={`text-sm md:text-lg font-black ${dev.diff > 0 ? 'text-red-500' : 'text-slate-900 dark:text-white'}`}>
                       {dev.spent.toLocaleString('ro-RO')} Lei
                     </div>
-                    <div className={`text-[10px] mt-1 font-black uppercase ${dev.diff > 0 ? 'text-red-500' : 'text-green-500'}`}>
-                      {dev.diff > 0 ? `+${fmtPct1(dev.percent)}% Depășire` : `-${fmtPct1(Math.abs(dev.percent))}% sub buget`}
+                    <div className={`text-[9px] font-black uppercase ${dev.diff > 0 ? 'text-red-500' : 'text-green-500'}`}>
+                      {dev.diff > 0 ? `+${fmtPct1(dev.percent)}%` : `-${fmtPct1(Math.abs(dev.percent))}%`}
                     </div>
                   </div>
                 </div>

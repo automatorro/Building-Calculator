@@ -139,34 +139,37 @@ export default function ProjectTimeline({
         background: '#FAFAF8', border: '1px solid #E5E3DE',
         borderRadius: 14, overflow: 'hidden', minWidth: 560,
       }}>
-        {/* Header săptămâni */}
-        <div style={{
-          display: 'flex', borderBottom: '2px solid #E5E3DE',
-          background: '#EDEBE6', padding: '12px 24px',
-        }}>
-          <div style={{ width: 200, flexShrink: 0, fontSize: 11,
-            fontWeight: 600, color: '#A8A59E', textTransform: 'uppercase', letterSpacing: '.06em' }}>
-            Etapă
+          {/* Header săptămâni */}
+          <div style={{
+            display: 'flex', borderBottom: '2px solid #E5E3DE',
+            background: '#EDEBE6', padding: '12px 24px', minWidth: 'max-content'
+          }}>
+            <div style={{ width: 150, flexShrink: 0, fontSize: 11,
+              fontWeight: 700, color: '#6B6860', textTransform: 'uppercase', letterSpacing: '.06em',
+              position: 'sticky', left: 0, background: '#EDEBE6', zIndex: 10,
+              boxShadow: '1px 0 0 #E5E3DE'
+            }}>
+              Etapă
+            </div>
+            <div style={{ flex: 1, display: 'flex', justifyContent: 'space-between',
+              fontSize: 10, fontWeight: 700, color: '#A8A59E',
+              textTransform: 'uppercase', letterSpacing: '.04em', gap: 40, paddingLeft: 20 }}>
+              <span>Start</span>
+              <span>Săpt. {Math.ceil(totalWeeks / 2)}</span>
+              <span>Final ({totalWeeks} s)</span>
+            </div>
           </div>
-          <div style={{ flex: 1, display: 'flex', justifyContent: 'space-between',
-            fontSize: 11, fontWeight: 600, color: '#A8A59E',
-            textTransform: 'uppercase', letterSpacing: '.06em' }}>
-            <span>Start</span>
-            <span>Săpt. {Math.ceil(totalWeeks / 2)}</span>
-            <span>Final ({totalWeeks} săpt.)</span>
-          </div>
-        </div>
 
         {/* Rânduri etape */}
         <div style={{ position: 'relative' }}>
-          {/* Linii verticale de ghidaj */}
-          <div style={{ position: 'absolute', top: 0, bottom: 0, left: 200,
-            right: 0, display: 'flex', pointerEvents: 'none', zIndex: 0 }}>
-            {[25, 50, 75].map(pct => (
-              <div key={pct} style={{ position: 'absolute', left: `${pct}%`,
-                top: 0, bottom: 0, width: 1, background: '#F3F2EF' }} />
-            ))}
-          </div>
+            {/* Linii verticale de ghidaj */}
+            <div style={{ position: 'absolute', top: 0, bottom: 0, left: 150,
+              right: 0, display: 'flex', pointerEvents: 'none', zIndex: 0 }}>
+              {[25, 50, 75].map(pct => (
+                <div key={pct} style={{ position: 'absolute', left: `${pct}%`,
+                  top: 0, bottom: 0, width: 1, background: '#E5E3DE' }} />
+              ))}
+            </div>
 
           {stageStats.map((stage, idx) => {
             /* Calculează offset și lățime bara Gantt */
@@ -180,21 +183,22 @@ export default function ProjectTimeline({
                 borderBottom: idx < stageStats.length - 1 ? '1px solid #F3F2EF' : 'none',
                 position: 'relative', zIndex: 1, minHeight: 64,
               }}>
-                {/* Nume etapă */}
-                <div style={{ width: 200, flexShrink: 0, padding: '14px 24px',
-                  display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <div style={{ width: 8, height: 8, borderRadius: '50%',
-                    background: stage.color.bg, flexShrink: 0 }} />
-                  <div>
-                    <div style={{ fontSize: 13, fontWeight: 500, color: '#1E2329', lineHeight: 1.2 }}>
-                      {stage.name}
-                    </div>
-                    <div style={{ fontSize: 11, color: '#A8A59E', marginTop: 2 }}>
-                      {stage.duration} săpt.
-                      {stage.linesCount > 0 && ` · ${stage.linesCount} articole`}
+                  {/* Nume etapă */}
+                  <div style={{ width: 150, flexShrink: 0, padding: '12px 16px',
+                    display: 'flex', alignItems: 'center', gap: 8,
+                    position: 'sticky', left: 0, background: 'white', zIndex: 10,
+                    boxShadow: '1px 0 0 #F3F2EF' }}>
+                    <div style={{ width: 6, height: 6, borderRadius: '50%',
+                      background: stage.color.bg, flexShrink: 0 }} />
+                    <div className="truncate">
+                      <div style={{ fontSize: 12, fontWeight: 600, color: '#1E2329', lineHeight: 1.2 }}>
+                        {stage.name}
+                      </div>
+                      <div style={{ fontSize: 10, color: '#A8A59E', marginTop: 1 }}>
+                        {stage.duration}s
+                      </div>
                     </div>
                   </div>
-                </div>
 
                 {/* Bara Gantt */}
                 <div style={{ flex: 1, height: 56, position: 'relative', padding: '10px 0' }}>
@@ -227,26 +231,27 @@ export default function ProjectTimeline({
           })}
         </div>
 
-        {/* Footer total */}
-        <div style={{
-          display: 'flex', alignItems: 'center', gap: 24,
-          padding: '14px 24px', borderTop: '1px solid #E5E3DE',
-          background: '#F3F2EF', justifyContent: 'flex-end',
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: '#6B6860' }}>
-            <Clock size={14} style={{ color: '#A8A59E' }} />
-            Durata totală: <strong style={{ color: '#1E2329' }}>{totalWeeks} săptămâni</strong>
+          {/* Footer total */}
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 16,
+            padding: '12px 16px', borderTop: '1px solid #E5E3DE',
+            background: '#F3F2EF', justifyContent: 'flex-start', flexWrap: 'wrap',
+            fontSize: 11
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#6B6860' }}>
+              <Clock size={12} style={{ color: '#A8A59E' }} />
+              <strong>{totalWeeks} săptămâni</strong>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#6B6860' }}>
+              <Flag size={12} style={{ color: '#2A7D4F' }} />
+              Calculat automat
+            </div>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: '#6B6860' }}>
-            <Flag size={14} style={{ color: '#2A7D4F' }} />
-            Finalizare: calculată de la data de start
-          </div>
-        </div>
       </div>
       </div>
 
       {/* ── Cards etape cu detalii ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 12 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: 8 }}>
         {stageStats.map((stage) => (
           <div key={stage.name} style={{
             background: '#FAFAF8', border: `1px solid ${stage.hasActivity ? stage.color.bg + '40' : '#E5E3DE'}`,

@@ -431,10 +431,11 @@ export default function ProjectClientContainer({
       </div>
 
       {/* ── Tab switcher ── */}
-      <div className="flex items-center justify-center">
+      <div className="flex items-center justify-center -mx-4 md:mx-0 overflow-x-auto no-scrollbar">
         <div style={{
-          background: '#F3F2EF', padding: 6, borderRadius: 12,
-          display: 'flex', gap: 4, border: '1px solid #E5E3DE', flexWrap: 'wrap'
+          background: '#F3F2EF', padding: 4, borderRadius: 12,
+          display: 'flex', gap: 2, border: '1px solid #E5E3DE',
+          width: 'max-content', minWidth: 'min-content'
         }}>
           {TABS.map(tab => {
             const Icon = tab.icon
@@ -442,16 +443,17 @@ export default function ProjectClientContainer({
             return (
               <button key={tab.id} onClick={() => setView(tab.id)}
                 style={{
-                  padding: '8px 16px', borderRadius: 8, border: 'none', cursor: 'pointer',
+                  padding: '8px 12px', borderRadius: 8, border: 'none', cursor: 'pointer',
                   fontFamily: 'var(--font-dm-sans,"DM Sans",system-ui,sans-serif)',
-                  fontSize: 13, fontWeight: active ? 500 : 400,
+                  fontSize: 12, fontWeight: active ? 600 : 500,
                   display: 'flex', alignItems: 'center', gap: 6,
                   background: active ? 'white' : 'transparent',
                   color: active ? '#E8500A' : '#6B6860',
                   boxShadow: active ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
                   transition: 'all .15s',
+                  whiteSpace: 'nowrap'
                 }}>
-                <Icon size={15} style={{ color: active ? '#E8500A' : '#A8A59E' }} />
+                <Icon size={14} style={{ color: active ? '#E8500A' : '#A8A59E' }} />
                 {tab.label}
               </button>
             )
@@ -625,15 +627,26 @@ export default function ProjectClientContainer({
                   <Plus size={18} />
                 </button>
               </div>
-              <div style={{ overflowX: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+              <div className="overflow-x-auto relative">
+                <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: 0, fontSize: 13 }}>
                   <thead>
-                    <tr style={{ background: '#F3F2EF', borderBottom: '1px solid #E5E3DE' }}>
-                      {['Dată', 'Articol / Notă', 'Poze', 'Etapă', 'Categorie', 'Sumă'].map(h => (
+                    <tr style={{ background: '#F3F2EF' }}>
+                      <th style={{
+                        padding: '10px 20px', textAlign: 'left',
+                        fontSize: 11, fontWeight: 600, color: '#6B6860',
+                        textTransform: 'uppercase', letterSpacing: '.04em',
+                        position: 'sticky', left: 0, background: '#F3F2EF', zIndex: 10,
+                        boxShadow: '2px 0 5px -2px rgba(0,0,0,0.1)'
+                      }}>
+                        Articol / Notă
+                      </th>
+                      {['Dată', 'Poze', 'Etapă', 'Categorie', 'Sumă'].map(h => (
                         <th key={h} style={{
                           padding: '10px 20px', textAlign: h === 'Sumă' ? 'right' : 'left',
                           fontSize: 11, fontWeight: 600, color: '#6B6860',
-                          textTransform: 'uppercase', letterSpacing: '.04em'
+                          textTransform: 'uppercase', letterSpacing: '.04em',
+                          borderBottom: '1px solid #E5E3DE',
+                          whiteSpace: 'nowrap'
                         }}>
                           {h}
                         </th>
@@ -653,11 +666,16 @@ export default function ProjectClientContainer({
                     ) : (
                       purchases.map(p => (
                         <tr key={p.id} style={{ borderBottom: '1px solid #F3F2EF' }}>
-                          <td style={{ padding: '12px 20px', fontFamily: 'monospace', fontSize: 12, color: '#6B6860' }}>
-                            {new Date(p.date).toLocaleDateString('ro-RO')}
-                          </td>
-                          <td style={{ padding: '12px 20px', fontWeight: 500, color: '#1E2329' }}>
+                          <td style={{ 
+                            padding: '12px 20px', fontWeight: 600, color: '#1E2329',
+                            position: 'sticky', left: 0, background: 'inherit', zIndex: 5,
+                            boxShadow: '2px 0 5px -2px rgba(0,0,0,0.1)',
+                            minWidth: 160
+                          }}>
                             {p.name}
+                          </td>
+                          <td style={{ padding: '12px 20px', fontFamily: 'monospace', fontSize: 12, color: '#6B6860', whiteSpace: 'nowrap' }}>
+                            {new Date(p.date).toLocaleDateString('ro-RO')}
                           </td>
                           <td style={{ padding: '12px 20px' }}>
                             {Array.isArray((p as any).photos) && (p as any).photos.length > 0 ? (
@@ -676,10 +694,10 @@ export default function ProjectClientContainer({
                               <span style={{ color: '#A8A59E' }}>—</span>
                             )}
                           </td>
-                          <td style={{ padding: '12px 20px', fontSize: 12, color: '#6B6860' }}>
+                          <td style={{ padding: '12px 20px', fontSize: 12, color: '#6B6860', whiteSpace: 'nowrap' }}>
                             {p.stage_name || '—'}
                           </td>
-                          <td style={{ padding: '12px 20px' }}>
+                          <td style={{ padding: '12px 20px', whiteSpace: 'nowrap' }}>
                             <span style={{
                               padding: '3px 10px', borderRadius: 100,
                               background: '#F3F2EF', color: '#6B6860',
@@ -690,7 +708,7 @@ export default function ProjectClientContainer({
                           </td>
                           <td style={{
                             padding: '12px 20px', textAlign: 'right',
-                            fontWeight: 600, color: '#E8500A'
+                            fontWeight: 700, color: '#E8500A', whiteSpace: 'nowrap'
                           }}>
                             {Number(p.amount_total).toLocaleString('ro-RO')} lei
                           </td>
