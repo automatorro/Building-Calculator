@@ -7,6 +7,8 @@ import { createClient } from '@/utils/supabase/client'
 import { calculateLineCosts, EstimateLine, ProjectSettings, calculateProjectTotals, analyzeEstimateLine } from '@/utils/calculators/estimate'
 import { motion, AnimatePresence } from 'framer-motion'
 import VendorOfferPicker from './VendorOfferPicker'
+import EstimateImporter from './EstimateImporter'
+import { FileSpreadsheet } from 'lucide-react'
 
 interface EstimateEditorProps {
   projectId: string
@@ -17,6 +19,7 @@ interface EstimateEditorProps {
   onAddLine: (stageName?: string) => void
   onDeleteLine: (id: string) => void
   onDuplicateLine: (line: EstimateLine) => void
+  onImport: (lines: EstimateLine[]) => void
   isSaving: boolean
   isSaved: boolean
 }
@@ -30,6 +33,7 @@ export default function EstimateEditor({
   onAddLine,
   onDeleteLine,
   onDuplicateLine,
+  onImport,
   isSaving,
   isSaved
 }: EstimateEditorProps) {
@@ -38,6 +42,7 @@ export default function EstimateEditor({
   const [collapsedStages, setCollapsedStages] = useState<Record<string, boolean>>({})
   const [didInitCollapse, setDidInitCollapse] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
+  const [showImporter, setShowImporter] = useState(false)
   const supabase = createClient()
 
   useEffect(() => {
@@ -82,6 +87,20 @@ export default function EstimateEditor({
   const handleDeleteLine = (id: string) => {
     onDeleteLine(id)
     toast.success('Rând șters.')
+  }
+
+  const handleImportLines = (newLines: any[]) => {
+    newLines.forEach(line => {
+      // We use onAddLine as a proxy or just call it multiple times? 
+      // Better to have a bulk update in props? 
+      // Current props don't have bulk add. I'll add them one by one for now or suggest bulk refactor.
+      // Actually, onAddLine in EstimateEditorProps is: (stageName?: string) => void
+      // The parent ProjectClientContainer seems to handle the actual array state.
+      // I'll simulate adding them by manually calling onUpdateLine if I can, 
+      // but the parent handles the 'lines' state. 
+      // Wait, EstimateEditor is a child. It should probably just call a prop.
+    })
+    // I will use a custom callback for bulk import if I can, but let's see ProjectClientContainer.
   }
 
     const handleDuplicateLine = (line: EstimateLine) => {
@@ -273,14 +292,22 @@ export default function EstimateEditor({
       {/* Tabel Deviz */}
       <div className="lg:col-span-3 order-2 lg:order-2">
         <div className="glass-card overflow-hidden">
-          <div className="p-6 border-b border-border/50 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/20">
+          <div className="p-6 border-b border-border/50 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-slate-50/50 dark:bg-slate-800/20">
             <h2 className="font-bold text-lg">Centralizator Lucrări</h2>
-            <button 
-              onClick={() => handleAddManualLine()}
-              className="inline-flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-xl text-sm font-black shadow-lg shadow-primary/25 hover:bg-primary-dark transition-all active:scale-95"
-            >
-              <Plus size={16} /> Creează Propria Rețetă
-            </button>
+            <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
+              <button 
+                onClick={() => setShowImporter(true)}
+                className="flex-1 md:flex-none inline-flex items-center justify-center gap-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 px-4 py-2 rounded-xl text-xs font-black border border-border/50 transition-all active:scale-95 shadow-sm"
+              >
+                <FileSpreadsheet size={16} /> Importă din Excel
+              </button>
+              <button 
+                onClick={() => handleAddManualLine()}
+                className="flex-1 md:flex-none inline-flex items-center justify-center gap-2 bg-primary text-white px-5 py-2 rounded-xl text-xs font-black shadow-lg shadow-primary/25 hover:bg-primary-dark transition-all active:scale-95"
+              >
+                <Plus size={16} /> Creează Rețetă Nouă
+              </button>
+            </div>
           </div>
 
           <div className="p-4 border-b border-border/50">
@@ -728,6 +755,15 @@ export default function EstimateEditor({
             handleUpdatePrice(activeOfferPicker.lineId, activeOfferPicker.resourceId, price.toString())
           }}
           onClose={() => setActiveOfferPicker(null)}
+        />
+      )}
+
+      {showImporter && (
+        <EstimateImporter
+          onClose={() => setShowImporter(false)}
+          onImport={(importedLines) => {
+            onImport(importedLines)
+          }}
         />
       )}
     </div>

@@ -10,8 +10,9 @@ import { EstimateLine, ProjectSettings } from '@/utils/calculators/estimate'
 import { Purchase, calculateFinancials } from '@/utils/calculators/financials'
 import {
   LayoutDashboard, ClipboardList, Wallet,
-  Settings as SettingsIcon, Plus, CalendarDays, ListTree, CheckCircle2, MessageSquare,
+  Settings as SettingsIcon, Plus, CalendarDays, ListTree, CheckCircle2, MessageSquare, Users
 } from 'lucide-react'
+import ProjectTeamSettings from './ProjectTeamSettings'
 import { motion, AnimatePresence } from 'framer-motion'
 import { createClient } from '@/utils/supabase/client'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -116,7 +117,7 @@ function exportCSV(lines: EstimateLine[], settings: ProjectSettings, projectName
   URL.revokeObjectURL(url)
 }
 
-type Tab = 'dashboard' | 'planning' | 'purchases' | 'timeline' | 'deviz'
+type Tab = 'dashboard' | 'planning' | 'purchases' | 'timeline' | 'deviz' | 'team'
 
 export default function ProjectClientContainer({
   projectId,
@@ -194,6 +195,12 @@ export default function ProjectClientContainer({
     setIsSaved(false)
     toast.success('Rând duplicat cu succes.')
   }
+
+  const handleImportLines = (newLines: EstimateLine[]) => {
+    setLines([...lines, ...newLines])
+    setIsSaved(false)
+  }
+
   const supabase = createClient()
   const router = useRouter()
 
@@ -367,6 +374,7 @@ export default function ProjectClientContainer({
       { id: 'timeline', label: 'Cronologie', icon: CalendarDays },
       { id: 'purchases', label: 'Achiziții', icon: Wallet },
       { id: 'dashboard', label: 'Status', icon: LayoutDashboard },
+      { id: 'team', label: 'Echipă', icon: Users },
     ]
 
     // 1. Dacă nu avem niciun rând în deviz, arătăm doar editorul pentru simplitate
@@ -520,6 +528,7 @@ export default function ProjectClientContainer({
             <ProjectDashboard
               financials={financials}
               projectName={projectName}
+              dimensions={dimensions}
               onAddPurchase={() => setShowPurchaseForm(true)}
               onViewStages={() => setView('planning')}
             />
@@ -570,6 +579,7 @@ export default function ProjectClientContainer({
               onAddLine={handleAddManualLine}
               onDeleteLine={handleDeleteLine}
               onDuplicateLine={handleDuplicateLine}
+              onImport={handleImportLines}
               isSaving={loading}
               isSaved={isSaved}
             />
@@ -721,6 +731,12 @@ export default function ProjectClientContainer({
             </div>
           </motion.div>
         )}
+        {view === 'team' && (
+          <motion.div key="team"
+            initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
+            <ProjectTeamSettings projectId={projectId} />
+          </motion.div>
+        )}
       </AnimatePresence>
 
       {/* ── Modal achiziție ─────────────────────────────────────────────── */}
@@ -728,6 +744,8 @@ export default function ProjectClientContainer({
         <PurchaseFormModal
           onClose={() => setShowPurchaseForm(false)}
           onSave={handleAddPurchase}
+          financials={financials}
+          settings={settings}
           stages={stages.length > 0
             ? stages
             : [...new Set(lines.map(l => l.stage_name || 'Lucrări Generale'))]
@@ -740,11 +758,13 @@ export default function ProjectClientContainer({
 
 /* ─── Modal înregistrare achiziție ──────────────────────────────────────── */
 function PurchaseFormModal({
-  onClose, onSave, stages,
+  onClose, onSave, stages, financials, settings,
 }: {
   onClose: () => void
   onSave: (p: any) => void
   stages: string[]
+  financials: any
+  settings: any
 }) {
   const [formData, setFormData] = useState({
     name: '', amount_total: '',
@@ -885,6 +905,49 @@ function PurchaseFormModal({
               </select>
             </div>
           </div>
+
+          {/* ── Live Impact Analysis ── */}
+          {(() => {
+            const amount = parseFloat(formData.amount_total) || 0
+            if (amount <= 0) return null
+            
+            const deviation = financials.deviations.find((d: any) => d.stage === formData.stage_name)
+            const planned = deviation?.planned || 0
+            const spent = deviation?.spent || 0
+            const newTotal = spent + amount
+            const isExceeded = planned > 0 && newTotal > planned
+            const diff = newTotal - planned
+            const impactOnProfit = isExceeded ? diff : 0
+
+            return (
+              <motion.div 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                style={{
+                  padding: '16px',
+                  borderRadius: 12,
+                  background: isExceeded ? '#FFF5F5' : '#F0FFF4',
+                  border: `1px solid ${isExceeded ? '#FEB2B2' : '#9AE6B4'}`,
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: isExceeded ? '#C53030' : '#2F855A', textTransform: 'uppercase' }}>
+                    Impact Buget Etapă
+                  </span>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: isExceeded ? '#C53030' : '#2F855A' }}>
+                    {isExceeded ? '⚠️ DEPĂȘIRE' : '✅ ÎN LIMITĂ'}
+                  </span>
+                </div>
+                <div style={{ fontSize: 13, color: isExceeded ? '#9B2C2C' : '#276749', lineHeight: 1.4 }}>
+                  {isExceeded ? (
+                    <>Această achiziție va duce la o depășire a bugetului de etapă cu <strong>{diff.toLocaleString('ro-RO')} Lei</strong>. Profitul tău estimat va scădea cu <strong>{impactOnProfit.toLocaleString('ro-RO')} Lei</strong>.</>
+                  ) : (
+                    <>După această achiziție, mai rămân <strong>{(planned - newTotal).toLocaleString('ro-RO')} Lei</strong> disponibili pentru această etapă.</>
+                  )}
+                </div>
+              </motion.div>
+            )
+          })()}
         </div>
 
         <div style={{ display: 'flex', gap: 10, marginTop: 24 }}>
