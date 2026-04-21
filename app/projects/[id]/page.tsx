@@ -182,6 +182,7 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
 
       {/* ── Container principal ── */}
       <ProjectClientContainer
+        key={`${id}-${formattedLines.length}-${JSON.stringify(project.dimensions)}`}
         projectId={id}
         projectName={project.name}
         projectLocation={project.location}

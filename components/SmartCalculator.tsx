@@ -253,6 +253,7 @@ export default function SmartCalculator({
 
   const handleSaveLines = async () => {
     setSaving(true)
+    const { data: { user } } = await supabase.auth.getUser()
     const included = lines.filter(l => l.include)
     const symbols = Array.from(new Set(included.map(l => l.symbol).filter(Boolean))) as string[]
     const normsBySymbol = new Map<string, { id: number; symbol: string; name: string; unit: string; category: string; unit_price: number | null; has_components: boolean | null }>()
@@ -347,6 +348,7 @@ export default function SmartCalculator({
           unit: norm.unit,
           unit_price: norm.unit_price ?? 0,
           category: norm.category,
+          user_id: user?.id
         }
       }
 
@@ -363,6 +365,7 @@ export default function SmartCalculator({
         excluded_resources: [],
         resources_override: [],
         metadata: l.symbol ? { source: 'smart_calc', catalog_norm_symbol: l.symbol } : { source: 'smart_calc' },
+        user_id: user?.id
       }
     })
 

@@ -42,7 +42,6 @@ export default function ProjectsPage() {
   }, [supabase])
 
   const handleDeleteProject = async (project: { id: string; name?: string }) => {
-    setDeletingId(project.id)
     const { data: deletedRows, error } = await supabase
       .from('projects')
       .delete()
@@ -50,24 +49,24 @@ export default function ProjectsPage() {
       .select('id')
 
     if (error) {
-      setDeletingId(null)
-      window.alert(`Eroare la ștergere (Server): ${error.message}\n\nDetalii: ${error.details || 'N/A'}\nHint: ${error.hint || 'N/A'}`)
+      console.error('Supabase delete error:', error)
+      window.alert(`Eroare la ștergere (Server): ${error.message}\n\nDetalii: ${error.details || 'N/A'}`)
       return
     }
 
     if (!deletedRows || deletedRows.length === 0) {
-      setDeletingId(null)
+      console.warn('No rows deleted - RLS check failed')
       window.alert(
-        'Ștergerea nu a fost permisă de baza de date (RLS).\n\n' +
-        'Am aplicat o nouă migrare SQL pentru a repara acest lucru. Te rugăm să reîncarci complet pagina (Ctrl+F5) și să încerci din nou.\n' +
-        'Dacă eroarea persistă, înseamnă că proiectul a fost creat cu un alt cont sau fără user_id.'
+        'Ștergerea nu a fost permisă de bază (RLS).\n\n' +
+        'Acest lucru se întâmplă dacă proiectul aparține altui utilizator sau dacă sesiunea a expirat.'
       )
       return
     }
 
+    // Success: Update local state and refresh router
     setProjects(prev => (prev || []).filter(p => p.id !== project.id))
-    setDeletingId(null)
     router.refresh()
+    // toast.success('Proiect șters!')
   }
 
   const handleCreateDemo = async () => {
@@ -183,10 +182,15 @@ export default function ProjectsPage() {
     const { error: lError } = await supabase.from('estimate_lines').insert(demoLines)
     
     if (lError) {
-      toast.error('Eroare linii demo: ' + lError.message)
+      console.error('Demo lines insertion failed:', lError)
+      toast.error('Eroare la generarea rândurilor: ' + lError.message)
+      // Cleanup: Ștergem proiectul dacă nu am putut genera liniile pentru a evita starea inconsistentă
+      await supabase.from('projects').delete().eq('id', project.id)
+      setLoading(false)
     } else {
       toast.success('Proiect Demo creat cu succes!')
       router.push(`/projects/${project.id}`)
+      router.refresh()
     }
   }
 
