@@ -164,7 +164,7 @@ export default function StrategicComparator({ initialArea = 100 }: StrategicComp
           </div>
           
           <div className="flex flex-wrap gap-2">
-            {SCENARIOS.map(s => (
+            {scenarios.map(s => (
               <button
                 key={s.id}
                 onClick={() => setSelectedScenarioId(s.id)}

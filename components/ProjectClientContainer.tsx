@@ -1086,7 +1086,3 @@ function PurchaseFormModal({
     </div>
   )
 }
-      </div>
-    </div>
-  )
-}

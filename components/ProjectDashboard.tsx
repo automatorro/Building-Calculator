@@ -2,6 +2,13 @@
 
 import { useMemo } from 'react'
 import StrategicComparator from './StrategicComparator'
+import { motion } from 'framer-motion'
+import { 
+  Wallet, DollarSign, TrendingUp, TrendingDown, 
+  AlertTriangle, BarChart3, ArrowRight, Clock, Calendar 
+} from 'lucide-react'
+
+import { FinancialsSummary } from '@/utils/calculators/financials'
 
 interface ProjectDashboardProps {
   financials: FinancialsSummary
