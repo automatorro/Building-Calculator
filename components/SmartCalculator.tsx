@@ -21,7 +21,7 @@ interface SmartCalculatorProps {
   onClose: () => void
 }
 
-type ProjectType = 'house' | 'apartment' | 'foundation' | 'roof' | 'bathroom'
+type ProjectType = 'house' | 'apartment' | 'foundation' | 'roof' | 'bathroom' | 'fence'
 
 interface GeneratedLine {
   name: string
@@ -157,6 +157,62 @@ function generateLines(type: ProjectType, params: Record<string, number>): Gener
       ]
     }
 
+    case 'fence': {
+      const p = params.perimetru || 0
+      const hs = params.has_socle !== 0 // 1 = true, 0 = false (folosim numere pentru simplitate in params)
+      const mat = params.panel_material || 0 // 0=mesh, 1=wood, 2=metal, 3=wpc
+      const isoc = params.inaltime_soclu || 0.2
+      const ad = params.adancime_fundatie || 0.5
+      const ls = params.latime_soclu || 0.2
+      const hg = params.inaltime_gard || 1.5
+
+      const res: GeneratedLine[] = []
+
+      // 1. Terasamente
+      if (hs) {
+        res.push({ name: 'Săpătură manuală de șanțuri pentru soclu', unit: 'mc', quantity: +(p * ls * ad).toFixed(1), stage: 'Fundație', symbol: 'TsA02A1', include: true, calc: `${p}ml * ${ls}m * ${ad}m = ${(p * ls * ad).toFixed(1)} mc` })
+      } else {
+        const nrStalpi = Math.ceil(p / 2.5) + 1
+        res.push({ name: 'Săpături pt. gropi stâlpi (individuale)', unit: 'mc', quantity: +(nrStalpi * 0.4 * 0.4 * ad).toFixed(1), stage: 'Fundație', symbol: 'TsA02A1', include: true, calc: `${nrStalpi} buc * 0.4 * 0.4 * ${ad}m = ${(nrStalpi * 0.4 * 0.4 * ad).toFixed(1)} mc` })
+      }
+
+      // 2. Beton & Cofraje
+      if (hs) {
+        res.push({ name: 'Beton simplu C12/15 în fundație soclu', unit: 'mc', quantity: +(p * ls * ad).toFixed(1), stage: 'Fundație', symbol: 'BcA01B1', include: true, calc: `${p}ml * ${ls}m * ${ad}m = ${(p * ls * ad).toFixed(1)} mc` })
+        res.push({ name: 'Beton armat C16/20 în elevație soclu', unit: 'mc', quantity: +(p * ls * isoc).toFixed(1), stage: 'Fundație', symbol: 'BcA02A1', include: true, calc: `${p}ml * ${ls}m * ${isoc}m = ${(p * ls * isoc).toFixed(1)} mc` })
+        res.push({ name: 'Cofraje din scânduri în soclu (față/verso)', unit: 'mp', quantity: +(p * isoc * 2).toFixed(1), stage: 'Fundație', symbol: 'BcB01A1', include: true, calc: `${p}ml * ${isoc}m * 2 = ${(p * isoc * 2).toFixed(1)} mp` })
+        res.push({ name: 'Armătură BST500 soclu (estimare 3.5kg/ml)', unit: 'kg', quantity: +(p * 3.5).toFixed(0), stage: 'Fundație', symbol: 'BcC01A1', include: true, calc: `${p}ml * 3.5kg/ml = ${(p * 3.5).toFixed(0)} kg` })
+      } else {
+        const nrStalpi = Math.ceil(p / 2.5) + 1
+        res.push({ name: 'Beton simplu C12/15 fixare stâlpi', unit: 'mc', quantity: +(nrStalpi * 0.3 * 0.3 * ad).toFixed(1), stage: 'Fundație', symbol: 'BcA01B1', include: true, calc: `${nrStalpi} buc * 0.3 * 0.3 * ${ad}m = ${(nrStalpi * 0.3 * 0.3 * ad).toFixed(1)} mc` })
+      }
+
+      // 3. Panouri & Stâlpi
+      let symbol = 'RPCS16B1'; // 1.5m default
+      if (hg <= 0.6) symbol = 'RPCS16D1'
+      else if (hg <= 1.1) symbol = 'RPCS16C1'
+      else if (hg <= 1.6) symbol = 'RPCS16B1'
+      else symbol = 'RPCS16A1'
+
+      if (mat === 0) { // Mesh
+        res.push({ name: `Panouri gard plasă bordurată H=${hg}m (inc. stâlpi)`, unit: 'ml', quantity: p, stage: 'Împrejmuire', symbol: symbol, include: true })
+      } else if (mat === 1) { // Wood
+        res.push({ name: `Panouri gard lemn masiv (inc. stâlpi/suporti)`, unit: 'ml', quantity: p, stage: 'Împrejmuire', symbol: 'MANUAL', include: true, calc: `${p} ml` })
+      } else if (mat === 2) { // Metal Jaluzea
+        res.push({ name: `Panouri gard metalic tip jaluzea (inc. stâlpi)`, unit: 'ml', quantity: p, stage: 'Împrejmuire', symbol: 'MANUAL', include: true, calc: `${p} ml` })
+      } else if (mat === 3) { // WPC
+        res.push({ name: `Panouri gard WPC (inc. stâlpi aluminum)`, unit: 'ml', quantity: p, stage: 'Împrejmuire', symbol: 'MANUAL', include: true, calc: `${p} ml` })
+      }
+
+      // 4. Porți
+      if (p > 10) {
+        res.push({ name: 'Poartă acces auto metalică (4.0 x 2.0m)', unit: 'buc', quantity: 1, stage: 'Împrejmuire', symbol: 'CK15A1', include: false, calc: 'Dacă e necesar' })
+        res.push({ name: 'Poartă pietonală metalică (1.0 x 2.0m)', unit: 'buc', quantity: 1, stage: 'Împrejmuire', symbol: 'CK15A1', include: false, calc: 'Dacă e necesar' })
+      }
+
+      return res
+    }
+
     default:
       return []
   }
@@ -178,6 +234,10 @@ export default function SmartCalculator({
     slab_thickness: initialDimensions.slab_thickness || 0.15,
     wall_thickness: initialDimensions.wall_thickness || 0.25,
     goluri_percent: 15,
+    has_socle: 1,
+    panel_material: 0,
+    inaltime_soclu: 0.2,
+    inaltime_gard: 1.5,
   })
   const [lines, setLines] = useState<GeneratedLine[]>([])
   const [saving, setSaving] = useState(false)
@@ -199,6 +259,7 @@ export default function SmartCalculator({
     { id: 'foundation', label: 'Fundație', desc: 'Fundații izolate, continue sau radier', icon: '⛏️' },
     { id: 'roof', label: 'Acoperiș', desc: 'Șarpantă nouă sau înlocuire învelitoare', icon: '🏗️' },
     { id: 'bathroom', label: 'Baie', desc: 'Renovare completă baie cu sanitare', icon: '🚿' },
+    { id: 'fence', label: 'Gard / Împrejmuire', desc: 'Continuu cu soclu sau individual', icon: '🚧' },
   ]
 
   const PARAMS_CONFIG: Record<ProjectType, { key: string; label: string; unit: string; min: number; step: number }[]> = {
@@ -226,6 +287,15 @@ export default function SmartCalculator({
     ],
     bathroom: [
       { key: 'suprafata', label: 'Suprafață baie (mp)', unit: 'mp', min: 2, step: 0.5 },
+    ],
+    fence: [
+      { key: 'perimetru', label: 'Lungime perimetru (ml)', unit: 'ml', min: 1, step: 5 },
+      { key: 'has_socle', label: 'Cu soclu beton (1=Da, 0=Nu)', unit: '', min: 0, step: 1 },
+      { key: 'panel_material', label: 'Material (0=Plasă, 1=Lemn, 2=Metal, 3=WPC)', unit: '', min: 0, step: 1 },
+      { key: 'inaltime_gard', label: 'Înălțime gard/panou (m)', unit: 'm', min: 0.5, step: 0.5 },
+      { key: 'inaltime_soclu', label: 'Înălțime soclu peste sol (m)', unit: 'm', min: 0, step: 0.1 },
+      { key: 'adancime', label: 'Adâncime fundație (m)', unit: 'm', min: 0.2, step: 0.1 },
+      { key: 'latime', label: 'Lățime soclu (m)', unit: 'm', min: 0.15, step: 0.05 },
     ],
   }
 
@@ -377,9 +447,9 @@ export default function SmartCalculator({
     } else {
       // Salvează și dimensiunile
       await onSave({
-        length: Math.sqrt(params.suprafata || 100),
-        width: Math.sqrt(params.suprafata || 100),
-        height: params.inaltime || 3,
+        length: projectType === 'fence' ? params.perimetru : Math.sqrt(params.suprafata || 100),
+        width: projectType === 'fence' ? 0.2 : Math.sqrt(params.suprafata || 100),
+        height: projectType === 'fence' ? params.inaltime_gard : params.inaltime || 3,
         foundation_depth: params.adancime || 0.8,
         foundation_width: params.latime || 0.6,
         slab_thickness: params.slab_thickness || 0.15,

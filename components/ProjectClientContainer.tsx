@@ -17,6 +17,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { createClient } from '@/utils/supabase/client'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { toast } from 'sonner'
+import { processPurchaseDocument, PurchaseOcrResult } from '@/utils/purchase-ocr'
+import { Camera, Scan, Loader2, Info } from 'lucide-react'
 
 interface ProjectClientContainerProps {
   projectId: string
@@ -212,7 +214,7 @@ export default function ProjectClientContainer({
   /* ── Înregistrare achiziție cu alertă depășire buget ────────────────── */
   const handleAddPurchase = async (newPurchase: any) => {
     const photosFiles: File[] = Array.isArray(newPurchase?.photosFiles) ? newPurchase.photosFiles : []
-    const uploadBucket = 'purchase-photos'
+    const uploadBucket = 'purchases'
     let photos: string[] = []
 
     if (photosFiles.length > 0) {
@@ -773,6 +775,28 @@ function PurchaseFormModal({
     date: new Date().toISOString().split('T')[0],
   })
   const [photosFiles, setPhotosFiles] = useState<File[]>([])
+  const [isScanning, setIsScanning] = useState(false)
+  const [ocrResult, setOcrResult] = useState<PurchaseOcrResult | null>(null)
+
+  const handleScan = async (file: File) => {
+    setIsScanning(true)
+    try {
+      const result = await processPurchaseDocument(file)
+      setOcrResult(result)
+      setFormData(prev => ({
+        ...prev,
+        name: result.vendorName || prev.name,
+        amount_total: result.totalAmount?.toString() || prev.amount_total,
+        date: result.date || prev.date
+      }))
+      toast.success('Date extrase cu succes!')
+    } catch (err) {
+      console.error(err)
+      toast.error('Eroare la scanarea documentului.')
+    } finally {
+      setIsScanning(false)
+    }
+  }
 
   const inputStyle: React.CSSProperties = {
     width: '100%', padding: '11px 14px', background: '#F3F2EF',
@@ -787,167 +811,243 @@ function PurchaseFormModal({
       background: 'rgba(30,35,41,0.5)', backdropFilter: 'blur(4px)', padding: 16
     }}>
       <div style={{
-        width: '100%', maxWidth: 480, background: '#FAFAF8',
+        width: '100%', maxWidth: ocrResult ? 800 : 480, background: '#FAFAF8',
         borderRadius: 16, padding: '28px 28px', boxShadow: '0 24px 60px rgba(0,0,0,0.2)',
-        fontFamily: 'var(--font-dm-sans,"DM Sans",system-ui,sans-serif)'
+        fontFamily: 'var(--font-dm-sans,"DM Sans",system-ui,sans-serif)',
+        maxHeight: '90vh', overflowY: 'auto', transition: 'all 0.3s ease'
       }}>
 
-        <h3 style={{
-          fontFamily: 'var(--font-dm-serif,"DM Serif Display",Georgia,serif)',
-          fontSize: 22, fontWeight: 400, color: '#1E2329', marginBottom: 20
-        }}>
-          Înregistrare Achiziție
-        </h3>
-
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-          <div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+          <h3 style={{
+            fontFamily: 'var(--font-dm-serif,"DM Serif Display",Georgia,serif)',
+            fontSize: 22, fontWeight: 400, color: '#1E2329'
+          }}>
+            Înregistrare Achiziție
+          </h3>
+          <div style={{ display: 'flex', gap: 8 }}>
             <label style={{
-              display: 'block', fontSize: 12, fontWeight: 500,
-              color: '#6B6860', textTransform: 'uppercase', letterSpacing: '.04em', marginBottom: 6
+              display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px',
+              background: '#F3F2EF', borderRadius: 8, fontSize: 11, fontWeight: 800,
+              cursor: 'pointer', color: '#4A4744', textTransform: 'uppercase', letterSpacing: '0.05em'
             }}>
-              Descriere / Articol
+              <Camera size={14} /> Foto Cameră
+              <input type="file" accept="image/*" capture="environment" style={{ display: 'none' }}
+                onChange={e => {
+                  const file = e.target.files?.[0]
+                  if (file) {
+                    setPhotosFiles([file])
+                    handleScan(file)
+                  }
+                }} />
             </label>
-            <input placeholder="ex: Fier beton fundație" style={inputStyle}
-              value={formData.name}
-              onChange={e => setFormData({ ...formData, name: e.target.value })}
-              onFocus={e => (e.target.style.borderColor = '#E8500A')}
-              onBlur={e => (e.target.style.borderColor = '#E5E3DE')} />
+            <label style={{
+              display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px',
+              background: '#E8500A15', borderRadius: 8, fontSize: 11, fontWeight: 800,
+              cursor: 'pointer', color: '#E8500A', textTransform: 'uppercase', letterSpacing: '0.05em'
+            }}>
+              <Scan size={14} /> Încarcă & Scan
+              <input type="file" accept="image/*" style={{ display: 'none' }}
+                onChange={e => {
+                  const file = e.target.files?.[0]
+                  if (file) {
+                    setPhotosFiles([file])
+                    handleScan(file)
+                  }
+                }} />
+            </label>
           </div>
+        </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 12 }}>
+        {isScanning && (
+          <div style={{ 
+            background: '#F0F9FF', border: '1px solid #BAE6FD', borderRadius: 12, 
+            padding: '24px', textAlign: 'center', marginBottom: 20,
+            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12
+          }}>
+            <Loader2 size={32} className="animate-spin text-blue-500" />
+            <p style={{ fontSize: 14, fontWeight: 600, color: '#0369A1' }}>Se analizează documentul nativ...</p>
+            <p style={{ fontSize: 12, color: '#0EA5E9' }}>Extragem CUI, Furnizor, TVA și Produse</p>
+          </div>
+        )}
+
+        <div style={{ display: 'grid', gridTemplateColumns: ocrResult ? '1fr 1.5fr' : '1fr', gap: 28 }}>
+          
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
             <div>
               <label style={{
                 display: 'block', fontSize: 12, fontWeight: 500,
                 color: '#6B6860', textTransform: 'uppercase', letterSpacing: '.04em', marginBottom: 6
               }}>
-                Sumă totală (lei)
+                Descriere / Furnizor
               </label>
-              <input type="number" placeholder="ex: 4500" style={inputStyle}
-                value={formData.amount_total}
-                onChange={e => setFormData({ ...formData, amount_total: e.target.value })}
+              <input placeholder="ex: Dedeman SRL" style={inputStyle}
+                value={formData.name}
+                onChange={e => setFormData({ ...formData, name: e.target.value })}
                 onFocus={e => (e.target.style.borderColor = '#E8500A')}
                 onBlur={e => (e.target.style.borderColor = '#E5E3DE')} />
             </div>
-            <div>
-              <label style={{
-                display: 'block', fontSize: 12, fontWeight: 500,
-                color: '#6B6860', textTransform: 'uppercase', letterSpacing: '.04em', marginBottom: 6
-              }}>
-                Dată
-              </label>
-              <input type="date" style={inputStyle}
-                value={formData.date}
-                onChange={e => setFormData({ ...formData, date: e.target.value })} />
-            </div>
-          </div>
 
-          <div>
-            <label style={{
-              display: 'block', fontSize: 12, fontWeight: 500,
-              color: '#6B6860', textTransform: 'uppercase', letterSpacing: '.04em', marginBottom: 6
-            }}>
-              Poze (max 3)
-            </label>
-            <input
-              type="file"
-              accept="image/*"
-              multiple
-              onChange={e => {
-                const files = Array.from(e.target.files || []).slice(0, 3)
-                setPhotosFiles(files)
-              }}
-            />
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 12 }}>
+              <div>
+                <label style={{
+                  display: 'block', fontSize: 12, fontWeight: 500,
+                  color: '#6B6860', textTransform: 'uppercase', letterSpacing: '.04em', marginBottom: 6
+                }}>
+                  Sumă totală (lei)
+                </label>
+                <input type="number" placeholder="ex: 4500" style={inputStyle}
+                  value={formData.amount_total}
+                  onChange={e => setFormData({ ...formData, amount_total: e.target.value })}
+                  onFocus={e => (e.target.style.borderColor = '#E8500A')}
+                  onBlur={e => (e.target.style.borderColor = '#E5E3DE')} />
+              </div>
+              <div>
+                <label style={{
+                  display: 'block', fontSize: 12, fontWeight: 500,
+                  color: '#6B6860', textTransform: 'uppercase', letterSpacing: '.04em', marginBottom: 6
+                }}>
+                  Dată
+                </label>
+                <input type="date" style={inputStyle}
+                  value={formData.date}
+                  onChange={e => setFormData({ ...formData, date: e.target.value })} />
+              </div>
+            </div>
+
+            {ocrResult?.vendorCui && (
+              <div style={{ fontSize: 11, background: '#F3F2EF', padding: '4px 8px', borderRadius: 4, display: 'inline-block' }}>
+                <span style={{ color: '#6B6860' }}>CUI Furnizor identificat: </span>
+                <span style={{ fontWeight: 700, color: '#1E2329' }}>{ocrResult.vendorCui}</span>
+              </div>
+            )}
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 12 }}>
+              <div>
+                <label style={{
+                  display: 'block', fontSize: 12, fontWeight: 500,
+                  color: '#6B6860', textTransform: 'uppercase', letterSpacing: '.04em', marginBottom: 6
+                }}>
+                  Etapă
+                </label>
+                <select style={{ ...inputStyle, cursor: 'pointer' }}
+                  value={formData.stage_name}
+                  onChange={e => setFormData({ ...formData, stage_name: e.target.value })}>
+                  {stages.map(s => <option key={s} value={s}>{s}</option>)}
+                  <option value="Lucrări Generale">Alte Lucrări</option>
+                </select>
+              </div>
+              <div>
+                <label style={{
+                  display: 'block', fontSize: 12, fontWeight: 500,
+                  color: '#6B6860', textTransform: 'uppercase', letterSpacing: '.04em', marginBottom: 6
+                }}>
+                  Categorie
+                </label>
+                <select style={{ ...inputStyle, cursor: 'pointer' }}
+                  value={formData.category}
+                  onChange={e => setFormData({ ...formData, category: e.target.value })}>
+                  {['Material', 'Manoperă', 'Utilaj', 'Transport', 'Altele'].map(c => (
+                    <option key={c} value={c}>{c}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* ── Poze Previzualizare ── */}
             {photosFiles.length > 0 && (
-              <div style={{ display: 'flex', gap: 8, marginTop: 10, flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', gap: 8, marginTop: 4, flexWrap: 'wrap' }}>
                 {photosFiles.map((file) => {
                   const url = URL.createObjectURL(file)
                   return (
-                    <img
-                      key={`${file.name}-${file.size}-${file.lastModified}`}
-                      src={url}
-                      alt=""
-                      style={{ width: 56, height: 56, borderRadius: 10, objectFit: 'cover', border: '1px solid #E5E3DE' }}
-                    />
+                    <div key={`${file.name}-${file.size}-${file.lastModified}`} style={{ position: 'relative' }}>
+                      <img
+                        src={url}
+                        alt=""
+                        style={{ width: 64, height: 64, borderRadius: 10, objectFit: 'cover', border: '1px solid #E5E3DE' }}
+                      />
+                    </div>
                   )
                 })}
               </div>
             )}
-          </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 12 }}>
-            <div>
-              <label style={{
-                display: 'block', fontSize: 12, fontWeight: 500,
-                color: '#6B6860', textTransform: 'uppercase', letterSpacing: '.04em', marginBottom: 6
-              }}>
-                Etapă
-              </label>
-              <select style={{ ...inputStyle, cursor: 'pointer' }}
-                value={formData.stage_name}
-                onChange={e => setFormData({ ...formData, stage_name: e.target.value })}>
-                {stages.map(s => <option key={s} value={s}>{s}</option>)}
-                <option value="Lucrări Generale">Alte Lucrări</option>
-              </select>
-            </div>
-            <div>
-              <label style={{
-                display: 'block', fontSize: 12, fontWeight: 500,
-                color: '#6B6860', textTransform: 'uppercase', letterSpacing: '.04em', marginBottom: 6
-              }}>
-                Categorie
-              </label>
-              <select style={{ ...inputStyle, cursor: 'pointer' }}
-                value={formData.category}
-                onChange={e => setFormData({ ...formData, category: e.target.value })}>
-                {['Material', 'Manoperă', 'Utilaj', 'Transport', 'Altele'].map(c => (
-                  <option key={c} value={c}>{c}</option>
-                ))}
-              </select>
-            </div>
-          </div>
+            {/* ── Live Impact Analysis ── */}
+            {(() => {
+              const amount = parseFloat(formData.amount_total) || 0
+              if (amount <= 0) return null
+              
+              const deviation = financials.deviations.find((d: any) => d.stage === formData.stage_name)
+              const planned = deviation?.planned || 0
+              const spent = deviation?.spent || 0
+              const newTotal = spent + amount
+              const isExceeded = planned > 0 && newTotal > planned
+              const diff = newTotal - planned
+              const impactOnProfit = isExceeded ? diff : 0
 
-          {/* ── Live Impact Analysis ── */}
-          {(() => {
-            const amount = parseFloat(formData.amount_total) || 0
-            if (amount <= 0) return null
-            
-            const deviation = financials.deviations.find((d: any) => d.stage === formData.stage_name)
-            const planned = deviation?.planned || 0
-            const spent = deviation?.spent || 0
-            const newTotal = spent + amount
-            const isExceeded = planned > 0 && newTotal > planned
-            const diff = newTotal - planned
-            const impactOnProfit = isExceeded ? diff : 0
-
-            return (
-              <motion.div 
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                style={{
-                  padding: '16px',
-                  borderRadius: 12,
+              return (
+                <div style={{
+                  padding: '12px', borderRadius: 10,
                   background: isExceeded ? '#FFF5F5' : '#F0FFF4',
                   border: `1px solid ${isExceeded ? '#FEB2B2' : '#9AE6B4'}`,
-                }}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: isExceeded ? '#C53030' : '#2F855A', textTransform: 'uppercase' }}>
-                    Impact Buget Etapă
-                  </span>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: isExceeded ? '#C53030' : '#2F855A' }}>
+                }}>
+                  <div style={{ display: 'flex', fontSize: 11, fontWeight: 700, color: isExceeded ? '#C53030' : '#2F855A', textTransform: 'uppercase', marginBottom: 4 }}>
                     {isExceeded ? '⚠️ DEPĂȘIRE' : '✅ ÎN LIMITĂ'}
-                  </span>
+                  </div>
+                  <div style={{ fontSize: 12, color: isExceeded ? '#9B2C2C' : '#276749', lineHeight: 1.4 }}>
+                    {isExceeded 
+                      ? <>S-a depășit bugetul cu <strong>{diff.toLocaleString()} Lei</strong>.</>
+                      : <>Rămân <strong>{(planned - newTotal).toLocaleString()} Lei</strong>.</>}
+                  </div>
                 </div>
-                <div style={{ fontSize: 13, color: isExceeded ? '#9B2C2C' : '#276749', lineHeight: 1.4 }}>
-                  {isExceeded ? (
-                    <>Această achiziție va duce la o depășire a bugetului de etapă cu <strong>{diff.toLocaleString('ro-RO')} Lei</strong>. Profitul tău estimat va scădea cu <strong>{impactOnProfit.toLocaleString('ro-RO')} Lei</strong>.</>
-                  ) : (
-                    <>După această achiziție, mai rămân <strong>{(planned - newTotal).toLocaleString('ro-RO')} Lei</strong> disponibili pentru această etapă.</>
-                  )}
+              )
+            })()}
+          </div>
+
+          {/* ── Detalii OCR Extrase ── */}
+          {ocrResult && (
+            <div style={{ background: '#F1F5F9', borderRadius: 12, padding: 16, border: '1px solid #E2E8F0' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+                <Info size={16} style={{ color: '#64748B' }} />
+                <h4 style={{ fontSize: 13, fontWeight: 700, color: '#475569', textTransform: 'uppercase' }}>Produse Identificate</h4>
+              </div>
+              
+              <div style={{ maxHeight: 300, overflowY: 'auto' }} className="no-scrollbar">
+                <table style={{ width: '100%', fontSize: 12, borderCollapse: 'collapse' }}>
+                  <thead style={{ position: 'sticky', top: 0, background: '#F1F5F9' }}>
+                    <tr style={{ borderBottom: '1px solid #CBD5E1' }}>
+                      <th style={{ textAlign: 'left', padding: '6px 4px', color: '#64748B' }}>Articol</th>
+                      <th style={{ textAlign: 'center', padding: '6px 4px', color: '#64748B' }}>Cant.</th>
+                      <th style={{ textAlign: 'right', padding: '6px 4px', color: '#64748B' }}>Total (Lei)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {ocrResult.items.length === 0 ? (
+                      <tr>
+                        <td colSpan={3} style={{ padding: '20px 0', textAlign: 'center', color: '#94A3B8' }}>
+                          Nu s-au putut extrage produsele individual.
+                        </td>
+                      </tr>
+                    ) : (
+                      ocrResult.items.map((item, idx) => (
+                        <tr key={idx} style={{ borderBottom: '1px solid #E2E8F0' }}>
+                          <td style={{ padding: '8px 4px', color: '#1E293B' }}>{item.name}</td>
+                          <td style={{ padding: '8px 4px', textAlign: 'center', color: '#1E293B' }}>{item.quantity}</td>
+                          <td style={{ padding: '8px 4px', textAlign: 'right', fontWeight: 600, color: '#0F172A' }}>{item.totalPrice.toFixed(2)}</td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+
+              {ocrResult.tvaAmount && (
+                <div style={{ marginTop: 12, paddingTop: 12, borderTop: '2px dashed #CBD5E1', display: 'flex', justifyContent: 'space-between', fontSize: 12 }}>
+                  <span style={{ color: '#64748B' }}>Din care TVA inclus:</span>
+                  <span style={{ fontWeight: 700, color: '#1E293B' }}>{ocrResult.tvaAmount.toFixed(2)} Lei</span>
                 </div>
-              </motion.div>
-            )
-          })()}
+              )}
+            </div>
+          )}
         </div>
 
         <div style={{ display: 'flex', gap: 10, marginTop: 24 }}>
@@ -957,26 +1057,35 @@ function PurchaseFormModal({
               border: '1px solid #E5E3DE', borderRadius: 8, fontSize: 14,
               fontWeight: 500, color: '#6B6860', cursor: 'pointer', fontFamily: 'inherit',
               transition: 'all .15s'
-            }}
-            onMouseEnter={e => (e.currentTarget.style.borderColor = '#A8A59E')}
-            onMouseLeave={e => (e.currentTarget.style.borderColor = '#E5E3DE')}>
+            }}>
             Anulează
           </button>
           <button
-            onClick={() => onSave({ ...formData, amount_total: parseFloat(formData.amount_total) || 0, photosFiles })}
-            disabled={!formData.name || !formData.amount_total}
+            onClick={() => onSave({ 
+              ...formData, 
+              amount_total: parseFloat(formData.amount_total) || 0, 
+              photosFiles,
+              metadata: { 
+                vendor_cui: ocrResult?.vendorCui,
+                tva_amount: ocrResult?.tvaAmount,
+                items: ocrResult?.items
+              }
+            })}
+            disabled={!formData.name || !formData.amount_total || isScanning}
             style={{
               flex: 1, padding: '12px', background: '#E8500A', border: 'none',
               borderRadius: 8, fontSize: 14, fontWeight: 500, color: 'white',
-              cursor: !formData.name || !formData.amount_total ? 'not-allowed' : 'pointer',
-              fontFamily: 'inherit', opacity: !formData.name || !formData.amount_total ? 0.5 : 1,
+              cursor: (!formData.name || !formData.amount_total || isScanning) ? 'not-allowed' : 'pointer',
+              fontFamily: 'inherit', opacity: (!formData.name || !formData.amount_total || isScanning) ? 0.5 : 1,
               transition: 'background .15s'
-            }}
-            onMouseEnter={e => { if (formData.name && formData.amount_total) e.currentTarget.style.background = '#C43F06' }}
-            onMouseLeave={e => (e.currentTarget.style.background = '#E8500A')}>
-            Salvează
+            }}>
+            {isScanning ? 'Se analizează...' : 'Salvează'}
           </button>
         </div>
+      </div>
+    </div>
+  )
+}
       </div>
     </div>
   )
