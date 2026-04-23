@@ -1,14 +1,15 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import ProjectAssistantAI from './ProjectAssistantAI'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { 
   Wallet, DollarSign, TrendingUp, TrendingDown, 
-  AlertTriangle, BarChart3, ArrowRight, Clock, Calendar 
+  AlertTriangle, BarChart3, ArrowRight, Clock, Calendar,
+  ShoppingCart, Zap
 } from 'lucide-react'
 
-import { FinancialsSummary } from '@/utils/calculators/financials'
+import { FinancialsSummary, Purchase } from '@/utils/calculators/financials'
 
 interface ProjectDashboardProps {
   financials: FinancialsSummary
@@ -19,10 +20,11 @@ interface ProjectDashboardProps {
   onViewStages: () => void
   lines: any[]
   settings: any
+  purchases: Purchase[]
 }
 
 export default function ProjectDashboard({ 
-  financials, projectName, dimensions, projectId, onAddPurchase, onViewStages, lines, settings 
+  financials, projectName, dimensions, projectId, onAddPurchase, onViewStages, lines, settings, purchases 
 }: ProjectDashboardProps) {
   const {
     totalBudget,
@@ -38,8 +40,16 @@ export default function ProjectDashboard({
 
   const isOverBudget = totalSpent > totalBudget
   const marginPercent = totalEstimatedRevenue > 0 ? (netProfit / totalEstimatedRevenue) * 100 : 0
-  const fmtPct1 = (n: number) => n.toLocaleString('ro-RO', { minimumFractionDigits: 1, maximumFractionDigits: 1 })
-  const fmtDecimalsInText = (s: string) => s.replace(/(\d)\.(\d)/g, '$1,$2')
+
+  const fmtCost = (n: number) => new Intl.NumberFormat('ro-RO', { 
+    minimumFractionDigits: 2, 
+    maximumFractionDigits: 2 
+  }).format(n)
+
+  const fmtPct1 = (n: number) => new Intl.NumberFormat('ro-RO', { 
+    minimumFractionDigits: 1, 
+    maximumFractionDigits: 1 
+  }).format(n)
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
@@ -67,31 +77,31 @@ export default function ProjectDashboard({
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <SummaryCard 
           label="Cât am cheltuit?" 
-          value={`${totalSpent.toLocaleString('ro-RO')} Lei`}
+          value={`${fmtCost(totalSpent)} Lei`}
           subValue="Total ieșiri reale"
           icon={<DollarSign className="text-blue-500" />}
           trend={null}
         />
         <SummaryCard 
           label="Buget Rămas" 
-          value={`${remainingBudget.toLocaleString('ro-RO')} Lei`}
+          value={`${fmtCost(remainingBudget)} Lei`}
           subValue="Buget de execuție disponibil"
           icon={<Wallet className="text-green-500" />}
           trend={null}
         />
         <SummaryCard 
           label="Profit Estimat" 
-          value={`${netProfit.toLocaleString('ro-RO')} Lei`}
+          value={`${fmtCost(netProfit)} Lei`}
           subValue={`${fmtPct1(marginPercent)}% Marjă Profit`}
           icon={<TrendingUp className="text-primary" />}
           trend={marginPercent > 10 ? 'positive' : 'negative'}
         />
         <SummaryCard 
           label="Status Buget" 
-          value={isOverBudget ? 'Derapaj' : 'În Grafic'}
-          subValue={`${fmtPct1(percentSpent)}% din plan consumat`}
-          icon={isOverBudget ? <AlertTriangle className="text-red-500" /> : <BarChart3 className="text-primary" />}
-          trend={isOverBudget ? 'negative' : 'positive'}
+          value={netProfit < 1 ? 'Deficit Estimat' : (isOverBudget ? 'Derapaj' : 'În Grafic')}
+          subValue={netProfit < 1 ? 'Cheltuieli > Venituri' : `${fmtPct1(percentSpent)}% din plan consumat`}
+          icon={(isOverBudget || netProfit < 1) ? <AlertTriangle className="text-red-500" /> : <BarChart3 className="text-primary" />}
+          trend={(isOverBudget || netProfit < 1) ? 'negative' : 'positive'}
         />
       </div>
 
@@ -107,7 +117,7 @@ export default function ProjectDashboard({
                 </div>
                 <div className="text-left sm:text-right w-full sm:w-auto">
                   <div className="text-[10px] font-bold text-slate-400 uppercase">Limită Cheltuieli (Fără Profit):</div>
-                  <div className="text-lg md:text-xl lg:text-2xl font-mono font-bold mt-0.5 text-slate-700 dark:text-slate-300">{totalBudget.toLocaleString('ro-RO')} Lei</div>
+                  <div className="text-lg md:text-xl lg:text-2xl font-mono font-bold mt-0.5 text-slate-700 dark:text-slate-300">{fmtCost(totalBudget)} Lei</div>
                 </div>
               </div>
               
@@ -122,11 +132,11 @@ export default function ProjectDashboard({
               <div className="grid grid-cols-1 sm:grid-cols-2 mt-6 md:mt-8 pt-6 md:pt-8 border-t border-border/30 gap-4 md:gap-8">
                 <div>
                   <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Valoare Contract (Ofertată)</div>
-                  <div className="text-xl md:text-2xl lg:text-3xl font-bold font-mono text-primary">{totalEstimatedRevenue.toLocaleString('ro-RO')} Lei</div>
+                  <div className="text-xl md:text-2xl lg:text-3xl font-bold font-mono text-primary">{fmtCost(totalEstimatedRevenue)} Lei</div>
                 </div>
                 <div>
                   <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Cheltuieli Reale</div>
-                  <div className="text-xl md:text-2xl lg:text-3xl font-bold font-mono">{totalSpent.toLocaleString('ro-RO')} Lei</div>
+                  <div className="text-xl md:text-2xl lg:text-3xl font-bold font-mono">{fmtCost(totalSpent)} Lei</div>
                 </div>
               </div>
             </div>
@@ -152,12 +162,12 @@ export default function ProjectDashboard({
                   <div className="space-y-0.5 flex-1 min-w-0">
                     <div className="font-black text-sm md:text-base tracking-tight truncate">{dev.stage}</div>
                     <div className="text-[10px] font-medium text-slate-400">
-                      Rămas: <span className="font-bold text-slate-700 dark:text-slate-300">{(dev.planned - dev.spent).toLocaleString('ro-RO')} Lei</span>
+                      Rămas: <span className="font-bold text-slate-700 dark:text-slate-300">{fmtCost(dev.planned - dev.spent)} Lei</span>
                     </div>
                   </div>
                   <div className="text-right shrink-0">
                     <div className={`text-sm md:text-lg font-black ${dev.diff > 0 ? 'text-red-500' : 'text-slate-900 dark:text-white'}`}>
-                      {dev.spent.toLocaleString('ro-RO')} Lei
+                      {fmtCost(dev.spent)} Lei
                     </div>
                     <div className={`text-[9px] font-black uppercase ${dev.diff > 0 ? 'text-red-500' : 'text-green-500'}`}>
                       {dev.diff > 0 ? `+${fmtPct1(dev.percent)}%` : `-${fmtPct1(Math.abs(dev.percent))}%`}
@@ -181,10 +191,10 @@ export default function ProjectDashboard({
                 <div key={i} className={`text-xs flex gap-3 p-3 rounded-xl ${alert.type === 'danger' ? 'bg-red-500/10 text-red-700 dark:text-red-400' : 'bg-orange-500/10 text-orange-700 dark:text-orange-300'}`}>
                   <div className="shrink-0 mt-0.5">•</div>
                   <div>
-                    <div className="font-bold">{fmtDecimalsInText(alert.message)}</div>
+                    <div className="font-bold">{alert.message}</div>
                     {alert.impact && alert.impact !== 0 && (
                       <div className="mt-1 opacity-80 uppercase text-[9px] font-black tracking-widest">
-                        Impact: {alert.impact.toLocaleString('ro-RO')} Lei
+                        Impact: {fmtCost(alert.impact)} Lei
                       </div>
                     )}
                   </div>
@@ -207,7 +217,7 @@ export default function ProjectDashboard({
                 <div className="pb-6 border-b border-white/10">
                   <div className="text-xs text-slate-400 font-bold uppercase tracking-widest mb-1">Necesar de plată</div>
                   <div className="text-3xl md:text-4xl font-black text-primary">
-                    {upcomingCosts.reduce((sum, c) => sum + c.amount, 0).toLocaleString('ro-RO')} Lei
+                    {fmtCost(upcomingCosts.reduce((sum, c) => sum + c.amount, 0))} Lei
                   </div>
                   <div className="text-xs mt-1 text-slate-500 font-medium">Estimat bazat pe etapele nelucrate</div>
                 </div>
@@ -218,7 +228,7 @@ export default function ProjectDashboard({
                       <div className="p-1.5 bg-white/5 rounded-lg text-primary"><Calendar size={12} /></div>
                       <div>
                         <div className="text-sm font-bold tracking-tight">{cost.stage}</div>
-                        <div className="text-xs font-medium text-slate-400 mt-0.5">{cost.amount.toLocaleString('ro-RO')} Lei</div>
+                        <div className="text-xs font-medium text-slate-400 mt-0.5">{fmtCost(cost.amount)} Lei</div>
                       </div>
                     </div>
                   ))}
@@ -232,13 +242,180 @@ export default function ProjectDashboard({
             <div className="absolute -right-16 -top-16 w-32 h-32 bg-primary/10 rounded-full blur-2xl" />
           </div>
 
-          <ProjectAssistantAI 
-            projectId={projectId}
-            projectName={projectName}
-            lines={lines}
-            settings={settings}
+          <FinanceCenter 
+            lines={lines} 
+            purchases={purchases} 
+            settings={settings} 
+            fmtCost={fmtCost} 
+            fmtPct1={fmtPct1} 
           />
         </div>
+      </div>
+    </div>
+  )
+}
+
+function FinanceCenter({ lines, purchases, settings, fmtCost, fmtPct1 }: { 
+  lines: any[], purchases: Purchase[], settings: any, fmtCost: any, fmtPct1: any 
+}) {
+  const [activeTab, setActiveTab] = useState<'resources' | 'activity' | 'performance'>('resources')
+  const { calculateLineCosts } = require('@/utils/calculators/estimate')
+
+  const data = useMemo(() => {
+    // 1. Resources Distribution
+    let totalMat = 0, totalLab = 0, totalEq = 0, totalTr = 0
+    lines.forEach(l => {
+      const c = calculateLineCosts(l, settings)
+      if (c.breakdown) {
+        totalMat += c.breakdown.material
+        totalLab += c.breakdown.labor
+        totalEq += c.breakdown.equipment
+        totalTr += c.breakdown.transport
+      }
+    })
+    const total = totalMat + totalLab + totalEq + totalTr
+    
+    // 2. Performance (Planned Material Budget vs Actual Material Spent)
+    const totalMatSpent = purchases
+      .filter(p => p.category?.toLowerCase().includes('material') || !p.category)
+      .reduce((sum, p) => sum + p.amount_total, 0)
+    
+    const performancePct = totalMat > 0 ? ((totalMat - totalMatSpent) / totalMat) * 100 : 0
+
+    return {
+      resources: {
+        material: totalMat,
+        labor: totalLab,
+        equipment: totalEq,
+        transport: totalTr,
+        total,
+        pats: [
+          { label: 'Materiale', val: totalMat, color: 'bg-primary' },
+          { label: 'Manoperă', val: totalLab, color: 'bg-blue-500' },
+          { label: 'Utilaje/Transp.', val: totalEq + totalTr, color: 'bg-amber-500' },
+        ]
+      },
+      activity: [...purchases].sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 5),
+      performance: {
+        plannedMat: totalMat,
+        spentMat: totalMatSpent,
+        savings: totalMat - totalMatSpent,
+        pct: performancePct
+      }
+    }
+  }, [lines, purchases, settings])
+
+  const TABS = [
+    { id: 'resources', label: 'Ponderi', icon: BarChart3 },
+    { id: 'activity', label: 'Activitate', icon: Clock },
+    { id: 'performance', label: 'Eficiență', icon: Zap },
+  ]
+
+  return (
+    <div className="glass-card bg-white dark:bg-slate-900 border-border/50 shadow-xl overflow-hidden rounded-3xl flex flex-col">
+      <div className="p-2 bg-slate-50 dark:bg-slate-800/50 flex gap-1">
+        {TABS.map(t => (
+          <button
+            key={t.id}
+            onClick={() => setActiveTab(t.id as any)}
+            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+              activeTab === t.id 
+              ? 'bg-white dark:bg-slate-900 text-primary shadow-sm ring-1 ring-border/50' 
+              : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
+            }`}
+          >
+            <t.icon size={14} /> {t.label}
+          </button>
+        ))}
+      </div>
+
+      <div className="p-6 min-h-[320px]">
+        <AnimatePresence mode="wait">
+          {activeTab === 'resources' && (
+            <motion.div 
+              key="res" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}
+              className="space-y-6"
+            >
+              <div className="space-y-4">
+                {data.resources.pats.map((p, i) => (
+                  <div key={i} className="space-y-1.5">
+                    <div className="flex justify-between text-[10px] font-bold uppercase tracking-tight">
+                      <span className="text-slate-500">{p.label}</span>
+                      <span className="text-slate-900 dark:text-white">{fmtCost(p.val)} Lei ({data.resources.total > 0 ? fmtPct1((p.val/data.resources.total)*100) : 0}%)</span>
+                    </div>
+                    <div className="h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                      <motion.div 
+                        initial={{ width: 0 }} animate={{ width: `${data.resources.total > 0 ? (p.val/data.resources.total)*100 : 0}%` }}
+                        className={`h-full ${p.color}`} 
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="p-4 bg-primary/5 rounded-2xl border border-primary/10">
+                <p className="text-[10px] text-primary font-bold leading-relaxed italic">
+                  💡 Sfat: {data.resources.material > data.resources.labor ? 'Proiectul are o pondere mare de materiale. Concentrează-te pe negocierea cu furnizorii pentru a crește marginea.' : 'Manopera domină costurile. Monitorizează productivitatea echipei pentru a evita întârzierile.'}
+                </p>
+              </div>
+            </motion.div>
+          )}
+
+          {activeTab === 'activity' && (
+            <motion.div 
+              key="act" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}
+              className="space-y-4"
+            >
+              {data.activity.length > 0 ? data.activity.map((p, i) => (
+                <div key={i} className="flex items-center gap-3 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-800 transition-all border border-transparent hover:border-border/50">
+                  <div className="w-10 h-10 rounded-xl bg-white dark:bg-slate-900 flex items-center justify-center text-primary shadow-sm">
+                    <ShoppingCart size={18} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-xs font-bold truncate">{p.name}</div>
+                    <div className="text-[10px] text-slate-400 font-medium">{new Date(p.date).toLocaleDateString('ro-RO')} • {p.category || 'General'}</div>
+                  </div>
+                  <div className="text-xs font-black text-slate-900 dark:text-white">
+                    {fmtCost(p.amount_total)}
+                  </div>
+                </div>
+              )) : (
+                <div className="py-12 text-center text-slate-400 text-xs italic">Nicio achiziție înregistrată.</div>
+              )}
+            </motion.div>
+          )}
+
+          {activeTab === 'performance' && (
+            <motion.div 
+              key="perf" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}
+              className="space-y-8"
+            >
+              <div className="text-center space-y-2">
+                <div className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Economie Realizată (Materiale)</div>
+                <div className={`text-4xl font-black ${data.performance.savings >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                  {data.performance.savings >= 0 ? '+' : ''}{fmtCost(data.performance.savings)} Lei
+                </div>
+                <div className="text-[10px] font-bold text-slate-500">
+                  {data.performance.pct >= 0 ? 'Sub bugetul planificat' : 'Peste bugetul planificat'} cu {Math.abs(Math.round(data.performance.pct))}%
+                </div>
+              </div>
+
+              <div className="space-y-4 pt-4 border-t border-border/30">
+                <div className="flex justify-between text-xs">
+                  <span className="font-bold text-slate-400 uppercase">Planificat (Mat)</span>
+                  <span className="font-black">{fmtCost(data.performance.plannedMat)} Lei</span>
+                </div>
+                <div className="flex justify-between text-xs">
+                  <span className="font-bold text-slate-400 uppercase">Realizat (Mat)</span>
+                  <span className="font-black text-primary">{fmtCost(data.performance.spentMat)} Lei</span>
+                </div>
+              </div>
+              
+              <p className="text-[9px] text-center text-slate-400 italic">
+                * Comparăm totalul planificat al materialelor din deviz cu achizițiile înregistrate ca fiind materiale.
+              </p>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   )

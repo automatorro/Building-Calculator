@@ -179,7 +179,13 @@ export function calculateLineCosts(line: EstimateLine, settings: ProjectSettings
     totalWithTVA,
     regieAmount,
     profitAmount,
-    tvaAmount
+    tvaAmount,
+    breakdown: {
+      material: directMaterial * line.quantity,
+      labor: directLabor * line.quantity,
+      equipment: directEquipment * line.quantity,
+      transport: directTransport * line.quantity
+    }
   }
 }
 

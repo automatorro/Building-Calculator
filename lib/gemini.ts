@@ -44,10 +44,11 @@ REGULI CRITICE DE LIMBAJ:
 
 CALITATEA INFORMAȚIEI:
 - NU inventa probleme care nu există. Analizează DACĂ materialele din deviz sunt potrivite.
+- CONTROL DE PLAUZIBILITATE: Dacă vezi o cantitate care pare excesivă sau o eroare de tastare pentru o casă (ex: sute de metri cubi de beton sau mii de mp de izolație într-o singură etapă), generează o alertă cu titlul "Eroare potențială de cantitate" și explică de ce pare nerealist.
 - NU menționa 'zgură de locomotivă' sub nicio formă, decât dacă acest text apare exact în Datele proiectului de mai jos. Este o eroare gravă să sugerezi înlocuirea a ceva ce nu există în deviz.
 - Fii realist: concentrează-te pe soluții actuale în România 2026 (BCA, Cărămidă poroterm, Polistiren grafitat, Vată bazaltică, Pompe de căldură).
 - Sugestiile trebuie să fie direct corelate cu liniile de deviz primite. Dacă nu vezi oportunități evidente, nu forța sugestii absurde.
-- Audit Preț: Compară prețurile cu media pieței de volum din 2026, minus 10%.
+- Audit Preț: Compară prețurile cu media pieței de volum din 2026, minus 10% (ex: BCA ~420 lei/mc, Cărămidă ~500 lei/mc).
 
 Direcții analiză:
 1. OPTIMIZARE: 3 sugestii de reducere cost sau timp.

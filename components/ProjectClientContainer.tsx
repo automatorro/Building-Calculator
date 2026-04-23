@@ -377,7 +377,7 @@ export default function ProjectClientContainer({
       { id: 'timeline', label: 'Cronologie', icon: CalendarDays },
       { id: 'purchases', label: 'Achiziții', icon: Wallet },
       { id: 'dashboard', label: 'Status', icon: LayoutDashboard },
-      { id: 'copilot', label: 'AI Copilot', icon: Sparkles },
+      { id: 'copilot', label: 'AI', icon: Sparkles },
       { id: 'team', label: 'Echipă', icon: Users },
     ]
 
@@ -538,6 +538,7 @@ export default function ProjectClientContainer({
               onViewStages={() => setView('planning')}
               lines={lines}
               settings={settings}
+              purchases={purchases}
             />
             <div className="mt-8" style={{
               background: '#F3F2EF', borderRadius: 12,
