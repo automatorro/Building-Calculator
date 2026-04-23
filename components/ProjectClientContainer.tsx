@@ -10,8 +10,9 @@ import { EstimateLine, ProjectSettings } from '@/utils/calculators/estimate'
 import { Purchase, calculateFinancials } from '@/utils/calculators/financials'
 import {
   LayoutDashboard, ClipboardList, Wallet,
-  Settings as SettingsIcon, Plus, CalendarDays, ListTree, CheckCircle2, MessageSquare, Users
+  Settings as SettingsIcon, Plus, CalendarDays, ListTree, CheckCircle2, MessageSquare, Users, Sparkles
 } from 'lucide-react'
+import ProjectAssistantAI from './ProjectAssistantAI'
 import ProjectTeamSettings from './ProjectTeamSettings'
 import { motion, AnimatePresence } from 'framer-motion'
 import { createClient } from '@/utils/supabase/client'
@@ -119,7 +120,7 @@ function exportCSV(lines: EstimateLine[], settings: ProjectSettings, projectName
   URL.revokeObjectURL(url)
 }
 
-type Tab = 'dashboard' | 'planning' | 'purchases' | 'timeline' | 'deviz' | 'team'
+type Tab = 'dashboard' | 'planning' | 'purchases' | 'timeline' | 'deviz' | 'team' | 'copilot'
 
 export default function ProjectClientContainer({
   projectId,
@@ -376,6 +377,7 @@ export default function ProjectClientContainer({
       { id: 'timeline', label: 'Cronologie', icon: CalendarDays },
       { id: 'purchases', label: 'Achiziții', icon: Wallet },
       { id: 'dashboard', label: 'Status', icon: LayoutDashboard },
+      { id: 'copilot', label: 'AI Copilot', icon: Sparkles },
       { id: 'team', label: 'Echipă', icon: Users },
     ]
 
@@ -530,9 +532,12 @@ export default function ProjectClientContainer({
             <ProjectDashboard
               financials={financials}
               projectName={projectName}
+              projectId={projectId}
               dimensions={dimensions}
               onAddPurchase={() => setShowPurchaseForm(true)}
               onViewStages={() => setView('planning')}
+              lines={lines}
+              settings={settings}
             />
             <div className="mt-8" style={{
               background: '#F3F2EF', borderRadius: 12,
@@ -731,6 +736,18 @@ export default function ProjectClientContainer({
                 </table>
               </div>
             </div>
+          </motion.div>
+        )}
+        {view === 'copilot' && (
+          <motion.div key="copilot"
+            initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
+            <ProjectAssistantAI 
+              projectId={projectId}
+              projectName={projectName}
+              lines={lines}
+              settings={settings}
+              fullPage={true}
+            />
           </motion.div>
         )}
         {view === 'team' && (

@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo } from 'react'
-import StrategicComparator from './StrategicComparator'
+import ProjectAssistantAI from './ProjectAssistantAI'
 import { motion } from 'framer-motion'
 import { 
   Wallet, DollarSign, TrendingUp, TrendingDown, 
@@ -14,11 +14,16 @@ interface ProjectDashboardProps {
   financials: FinancialsSummary
   projectName: string
   dimensions?: any
+  projectId: string
   onAddPurchase: () => void
   onViewStages: () => void
+  lines: any[]
+  settings: any
 }
 
-export default function ProjectDashboard({ financials, projectName, dimensions, onAddPurchase, onViewStages }: ProjectDashboardProps) {
+export default function ProjectDashboard({ 
+  financials, projectName, dimensions, projectId, onAddPurchase, onViewStages, lines, settings 
+}: ProjectDashboardProps) {
   const {
     totalBudget,
     totalSpent,
@@ -227,7 +232,12 @@ export default function ProjectDashboard({ financials, projectName, dimensions, 
             <div className="absolute -right-16 -top-16 w-32 h-32 bg-primary/10 rounded-full blur-2xl" />
           </div>
 
-          <StrategicComparator initialArea={dimensions?.length && dimensions?.width ? dimensions.length * dimensions.width : 120} />
+          <ProjectAssistantAI 
+            projectId={projectId}
+            projectName={projectName}
+            lines={lines}
+            settings={settings}
+          />
         </div>
       </div>
     </div>
