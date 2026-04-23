@@ -308,6 +308,7 @@ export default function ProjectAssistantAI({ lines, settings, projectId, project
           )}
         </button>
       </div>
+      )}
     </div>
   )
 }
