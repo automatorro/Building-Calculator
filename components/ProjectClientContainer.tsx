@@ -822,7 +822,7 @@ function PurchaseFormModal({
             fontFamily: 'var(--font-dm-serif,"DM Serif Display",Georgia,serif)',
             fontSize: 22, fontWeight: 400, color: '#1E2329'
           }}>
-            Înregistrare Achiziție (v2.0 OCR)
+            Înregistrare Achiziție
           </h3>
           <div style={{ display: 'flex', gap: 8 }}>
             <label style={{
