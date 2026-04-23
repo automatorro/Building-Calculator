@@ -25,7 +25,9 @@ export async function processPurchaseDocument(imageFile: File): Promise<Purchase
   const worker = await createWorker('ron'); // Romanian language
   
   try {
-    const { data: { text, lines } } = await worker.recognize(imageFile);
+    const { data } = await worker.recognize(imageFile);
+    const text = data.text;
+    const lines = (data as any).lines || [];
     
     // Basic Parsing Logic
     const result: PurchaseOcrResult = {
@@ -80,7 +82,7 @@ export async function processPurchaseDocument(imageFile: File): Promise<Purchase
     // Looking for lines with like: "NAME X QTY PRICE"
     // This part is complex and often depends on layout. 
     // We look for patterns like "1.5 X 10,00" or similar.
-    lines.forEach(line => {
+    lines.forEach((line: any) => {
       const content = line.text.trim();
       // Heuristic: line contains a number followed by 'X' or '*', then another number
       const itemMatch = content.match(/^(.+?)\s+(\d+(?:[.,]\d+)?)\s*[xX*]\s*(\d+(?:[.,]\d+)?)\s+(\d+(?:[.,]\d+)?)/);
