@@ -1,15 +1,23 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Plus, Users, Mail, Shield, Trash2, Loader2, UserPlus, ShieldCheck, Eye } from 'lucide-react'
+import { Plus, Users, Mail, Shield, Trash2, Loader2, UserPlus, ShieldCheck, Eye, Clock, X } from 'lucide-react'
 import { createClient } from '@/utils/supabase/client'
 import { toast } from 'sonner'
 import { motion, AnimatePresence } from 'framer-motion'
+import { inviteMemberAction, deleteInvitationAction, removeMemberAction } from '@/lib/actions/invitations'
 
 interface Member {
   id: string
   user_email: string
   role: 'Manager' | 'Editor' | 'Viewer'
+  created_at: string
+}
+
+interface Invitation {
+  id: string
+  email: string
+  role: string
   created_at: string
 }
 
@@ -19,6 +27,7 @@ interface ProjectTeamSettingsProps {
 
 export default function ProjectTeamSettings({ projectId }: ProjectTeamSettingsProps) {
   const [members, setMembers] = useState<Member[]>([])
+  const [invitations, setInvitations] = useState<Invitation[]>([])
   const [loading, setLoading] = useState(true)
   const [inviting, setInviting] = useState(false)
   const [email, setEmail] = useState('')
@@ -27,17 +36,25 @@ export default function ProjectTeamSettings({ projectId }: ProjectTeamSettingsPr
 
   const fetchMembers = async () => {
     setLoading(true)
-    const { data, error } = await supabase
-      .from('project_members')
-      .select('*')
-      .eq('project_id', projectId)
-    
-    if (error) {
+    try {
+      const { data: membersData } = await supabase
+        .from('project_members')
+        .select('*')
+        .eq('project_id', projectId)
+      
+      setMembers(membersData || [])
+
+      const { data: inviteData } = await supabase
+        .from('project_invitations')
+        .select('*')
+        .eq('project_id', projectId)
+      
+      setInvitations(inviteData || [])
+    } catch (err) {
       toast.error('Eroare la încărcarea echipei.')
-    } else {
-      setMembers(data as Member[])
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
   }
 
   useEffect(() => {
@@ -51,20 +68,12 @@ export default function ProjectTeamSettings({ projectId }: ProjectTeamSettingsPr
     }
 
     setInviting(true)
-    const { error } = await supabase
-      .from('project_members')
-      .insert([
-        { project_id: projectId, user_email: email.toLowerCase(), role }
-      ])
+    const result = await inviteMemberAction(projectId, email, role)
 
-    if (error) {
-      if (error.code === '23505') {
-        toast.error('Acest utilizator face deja parte din echipă.')
-      } else {
-        toast.error('Eroare la invitarea membrului: ' + error.message)
-      }
+    if (result.error) {
+      toast.error(result.error)
     } else {
-      toast.success(`Invitație trimisă către ${email}!`)
+      toast.success(`Invitație trimisă prin email către ${email}!`)
       setEmail('')
       fetchMembers()
     }
@@ -75,15 +84,25 @@ export default function ProjectTeamSettings({ projectId }: ProjectTeamSettingsPr
     const confirmed = confirm(`Sigur vrei să elimini utilizatorul ${memberEmail} din proiect?`)
     if (!confirmed) return
 
-    const { error } = await supabase
-      .from('project_members')
-      .delete()
-      .eq('id', id)
+    const result = await removeMemberAction(id)
 
-    if (error) {
-      toast.error('Eroare la eliminarea membrului.')
+    if (result.error) {
+      toast.error(result.error)
     } else {
       toast.success('Membru eliminat cu succes.')
+      fetchMembers()
+    }
+  }
+
+  const handleCancelInvitation = async (id: string, inviteEmail: string) => {
+    const confirmed = confirm(`Sigur vrei să anulezi invitația pentru ${inviteEmail}?`)
+    if (!confirmed) return
+
+    const result = await deleteInvitationAction(id)
+    if (result.error) {
+      toast.error('Eroare la anularea invitației.')
+    } else {
+      toast.success('Invitație anulată.')
       fetchMembers()
     }
   }
@@ -129,43 +148,82 @@ export default function ProjectTeamSettings({ projectId }: ProjectTeamSettingsPr
               className="bg-primary text-white px-6 py-3.5 rounded-xl text-sm font-black shadow-lg shadow-primary/25 hover:bg-primary-dark transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
             >
               {inviting ? <Loader2 className="animate-spin" size={18} /> : <Plus size={18} />}
-              <span>Invită în Echpă</span>
+              <span>Trimite Invitația</span>
             </button>
           </div>
         </div>
         <div className="absolute -right-16 -top-16 w-32 h-32 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
       </div>
 
-      {/* Members List */}
-      <div className="glass-card bg-white dark:bg-slate-900 border-border/50 shadow-lg rounded-3xl overflow-hidden">
-        <div className="p-6 border-b border-border/50 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Users size={18} className="text-slate-400" />
-            <h3 className="font-black uppercase text-xs tracking-widest">Echipa Proiectului</h3>
-            <span className="bg-slate-100 dark:bg-slate-800 text-[10px] font-black px-2 py-0.5 rounded-full text-slate-500">{members.length + 1} membri</span>
-          </div>
-        </div>
-
-        <div className="divide-y divide-border/50">
-          <AnimatePresence>
-            {loading ? (
-              <div className="p-12 flex flex-col items-center justify-center text-slate-400 gap-4">
-                <Loader2 className="animate-spin" size={32} />
-                <p className="text-xs font-bold uppercase tracking-widest">Se încarcă membrii...</p>
+      <div className="grid grid-cols-1 gap-8">
+        {/* Pending Invitations */}
+        {invitations.length > 0 && (
+          <div className="glass-card bg-white dark:bg-slate-900 border-border/50 shadow-lg rounded-3xl overflow-hidden border-l-4 border-l-orange-500">
+            <div className="p-6 border-b border-border/50 flex items-center justify-between bg-orange-50/50 dark:bg-orange-950/10">
+              <div className="flex items-center gap-2">
+                <Clock size={18} className="text-orange-500" />
+                <h3 className="font-black uppercase text-xs tracking-widest text-orange-600">Invitații în așteptare</h3>
+                <span className="bg-orange-100 dark:bg-orange-900/30 text-[10px] font-black px-2 py-0.5 rounded-full text-orange-600">{invitations.length} email-uri trimise</span>
               </div>
-            ) : (
-              <>
-                {/* Note: In a real app, I'd also show the project owner here as "Admin" */}
-                {members.length === 0 ? (
-                  <div className="p-12 flex flex-col items-center justify-center text-slate-500 gap-2 text-center">
-                    <div className="w-16 h-16 bg-slate-50 dark:bg-slate-800 rounded-full flex items-center justify-center mb-2">
-                      <Users size={24} className="text-slate-300" />
+            </div>
+            <div className="divide-y divide-border/50">
+              {invitations.map((invite) => (
+                <div key={invite.id} className="p-6 flex items-center justify-between group">
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center text-orange-500">
+                      <Mail size={18} />
                     </div>
-                    <h4 className="font-black text-sm uppercase">Niciun alt membru invitat</h4>
-                    <p className="text-xs text-slate-400 max-w-[250px]">Doar tu ai acces la acest proiect. Invită un coleg pentru a colabora.</p>
+                    <div>
+                      <div className="font-black text-slate-900 dark:text-white">{invite.email}</div>
+                      <div className="text-[9px] font-black uppercase text-slate-400 tracking-widest mt-0.5 flex items-center gap-2">
+                        <span>Invitat la: {new Date(invite.created_at).toLocaleDateString('ro-RO')}</span>
+                        <span className="w-1 h-1 bg-slate-300 rounded-full" />
+                        <span className="text-orange-500">Așteaptă acceptarea</span>
+                      </div>
+                    </div>
                   </div>
-                ) : (
-                  members.map((member) => (
+                  <button 
+                    onClick={() => handleCancelInvitation(invite.id, invite.email)}
+                    className="p-2 text-slate-300 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-xl transition-all"
+                    title="Anulează invitația"
+                  >
+                    <X size={18} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Members List */}
+        <div className="glass-card bg-white dark:bg-slate-900 border-border/50 shadow-lg rounded-3xl overflow-hidden">
+          <div className="p-6 border-b border-border/50 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Users size={18} className="text-slate-400" />
+              <h3 className="font-black uppercase text-xs tracking-widest">Echipa Activă</h3>
+              <span className="bg-slate-100 dark:bg-slate-800 text-[10px] font-black px-2 py-0.5 rounded-full text-slate-500">{members.length + 1} membri</span>
+            </div>
+          </div>
+
+          <div className="divide-y divide-border/50">
+            <AnimatePresence>
+              {loading ? (
+                <div className="p-12 flex flex-col items-center justify-center text-slate-400 gap-4">
+                  <Loader2 className="animate-spin" size={32} />
+                  <p className="text-xs font-bold uppercase tracking-widest">Se încarcă echipa...</p>
+                </div>
+              ) : (
+                <>
+                  {members.length === 0 && invitations.length === 0 && (
+                    <div className="p-12 flex flex-col items-center justify-center text-slate-500 gap-2 text-center">
+                      <div className="w-16 h-16 bg-slate-50 dark:bg-slate-800 rounded-full flex items-center justify-center mb-2">
+                        <Users size={24} className="text-slate-300" />
+                      </div>
+                      <h4 className="font-black text-sm uppercase">Niciun membru activ</h4>
+                      <p className="text-xs text-slate-400 max-w-[250px]">Doar tu ai acces. Invită un coleg pentru a începe colaborarea.</p>
+                    </div>
+                  )}
+                  {members.map((member) => (
                     <motion.div 
                       key={member.id}
                       initial={{ opacity: 0 }}
@@ -174,7 +232,7 @@ export default function ProjectTeamSettings({ projectId }: ProjectTeamSettingsPr
                       className="p-6 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800/20 transition-colors"
                     >
                       <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center text-slate-400">
+                        <div className="w-10 h-10 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center text-slate-400 font-bold">
                           {member.user_email[0].toUpperCase()}
                         </div>
                         <div>
@@ -200,11 +258,11 @@ export default function ProjectTeamSettings({ projectId }: ProjectTeamSettingsPr
                         </button>
                       </div>
                     </motion.div>
-                  ))
-                )}
-              </>
-            )}
-          </AnimatePresence>
+                  ))}
+                </>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
       </div>
     </div>
