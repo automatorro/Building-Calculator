@@ -39,41 +39,54 @@ export async function POST(req: NextRequest) {
 
     const prompt = `Ești un consultant senior în construcții din România, expert în devize, rețete de resurse și norme de consum pentru 2026.
 
-REGULI CRITICE DE RĂSPUNS:
-- Exclusiv română. Fără englezisme (fără benchmark, insight, etc.).
+REGULI CRITICE:
+- Exclusiv română. Fără englezisme.
 - Ton sobru, tehnic, concis. Fără introduceri sau concluzii lungi.
 - NU inventa probleme care nu există în date.
 - NU menționa materiale care nu apar în deviz.
 
-CONTROL CANTITĂȚI — generează alertă "Eroare potențială de cantitate" dacă:
-- >500mc beton într-o singură normă
+CONTROL CANTITĂȚI — generează alertă tip "recipe_error" dacă:
+- >500mc beton într-o singură linie
 - >3000mp tencuială/zugrăvit la o singură linie
-- Consum de resursă zero sau negativ
+- Consum de resursă zero sau negativ în rețetă
 - Cantitate de manoperă sub norma minimă indicativă
 
-VERIFICARE REȚETE — verifică logica resurselor:
-- Mortar la zidărie BCA: minim 0.25mc mortar per mc BCA
-- Armatură la beton: minim 80kg/mc pentru fundații, 100kg/mc pentru planșee
-- Ciment la tencuială: minim 250kg/mc mortar
-- Dacă lipsesc resurse esențiale dintr-o normă, generează alertă tip "recipe_error"
+VERIFICARE REȚETE — verifică logica resurselor per linie:
+- Zidărie BCA: minim 0.25mc mortar per mc BCA, dacă lipsește → recipe_error
+- Beton armat: minim 80kg armătură/mc fundații, 100kg/mc planșee, dacă lipsește → recipe_error
+- Tencuială: minim 250kg ciment/mc mortar, dacă lipsește → recipe_error
+- Dacă o linie are 0 resurse și nu e manual → recipe_error
 
-PREȚURI REFERINȚĂ 2026 (compară cu unitPrice din deviz):
-- BCA bloc 30cm: ~420 lei/mc | Cărămidă Porotherm: ~500-600 lei/mc
-- Beton C16/20: ~380 lei/mc | Beton C25/30: ~430 lei/mc
-- Mortar M10: ~450 lei/mc | Armătură PC52: ~4800 lei/t
-- Nisip: ~80 lei/t | Pietriș: ~90 lei/t | Ciment CEM II: ~520 lei/t
-- Tencuială manuală (manoperă): ~18-22 lei/mp | Zidărie BCA (manoperă): ~35-45 lei/mp
-- Alarmă audit preț dacă unitPrice > 120%% din referință
+PREȚURI REFERINȚĂ 2026 (compară cu unitPrice):
+- BCA bloc 30cm: 420 lei/mc | Cărămidă Porotherm: 550 lei/mc
+- Beton C16/20: 380 lei/mc | Beton C25/30: 430 lei/mc
+- Mortar M10: 450 lei/mc | Armătură PC52: 4800 lei/t
+- Nisip: 80 lei/t | Pietriș: 90 lei/t | Ciment CEM II: 520 lei/t
+- Manoperă tencuială: 20 lei/mp | Manoperă zidărie BCA: 40 lei/mp
+- Audit preț dacă unitPrice > 120% din referință
 
 DIRECȚII ANALIZĂ:
-1. OPTIMIZĂRI: max 3 sugestii concrete (reducere cost sau timp).
+1. OPTIMIZĂRI: max 3 sugestii concrete cu impact numeric.
 2. AUDIT PREȚ: max 2 prețuri aberante față de piață.
-3. ERORI REȚETĂ: resurse lipsă sau cantități de consum nereale.
+3. ERORI REȚETĂ: resurse lipsă sau cantități nereale.
 
 DATE DEVIZ:
 ${JSON.stringify(linesSummary, null, 1)}
 
-Setări proiect: TVA=${settings.tva}%%, Profit=${settings.profit}%%, Regie=${settings.regie ?? 'N/A'}%%
+Setări proiect: TVA=${settings.tva}%, Profit=${settings.profit}%, Regie=${settings.regie ?? 'N/A'}%
+
+CÂMPUL "action" — OBLIGATORIU respectă structura exactă:
+
+Pentru corecție cantitate (correct_qty):
+  "action": { "type": "correct_qty", "lineId": "<id exact din date>", "payload": { "newQty": <număr> } }
+
+Pentru adăugare resursă lipsă (add_resource):
+  "action": { "type": "add_resource", "lineId": "<id exact din date>", "payload": { "resource": { "type": "material"|"labor"|"equipment", "name": "...", "um": "...", "consumption": <număr>, "unit_price": <număr>, "waste_percent": 0 } } }
+
+Pentru actualizare preț resursă (replace_material):
+  "action": { "type": "replace_material", "lineId": "<id exact din date>", "payload": { "resourceId": "<id resursă din resurse linie>", "updates": { "unit_price": <număr> } } }
+
+Dacă nu poți identifica linia sau acțiunea nu e aplicabilă: "action": null
 
 Răspunde STRICT în JSON, fără text suplimentar:
 {
@@ -83,15 +96,11 @@ Răspunde STRICT în JSON, fără text suplimentar:
       "description": "string concis, max 2 propoziții, cu cifre concrete",
       "impactPrice": number,
       "impactTime": number,
-      "reasoning": "string tehnic",
-      "actionLabel": "string (ex: Verifică cantitatea, Înlocuiește material)",
+      "reasoning": "string tehnic max 1 propoziție",
+      "actionLabel": "string scurt (ex: Corectează cantitatea, Adaugă resursă, Verifică prețul)",
       "type": "material"|"labor"|"process"|"price_audit"|"recipe_error",
       "marketRefPrice": number|null,
-      "action": null | {
-        "type": "correct_qty"|"replace_material"|"add_resource",
-        "lineId": "string sau null",
-        "payload": {}
-      }
+      "action": null | { ... conform structurii de mai sus }
     }
   ]
 }`

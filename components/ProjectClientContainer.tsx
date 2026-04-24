@@ -759,12 +759,13 @@ export default function ProjectClientContainer({
         {view === 'copilot' && (
           <motion.div key="copilot"
             initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
-            <ProjectAssistantAI 
+            <ProjectAssistantAI
               projectId={projectId}
               projectName={projectName}
               lines={lines}
               settings={settings}
               fullPage={true}
+              onApplyAction={handleUpdateLine}
             />
           </motion.div>
         )}

@@ -6,9 +6,9 @@ import {
   X, Send,
   Clock, Zap, Bot,
   ArrowRight, AlertCircle, ShoppingCart,
-  Calculator, ChefHat,
+  Calculator, ChefHat, CheckCircle2, Info,
 } from 'lucide-react'
-import type { OptimizationSuggestion } from '@/lib/ai-types'
+import type { OptimizationSuggestion, AIAction } from '@/lib/ai-types'
 import { toast } from 'sonner'
 import { fmtRon } from '@/utils/format'
 import ReactMarkdown from 'react-markdown'
@@ -20,12 +20,20 @@ interface ChatMessage {
   loading?: boolean
 }
 
+interface PendingAction {
+  suggestion: OptimizationSuggestion
+  action: AIAction
+  line: any | null
+  applying: boolean
+}
+
 interface Props {
   lines: any[]
   settings: any
   projectId: string
   projectName: string
   fullPage?: boolean
+  onApplyAction?: (lineId: string, updates: Record<string, any>) => void
 }
 
 const SUGGESTED_QUESTIONS_FULL = [
@@ -49,57 +57,81 @@ const TYPE_CONFIG: Record<string, { icon: React.ElementType; colorClass: string;
   process: { icon: Zap, colorClass: 'bg-green-100 text-green-600', badgeClass: 'bg-slate-50 dark:bg-slate-800/50 border-transparent hover:border-primary/20 hover:bg-white' },
 }
 
-function SuggestionCard({ s, onClick }: { s: OptimizationSuggestion; onClick: () => void }) {
+function SuggestionCard({
+  s,
+  onClick,
+  onApply,
+  canApply,
+}: {
+  s: OptimizationSuggestion
+  onClick: () => void
+  onApply?: () => void
+  canApply: boolean
+}) {
   const config = TYPE_CONFIG[s.type] ?? TYPE_CONFIG.material
   const Icon = config.icon
   const isAlert = s.type === 'price_audit' || s.type === 'recipe_error'
+  const hasApply = canApply && !!s.action?.lineId && !!onApply
 
   return (
     <motion.div
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
-      onClick={onClick}
-      className={`p-4 rounded-2xl border transition-all cursor-pointer group ${config.badgeClass}`}
+      className={`p-4 rounded-2xl border transition-all ${config.badgeClass}`}
     >
-      <div className="flex justify-between items-start mb-2">
-        <div className="flex items-center gap-2">
-          <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${config.colorClass}`}>
-            <Icon size={14} />
+      <div
+        className="cursor-pointer group"
+        onClick={onClick}
+      >
+        <div className="flex justify-between items-start mb-2">
+          <div className="flex items-center gap-2">
+            <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${config.colorClass}`}>
+              <Icon size={14} />
+            </div>
+            <h4 className={`font-bold text-sm transition-colors ${isAlert ? 'text-red-900 dark:text-red-400' : 'group-hover:text-primary'}`}>
+              {s.title}
+            </h4>
           </div>
-          <h4 className={`font-bold text-sm transition-colors ${isAlert ? 'text-red-900 dark:text-red-400' : 'group-hover:text-primary'}`}>
-            {s.title}
-          </h4>
+          <div className="text-right shrink-0 ml-2">
+            <div className={`${isAlert ? 'text-red-600' : 'text-green-600'} font-black text-sm`}>
+              {isAlert ? 'Alertă' : s.impactPrice > 0 ? `-${fmtRon(s.impactPrice)} Lei` : '—'}
+            </div>
+            <div className="text-[9px] font-bold text-slate-400 uppercase">
+              {isAlert ? 'Verificare necesară' : 'Impact estimat'}
+            </div>
+          </div>
         </div>
-        <div className="text-right shrink-0 ml-2">
-          <div className={`${isAlert ? 'text-red-600' : 'text-green-600'} font-black text-sm`}>
-            {isAlert ? 'Alertă' : s.impactPrice > 0 ? `-${fmtRon(s.impactPrice)} Lei` : '—'}
+
+        <p className="text-xs text-slate-500 line-clamp-2 mb-3 leading-relaxed">{s.description}</p>
+
+        <div className="flex items-center justify-between pt-3 border-t border-border/30">
+          <div className="flex items-center gap-2">
+            {s.marketRefPrice != null && (
+              <div className="flex items-center gap-1.5 px-2 py-1 bg-slate-900 text-white rounded-lg font-mono text-[9px] font-bold">
+                <ShoppingCart size={10} className="text-primary" />
+                Ref. 2026: {fmtRon(s.marketRefPrice)} lei
+              </div>
+            )}
+            {s.marketRefPrice == null && s.impactTime > 0 && (
+              <div className="flex items-center gap-1 text-[10px] font-bold text-amber-600">
+                <Clock size={10} /> {s.impactTime}h salvate
+              </div>
+            )}
           </div>
-          <div className="text-[9px] font-bold text-slate-400 uppercase">
-            {isAlert ? 'Verificare necesară' : 'Impact estimat'}
-          </div>
+          <button className="flex items-center gap-1 text-[10px] font-black text-primary uppercase tracking-tighter group-hover:translate-x-1 transition-transform">
+            {s.actionLabel} <ArrowRight size={12} />
+          </button>
         </div>
       </div>
 
-      <p className="text-xs text-slate-500 line-clamp-2 mb-3 leading-relaxed">{s.description}</p>
-
-      <div className="flex items-center justify-between pt-3 border-t border-border/30">
-        <div className="flex items-center gap-2">
-          {s.marketRefPrice != null && (
-            <div className="flex items-center gap-1.5 px-2 py-1 bg-slate-900 text-white rounded-lg font-mono text-[9px] font-bold">
-              <ShoppingCart size={10} className="text-primary" />
-              Ref. 2026: {fmtRon(s.marketRefPrice)} lei
-            </div>
-          )}
-          {s.marketRefPrice == null && s.impactTime > 0 && (
-            <div className="flex items-center gap-1 text-[10px] font-bold text-amber-600">
-              <Clock size={10} /> {s.impactTime}h salvate
-            </div>
-          )}
-        </div>
-        <button className="flex items-center gap-1 text-[10px] font-black text-primary uppercase tracking-tighter group-hover:translate-x-1 transition-transform">
-          {s.actionLabel} <ArrowRight size={12} />
+      {hasApply && (
+        <button
+          onClick={(e) => { e.stopPropagation(); onApply!() }}
+          className="mt-3 w-full py-2.5 rounded-xl bg-primary text-white text-xs font-bold flex items-center justify-center gap-2 hover:bg-orange-600 transition-colors"
+        >
+          <CheckCircle2 size={13} /> Aplică modificarea în deviz
         </button>
-      </div>
+      )}
     </motion.div>
   )
 }
@@ -173,11 +205,12 @@ function ChatInput({
   )
 }
 
-export default function ProjectAssistantAI({ lines, settings, projectId, projectName, fullPage = false }: Props) {
+export default function ProjectAssistantAI({ lines, settings, projectId, projectName, fullPage = false, onApplyAction }: Props) {
   const [isOpen, setIsOpen] = useState(false)
   const [suggestions, setSuggestions] = useState<OptimizationSuggestion[]>([])
   const [loading, setLoading] = useState(true)
   const [chatMessage, setChatMessage] = useState('')
+  const [pendingAction, setPendingAction] = useState<PendingAction | null>(null)
   const chatEndRef = useRef<HTMLDivElement>(null)
 
   const [history, setHistory] = useState<ChatMessage[]>([
@@ -259,11 +292,144 @@ export default function ProjectAssistantAI({ lines, settings, projectId, project
     )
   }
 
+  const handleApply = (s: OptimizationSuggestion) => {
+    if (!s.action) return
+    const line = s.action.lineId ? lines.find(l => l.id === s.action!.lineId) ?? null : null
+    setPendingAction({ suggestion: s, action: s.action, line, applying: false })
+  }
+
+  const confirmApply = () => {
+    if (!pendingAction || !onApplyAction) return
+    const { action, line } = pendingAction
+    if (!line) return
+
+    setPendingAction(prev => prev ? { ...prev, applying: true } : null)
+
+    let updates: Record<string, any> = {}
+
+    if (action.type === 'correct_qty' && action.payload.newQty != null) {
+      updates = { quantity: Number(action.payload.newQty) }
+    } else if (action.type === 'add_resource' && action.payload.resource) {
+      const base: any[] = line.resources_override?.length > 0
+        ? line.resources_override
+        : [...(line.items?.resources ?? [])]
+      const newRes = {
+        id: `ai-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+        type: action.payload.resource.type ?? 'material',
+        name: action.payload.resource.name ?? 'Resursă nouă',
+        um: action.payload.resource.um ?? 'buc',
+        consumption: Number(action.payload.resource.consumption ?? 0),
+        unit_price: Number(action.payload.resource.unit_price ?? 0),
+        waste_percent: Number(action.payload.resource.waste_percent ?? 0),
+      }
+      updates = { resources_override: [...base, newRes] }
+    } else if (action.type === 'replace_material' && action.payload.resourceId) {
+      const base: any[] = line.resources_override?.length > 0
+        ? line.resources_override
+        : [...(line.items?.resources ?? [])]
+      updates = {
+        resources_override: base.map((r: any) =>
+          r.id === action.payload.resourceId ? { ...r, ...(action.payload.updates ?? {}) } : r
+        ),
+      }
+    }
+
+    if (Object.keys(updates).length > 0) {
+      onApplyAction(line.id, updates)
+      toast.success('Modificare aplicată — se salvează automat.')
+    } else {
+      toast.error('Nu am putut aplica modificarea. Verifică manual în editor.')
+    }
+    setPendingAction(null)
+  }
+
   const badgeCount = suggestions.length
+
+  // ── Modal confirmare acțiune ────────────────────────────────────
+  const ConfirmModal = pendingAction ? (
+    <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl p-8 max-w-md w-full border border-border/50"
+      >
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 bg-primary/10 rounded-2xl flex items-center justify-center">
+            <CheckCircle2 size={20} className="text-primary" />
+          </div>
+          <div>
+            <h3 className="font-black text-base dark:text-white">Confirmi modificarea?</h3>
+            <p className="text-[11px] text-slate-400 font-medium">{pendingAction.suggestion.title}</p>
+          </div>
+        </div>
+
+        {/* Preview modificare */}
+        <div className="bg-slate-50 dark:bg-slate-800 rounded-2xl p-4 mb-4 space-y-2">
+          {pendingAction.action.type === 'correct_qty' && pendingAction.line && (
+            <>
+              <p className="text-xs font-bold text-slate-700 dark:text-slate-200 truncate">
+                {pendingAction.line.name ?? pendingAction.line.items?.name ?? 'Articol'}
+              </p>
+              <div className="flex items-center gap-3 text-sm">
+                <span className="line-through text-red-500 font-mono font-bold">
+                  {pendingAction.line.quantity} {pendingAction.line.unit ?? pendingAction.line.items?.um ?? ''}
+                </span>
+                <ArrowRight size={14} className="text-slate-400" />
+                <span className="text-green-600 font-mono font-bold">
+                  {pendingAction.action.payload.newQty} {pendingAction.line.unit ?? pendingAction.line.items?.um ?? ''}
+                </span>
+              </div>
+            </>
+          )}
+          {pendingAction.action.type === 'add_resource' && pendingAction.line && (
+            <>
+              <p className="text-xs font-bold text-slate-700 dark:text-slate-200 truncate">
+                Se adaugă resursă la: {pendingAction.line.name ?? pendingAction.line.items?.name}
+              </p>
+              <p className="text-xs text-slate-500">
+                {pendingAction.action.payload.resource?.name} — {pendingAction.action.payload.resource?.consumption} {pendingAction.action.payload.resource?.um} × {fmtRon(pendingAction.action.payload.resource?.unit_price ?? 0)} lei
+              </p>
+            </>
+          )}
+          {pendingAction.action.type === 'replace_material' && pendingAction.line && (
+            <p className="text-xs text-slate-500">
+              Se actualizează resursa în: {pendingAction.line.name ?? pendingAction.line.items?.name}
+            </p>
+          )}
+          {!pendingAction.line && (
+            <div className="flex items-start gap-2 text-amber-700">
+              <Info size={14} className="mt-0.5 shrink-0" />
+              <p className="text-xs">Linia nu a fost identificată automat. Aplică manual din editor.</p>
+            </div>
+          )}
+        </div>
+
+        <p className="text-xs text-slate-400 italic mb-6 leading-relaxed">{pendingAction.suggestion.reasoning}</p>
+
+        <div className="flex gap-3">
+          <button
+            onClick={() => setPendingAction(null)}
+            className="flex-1 py-3 rounded-2xl border border-border font-bold text-sm text-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+          >
+            Renunț
+          </button>
+          <button
+            onClick={confirmApply}
+            disabled={pendingAction.applying || !pendingAction.line}
+            className="flex-1 py-3 rounded-2xl bg-primary text-white font-bold text-sm hover:bg-orange-600 transition-colors disabled:opacity-40"
+          >
+            {pendingAction.applying ? 'Se aplică…' : 'Aplică modificarea'}
+          </button>
+        </div>
+      </motion.div>
+    </div>
+  ) : null
 
   // ── FULL PAGE MODE ──────────────────────────────────────────────
   if (fullPage) {
     return (
+      <>
+        {ConfirmModal}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 min-h-[80vh]">
         {/* Panel stânga — Sugestii */}
         <div className="glass-card bg-white dark:bg-slate-900 border-border/50 shadow-2xl relative overflow-hidden rounded-3xl lg:col-span-1">
@@ -295,7 +461,13 @@ export default function ProjectAssistantAI({ lines, settings, projectId, project
             ) : suggestions.length > 0 ? (
               <div className="space-y-4">
                 {suggestions.map((s, i) => (
-                  <SuggestionCard key={i} s={s} onClick={() => handleSuggestionClick(s)} />
+                  <SuggestionCard
+                    key={i}
+                    s={s}
+                    onClick={() => handleSuggestionClick(s)}
+                    onApply={onApplyAction ? () => handleApply(s) : undefined}
+                    canApply={!!onApplyAction}
+                  />
                 ))}
               </div>
             ) : (
@@ -346,11 +518,14 @@ export default function ProjectAssistantAI({ lines, settings, projectId, project
           </div>
         </div>
       </div>
+      </>
     )
   }
 
   // ── FLOATING / DASHBOARD MODE ────────────────────────────────────
   return (
+    <>
+      {ConfirmModal}
     <div className="fixed bottom-8 right-8 z-[100] flex flex-col items-end gap-4">
       <AnimatePresence>
         {isOpen && (
@@ -450,5 +625,6 @@ export default function ProjectAssistantAI({ lines, settings, projectId, project
         )}
       </button>
     </div>
+    </>
   )
 }
