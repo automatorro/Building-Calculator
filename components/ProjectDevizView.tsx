@@ -64,7 +64,6 @@ export default function ProjectDevizView({
   const [expandedStage, setExpandedStage] = useState<string | null>(null)
   const [discountB2B, setDiscountB2B] = useState(0)
   const [includePierderi, setIncludePierderi] = useState(false)
-  const { calculateLineCosts } = require('@/utils/calculators/estimate')
 
   function getAdjustedCosts(
     line: EstimateLine, 
@@ -147,7 +146,7 @@ export default function ProjectDevizView({
     return result
   }, [grouped, stages, settings, discountB2B, includePierderi])
 
-  /* Total general */
+  /* Total general (cu discount/pierderi aplicate) */
   const totals = useMemo(() => {
     if (discountB2B === 0 && !includePierderi) return calculateProjectTotals(lines, settings)
     return lines.reduce((acc, line) => {
@@ -160,6 +159,12 @@ export default function ProjectDevizView({
     }, { totalDirect: 0, totalOfertat: 0, totalWithTVA: 0 })
   }, [lines, settings, discountB2B, includePierderi])
 
+  /* Total original (fără discount/pierderi) — pentru calculul economiei */
+  const totalsUndiscounted = useMemo(() =>
+    calculateProjectTotals(lines, settings),
+    [lines, settings]
+  )
+
   const totalDirect   = totals.totalDirect
   const regieAmount   = totalDirect * (settings.regie / 100)
   const costCuRegie   = totalDirect + regieAmount
@@ -167,10 +172,8 @@ export default function ProjectDevizView({
   const fAraTVA       = totals.totalOfertat
   const tvaAmount     = totals.totalWithTVA - fAraTVA
 
-  /* Ajustări discount B2B + pierderi */
-  const discountFactor  = 1 - discountB2B / 100
-  const totalCuDiscount = fAraTVA * discountFactor
-  const economieLei     = fAraTVA - totalCuDiscount
+  /* Economie reală = diferența între totalul original și cel cu discount */
+  const economieLei   = totalsUndiscounted.totalOfertat - fAraTVA
 
   /* Articole cu probleme */
   const invalidLines = useMemo(() => 
