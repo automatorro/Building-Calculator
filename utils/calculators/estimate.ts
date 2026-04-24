@@ -57,7 +57,7 @@ export interface EstimateLineAnalysis {
 
 export function analyzeEstimateLine(line: EstimateLine): EstimateLineAnalysis {
   // Verificăm dacă e introdus manual (uneori code e MANUAL sau lipsesc detaliile de normativ)
-  const isManual = (!line.items && !line.catalog_norm_id && !line.code) || line.code === 'MANUAL' || line.id.startsWith('manual');
+  const isManual = (!line.items && !line.catalog_norm_id && !line.code) || line.code === 'MANUAL';
   const origin: Origin = isManual ? 'Adăugat manual' : 'Normativ'
   
   const resourcesToUse = line.resources_override && line.resources_override.length > 0
@@ -147,7 +147,10 @@ export function calculateLineCosts(line: EstimateLine, settings: ProjectSettings
       // Use custom price if available, otherwise default
       const price = line.custom_prices[res.id] ?? res.unit_price
       const wasteMultiplier = 1 + ((res.waste_percent || 0) / 100)
-      const cost = res.consumption * price * wasteMultiplier
+      const taxeManoperaMultiplier = res.type === 'labor' 
+        ? (1 + (settings.taxe_manopera || 0) / 100) 
+        : 1
+      const cost = res.consumption * price * wasteMultiplier * taxeManoperaMultiplier
 
       if (res.type === 'material') directMaterial += cost
       else if (res.type === 'labor') directLabor += cost
@@ -156,7 +159,16 @@ export function calculateLineCosts(line: EstimateLine, settings: ProjectSettings
     })
   } else {
     // Linie fără rețetă — se aplică direct unit_price global al normei/articolului
-    directMaterial = line.unit_price || line.manual_price || 0
+    const unitPrice = line.unit_price || line.manual_price || 0
+    const resourceType = line.metadata?.resource_type || 'material'
+
+    if (resourceType === 'material') directMaterial = unitPrice
+    else if (resourceType === 'labor') {
+      const taxeManoperaMultiplier = (1 + (settings.taxe_manopera || 0) / 100)
+      directLabor = unitPrice * taxeManoperaMultiplier
+    }
+    else if (resourceType === 'equipment') directEquipment = unitPrice
+    else if (resourceType === 'transport') directTransport = unitPrice
   }
 
   const unitDirectCost = directMaterial + directLabor + directEquipment + directTransport

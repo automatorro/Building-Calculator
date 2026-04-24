@@ -60,16 +60,14 @@ export function calculateFinancials(
     
     totalPlannedDirect += costs.totalDirectCost
     
-    // Costul cu regie reprezintă limita maximă de cheltuieli (fără profit) la care adăugăm TVA
-    const costWithRegie = costs.totalDirectCost + costs.regieAmount
-    const expectedTvaForCost = costWithRegie * (settings.tva / 100)
-    const costBudgetForLine = costWithRegie + expectedTvaForCost
+    // Costul cu regie reprezintă limita maximă de cheltuieli (fără profit)
+    const costBudgetForLine = costs.totalDirectCost + costs.regieAmount
 
     totalCostBudget += costBudgetForLine
     totalSalePrice += costs.totalWithTVA
-    totalBudget += costs.totalWithTVA // Menținem ca referință legacy dacă e nevoie
+    totalBudget += costs.totalWithTVA
     
-    // Alocăm bugetul de cheltuieli (nu devizul cu profit) pentru etapă
+    // Alocăm bugetul de cheltuieli (fără TVA, pentru comparație cu achiziții nete)
     stagePlanned[stage] = (stagePlanned[stage] || 0) + costBudgetForLine
     
     if (!stageItems[stage]) stageItems[stage] = []

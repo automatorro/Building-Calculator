@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { 
   Wallet, DollarSign, TrendingUp, TrendingDown, 
   AlertTriangle, BarChart3, ArrowRight, Clock, Calendar,
-  ShoppingCart, Zap
+  ShoppingCart, Zap, Settings2, Save, X
 } from 'lucide-react'
 
 import { FinancialsSummary, Purchase } from '@/utils/calculators/financials'
@@ -20,11 +20,12 @@ interface ProjectDashboardProps {
   onViewStages: () => void
   lines: any[]
   settings: any
+  onUpdateSettings: (settings: any) => void
   purchases: Purchase[]
 }
 
 export default function ProjectDashboard({ 
-  financials, projectName, dimensions, projectId, onAddPurchase, onViewStages, lines, settings, purchases 
+  financials, projectName, dimensions, projectId, onAddPurchase, onViewStages, lines, settings, onUpdateSettings, purchases 
 }: ProjectDashboardProps) {
   const {
     totalBudget,
@@ -58,19 +59,22 @@ export default function ProjectDashboard({
         <p style={{ fontSize: 11, fontWeight: 700, color: '#A8A59E', letterSpacing: '.08em', textTransform: 'uppercase' }}>
           Status Financiar Proiect (Live)
         </p>
-        <button
-          onClick={onAddPurchase}
-          style={{
-            display: 'inline-flex', alignItems: 'center', gap: 6,
-            background: '#E8500A', color: 'white', border: 'none',
-            padding: '9px 16px', borderRadius: 8,
-            fontSize: 13, fontWeight: 600, fontFamily: 'inherit',
-            cursor: 'pointer', boxShadow: '0 2px 8px rgba(232,80,10,0.2)',
-            transition: 'background .15s',
-          }}
-        >
-          <Wallet size={15} /> Înregistrează Achiziție
-        </button>
+        <div className="flex items-center gap-3 w-full sm:w-auto">
+          <ProjectSettingsPanel settings={settings} onSave={onUpdateSettings} />
+          <button
+            onClick={onAddPurchase}
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 6,
+              background: '#E8500A', color: 'white', border: 'none',
+              padding: '9px 16px', borderRadius: 8,
+              fontSize: 13, fontWeight: 600, fontFamily: 'inherit',
+              cursor: 'pointer', boxShadow: '0 2px 8px rgba(232,80,10,0.2)',
+              transition: 'background .15s',
+            }}
+          >
+            <Wallet size={15} /> Înregistrează Achiziție
+          </button>
+        </div>
       </div>
 
       {/* 4 Întrebări în 5 Secunde */}
@@ -438,6 +442,94 @@ function SummaryCard({ label, value, subValue, icon, trend }: { label: string, v
         <div className="text-2xl font-black text-slate-900 dark:text-white mb-1 group-hover:text-primary transition-colors">{value}</div>
         <div className="text-[10px] font-bold text-slate-500">{subValue}</div>
       </div>
+    </div>
+  )
+}
+function ProjectSettingsPanel({ settings, onSave }: { settings: any, onSave: (s: any) => void }) {
+  const [isOpen, setIsOpen] = useState(false)
+  const [tempSettings, setTempSettings] = useState(settings)
+
+  const handleSave = () => {
+    onSave(tempSettings)
+    setIsOpen(false)
+  }
+
+  return (
+    <div className="relative">
+      <button
+        onClick={() => {
+          setTempSettings(settings)
+          setIsOpen(!isOpen)
+        }}
+        className="flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg text-xs font-bold transition-all"
+      >
+        <Settings2 size={16} /> Coeficienți
+      </button>
+
+      <AnimatePresence>
+        {isOpen && (
+          <>
+            <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
+            <motion.div
+              initial={{ opacity: 0, y: 10, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 10, scale: 0.95 }}
+              className="absolute right-0 top-full mt-2 w-72 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-border/50 p-6 z-50 ring-1 ring-black/5"
+            >
+              <div className="flex justify-between items-center mb-4">
+                <h4 className="font-black text-[10px] uppercase tracking-widest text-slate-400">Setări Recapitație</h4>
+                <button onClick={() => setIsOpen(false)} className="text-slate-400 hover:text-slate-600"><X size={14} /></button>
+              </div>
+
+              <div className="space-y-4">
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black uppercase text-slate-500">Regie (%)</label>
+                  <input 
+                    type="number" 
+                    value={tempSettings.regie}
+                    onChange={e => setTempSettings({ ...tempSettings, regie: parseFloat(e.target.value) || 0 })}
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-border/50 rounded-lg outline-none font-bold text-sm focus:border-primary"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black uppercase text-slate-500">Profit (%)</label>
+                  <input 
+                    type="number" 
+                    value={tempSettings.profit}
+                    onChange={e => setTempSettings({ ...tempSettings, profit: parseFloat(e.target.value) || 0 })}
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-border/50 rounded-lg outline-none font-bold text-sm focus:border-primary"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black uppercase text-slate-500">Taxe Manoperă (%)</label>
+                  <input 
+                    type="number" 
+                    value={tempSettings.taxe_manopera || 0}
+                    onChange={e => setTempSettings({ ...tempSettings, taxe_manopera: parseFloat(e.target.value) || 0 })}
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-border/50 rounded-lg outline-none font-bold text-sm focus:border-primary"
+                  />
+                </div>
+                <div className="space-y-1.5 pb-2 border-b border-border/30">
+                  <label className="text-[10px] font-black uppercase text-slate-500">TVA (%)</label>
+                  <input 
+                    type="number" 
+                    value={tempSettings.tva}
+                    onChange={e => setTempSettings({ ...tempSettings, tva: parseFloat(e.target.value) || 0 })}
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-border/50 rounded-lg outline-none font-bold text-sm focus:border-primary"
+                  />
+                </div>
+
+                <button
+                  onClick={handleSave}
+                  className="w-full flex items-center justify-center gap-2 bg-primary text-white py-2.5 rounded-xl text-xs font-black uppercase tracking-widest shadow-lg shadow-primary/20 hover:bg-primary-dark transition-all"
+                >
+                  <Save size={14} /> Salvează
+                </button>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

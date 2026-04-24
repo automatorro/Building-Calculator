@@ -89,19 +89,6 @@ export default function EstimateEditor({
     toast.success('Rând șters.')
   }
 
-  const handleImportLines = (newLines: any[]) => {
-    newLines.forEach(line => {
-      // We use onAddLine as a proxy or just call it multiple times? 
-      // Better to have a bulk update in props? 
-      // Current props don't have bulk add. I'll add them one by one for now or suggest bulk refactor.
-      // Actually, onAddLine in EstimateEditorProps is: (stageName?: string) => void
-      // The parent ProjectClientContainer seems to handle the actual array state.
-      // I'll simulate adding them by manually calling onUpdateLine if I can, 
-      // but the parent handles the 'lines' state. 
-      // Wait, EstimateEditor is a child. It should probably just call a prop.
-    })
-    // I will use a custom callback for bulk import if I can, but let's see ProjectClientContainer.
-  }
 
     const handleDuplicateLine = (line: EstimateLine) => {
     onDuplicateLine(line)
@@ -460,13 +447,27 @@ export default function EstimateEditor({
                                         </div>
                                       </div>
                                       <div className="flex flex-col gap-1 col-span-2">
-                                        <span className="text-[9px] font-black uppercase tracking-widest text-slate-500">U.M.:</span>
-                                          <input
-                                            className="w-full px-2 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 rounded-lg outline-none text-base font-mono font-black text-slate-900 dark:text-white focus:border-primary transition-all"
-                                          value={line.unit ?? line.manual_um ?? (line.items?.um || '')}
-                                          onChange={(e) => handleUpdateManualField(line.id, 'unit', e.target.value)}
-                                        />
-                                      </div>
+                                         <span className="text-[9px] font-black uppercase tracking-widest text-slate-500">U.M.:</span>
+                                         <div className="flex gap-1">
+                                           <input
+                                             className="w-full px-2 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 rounded-lg outline-none text-base font-mono font-black text-slate-900 dark:text-white focus:border-primary transition-all"
+                                             value={line.unit ?? line.manual_um ?? (line.items?.um || '')}
+                                             onChange={(e) => handleUpdateManualField(line.id, 'unit', e.target.value)}
+                                           />
+                                           <select
+                                             value={line.metadata?.resource_type || 'material'}
+                                             onChange={e => onUpdateLine(line.id, { 
+                                               metadata: { ...line.metadata, resource_type: e.target.value }
+                                             })}
+                                             className="px-1 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 rounded-lg outline-none text-[10px] font-black uppercase text-slate-600 focus:border-primary transition-all"
+                                           >
+                                             <option value="material">MAT</option>
+                                             <option value="labor">MAN</option>
+                                             <option value="equipment">UTIL</option>
+                                             <option value="transport">TRA</option>
+                                           </select>
+                                         </div>
+                                       </div>
                                     </div>
                                   </div>
                                 ) : (

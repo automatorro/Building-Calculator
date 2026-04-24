@@ -128,7 +128,7 @@ export default function ProjectClientContainer({
   projectLocation,
   initialLines,
   initialPurchases,
-  settings,
+  settings: initialSettings,
   dimensions,
   totalEstimatedRevenue: initialRevenue,
   stages,
@@ -144,6 +144,7 @@ export default function ProjectClientContainer({
     }
   }, [tabParam])
   const [lines, setLines] = useState<EstimateLine[]>(initialLines)
+  const [settings, setSettings] = useState<ProjectSettings>(initialSettings)
   const [purchases, setPurchases] = useState<Purchase[]>(initialPurchases)
   const [revenue, setRevenue] = useState(initialRevenue)
   const [showPurchaseForm, setShowPurchaseForm] = useState(false)
@@ -281,7 +282,7 @@ export default function ProjectClientContainer({
 
         if (planned > 0 && newTotal > planned) {
           const exceeded = newTotal - planned
-          const impact = -(exceeded * (settings.profit / 100))
+          const impact = -exceeded
           setBudgetAlert({ stage, exceeded, impact })
           toast.warning(`Atenție! Bugetul pentru etapa "${stage}" a fost depășit.`)
         }
@@ -324,7 +325,7 @@ export default function ProjectClientContainer({
             custom_prices: line.custom_prices,
             excluded_resources: line.excluded_resources,
             stage_name: line.stage_name,
-            sort_order: line.sort_order ?? 0,
+            sort_order: lines.indexOf(line),
             notes: line.notes,
             catalog_norm_id: line.catalog_norm_id ?? null,
             name: line.name || line.manual_name || 'Articol',
@@ -390,6 +391,21 @@ export default function ProjectClientContainer({
     return allTabs
   }, [lines.length, purchases.length])
 
+  const handleSaveSettings = async (newSettings: ProjectSettings) => {
+    setSettings(newSettings)
+    try {
+      const { error } = await supabase
+        .from('projects')
+        .update({ settings: newSettings })
+        .eq('id', projectId)
+      if (error) throw error
+      toast.success('Setări actualizate cu succes.')
+    } catch (err) {
+      console.error(err)
+      toast.error('Eroare la salvarea setărilor.')
+    }
+  }
+
   return (
     <div className="space-y-8">
 
@@ -406,8 +422,7 @@ export default function ProjectClientContainer({
         />
         <div className="flex justify-end pr-2">
           {loading ? (
-            <span className="tex
-            t-[10px] font-bold text-slate-400 flex items-center gap-1 uppercase tracking-widest">
+            <span className="text-[10px] font-bold text-slate-400 flex items-center gap-1 uppercase tracking-widest">
               <span className="w-1.5 h-1.5 bg-orange-500 rounded-full animate-pulse" /> Se sincronizează...
             </span>
           ) : isSaved ? (
@@ -538,6 +553,7 @@ export default function ProjectClientContainer({
               onViewStages={() => setView('planning')}
               lines={lines}
               settings={settings}
+              onUpdateSettings={handleSaveSettings}
               purchases={purchases}
             />
             <div className="mt-8" style={{
@@ -792,6 +808,7 @@ function PurchaseFormModal({
     category: 'Material',
     date: new Date().toISOString().split('T')[0],
   })
+  const [tvaInclus, setTvaInclus] = useState(true)
   const [photosFiles, setPhotosFiles] = useState<File[]>([])
   const [isScanning, setIsScanning] = useState(false)
   const [ocrResult, setOcrResult] = useState<PurchaseOcrResult | null>(null)
@@ -918,6 +935,18 @@ function PurchaseFormModal({
                   onChange={e => setFormData({ ...formData, amount_total: e.target.value })}
                   onFocus={e => (e.target.style.borderColor = '#E8500A')}
                   onBlur={e => (e.target.style.borderColor = '#E5E3DE')} />
+                
+                <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', marginTop: 6 }}>
+                  <input 
+                    type="checkbox" 
+                    checked={tvaInclus} 
+                    onChange={e => setTvaInclus(e.target.checked)}
+                    style={{ width: 14, height: 14, accentColor: '#E8500A' }}
+                  />
+                  <span style={{ fontSize: 11, color: '#6B6860', fontWeight: 500 }}>
+                    Suma include TVA ({settings.tva}%)?
+                  </span>
+                </label>
               </div>
               <div>
                 <label style={{
@@ -1079,16 +1108,25 @@ function PurchaseFormModal({
             Anulează
           </button>
           <button
-            onClick={() => onSave({ 
-              ...formData, 
-              amount_total: parseFloat(formData.amount_total) || 0, 
-              photosFiles,
-              metadata: { 
-                vendor_cui: ocrResult?.vendorCui,
-                tva_amount: ocrResult?.tvaAmount,
-                items: ocrResult?.items
-              }
-            })}
+            onClick={() => {
+              const amountRaw = parseFloat(formData.amount_total) || 0
+              const amountFinal = tvaInclus 
+                ? (amountRaw / (1 + (settings.tva || 0) / 100))
+                : amountRaw
+
+              onSave({ 
+                ...formData, 
+                amount_total: amountFinal, 
+                photosFiles,
+                metadata: { 
+                  vendor_cui: ocrResult?.vendorCui,
+                  tva_amount: ocrResult?.tvaAmount,
+                  items: ocrResult?.items,
+                  tva_inclus_la_introducere: tvaInclus,
+                  suma_bruta_originala: amountRaw
+                }
+              })
+            }}
             disabled={!formData.name || !formData.amount_total || isScanning}
             style={{
               flex: 1, padding: '12px', background: '#E8500A', border: 'none',

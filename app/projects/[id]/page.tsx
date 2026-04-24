@@ -34,6 +34,7 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
       )
     `)
     .eq('project_id', id)
+    .order('sort_order', { ascending: true })
 
   /* 3. Preia achizițiile */
   const { data: purchases } = await supabase

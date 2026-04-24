@@ -64,6 +64,53 @@ export default function ProjectDevizView({
   const [expandedStage, setExpandedStage] = useState<string | null>(null)
   const [discountB2B, setDiscountB2B] = useState(0)
   const [includePierderi, setIncludePierderi] = useState(false)
+  const { calculateLineCosts } = require('@/utils/calculators/estimate')
+
+  function getAdjustedCosts(
+    line: EstimateLine, 
+    settings: ProjectSettings, 
+    discountB2B: number,
+    includePierderi: boolean
+  ) {
+    const baseCosts = calculateLineCosts(line, settings)
+    if (discountB2B === 0 && !includePierderi) return baseCosts
+
+    // 1. Rebuild resources cu discount pe materiale + pierderi pe cantități
+    const resourcesToUse = line.resources_override?.length 
+      ? line.resources_override 
+      : line.items?.resources || []
+
+    if (resourcesToUse.length === 0) {
+      // Linie simplă (fără rețetă) — discount pe tot dacă nu știm tipul
+      const discountedUnitPrice = (line.unit_price || line.manual_price || 0) * (1 - discountB2B / 100)
+      const pierderi = includePierderi ? (1 + getPierderi(line.name || line.manual_name || '')) : 1
+      const adjustedLine = { ...line, unit_price: discountedUnitPrice, quantity: line.quantity * pierderi }
+      return calculateLineCosts(adjustedLine, settings)
+    }
+
+    // Linie cu rețetă — discount selectiv pe material, pierderi pe consum
+    const adjustedResources = resourcesToUse.map(res => {
+      const basePrice = line.custom_prices[res.id] ?? res.unit_price
+      const discountedPrice = res.type === 'material' 
+        ? basePrice * (1 - discountB2B / 100) 
+        : basePrice
+      const pierderiMult = includePierderi && res.type === 'material'
+        ? (1 + getPierderi(line.name || line.manual_name || ''))
+        : 1
+      return { 
+        ...res, 
+        unit_price: discountedPrice,
+        consumption: res.consumption * pierderiMult
+      }
+    })
+
+    const adjustedLine = {
+      ...line,
+      resources_override: adjustedResources,
+      custom_prices: {} // prețurile sunt deja în resources_override
+    }
+    return calculateLineCosts(adjustedLine, settings)
+  }
 
   /* Grupăm liniile după etapă */
   const grouped = useMemo(() => {
@@ -86,14 +133,32 @@ export default function ProjectDevizView({
       withTVA: number
     }> = {}
     for (const stage of stages) {
-      const t = calculateProjectTotals(grouped[stage], settings)
-      result[stage] = { direct: t.totalDirect, ofertat: t.totalOfertat, withTVA: t.totalWithTVA }
+      const stageLines = grouped[stage]
+      const t = stageLines.reduce((acc, line) => {
+        const costs = getAdjustedCosts(line, settings, discountB2B, includePierderi)
+        return {
+          direct: acc.direct + costs.totalDirectCost,
+          ofertat: acc.ofertat + costs.totalOfertatWithoutTVA,
+          withTVA: acc.withTVA + costs.totalWithTVA
+        }
+      }, { direct: 0, ofertat: 0, withTVA: 0 })
+      result[stage] = t
     }
     return result
-  }, [grouped, stages, settings])
+  }, [grouped, stages, settings, discountB2B, includePierderi])
 
   /* Total general */
-  const totals = useMemo(() => calculateProjectTotals(lines, settings), [lines, settings])
+  const totals = useMemo(() => {
+    if (discountB2B === 0 && !includePierderi) return calculateProjectTotals(lines, settings)
+    return lines.reduce((acc, line) => {
+      const costs = getAdjustedCosts(line, settings, discountB2B, includePierderi)
+      return {
+        totalDirect: acc.totalDirect + costs.totalDirectCost,
+        totalOfertat: acc.totalOfertat + costs.totalOfertatWithoutTVA,
+        totalWithTVA: acc.totalWithTVA + costs.totalWithTVA
+      }
+    }, { totalDirect: 0, totalOfertat: 0, totalWithTVA: 0 })
+  }, [lines, settings, discountB2B, includePierderi])
 
   const totalDirect   = totals.totalDirect
   const regieAmount   = totalDirect * (settings.regie / 100)
@@ -348,7 +413,7 @@ export default function ProjectDevizView({
                         </thead>
                         <tbody>
                           {stageLines.map((line, i) => {
-                            const costs = calculateLineCosts(line, settings)
+                            const costs = getAdjustedCosts(line, settings, discountB2B, includePierderi)
                             const analysis = analyzeEstimateLine(line)
                             const isCatalogNorm = !!(line.catalog_norm_id || line.metadata?.catalog_norm_id)
                             const isManual = analysis.origin === 'Adăugat manual'
