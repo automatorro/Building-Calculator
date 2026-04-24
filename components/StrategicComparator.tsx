@@ -4,6 +4,7 @@ import { useState, useMemo, useEffect } from 'react'
 import { BarChart3, Clock, DollarSign, ArrowRight, Zap, Info, Loader2 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { createClient } from '@/utils/supabase/client'
+import { fmtRon } from '@/utils/format'
 
 interface Scenario {
   id: string
@@ -240,14 +241,14 @@ export default function StrategicComparator({ initialArea = 100 }: StrategicComp
                     <span>{res.materialCostPerUM} lei / {res.um}</span>
                   </div>
                   <div className="text-2xl font-black text-slate-900 dark:text-white">
-                    {res.totalMat.toLocaleString('ro-RO')} <span className="text-xs">Lei</span>
+                    {fmtRon(res.totalMat)} <span className="text-xs">Lei</span>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4 pb-6 border-b border-border/30">
                   <div>
                     <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Manoperă Est.</div>
-                    <div className="text-lg font-bold text-slate-700 dark:text-slate-300">{res.totalLabor.toLocaleString('ro-RO')} Lei</div>
+                    <div className="text-lg font-bold text-slate-700 dark:text-slate-300">{fmtRon(res.totalLabor)} Lei</div>
                   </div>
                   <div>
                     <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Timp Manoperă</div>
@@ -260,7 +261,7 @@ export default function StrategicComparator({ initialArea = 100 }: StrategicComp
                 <div>
                   <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Investiție Totală</div>
                   <div className={`text-3xl lg:text-4xl font-black ${i === diff.cheapestIdx ? 'text-emerald-600' : 'text-slate-900 dark:text-white'}`}>
-                    {res.totalCost.toLocaleString('ro-RO')} Lei
+                    {fmtRon(res.totalCost)} Lei
                   </div>
                 </div>
               </div>
@@ -271,7 +272,7 @@ export default function StrategicComparator({ initialArea = 100 }: StrategicComp
           <div className="lg:absolute lg:left-1/2 lg:top-1/2 lg:-translate-x-1/2 lg:-translate-y-1/2 flex flex-col items-center gap-3 w-full lg:w-auto p-4 z-10">
             <div className="bg-slate-900 text-white p-4 rounded-2xl shadow-2xl border border-white/10 text-center min-w-[200px]">
               <div className="text-[9px] font-black uppercase text-primary mb-1">Diferența de Cost</div>
-              <div className="text-xl font-black text-primary">-{diff.costDiff.toLocaleString('ro-RO')} Lei</div>
+              <div className="text-xl font-black text-primary">-{fmtRon(diff.costDiff)} Lei</div>
               <div className="h-px bg-white/10 my-2" />
               <div className="text-[9px] font-black uppercase text-amber-500 mb-1">Economie Timp</div>
               <div className="text-lg font-black text-amber-500 flex items-center justify-center gap-1">
@@ -288,7 +289,7 @@ export default function StrategicComparator({ initialArea = 100 }: StrategicComp
           <div className="flex-1 text-center md:text-left">
             <h5 className="font-black text-sm uppercase tracking-tight text-slate-900 dark:text-white">Concluzie Analitică</h5>
             <p className="text-xs text-slate-500 mt-1 leading-relaxed">
-              Dacă alegi <strong>{results[diff.cheapestIdx].name}</strong>, economisești <strong>{diff.costDiff.toLocaleString('ro-RO')} Lei</strong>. 
+              Dacă alegi <strong>{results[diff.cheapestIdx].name}</strong>, economisești <strong>{fmtRon(diff.costDiff)} Lei</strong>. 
               Dacă timpul este critic, <strong>{results[diff.fastestIdx].name}</strong> îți salvează <strong>{Math.ceil(diff.timeDiff)} ore</strong> de manoperă (echivalentul a aprox. {Math.ceil(diff.timeDiff / 8)} zile de lucru pentru o echipă de 2 oameni).
             </p>
           </div>

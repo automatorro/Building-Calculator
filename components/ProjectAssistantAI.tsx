@@ -11,6 +11,7 @@ import {
 } from 'lucide-react'
 import { getProjectOptimizations, OptimizationSuggestion } from '@/lib/gemini'
 import { toast } from 'sonner'
+import { fmtRon } from '@/utils/format'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 
@@ -189,7 +190,7 @@ export default function ProjectAssistantAI({ lines, settings, projectId, project
                       </div>
                       <div className="text-right">
                         <div className={`${s.type === 'price_audit' ? 'text-red-600' : 'text-green-600'} font-black text-sm`}>
-                          {s.type === 'price_audit' ? 'Derapaj' : `-${s.impactPrice.toLocaleString('ro-RO')} Lei`}
+                          {s.type === 'price_audit' ? 'Derapaj' : `-${fmtRon(s.impactPrice)} Lei`}
                         </div>
                         <div className="text-[9px] font-bold text-slate-400 uppercase">
                           {s.type === 'price_audit' ? 'Peste referință' : 'Impact estimat'}
@@ -202,7 +203,7 @@ export default function ProjectAssistantAI({ lines, settings, projectId, project
                         {s.marketRefPrice && (
                           <div className="flex items-center gap-1.5 px-2 py-1 bg-slate-900 text-white rounded-lg font-mono text-[9px] font-bold">
                             <ShoppingCart size={10} className="text-primary" />
-                            Ref. 2026: {s.marketRefPrice.toLocaleString('ro-RO')} lei
+                            Ref. 2026: {fmtRon(s.marketRefPrice)} lei
                           </div>
                         )}
                         {!s.marketRefPrice && s.impactTime > 0 && (

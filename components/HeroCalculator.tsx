@@ -9,9 +9,7 @@ const FIN_BASE   = [4000, 5500, 7500]   // lei/mp fără TVA
 const FIN_LABEL  = ['~800 EUR/mp', '~1.100 EUR/mp', '~1.500 EUR/mp']
 const EUR_RATE   = 5.0
 
-function fmt(n: number) {
-  return Math.round(n).toLocaleString('ro-RO')
-}
+import { fmtRon } from '@/utils/format'
 
 export default function HeroCalculator() {
   const [mp,     setMp]     = useState(150)
@@ -133,19 +131,19 @@ export default function HeroCalculator() {
           fontFamily:'var(--font-dm-serif,"DM Serif Display",Georgia,serif)',
           fontSize:38, color:'#FFFFFF', lineHeight:1, marginBottom:4,
         }}>
-          {fmt(total)} lei
+          {fmtRon(total)} lei
         </div>
         <div style={{ fontSize:14, color:'#FFFFFF', fontWeight:500 }}>
-          {fmt(perMp)} lei / mp · ~{perMpEur.toLocaleString('ro-RO')} EUR/mp · fără TVA
+          {fmtRon(perMp)} lei / mp · ~{fmtRon(perMpEur)} EUR/mp · fără TVA
         </div>
       </div>
 
       {/* Breakdown */}
       <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:8, marginBottom:20 }}>
         {[
-          { label:'Structură',  value: fmt(struct)  },
-          { label:'Finisaje',   value: fmt(finCost)  },
-          { label:'Instalații', value: fmt(inst)     },
+          { label:'Structură',  value: fmtRon(struct)  },
+          { label:'Finisaje',   value: fmtRon(finCost)  },
+          { label:'Instalații', value: fmtRon(inst)     },
         ].map(({ label, value }) => (
           <div key={label} style={{ background:'#E5E3DE', borderRadius:8, padding:'10px 12px' }}>
             <div style={{ fontSize:12, color:'#4A4744', marginBottom:3, fontWeight:700 }}>{label}</div>

@@ -4,6 +4,7 @@ import { useMemo } from 'react'
 import { CalendarDays, Clock, Flag, AlertCircle } from 'lucide-react'
 import { Purchase } from '@/utils/calculators/financials'
 import { EstimateLine } from '@/utils/calculators/estimate'
+import { fmtRon } from '@/utils/format'
 
 interface ProjectTimelineProps {
   stages: string[]           // din Supabase projects.stages
@@ -279,7 +280,7 @@ export default function ProjectTimeline({
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12 }}>
                   <span style={{ color: '#A8A59E' }}>Cheltuit</span>
                   <span style={{ fontWeight: 600, color: stage.isOverBudget ? '#C0392B' : '#2A7D4F' }}>
-                    {stage.spentCost.toLocaleString('ro-RO')} lei
+                    {fmtRon(stage.spentCost)} lei
                   </span>
                 </div>
               )}

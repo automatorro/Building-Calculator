@@ -9,6 +9,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import VendorOfferPicker from './VendorOfferPicker'
 import EstimateImporter from './EstimateImporter'
 import { FileSpreadsheet } from 'lucide-react'
+import { fmtRon } from '@/utils/format'
 
 interface EstimateEditorProps {
   projectId: string
@@ -245,18 +246,18 @@ export default function EstimateEditor({
         <div className="glass-card p-5 md:p-6 bg-slate-900 text-white sticky top-4 z-20 shadow-2xl lg:shadow-none rounded-2xl">
           <h3 className="font-bold mb-3 md:mb-4 uppercase text-[10px] tracking-widest text-slate-400">Total Proiect</h3>
           <div className="text-2xl md:text-3xl font-black text-primary mb-1">
-            {totals.totalWithTVA.toLocaleString('ro-RO', { minimumFractionDigits: 0 })} Lei
+            {fmtRon(totals.totalWithTVA)} Lei
           </div>
           <div className="text-[10px] text-slate-400 mb-4 md:mb-6 font-bold uppercase tracking-wide">Inclusiv TVA</div>
           
           <div className="space-y-1.5 md:space-y-2 text-xs md:text-sm text-slate-300 mb-4 md:mb-6">
             <div className="flex justify-between">
               <span>Cost Execuție:</span>
-              <span className="font-mono">{totals.totalDirect.toLocaleString('ro-RO')} Lei</span>
+              <span className="font-mono">{fmtRon(totals.totalDirect)} Lei</span>
             </div>
             <div className="flex justify-between">
               <span>Vânzare (fără TVA):</span>
-              <span className="font-mono">{totals.totalOfertat.toLocaleString('ro-RO')} Lei</span>
+              <span className="font-mono">{fmtRon(totals.totalOfertat)} Lei</span>
             </div>
           </div>
 
@@ -414,8 +415,8 @@ export default function EstimateEditor({
                                         </>
                                       ) : (
                                         <>
-                                          <span>Unit: {line.unit_price?.toLocaleString('ro-RO')} lei / {line.unit || '—'}</span>
-                                          <span className="text-primary">Final: {(lineCosts.totalWithTVA / line.quantity).toLocaleString('ro-RO')} / {line.unit}</span>
+                                          <span>Unit: {fmtRon(line.unit_price ?? 0)} lei / {line.unit || '—'}</span>
+                                          <span className="text-primary">Final: {fmtRon(lineCosts.totalWithTVA / line.quantity)} / {line.unit}</span>
                                         </>
                                       )}
                                     </div>
@@ -481,8 +482,8 @@ export default function EstimateEditor({
                                         </>
                                       ) : (
                                         <>
-                                          <span>Cost: {lineCosts.unitDirectCost.toLocaleString('ro-RO')} lei / {line.items!.um}</span>
-                                          <span className="text-primary font-black">Final: {(lineCosts.totalWithTVA / line.quantity).toLocaleString('ro-RO')} lei</span>
+                                          <span>Cost: {fmtRon(lineCosts.unitDirectCost)} lei / {line.items!.um}</span>
+                                          <span className="text-primary font-black">Final: {fmtRon(lineCosts.totalWithTVA / line.quantity)} lei</span>
                                         </>
                                       )}
                                     </div>
@@ -494,26 +495,26 @@ export default function EstimateEditor({
                                 <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 p-3 bg-slate-100/50 dark:bg-slate-950/20 rounded-xl border border-border/30 text-[11px] font-bold uppercase tracking-tight text-slate-500">
                                   <span className="text-slate-400">Desfășurare Preț Final:</span>
                                   <div className="flex items-center gap-1.5 bg-white dark:bg-slate-900 px-2 py-1 rounded-md border border-border/50">
-                                    <span>Bază: {(lineCosts.unitDirectCost).toLocaleString('ro-RO', { minimumFractionDigits: 2 })}</span>
+                                    <span>Bază: {fmtRon(lineCosts.unitDirectCost)}</span>
                                   </div>
                                   <span>+</span>
                                   <div className="flex items-center gap-1.5">
                                     <span>Regie ({settings.regie}%):</span>
-                                    <span className="text-amber-600">{(lineCosts.regieAmount / line.quantity).toLocaleString('ro-RO', { minimumFractionDigits: 2 })}</span>
+                                    <span className="text-amber-600">{fmtRon(lineCosts.regieAmount / line.quantity)}</span>
                                   </div>
                                   <span>+</span>
                                   <div className="flex items-center gap-1.5">
                                     <span>Profit ({settings.profit}%):</span>
-                                    <span className="text-emerald-600">{(lineCosts.profitAmount / line.quantity).toLocaleString('ro-RO', { minimumFractionDigits: 2 })}</span>
+                                    <span className="text-emerald-600">{fmtRon(lineCosts.profitAmount / line.quantity)}</span>
                                   </div>
                                   <span>+</span>
                                   <div className="flex items-center gap-1.5">
                                     <span>TVA ({settings.tva}%):</span>
-                                    <span className="text-indigo-600">{(lineCosts.tvaAmount / line.quantity).toLocaleString('ro-RO', { minimumFractionDigits: 2 })}</span>
+                                    <span className="text-indigo-600">{fmtRon(lineCosts.tvaAmount / line.quantity)}</span>
                                   </div>
                                   <span className="text-primary">=</span>
                                   <div className="bg-primary/10 text-primary px-2 py-1 rounded-md border border-primary/20 font-black">
-                                    {(lineCosts.totalWithTVA / line.quantity).toLocaleString('ro-RO', { minimumFractionDigits: 2 })} lei / {line.unit || (isManual ? line.manual_um : line.items!.um)}
+                                    {fmtRon(lineCosts.totalWithTVA / line.quantity)} lei / {line.unit || (isManual ? line.manual_um : line.items!.um)}
                                   </div>
                                 </div>
                               )}
@@ -550,7 +551,7 @@ export default function EstimateEditor({
                                     </div>
                                   ) : (
                                     <div className="font-mono text-xl md:text-3xl font-black text-slate-900 dark:text-white">
-                                      {lineCosts.totalOfertatWithoutTVA.toLocaleString('ro-RO', { minimumFractionDigits: 0 })}
+                                      {fmtRon(lineCosts.totalOfertatWithoutTVA)}
                                       <span className="text-[10px] ml-1">lei</span>
                                     </div>
                                   )}
@@ -717,7 +718,7 @@ export default function EstimateEditor({
                                             <div className="flex justify-between items-center pt-2 text-[10px] font-black uppercase text-slate-400">
                                               <span>Total Resursă:</span>
                                               <span className="text-primary font-black text-sm">
-                                                {(res.consumption * line.quantity * (customPrice ?? res.unit_price) * (1 + (res.waste_percent || 0) / 100)).toLocaleString('ro-RO', {maximumFractionDigits: 0})} lei
+                                                {fmtRon(res.consumption * line.quantity * (customPrice ?? res.unit_price) * (1 + (res.waste_percent || 0) / 100))} lei
                                               </span>
                                             </div>
                                           </div>

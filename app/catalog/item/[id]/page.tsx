@@ -3,6 +3,7 @@ import { createClient } from '@/utils/supabase/server'
 import { notFound } from 'next/navigation'
 import { ArrowLeft, Box } from 'lucide-react'
 import AddToProjectButton from '@/components/AddToProjectButton'
+import { fmtRon } from '@/utils/format'
 
 export const dynamic = 'force-dynamic'
 
@@ -111,7 +112,7 @@ export default async function CatalogItemPage({
             <div className="flex items-center gap-2">
               <span className="text-slate-400">Preț referință:</span>
               <span className="font-semibold text-primary">
-                {norm.unit_price.toLocaleString('ro-RO', { minimumFractionDigits: 2 })} lei/{norm.unit}
+                {fmtRon(norm.unit_price)} lei/{norm.unit}
               </span>
               <span className="text-xs text-slate-400">(fără TVA)</span>
             </div>
@@ -132,7 +133,7 @@ export default async function CatalogItemPage({
                   <div key={type} className={`rounded-lg p-3 ${cfg.color}`}>
                     <div className="text-xs font-medium mb-1">{cfg.label}</div>
                     <p className="text-lg font-bold">
-                      {val.toLocaleString('ro-RO', { minimumFractionDigits: 2 })}
+                      {fmtRon(val)}
                     </p>
                     <p className="text-xs opacity-70">lei/{norm.unit}</p>
                   </div>
@@ -143,14 +144,14 @@ export default async function CatalogItemPage({
               <div>
                 <span className="text-slate-400">Total obligatoriu:</span>{' '}
                 <span className="font-bold text-base">
-                  {totalRequired.toLocaleString('ro-RO', { minimumFractionDigits: 2 })} lei/{norm.unit}
+                  {fmtRon(totalRequired)} lei/{norm.unit}
                 </span>
               </div>
               {totalOptional > 0 && (
                 <div>
                   <span className="text-slate-400">+ opționale:</span>{' '}
                   <span className="font-semibold text-slate-500">
-                    +{totalOptional.toLocaleString('ro-RO', { minimumFractionDigits: 2 })} lei
+                    +{fmtRon(totalOptional)} lei
                   </span>
                 </div>
               )}
@@ -211,18 +212,15 @@ export default async function CatalogItemPage({
                           </span>
                         </td>
                         <td className="px-4 py-4 text-right font-mono">
-                          {comp.qty_per_unit.toLocaleString('ro-RO', {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 4,
-                          })}{' '}
+                          {fmtRon(comp.qty_per_unit)}{' '}
                           <span className="text-slate-400 text-xs">{comp.unit}</span>
                         </td>
                         <td className="px-4 py-4 text-right font-mono">
-                          {comp.unit_price.toLocaleString('ro-RO', { minimumFractionDigits: 2 })}{' '}
+                          {fmtRon(comp.unit_price)}{' '}
                           <span className="text-slate-400 text-xs">lei</span>
                         </td>
                         <td className="px-6 py-4 text-right font-mono font-semibold">
-                          {lineTotal.toLocaleString('ro-RO', { minimumFractionDigits: 2 })}{' '}
+                          {fmtRon(lineTotal)}{' '}
                           <span className="text-slate-400 text-xs font-normal">lei</span>
                         </td>
                       </tr>
@@ -235,7 +233,7 @@ export default async function CatalogItemPage({
                       TOTAL per {norm.unit}:
                     </td>
                     <td className="px-6 py-3 text-right font-mono text-primary">
-                      {totalRequired.toLocaleString('ro-RO', { minimumFractionDigits: 2 })} lei
+                      {fmtRon(totalRequired)} lei
                     </td>
                   </tr>
                 </tfoot>
@@ -256,7 +254,7 @@ export default async function CatalogItemPage({
                 Prețul de referință de{' '}
                 <strong>
                   {norm.unit_price > 0
-                    ? `${norm.unit_price.toLocaleString('ro-RO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} lei/${norm.unit}`
+                    ? `${fmtRon(norm.unit_price)} lei/${norm.unit}`
                     : 'neconfigurat'}
                 </strong>{' '}
                 reprezintă costul estimativ total.

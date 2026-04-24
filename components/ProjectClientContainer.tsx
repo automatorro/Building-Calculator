@@ -18,6 +18,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { createClient } from '@/utils/supabase/client'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { toast } from 'sonner'
+import { fmtRon } from '@/utils/format'
 import { processPurchaseDocument, PurchaseOcrResult } from '@/utils/purchase-ocr'
 import { Camera, Scan, Loader2, Info } from 'lucide-react'
 
@@ -507,9 +508,9 @@ export default function ProjectClientContainer({
             </p>
             <p style={{ fontSize: 13, color: '#C0392B', lineHeight: 1.5 }}>
               S-a depășit bugetul planificat cu{' '}
-              <strong>{budgetAlert.exceeded.toLocaleString('ro-RO', { maximumFractionDigits: 0 })} lei</strong>.
+              <strong>{fmtRon(budgetAlert.exceeded)} lei</strong>.
               {budgetAlert.impact < 0 && (
-                <> Impact profit: <strong>{budgetAlert.impact.toLocaleString('ro-RO', { maximumFractionDigits: 0 })} lei</strong>.</>
+                <> Impact profit: <strong>{fmtRon(budgetAlert.impact)} lei</strong>.</>
               )}
             </p>
           </div>
@@ -523,7 +524,7 @@ export default function ProjectClientContainer({
             </button>
             <button 
               onClick={() => {
-                const msg = `⚠️ Atenție: Etapa "${budgetAlert.stage}" de la proiectul "${projectName}" a depășit bugetul cu ${budgetAlert.exceeded.toLocaleString('ro-RO')} lei. Verifică aici: ${window.location.href}`;
+                const msg = `⚠️ Atenție: Etapa "${budgetAlert.stage}" de la proiectul "${projectName}" a depășit bugetul cu ${fmtRon(budgetAlert.exceeded)} lei. Verifică aici: ${window.location.href}`;
                 window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
               }}
               style={{
@@ -744,7 +745,7 @@ export default function ProjectClientContainer({
                             padding: '12px 20px', textAlign: 'right',
                             fontWeight: 700, color: '#E8500A', whiteSpace: 'nowrap'
                           }}>
-                            {Number(p.amount_total).toLocaleString('ro-RO')} lei
+                            {fmtRon(Number(p.amount_total))} lei
                           </td>
                         </tr>
                       ))

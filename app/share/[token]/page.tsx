@@ -1,11 +1,9 @@
 import { createClient } from '@/utils/supabase/server'
 import { notFound } from 'next/navigation'
 import { calculateLineCosts, type EstimateLine, type ProjectSettings } from '@/utils/calculators/estimate'
+import { fmtRon } from '@/utils/format'
 
 export const dynamic = 'force-dynamic'
-
-const lei = (n: number) =>
-  n.toLocaleString('ro-RO', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
 
 export default async function SharePage({ params }: { params: { token: string } }) {
   const supabase = await createClient()
@@ -127,7 +125,7 @@ export default async function SharePage({ params }: { params: { token: string } 
                 </div>
               </div>
               <div style={{ fontSize: 16, fontWeight: 600, color: C.orange }}>
-                ~{lei(data.total)} lei
+                ~{fmtRon(data.total)} lei
               </div>
             </div>
           ))}
@@ -142,7 +140,7 @@ export default async function SharePage({ params }: { params: { token: string } 
               Total estimativ fără TVA
             </div>
             <div style={{ fontFamily: C.serif, fontSize: 36, color: C.white, lineHeight: 1 }}>
-              {lei(totalFaraTVA)}
+              {fmtRon(totalFaraTVA)}
               <span style={{ fontSize: 16, color: 'rgba(255,255,255,0.4)',
                 fontFamily: C.sans, fontWeight: 400 }}> lei</span>
             </div>
@@ -153,7 +151,7 @@ export default async function SharePage({ params }: { params: { token: string } 
               Cu TVA {settings.tva}%
             </div>
             <div style={{ fontSize: 20, fontWeight: 700, color: C.orange }}>
-              ~{lei(totalFaraTVA * (1 + settings.tva / 100))} lei
+              ~{fmtRon(totalFaraTVA * (1 + settings.tva / 100))} lei
             </div>
           </div>
         </div>

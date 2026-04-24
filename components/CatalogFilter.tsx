@@ -5,6 +5,7 @@ import { Search, X, PlusCircle, Check, ChevronDown, ChevronUp } from 'lucide-rea
 import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
+import { fmtRon } from '@/utils/format'
 
 interface CatalogNorm {
   id: number
@@ -201,7 +202,7 @@ export default function CatalogFilter({
                 <div className="flex items-center gap-2">
                   {norm.unit_price > 0 && (
                     <span className="text-sm font-semibold text-slate-600 dark:text-slate-300 whitespace-nowrap">
-                      {norm.unit_price.toLocaleString('ro-RO', { minimumFractionDigits: 2 })} lei/{norm.unit}
+                      {fmtRon(norm.unit_price)} lei/{norm.unit}
                     </span>
                   )}
                   <span className="text-xs text-slate-400">u.m. {norm.unit}</span>
@@ -252,7 +253,7 @@ export default function CatalogFilter({
                   {norm.unit_price > 0 && (
                     <div>
                       <span className="font-medium">Preț referință:</span>{' '}
-                      {norm.unit_price.toLocaleString('ro-RO', { minimumFractionDigits: 2 })} lei/{norm.unit} (fără TVA)
+                      {fmtRon(norm.unit_price)} lei/{norm.unit} (fără TVA)
                     </div>
                   )}
                   <a
