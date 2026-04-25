@@ -407,7 +407,7 @@ export default function EstimateEditor({
                                 {isCatalogNorm ? (
                                   <div className="flex flex-col w-full">
                                     <h4 className="font-black text-lg md:text-2xl leading-tight break-words text-slate-900 dark:text-white">{line.name || line.manual_name || '—'}</h4>
-                                    <div className={`flex flex-wrap items-center gap-2 text-[10px] md:text-[11px] font-bold uppercase tracking-wider mt-1.5 px-3 py-2 ${!analysis.isCalculable ? 'bg-red-600 text-white animate-pulse' : 'bg-slate-50 dark:bg-slate-900/50 text-slate-400'} rounded-lg border border-transparent`}>
+                                    <div className={`flex flex-wrap items-center gap-x-4 gap-y-1 text-xs md:text-sm font-bold uppercase tracking-wide mt-1.5 px-3 py-2 ${!analysis.isCalculable ? 'bg-red-600 text-white animate-pulse' : 'bg-slate-50 dark:bg-slate-900/50 text-slate-500'} rounded-lg border border-transparent`}>
                                       {!analysis.isCalculable ? (
                                         <>
                                           <AlertCircle size={14} className="shrink-0" />
@@ -416,7 +416,7 @@ export default function EstimateEditor({
                                       ) : (
                                         <>
                                           <span>Cost net: {fmtRon(lineCosts.unitDirectCost)} lei / {line.unit || '—'}</span>
-                                          <span className="text-primary">Preț/buc cu TVA: {fmtRon(lineCosts.totalWithTVA / line.quantity)} / {line.unit}</span>
+                                          <span className="text-primary font-black">Preț/buc cu TVA: {fmtRon(lineCosts.totalWithTVA / line.quantity)} / {line.unit}</span>
                                         </>
                                       )}
                                     </div>
@@ -474,7 +474,7 @@ export default function EstimateEditor({
                                 ) : (
                                   <div className="flex flex-col w-full">
                                     <h4 className="font-black text-lg md:text-2xl leading-tight break-words text-slate-900 dark:text-white">{line.items!.name}</h4>
-                                    <div className={`flex flex-wrap items-center gap-2 text-[10px] md:text-[11px] font-bold uppercase tracking-wider mt-1.5 px-3 py-2 ${!analysis.isCalculable ? 'bg-red-600 text-white animate-pulse' : 'bg-slate-50 dark:bg-slate-900/50 text-slate-400'} rounded-lg border border-transparent`}>
+                                    <div className={`flex flex-wrap items-center gap-x-4 gap-y-1 text-xs md:text-sm font-bold uppercase tracking-wide mt-1.5 px-3 py-2 ${!analysis.isCalculable ? 'bg-red-600 text-white animate-pulse' : 'bg-slate-50 dark:bg-slate-900/50 text-slate-500'} rounded-lg border border-transparent`}>
                                       {!analysis.isCalculable ? (
                                         <>
                                           <AlertCircle size={14} className="shrink-0" />
@@ -542,23 +542,23 @@ export default function EstimateEditor({
                                   <span className="text-xs font-bold text-slate-400 pr-2">{line.unit || (isManual ? line.manual_um : line.items!.um)}</span>
                                 </div>
 
-                                <div className="text-right flex-1 min-w-[110px]">
+                                <div className="text-right flex-1 min-w-[140px]">
                                   {!analysis.isCalculable ? (
                                     <div className="animate-pulse bg-red-600 text-white text-[10px] font-black px-3 py-2 rounded-lg shadow-md flex items-center gap-2 whitespace-nowrap">
                                       <AlertCircle size={12} className="shrink-0" />
                                       <span>{analysis.status}</span>
                                     </div>
                                   ) : (
-                                    <div className="space-y-0.5">
-                                      <div className="text-[9px] text-slate-400 uppercase tracking-widest font-black">Total cu TVA</div>
+                                    <div className="space-y-1">
+                                      <div className="text-[11px] text-slate-400 uppercase tracking-widest font-black">Total cu TVA</div>
                                       <div className="font-mono text-xl md:text-3xl font-black text-slate-900 dark:text-white">
                                         {fmtRon(lineCosts.totalWithTVA)}
-                                        <span className="text-[10px] ml-1">lei</span>
+                                        <span className="text-xs ml-1">lei</span>
                                       </div>
-                                      <div className="text-[10px] text-slate-400 font-mono">
-                                        fără TVA: {fmtRon(lineCosts.totalOfertatWithoutTVA)} lei
+                                      <div className="text-xs text-slate-500 font-mono">
+                                        fără TVA: <span className="font-bold">{fmtRon(lineCosts.totalOfertatWithoutTVA)}</span> lei
                                       </div>
-                                      <div className="text-[10px] text-indigo-500 font-mono font-bold">
+                                      <div className="text-xs text-indigo-500 font-mono font-bold">
                                         TVA {settings.tva}%: {fmtRon(lineCosts.tvaAmount)} lei
                                       </div>
                                     </div>
