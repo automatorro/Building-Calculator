@@ -90,7 +90,7 @@ export default function ImageUploader({ value, onChange, label = 'Imagine reprez
               <UploadCloud className="mb-3 h-8 w-8 text-[#A8A59E]" />
             )}
             <p className="mb-1 text-sm text-[#6B6860]">
-              <span className="font-semibold text-[#E8500A]">Click pentru upload</span> sau drag & drop
+              <span className="font-semibold text-[#E8500A]">Apasă pentru a încărca</span> sau trage fișierul aici
             </p>
             <p className="text-xs text-[#A8A59E]">PNG, JPG sau WEBP (max. 5MB)</p>
           </div>

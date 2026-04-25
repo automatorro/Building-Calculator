@@ -57,7 +57,7 @@ export default function ProjectDashboard({
       {/* Header Info */}
       <div className="flex flex-wrap items-center justify-between gap-4">
         <p style={{ fontSize: 11, fontWeight: 700, color: '#A8A59E', letterSpacing: '.08em', textTransform: 'uppercase' }}>
-          Status Financiar Proiect (Live)
+          Situație Financiară Proiect (în timp real)
         </p>
         <div className="flex items-center gap-3 w-full sm:w-auto">
           <ProjectSettingsPanel settings={settings} onSave={onUpdateSettings} />

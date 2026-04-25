@@ -35,7 +35,7 @@ export default async function InviteAcceptPage({ params }: { params: { token: st
             Această invitație nu mai este valabilă, a expirat sau a fost deja folosită de altcineva.
           </p>
           <Link href="/" className="inline-block bg-primary text-white px-8 py-3 rounded-xl font-bold transition-transform hover:scale-105 active:scale-95 shadow-lg shadow-primary/20">
-            Înapoi la Dashboard
+            Înapoi la proiecte
           </Link>
         </div>
       </div>

@@ -36,7 +36,7 @@ function getProjectId(pathname: string): string | null {
    ─────────────────────────────────────────────────────────────────────────── */
 const PROJECT_NAV = [
   {
-    name: 'Dashboard',
+    name: 'Panou principal',
     icon: Home,
     // Tab-ul dashboard e în /projects/[id] direct (primul tab)
     href: (id: string) => `/projects/${id}`,

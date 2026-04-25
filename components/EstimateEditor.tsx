@@ -445,11 +445,11 @@ export default function EstimateEditor({
                             ✨ {issueCount} {issueCount === 1 ? 'articol cu problemă de rețetă' : 'articole cu probleme în rețete'}
                           </h4>
                           <p className="text-xs font-bold text-amber-700/70 dark:text-amber-500/70">
-                            Caută badge-urile ✨ pe fiecare linie pentru detalii și corecții rapide.
+                            Caută indicatoarele ✨ de pe fiecare linie pentru detalii și corecții rapide.
                           </p>
                         </div>
                       </div>
-                      <span className="text-[10px] font-black bg-gradient-to-r from-amber-400 to-orange-400 text-white px-3 py-1 rounded-full uppercase tracking-widest shadow-md shadow-amber-400/30 shrink-0">AI Review</span>
+                      <span className="text-[10px] font-black bg-gradient-to-r from-amber-400 to-orange-400 text-white px-3 py-1 rounded-full uppercase tracking-widest shadow-md shadow-amber-400/30 shrink-0">Analiză AI</span>
                     </div>
                   )}
                 </div>
@@ -1007,7 +1007,7 @@ export default function EstimateEditor({
                   )}
                   <div className="flex items-start gap-2 px-2.5 py-2 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-700/50 rounded-xl text-[10px] text-amber-800 dark:text-amber-300 leading-snug">
                     <span className="text-amber-500 mt-0.5 shrink-0">⚠</span>
-                    <span>Verifică tipul fiecărei resurse — AI poate clasifica greșit manopera. Corectează din dropdown înainte de a aplica.</span>
+                    <span>Verifică tipul fiecărei resurse — AI poate clasifica greșit manopera. Corectează tipul din lista de opțiuni înainte de a aplica.</span>
                   </div>
                   <div className="space-y-2">
                     {aiSuggestion.resources.map((res, resIdx) => (
