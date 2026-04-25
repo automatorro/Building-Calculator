@@ -9,7 +9,10 @@ const apiKey =
 
 export const geminiClient = new GoogleGenAI({ apiKey })
 
-export const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-3-flash-preview'
+export const GEMINI_MODEL =
+  process.env.GEMINI_MODEL ||
+  process.env.NEXT_PUBLIC_GEMINI_MODEL ||
+  'gemini-3-flash-preview'
 
 // Re-export types for convenience
 export type { OptimizationSuggestion, AIAction, SuggestionType } from './ai-types'
