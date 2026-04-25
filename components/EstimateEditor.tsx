@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
-import { Plus, Trash2, Save, Info, ChevronDown, ChevronUp, Settings2, CheckCircle2, Lightbulb, Store, Link as LinkIcon, BookPlus, MoreVertical, Copy, Search, AlertCircle } from 'lucide-react'
+import { Plus, Trash2, Save, Info, ChevronDown, ChevronUp, Settings2, CheckCircle2, Lightbulb, Store, Link as LinkIcon, BookPlus, MoreVertical, Copy, Search, AlertCircle, Sparkles } from 'lucide-react'
 import { toast } from 'sonner'
 import { createClient } from '@/utils/supabase/client'
 import { calculateLineCosts, EstimateLine, ProjectSettings, calculateProjectTotals, analyzeEstimateLine } from '@/utils/calculators/estimate'
@@ -25,7 +25,41 @@ interface EstimateEditorProps {
   isSaved: boolean
 }
 
-export default function EstimateEditor({ 
+function detectLineIssues(line: EstimateLine, isManual: boolean): { code: string; message: string }[] {
+  const issues: { code: string; message: string }[] = []
+  const resources: any[] = (line.resources_override && line.resources_override.length > 0
+    ? line.resources_override
+    : line.items?.resources) || []
+  const excluded = line.excluded_resources || []
+  const customPrices = line.custom_prices || {}
+
+  if (!isManual && resources.length === 0) {
+    issues.push({ code: 'NO_RECIPE', message: 'Lipsă rețetă — nicio resursă definită' })
+    return issues
+  }
+
+  const active = resources.filter((r: any) => !excluded.includes(r.id))
+  if (active.length > 0) {
+    const zeroQ = active.filter((r: any) => !r.consumption || r.consumption === 0)
+    if (zeroQ.length > 0)
+      issues.push({ code: 'ZERO_CONSUMPTION', message: `${zeroQ.length} ${zeroQ.length === 1 ? 'resursă' : 'resurse'} cu consum 0` })
+
+    const allZeroPrice = active.every((r: any) => !(customPrices[r.id] ?? r.unit_price))
+    if (allZeroPrice)
+      issues.push({ code: 'ZERO_PRICE', message: 'Toate resursele active au prețul 0' })
+
+    if (!isManual) {
+      const hasMaterial = active.some((r: any) => r.type === 'material')
+      const hasLabor = active.some((r: any) => r.type === 'labor')
+      if (hasMaterial && !hasLabor)
+        issues.push({ code: 'MISSING_LABOR', message: 'Rețeta nu include manoperă' })
+    }
+  }
+
+  return issues
+}
+
+export default function EstimateEditor({
   projectId, 
   lines, 
   settings, 
@@ -44,6 +78,7 @@ export default function EstimateEditor({
   const [didInitCollapse, setDidInitCollapse] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [showImporter, setShowImporter] = useState(false)
+  const [activeBadgeId, setActiveBadgeId] = useState<string | null>(null)
   const supabase = createClient()
 
   useEffect(() => {
@@ -301,19 +336,45 @@ export default function EstimateEditor({
           <div className="p-4 border-b border-border/50">
             {(() => {
               const invalidCount = lines.filter(l => !analyzeEstimateLine(l).isCalculable).length;
-              if (invalidCount === 0) return null;
+              const issueCount = lines.filter(l => {
+                const a = analyzeEstimateLine(l)
+                return a.isCalculable && detectLineIssues(l, a.origin === 'Adăugat manual').length > 0
+              }).length;
+              if (invalidCount === 0 && issueCount === 0) return null;
               return (
-                <div className="mb-4 p-4 bg-red-50 dark:bg-red-950/20 border-2 border-red-200 dark:border-red-900/30 rounded-2xl flex items-center justify-between animate-pulse">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-red-100 dark:bg-red-900/50 rounded-full flex items-center justify-center text-red-600">
-                      <Info size={24} />
+                <div className="space-y-3 mb-4">
+                  {invalidCount > 0 && (
+                    <div className="p-4 bg-red-50 dark:bg-red-950/20 border-2 border-red-200 dark:border-red-900/30 rounded-2xl flex items-center justify-between animate-pulse">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-red-100 dark:bg-red-900/50 rounded-full flex items-center justify-center text-red-600">
+                          <Info size={24} />
+                        </div>
+                        <div>
+                          <h4 className="font-black text-red-900 dark:text-red-400 uppercase tracking-tight text-sm">Atenție: {invalidCount} articole neconfigurate</h4>
+                          <p className="text-xs font-bold text-red-700/70 dark:text-red-500/70">Acestea vor apărea cu preț zero în oferta finală PDF.</p>
+                        </div>
+                      </div>
+                      <span className="text-[10px] font-black bg-red-600 text-white px-3 py-1 rounded-full uppercase tracking-widest">Urgent</span>
                     </div>
-                    <div>
-                      <h4 className="font-black text-red-900 dark:text-red-400 uppercase tracking-tight text-sm">Atenție: {invalidCount} articole neconfigurate</h4>
-                      <p className="text-xs font-bold text-red-700/70 dark:text-red-500/70">Acestea vor apărea cu preț zero în oferta finală PDF.</p>
+                  )}
+                  {issueCount > 0 && (
+                    <div className="p-4 bg-amber-50 dark:bg-amber-950/20 border-2 border-amber-300 dark:border-amber-800/50 rounded-2xl flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-gradient-to-br from-amber-400 to-orange-400 rounded-full flex items-center justify-center text-white shadow-md shadow-amber-400/40 shrink-0">
+                          <Sparkles size={20} />
+                        </div>
+                        <div>
+                          <h4 className="font-black text-amber-900 dark:text-amber-400 uppercase tracking-tight text-sm">
+                            ✨ {issueCount} {issueCount === 1 ? 'articol cu problemă de rețetă' : 'articole cu probleme în rețete'}
+                          </h4>
+                          <p className="text-xs font-bold text-amber-700/70 dark:text-amber-500/70">
+                            Caută badge-urile ✨ pe fiecare linie pentru detalii și corecții rapide.
+                          </p>
+                        </div>
+                      </div>
+                      <span className="text-[10px] font-black bg-gradient-to-r from-amber-400 to-orange-400 text-white px-3 py-1 rounded-full uppercase tracking-widest shadow-md shadow-amber-400/30 shrink-0">AI Review</span>
                     </div>
-                  </div>
-                  <span className="text-[10px] font-black bg-red-600 text-white px-3 py-1 rounded-full uppercase tracking-widest">Urgent</span>
+                  )}
                 </div>
               );
             })()}
@@ -374,6 +435,7 @@ export default function EstimateEditor({
                     const isExpanded = expandedId === line.id
                     const isCatalogNorm = !!(line.catalog_norm_id || (line.code && !line.items))
                     const isManual = analysis.origin === 'Adăugat manual'
+                    const lineIssues = analysis.isCalculable ? detectLineIssues(line, isManual) : []
                     const hasCustomResources = (line.resources_override && line.resources_override.length > 0)
                     const resourceCostBreakdown = hasCustomResources ? getResourceCostBreakdown(line) : null
                     const allResources = ensureResourcesOverride(line)
@@ -402,6 +464,45 @@ export default function EstimateEditor({
                                     )}
                                     <span className="text-[10px] font-bold bg-slate-100 text-slate-500 border border-slate-200 px-2 py-0.5 rounded-full shrink-0">{analysis.origin}</span>
                                   </div>
+                                  {lineIssues.length > 0 && (
+                                    <div className="relative shrink-0">
+                                      <button
+                                        onClick={(e) => {
+                                          e.stopPropagation()
+                                          setActiveBadgeId(activeBadgeId === line.id ? null : line.id)
+                                        }}
+                                        className="flex items-center gap-1.5 bg-gradient-to-r from-amber-400 to-orange-400 hover:from-amber-500 hover:to-orange-500 text-white px-3 py-1.5 rounded-full text-[11px] font-black shadow-lg shadow-amber-400/50 transition-all hover:scale-105 active:scale-95 ring-2 ring-amber-300 ring-offset-1"
+                                      >
+                                        <Sparkles size={12} className="shrink-0 fill-white" />
+                                        <span>✨ {lineIssues.length} {lineIssues.length === 1 ? 'problemă' : 'probleme'}</span>
+                                      </button>
+                                      {activeBadgeId === line.id && (
+                                        <div className="absolute left-0 top-full mt-2 z-50 w-72 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border-2 border-amber-300 dark:border-amber-700 overflow-hidden">
+                                          <div className="bg-gradient-to-r from-amber-400 to-orange-400 px-4 py-2.5 flex items-center gap-2">
+                                            <Sparkles size={14} className="text-white fill-white shrink-0" />
+                                            <span className="text-xs font-black text-white uppercase tracking-widest">Analiză AI — Probleme Detectate</span>
+                                          </div>
+                                          <div className="p-3 space-y-2">
+                                            {lineIssues.map((issue, idx) => (
+                                              <div key={idx} className="flex items-start gap-2.5 p-2.5 bg-amber-50 dark:bg-amber-950/20 rounded-xl border border-amber-200 dark:border-amber-900/30">
+                                                <AlertCircle size={14} className="text-amber-500 shrink-0 mt-0.5" />
+                                                <span className="text-xs font-bold text-slate-700 dark:text-slate-300">{issue.message}</span>
+                                              </div>
+                                            ))}
+                                            <button
+                                              onClick={() => {
+                                                setActiveBadgeId(null)
+                                                setExpandedId(line.id)
+                                              }}
+                                              className="w-full mt-2 bg-gradient-to-r from-amber-400 to-orange-400 hover:from-amber-500 hover:to-orange-500 text-white py-2.5 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-2 shadow-md"
+                                            >
+                                              <Settings2 size={12} /> Deschide Rețeta & Corectează
+                                            </button>
+                                          </div>
+                                        </div>
+                                      )}
+                                    </div>
+                                  )}
                                 </div>
 
                                 {isCatalogNorm ? (
@@ -756,8 +857,12 @@ export default function EstimateEditor({
         </div>
       </div>
 
+      {activeBadgeId && (
+        <div className="fixed inset-0 z-40" onClick={() => setActiveBadgeId(null)} />
+      )}
+
       {activeOfferPicker && (
-        <VendorOfferPicker 
+        <VendorOfferPicker
           projectId={projectId}
           resourceId={activeOfferPicker.resourceId}
           resourceName={activeOfferPicker.resourceName}
