@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { geminiClient, GEMINI_MODEL } from '@/lib/gemini'
+import { checkRateLimit } from '@/lib/rate-limit'
 import type { OptimizationSuggestion } from '@/lib/ai-types'
 
 function buildLinesSummary(lines: any[]) {
@@ -29,6 +30,15 @@ function buildLinesSummary(lines: any[]) {
 
 export async function POST(req: NextRequest) {
   try {
+    const ip = req.headers.get('x-forwarded-for') ?? req.headers.get('x-real-ip') ?? 'unknown'
+    const { allowed, retryAfterSeconds } = checkRateLimit(ip)
+    if (!allowed) {
+      return NextResponse.json(
+        { error: `Prea multe cereri. Încearcă din nou în ${retryAfterSeconds} secunde.` },
+        { status: 429, headers: { 'Retry-After': String(retryAfterSeconds) } }
+      )
+    }
+
     const { lines, settings } = await req.json()
 
     if (!lines || lines.length === 0) {

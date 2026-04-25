@@ -1,8 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { checkRateLimit } from '@/lib/rate-limit';
 import { geminiClient, GEMINI_MODEL } from '@/lib/gemini';
 
 export async function POST(req: NextRequest) {
   try {
+    const ip = req.headers.get('x-forwarded-for') ?? req.headers.get('x-real-ip') ?? 'unknown'
+    const { allowed, retryAfterSeconds } = checkRateLimit(ip)
+    if (!allowed) {
+      return NextResponse.json(
+        { error: `Prea multe cereri. Încearcă din nou în ${retryAfterSeconds} secunde.` },
+        { status: 429, headers: { 'Retry-After': String(retryAfterSeconds) } }
+      )
+    }
+
     const formData = await req.formData();
     const imageFile = formData.get('file') as File;
 
