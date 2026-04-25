@@ -1,7 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { geminiClient, GEMINI_MODEL } from '@/lib/gemini';
+import { rateLimit, getClientIp } from '@/lib/rate-limit';
 
 export async function POST(req: NextRequest) {
+  const ip = getClientIp(req);
+  if (!rateLimit(`${ip}-purchase`, 5, 60_000)) {
+    return NextResponse.json({ error: 'Prea multe cereri. Încearcă din nou în câteva secunde.' }, { status: 429 });
+  }
+
   try {
     const formData = await req.formData();
     const imageFile = formData.get('file') as File;

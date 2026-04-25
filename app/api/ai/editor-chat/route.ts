@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server'
 import { geminiClient, GEMINI_MODEL } from '@/lib/gemini'
+import { rateLimit, getClientIp } from '@/lib/rate-limit'
 
 const MAX_HISTORY = 10
 
@@ -40,6 +41,11 @@ function buildEditorContext(lines: any[], dimensions: any, settings: any, projec
 }
 
 export async function POST(req: NextRequest) {
+  const ip = getClientIp(req)
+  if (!rateLimit(`${ip}-editor-chat`, 5, 60_000)) {
+    return new Response('Prea multe cereri. Încearcă din nou în câteva secunde.', { status: 429 })
+  }
+
   try {
     const { message, history, lines, settings, dimensions, projectName } = await req.json()
     const recentHistory: any[] = (history || []).slice(-MAX_HISTORY)

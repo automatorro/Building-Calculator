@@ -684,19 +684,27 @@ export default function HomePage() {
               <div style={{ fontSize:14, fontWeight:700, color:'#FFFFFF',
                 letterSpacing:'.06em', textTransform:'uppercase', marginBottom:20 }}>Constructor</div>
               <div style={{ fontFamily:serif, fontSize:48, color:'#FFFFFF', lineHeight:1, marginBottom:4 }}>
-                69 <sup style={{ fontSize:24, verticalAlign:'top', marginTop:10, display:'inline-block' }}>lei</sup>
+                89 <sup style={{ fontSize:24, verticalAlign:'top', marginTop:10, display:'inline-block' }}>lei</sup>
               </div>
               <div style={{ fontSize:14, color:'rgba(255,255,255,0.7)', marginBottom:28 }}>
                 / lună · facturat lunar
               </div>
               <div style={{ height:1, background:'rgba(255,255,255,0.15)', marginBottom:24 }} />
               <ul style={{ listStyle:'none', marginBottom:28 }}>
-                {['Proiecte nelimitate','Catalog complet 1.100+ articole',
-                  'Urmărire cheltuieli reale + alerte','Fotografii la achiziții',
-                  'Link read-only pentru beneficiar','Import extras cantități Excel',
-                  'Comparator prețuri furnizori','Export Excel și PDF profesional'].map(f => (
+                {['Proiecte nelimitate',
+                  'Catalog complet 1.100+ articole',
+                  'Urmărire cheltuieli reale + alerte depășire buget',
+                  'Fotografii la achiziții',
+                  'Link read-only pentru beneficiar',
+                  'Import extras cantități Excel',
+                  'Comparator prețuri furnizori',
+                  'Export Excel și PDF profesional',
+                  'AI Consultant tehnic (chat în deviz)',
+                  'AI Generare rețete resurse automat',
+                  'AI Analiză și optimizare deviz',
+                ].map(f => (
                   <li key={f} style={{ display:'flex', alignItems:'flex-start', gap:10,
-                    fontSize:15, color:'#FFFFFF', marginBottom:12,
+                    fontSize:14, color:'#FFFFFF', marginBottom:11,
                     lineHeight:1.45, fontWeight:400 }}>
                     <Check orange /> {f}
                   </li>
@@ -708,7 +716,7 @@ export default function HomePage() {
                 textDecoration:'none', background:'#E8500A', color:'#FFFFFF',
                 border:'none', transition:'background .2s',
               }}>
-                14 zile gratuit, apoi 69 lei/lună
+                14 zile gratuit, apoi 89 lei/lună
               </Link>
             </div>
 
@@ -720,16 +728,22 @@ export default function HomePage() {
               <div style={{ fontSize:13, fontWeight:600, color:'#6B6860', letterSpacing:'.06em',
                 textTransform:'uppercase', marginBottom:20 }}>Echipă</div>
               <div style={{ fontFamily:serif, fontSize:48, color:'#1E2329', lineHeight:1, marginBottom:4 }}>
-                149 <sup style={{ fontSize:24, verticalAlign:'top', marginTop:10, display:'inline-block' }}>lei</sup>
+                169 <sup style={{ fontSize:24, verticalAlign:'top', marginTop:10, display:'inline-block' }}>lei</sup>
               </div>
               <div style={{ fontSize:13, color:'#A8A59E', marginBottom:28 }}>/ lună · până la 5 utilizatori</div>
               <div style={{ height:1, background:'#E5E3DE', marginBottom:24 }} />
               <ul style={{ listStyle:'none', marginBottom:28 }}>
-                {['Tot din planul Constructor','5 conturi utilizatori',
-                  'Jurnal de șantier partajat','Rapoarte avans per utilizator',
-                  'Catalog propriu de articole','Suport prioritar'].map(f => (
+                {['Tot din planul Constructor',
+                  '5 utilizatori — manager + maiștri',
+                  'Jurnal de șantier partajat în timp real',
+                  'Raport progres per utilizator și etapă',
+                  'Catalog propriu al firmei cu prețuri personalizate',
+                  'Asignare proiecte pe responsabili',
+                  'AI pentru toți utilizatorii (limite extinse)',
+                  'Suport prioritar — răspuns în 24h',
+                ].map(f => (
                   <li key={f} style={{ display:'flex', alignItems:'flex-start', gap:10,
-                    fontSize:14, color:'#2E2D2A', marginBottom:12, lineHeight:1.45, fontWeight:300 }}>
+                    fontSize:14, color:'#2E2D2A', marginBottom:11, lineHeight:1.45, fontWeight:300 }}>
                     <Check /> {f}
                   </li>
                 ))}

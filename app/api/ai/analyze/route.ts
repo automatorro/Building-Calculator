@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { geminiClient, GEMINI_MODEL } from '@/lib/gemini'
 import type { OptimizationSuggestion } from '@/lib/ai-types'
+import { rateLimit, getClientIp } from '@/lib/rate-limit'
 
 function buildLinesSummary(lines: any[]) {
   return lines.map((l: any) => {
@@ -28,6 +29,11 @@ function buildLinesSummary(lines: any[]) {
 }
 
 export async function POST(req: NextRequest) {
+  const ip = getClientIp(req)
+  if (!rateLimit(`${ip}-analyze`, 5, 60_000)) {
+    return NextResponse.json({ suggestions: [], error: 'Prea multe cereri. Încearcă din nou în câteva secunde.' }, { status: 429 })
+  }
+
   try {
     const { lines, settings } = await req.json()
 

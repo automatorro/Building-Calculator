@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server'
 import { geminiClient, GEMINI_MODEL } from '@/lib/gemini'
+import { rateLimit, getClientIp } from '@/lib/rate-limit'
 
 const MAX_HISTORY = 12
 
@@ -26,6 +27,11 @@ function buildLinesSummary(lines: any[]) {
 }
 
 export async function POST(req: NextRequest) {
+  const ip = getClientIp(req)
+  if (!rateLimit(`${ip}-chat`, 5, 60_000)) {
+    return new Response('Prea multe cereri. Încearcă din nou în câteva secunde.', { status: 429 })
+  }
+
   try {
     const { message, history, lines, settings, projectName } = await req.json()
 
