@@ -555,11 +555,13 @@ export default function EstimateEditor({
                                         <span>{isHintOnly ? '✨ Completează cu AI' : `✨ ${lineIssues.length} ${lineIssues.length === 1 ? 'problemă' : 'probleme'}`}</span>
                                       </button>
                                       {activeBadgeId === line.id && (
-                                        <div className={`absolute left-0 top-full mt-2 z-50 w-[400px] max-w-[calc(100vw-2rem)] bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border-2 overflow-hidden ${
+                                        <div className={`fixed bottom-0 left-0 right-0 md:bottom-auto md:left-1/2 md:-translate-x-1/2 md:top-[8vh] md:w-[420px] z-50 bg-white dark:bg-slate-900 rounded-t-3xl md:rounded-2xl shadow-2xl border-t-2 md:border-2 flex flex-col overflow-hidden max-h-[92vh] md:max-h-[82vh] ${
                                           isHintOnly ? 'border-indigo-300 dark:border-indigo-700' : 'border-amber-300 dark:border-amber-700'
                                         }`}>
+                                          {/* Mobile drag handle */}
+                                          <div className="md:hidden w-12 h-1 bg-slate-200 dark:bg-slate-700 rounded-full mx-auto mt-3 mb-1 shrink-0" />
                                           {/* Header */}
-                                          <div className={`bg-gradient-to-r px-4 py-2.5 flex items-center gap-2 ${
+                                          <div className={`bg-gradient-to-r px-4 py-2.5 flex items-center gap-2 shrink-0 ${
                                             isHintOnly ? 'from-indigo-400 to-violet-500' : 'from-amber-400 to-orange-400'
                                           }`}>
                                             <Sparkles size={14} className="text-white fill-white shrink-0" />
@@ -621,7 +623,7 @@ export default function EstimateEditor({
 
                                           {/* Phase 2: editable resource preview */}
                                           {aiSuggestion?.lineId === line.id && !aiSuggestion.loading && !aiSuggestion.error && aiSuggestion.resources.length > 0 && (
-                                            <div className="p-3 space-y-3 max-h-[480px] overflow-y-auto">
+                                            <div className="p-3 space-y-3 overflow-y-auto flex-1">
                                               {aiSuggestion.explanation && (
                                                 <p className="text-[11px] text-slate-500 italic p-2.5 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-700/50 leading-relaxed">
                                                   {aiSuggestion.explanation}
@@ -1053,7 +1055,7 @@ export default function EstimateEditor({
       </div>
 
       {activeBadgeId && (
-        <div className="fixed inset-0 z-40" onClick={() => setActiveBadgeId(null)} />
+        <div className="fixed inset-0 z-40 bg-black/25 md:bg-black/15" onClick={() => setActiveBadgeId(null)} />
       )}
 
       {activeOfferPicker && (
