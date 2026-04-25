@@ -1005,6 +1005,10 @@ export default function EstimateEditor({
                       {aiSuggestion.explanation}
                     </p>
                   )}
+                  <div className="flex items-start gap-2 px-2.5 py-2 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-700/50 rounded-xl text-[10px] text-amber-800 dark:text-amber-300 leading-snug">
+                    <span className="text-amber-500 mt-0.5 shrink-0">⚠</span>
+                    <span>Verifică tipul fiecărei resurse — AI poate clasifica greșit manopera. Corectează din dropdown înainte de a aplica.</span>
+                  </div>
                   <div className="space-y-2">
                     {aiSuggestion.resources.map((res, resIdx) => (
                       <div key={res.id} className="p-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-2.5">
@@ -1012,7 +1016,12 @@ export default function EstimateEditor({
                           <select
                             value={res.type}
                             onChange={e => updateSuggestedResource(resIdx, 'type', e.target.value)}
-                            className="text-[9px] font-black uppercase bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded-lg outline-none shrink-0"
+                            className={`text-[9px] font-black uppercase px-2 py-1 rounded-lg outline-none shrink-0 ${
+                              res.type === 'labor' ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300' :
+                              res.type === 'equipment' ? 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300' :
+                              res.type === 'transport' ? 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300' :
+                              'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
+                            }`}
                           >
                             <option value="material">MAT</option>
                             <option value="labor">MAN</option>
