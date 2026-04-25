@@ -3,6 +3,7 @@
 import { useState, useMemo, useEffect } from 'react'
 import ProjectDashboard from './ProjectDashboard'
 import EstimateEditor from './EstimateEditor'
+import EditorAIAssistant from './EditorAIAssistant'
 import ProjectTimeline from './ProjectTimeline'
 import ProjectDevizView from './ProjectDevizView'
 import ProjectStepper from './ProjectStepper'
@@ -607,6 +608,12 @@ export default function ProjectClientContainer({
               onImport={handleImportLines}
               isSaving={loading}
               isSaved={isSaved}
+            />
+            <EditorAIAssistant
+              lines={lines}
+              settings={settings}
+              dimensions={dimensions}
+              projectName={projectName}
             />
           </motion.div>
         )}
