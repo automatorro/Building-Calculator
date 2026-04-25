@@ -415,8 +415,8 @@ export default function EstimateEditor({
                                         </>
                                       ) : (
                                         <>
-                                          <span>Unit: {fmtRon(line.unit_price ?? 0)} lei / {line.unit || '—'}</span>
-                                          <span className="text-primary">Final: {fmtRon(lineCosts.totalWithTVA / line.quantity)} / {line.unit}</span>
+                                          <span>Cost net: {fmtRon(lineCosts.unitDirectCost)} lei / {line.unit || '—'}</span>
+                                          <span className="text-primary">Preț/buc cu TVA: {fmtRon(lineCosts.totalWithTVA / line.quantity)} / {line.unit}</span>
                                         </>
                                       )}
                                     </div>
@@ -482,8 +482,8 @@ export default function EstimateEditor({
                                         </>
                                       ) : (
                                         <>
-                                          <span>Cost: {fmtRon(lineCosts.unitDirectCost)} lei / {line.items!.um}</span>
-                                          <span className="text-primary font-black">Final: {fmtRon(lineCosts.totalWithTVA / line.quantity)} lei</span>
+                                          <span>Cost net: {fmtRon(lineCosts.unitDirectCost)} lei / {line.items!.um}</span>
+                                          <span className="text-primary font-black">Preț/buc cu TVA: {fmtRon(lineCosts.totalWithTVA / line.quantity)} lei</span>
                                         </>
                                       )}
                                     </div>
@@ -542,17 +542,25 @@ export default function EstimateEditor({
                                   <span className="text-xs font-bold text-slate-400 pr-2">{line.unit || (isManual ? line.manual_um : line.items!.um)}</span>
                                 </div>
 
-                                <div className="text-right flex-1 min-w-[100px]">
-                                  <label className="block text-[9px] text-slate-400 mb-0.5 uppercase tracking-widest font-black">Total</label>
+                                <div className="text-right flex-1 min-w-[110px]">
                                   {!analysis.isCalculable ? (
                                     <div className="animate-pulse bg-red-600 text-white text-[10px] font-black px-3 py-2 rounded-lg shadow-md flex items-center gap-2 whitespace-nowrap">
                                       <AlertCircle size={12} className="shrink-0" />
                                       <span>{analysis.status}</span>
                                     </div>
                                   ) : (
-                                    <div className="font-mono text-xl md:text-3xl font-black text-slate-900 dark:text-white">
-                                      {fmtRon(lineCosts.totalOfertatWithoutTVA)}
-                                      <span className="text-[10px] ml-1">lei</span>
+                                    <div className="space-y-0.5">
+                                      <div className="text-[9px] text-slate-400 uppercase tracking-widest font-black">Total cu TVA</div>
+                                      <div className="font-mono text-xl md:text-3xl font-black text-slate-900 dark:text-white">
+                                        {fmtRon(lineCosts.totalWithTVA)}
+                                        <span className="text-[10px] ml-1">lei</span>
+                                      </div>
+                                      <div className="text-[10px] text-slate-400 font-mono">
+                                        fără TVA: {fmtRon(lineCosts.totalOfertatWithoutTVA)} lei
+                                      </div>
+                                      <div className="text-[10px] text-indigo-500 font-mono font-bold">
+                                        TVA {settings.tva}%: {fmtRon(lineCosts.tvaAmount)} lei
+                                      </div>
                                     </div>
                                   )}
                                 </div>
