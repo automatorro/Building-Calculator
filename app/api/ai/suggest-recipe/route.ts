@@ -47,8 +47,14 @@ REGULI STRICTE:
 5. waste_percent: 5-10 pentru materiale, 0 pentru manoperă/utilaje
 6. Minimum 2 resurse (cel puțin 1 material + 1 manoperă)
 
-FORMAT JSON EXACT (nu alt text):
-{"explanation":"explicație scurtă în română despre rețeta generată, max 2 fraze","resources":[{"name":"denumire resursă","type":"material","um":"mc","consumption":0.022,"unit_price":280,"waste_percent":5}]}`
+TIPURI RESURSE — OBLIGATORIU CORECT:
+- type: "material" — materiale de construcție (ciment, nisip, cărămidă, tigla, vopsea etc.)
+- type: "labor" — EXCLUSIV manoperă umană (zidar, tencuitor, zugrav, dulgher, muncitor etc.) — NU folosi "material" pentru oameni!
+- type: "equipment" — utilaje și echipamente (macara, betonieră, schele etc.)
+- type: "transport" — transport materiale
+
+FORMAT JSON EXACT (nu alt text, înlocuiește exemplele cu datele reale):
+{"explanation":"explicație scurtă în română despre rețeta generată, max 2 fraze","resources":[{"name":"Ciment Portland 42.5","type":"material","um":"kg","consumption":8.5,"unit_price":1.2,"waste_percent":5},{"name":"Zidar calificat","type":"labor","um":"ore","consumption":0.45,"unit_price":65,"waste_percent":0}]}`
 
     const result = await geminiClient.models.generateContent({
       model: GEMINI_MODEL,
