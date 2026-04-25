@@ -38,6 +38,15 @@ function detectLineIssues(line: EstimateLine, isManual: boolean): { code: string
     return issues
   }
 
+  if (isManual && resources.length === 0) {
+    const description = (line.name || line.manual_name || '').trim()
+    const price = line.unit_price ?? (line as any).manual_price ?? 0
+    if (description.length >= 10 && price > 0) {
+      issues.push({ code: 'MANUAL_NO_RECIPE', message: 'Fără defalcare pe resurse — AI poate genera una' })
+    }
+    return issues
+  }
+
   const active = resources.filter((r: any) => !excluded.includes(r.id))
   if (active.length > 0) {
     const zeroQ = active.filter((r: any) => !r.consumption || r.consumption === 0)
@@ -274,6 +283,12 @@ export default function EstimateEditor({
   const generateAiRecipe = async (line: EstimateLine) => {
     const lineUnit = line.unit || line.manual_um || line.items?.um || 'buc'
     const lineName = line.name || line.manual_name || line.items?.name || ''
+    const lineAnalysis = analyzeEstimateLine(line)
+    const isManualLine = lineAnalysis.origin === 'Adăugat manual'
+    const hasResources = (line.resources_override && line.resources_override.length > 0) || (line.items?.resources && line.items.resources.length > 0)
+    const existingUnitPrice = isManualLine && !hasResources
+      ? ((line.unit_price ?? (line as any).manual_price) || null)
+      : null
     setAiSuggestion({ lineId: line.id, loading: true, error: null, explanation: '', resources: [] })
     try {
       const res = await fetch('/api/ai/suggest-recipe', {
@@ -285,6 +300,7 @@ export default function EstimateEditor({
           lineUnit,
           quantity: line.quantity,
           dimensions,
+          existingUnitPrice,
         }),
       })
       const data = await res.json()
@@ -493,6 +509,7 @@ export default function EstimateEditor({
                     const isCatalogNorm = !!(line.catalog_norm_id || (line.code && !line.items))
                     const isManual = analysis.origin === 'Adăugat manual'
                     const lineIssues = analysis.isCalculable ? detectLineIssues(line, isManual) : []
+                    const isHintOnly = lineIssues.length > 0 && lineIssues.every(i => i.code === 'MANUAL_NO_RECIPE')
                     const hasCustomResources = (line.resources_override && line.resources_override.length > 0)
                     const resourceCostBreakdown = hasCustomResources ? getResourceCostBreakdown(line) : null
                     const allResources = ensureResourcesOverride(line)
@@ -528,32 +545,46 @@ export default function EstimateEditor({
                                           e.stopPropagation()
                                           setActiveBadgeId(activeBadgeId === line.id ? null : line.id)
                                         }}
-                                        className="flex items-center gap-1.5 bg-gradient-to-r from-amber-400 to-orange-400 hover:from-amber-500 hover:to-orange-500 text-white px-3 py-1.5 rounded-full text-[11px] font-black shadow-lg shadow-amber-400/50 transition-all hover:scale-105 active:scale-95 ring-2 ring-amber-300 ring-offset-1"
+                                        className={`flex items-center gap-1.5 text-white px-3 py-1.5 rounded-full text-[11px] font-black shadow-lg transition-all hover:scale-105 active:scale-95 ring-2 ring-offset-1 ${
+                                          isHintOnly
+                                            ? 'bg-gradient-to-r from-indigo-400 to-violet-500 hover:from-indigo-500 hover:to-violet-600 shadow-indigo-400/50 ring-indigo-300'
+                                            : 'bg-gradient-to-r from-amber-400 to-orange-400 hover:from-amber-500 hover:to-orange-500 shadow-amber-400/50 ring-amber-300'
+                                        }`}
                                       >
                                         <Sparkles size={12} className="shrink-0 fill-white" />
-                                        <span>✨ {lineIssues.length} {lineIssues.length === 1 ? 'problemă' : 'probleme'}</span>
+                                        <span>{isHintOnly ? '✨ Completează cu AI' : `✨ ${lineIssues.length} ${lineIssues.length === 1 ? 'problemă' : 'probleme'}`}</span>
                                       </button>
                                       {activeBadgeId === line.id && (
-                                        <div className="absolute left-0 top-full mt-2 z-50 w-[400px] max-w-[calc(100vw-2rem)] bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border-2 border-amber-300 dark:border-amber-700 overflow-hidden">
+                                        <div className={`absolute left-0 top-full mt-2 z-50 w-[400px] max-w-[calc(100vw-2rem)] bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border-2 overflow-hidden ${
+                                          isHintOnly ? 'border-indigo-300 dark:border-indigo-700' : 'border-amber-300 dark:border-amber-700'
+                                        }`}>
                                           {/* Header */}
-                                          <div className="bg-gradient-to-r from-amber-400 to-orange-400 px-4 py-2.5 flex items-center gap-2">
+                                          <div className={`bg-gradient-to-r px-4 py-2.5 flex items-center gap-2 ${
+                                            isHintOnly ? 'from-indigo-400 to-violet-500' : 'from-amber-400 to-orange-400'
+                                          }`}>
                                             <Sparkles size={14} className="text-white fill-white shrink-0" />
                                             <span className="text-xs font-black text-white uppercase tracking-widest">
                                               {aiSuggestion?.lineId === line.id && !aiSuggestion.loading && !aiSuggestion.error && aiSuggestion.resources.length > 0
                                                 ? 'Rețetă AI Generată — Editează & Aplică'
-                                                : 'Analiză AI — Probleme Detectate'}
+                                                : isHintOnly ? 'Completează Rețeta cu AI' : 'Analiză AI — Probleme Detectate'}
                                             </span>
                                           </div>
 
                                           {/* Phase 1: issues + generate button */}
                                           {(!aiSuggestion || aiSuggestion.lineId !== line.id || aiSuggestion.error) && (
                                             <div className="p-3 space-y-2">
-                                              {lineIssues.map((issue, issueIdx) => (
-                                                <div key={issueIdx} className="flex items-start gap-2.5 p-2.5 bg-amber-50 dark:bg-amber-950/20 rounded-xl border border-amber-200 dark:border-amber-900/30">
-                                                  <AlertCircle size={14} className="text-amber-500 shrink-0 mt-0.5" />
-                                                  <span className="text-xs font-bold text-slate-700 dark:text-slate-300">{issue.message}</span>
+                                              {isHintOnly ? (
+                                                <div className="p-3 bg-indigo-50 dark:bg-indigo-950/20 rounded-xl border border-indigo-200 dark:border-indigo-800/30 text-xs text-indigo-700 dark:text-indigo-300 font-bold leading-relaxed">
+                                                  Această linie are un preț direct definit. AI poate genera o defalcare detaliată (materiale + manoperă) calibrată față de prețul tău de referință.
                                                 </div>
-                                              ))}
+                                              ) : (
+                                                lineIssues.map((issue, issueIdx) => (
+                                                  <div key={issueIdx} className="flex items-start gap-2.5 p-2.5 bg-amber-50 dark:bg-amber-950/20 rounded-xl border border-amber-200 dark:border-amber-900/30">
+                                                    <AlertCircle size={14} className="text-amber-500 shrink-0 mt-0.5" />
+                                                    <span className="text-xs font-bold text-slate-700 dark:text-slate-300">{issue.message}</span>
+                                                  </div>
+                                                ))
+                                              )}
                                               {aiSuggestion?.lineId === line.id && aiSuggestion.error && (
                                                 <div className="p-2.5 bg-red-50 dark:bg-red-950/20 rounded-xl border border-red-200 text-xs text-red-600 font-bold">
                                                   {aiSuggestion.error}
@@ -562,9 +593,13 @@ export default function EstimateEditor({
                                               <div className="flex gap-2 pt-1">
                                                 <button
                                                   onClick={(e) => { e.stopPropagation(); generateAiRecipe(line) }}
-                                                  className="flex-1 bg-gradient-to-r from-amber-400 to-orange-400 hover:from-amber-500 hover:to-orange-500 text-white py-2.5 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-2 shadow-md active:scale-95"
+                                                  className={`flex-1 bg-gradient-to-r text-white py-2.5 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-2 shadow-md active:scale-95 ${
+                                                    isHintOnly
+                                                      ? 'from-indigo-400 to-violet-500 hover:from-indigo-500 hover:to-violet-600'
+                                                      : 'from-amber-400 to-orange-400 hover:from-amber-500 hover:to-orange-500'
+                                                  }`}
                                                 >
-                                                  <Sparkles size={12} className="fill-white" /> Generează Rețetă AI
+                                                  <Sparkles size={12} className="fill-white" /> {isHintOnly ? 'Generează Rețetă Detaliată' : 'Generează Rețetă AI'}
                                                 </button>
                                                 <button
                                                   onClick={() => { setActiveBadgeId(null); setExpandedId(line.id) }}

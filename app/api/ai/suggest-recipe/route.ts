@@ -5,7 +5,7 @@ const VALID_TYPES = ['material', 'labor', 'equipment', 'transport']
 
 export async function POST(req: NextRequest) {
   try {
-    const { lineName, lineCode, lineUnit, quantity, dimensions } = await req.json()
+    const { lineName, lineCode, lineUnit, quantity, dimensions, existingUnitPrice } = await req.json()
 
     if (!lineName || !lineUnit) {
       return NextResponse.json({ error: 'Date insuficiente.' }, { status: 400 })
@@ -26,6 +26,10 @@ export async function POST(req: NextRequest) {
           .join(' · ')
       : ''
 
+    const priceHint = existingUnitPrice && existingUnitPrice > 0
+      ? `- Prețul unitar direct definit de utilizator: ${existingUnitPrice} lei/${lineUnit}. Calibrează resursele (consumuri × prețuri) astfel încât costul total direct per ${lineUnit} să fie cât mai aproape de această valoare de referință.`
+      : ''
+
     const prompt = `Ești expert în normative de construcții românești 2026.
 RETURNEAZĂ EXCLUSIV JSON VALID, fără text suplimentar, fără markdown, fără \`\`\`.
 
@@ -33,7 +37,7 @@ Generează rețeta completă de resurse pentru:
 - Lucrare: ${lineName}
 - Cod normativ: ${lineCode || 'nedefinit'}
 - Unitate de măsură: ${lineUnit}
-- Cantitate totală în proiect: ${quantity} ${lineUnit}${dimText ? `\n- Context proiect: ${dimText}` : ''}
+- Cantitate totală în proiect: ${quantity} ${lineUnit}${dimText ? `\n- Context proiect: ${dimText}` : ''}${priceHint ? `\n${priceHint}` : ''}
 
 REGULI STRICTE:
 1. Consumurile sunt PER 1 ${lineUnit} (nu per cantitate totală)
