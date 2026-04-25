@@ -79,6 +79,21 @@ export default function EstimateEditor({
   const [searchQuery, setSearchQuery] = useState('')
   const [showImporter, setShowImporter] = useState(false)
   const [activeBadgeId, setActiveBadgeId] = useState<string | null>(null)
+  const [aiSuggestion, setAiSuggestion] = useState<{
+    lineId: string
+    loading: boolean
+    error: string | null
+    explanation: string
+    resources: Array<{
+      id: string
+      name: string
+      type: 'material' | 'labor' | 'equipment' | 'transport'
+      um: string
+      consumption: number
+      unit_price: number
+      waste_percent: number
+    }>
+  } | null>(null)
   const supabase = createClient()
 
   useEffect(() => {
@@ -254,6 +269,48 @@ export default function EstimateEditor({
     const { error: resError } = await supabase.from('resources').insert(resourcesToInsert)
     if (resError) console.error('Error saving resources:', resError)
     else alert('✅ Rețetă salvată cu succes în Biblioteca Personală!')
+  }
+
+  const generateAiRecipe = async (line: EstimateLine) => {
+    const lineUnit = line.unit || line.manual_um || line.items?.um || 'buc'
+    const lineName = line.name || line.manual_name || line.items?.name || ''
+    setAiSuggestion({ lineId: line.id, loading: true, error: null, explanation: '', resources: [] })
+    try {
+      const res = await fetch('/api/ai/suggest-recipe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          lineName,
+          lineCode: line.code || line.items?.normatives?.code || '',
+          lineUnit,
+          quantity: line.quantity,
+          dimensions,
+        }),
+      })
+      const data = await res.json()
+      if (!res.ok || data.error) throw new Error(data.error || 'Eroare server')
+      setAiSuggestion({ lineId: line.id, loading: false, error: null, explanation: data.explanation, resources: data.resources })
+    } catch (e: any) {
+      setAiSuggestion(prev => prev ? { ...prev, loading: false, error: e.message || 'Eroare la generarea rețetei.' } : null)
+    }
+  }
+
+  const updateSuggestedResource = (idx: number, field: string, value: string | number) => {
+    setAiSuggestion(prev => {
+      if (!prev) return prev
+      const resources = [...prev.resources]
+      resources[idx] = { ...resources[idx], [field]: value }
+      return { ...prev, resources }
+    })
+  }
+
+  const applyAiRecipe = (lineId: string) => {
+    if (!aiSuggestion || !aiSuggestion.resources.length) return
+    onUpdateLine(lineId, { resources_override: aiSuggestion.resources })
+    setAiSuggestion(null)
+    setActiveBadgeId(null)
+    setExpandedId(lineId)
+    toast.success('✨ Rețetă AI aplicată! Verifică și ajustează consumurile.')
   }
 
   return (
@@ -477,28 +534,131 @@ export default function EstimateEditor({
                                         <span>✨ {lineIssues.length} {lineIssues.length === 1 ? 'problemă' : 'probleme'}</span>
                                       </button>
                                       {activeBadgeId === line.id && (
-                                        <div className="absolute left-0 top-full mt-2 z-50 w-72 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border-2 border-amber-300 dark:border-amber-700 overflow-hidden">
+                                        <div className="absolute left-0 top-full mt-2 z-50 w-[400px] max-w-[calc(100vw-2rem)] bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border-2 border-amber-300 dark:border-amber-700 overflow-hidden">
+                                          {/* Header */}
                                           <div className="bg-gradient-to-r from-amber-400 to-orange-400 px-4 py-2.5 flex items-center gap-2">
                                             <Sparkles size={14} className="text-white fill-white shrink-0" />
-                                            <span className="text-xs font-black text-white uppercase tracking-widest">Analiză AI — Probleme Detectate</span>
+                                            <span className="text-xs font-black text-white uppercase tracking-widest">
+                                              {aiSuggestion?.lineId === line.id && !aiSuggestion.loading && !aiSuggestion.error && aiSuggestion.resources.length > 0
+                                                ? 'Rețetă AI Generată — Editează & Aplică'
+                                                : 'Analiză AI — Probleme Detectate'}
+                                            </span>
                                           </div>
-                                          <div className="p-3 space-y-2">
-                                            {lineIssues.map((issue, idx) => (
-                                              <div key={idx} className="flex items-start gap-2.5 p-2.5 bg-amber-50 dark:bg-amber-950/20 rounded-xl border border-amber-200 dark:border-amber-900/30">
-                                                <AlertCircle size={14} className="text-amber-500 shrink-0 mt-0.5" />
-                                                <span className="text-xs font-bold text-slate-700 dark:text-slate-300">{issue.message}</span>
+
+                                          {/* Phase 1: issues + generate button */}
+                                          {(!aiSuggestion || aiSuggestion.lineId !== line.id || aiSuggestion.error) && (
+                                            <div className="p-3 space-y-2">
+                                              {lineIssues.map((issue, issueIdx) => (
+                                                <div key={issueIdx} className="flex items-start gap-2.5 p-2.5 bg-amber-50 dark:bg-amber-950/20 rounded-xl border border-amber-200 dark:border-amber-900/30">
+                                                  <AlertCircle size={14} className="text-amber-500 shrink-0 mt-0.5" />
+                                                  <span className="text-xs font-bold text-slate-700 dark:text-slate-300">{issue.message}</span>
+                                                </div>
+                                              ))}
+                                              {aiSuggestion?.lineId === line.id && aiSuggestion.error && (
+                                                <div className="p-2.5 bg-red-50 dark:bg-red-950/20 rounded-xl border border-red-200 text-xs text-red-600 font-bold">
+                                                  {aiSuggestion.error}
+                                                </div>
+                                              )}
+                                              <div className="flex gap-2 pt-1">
+                                                <button
+                                                  onClick={(e) => { e.stopPropagation(); generateAiRecipe(line) }}
+                                                  className="flex-1 bg-gradient-to-r from-amber-400 to-orange-400 hover:from-amber-500 hover:to-orange-500 text-white py-2.5 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-2 shadow-md active:scale-95"
+                                                >
+                                                  <Sparkles size={12} className="fill-white" /> Generează Rețetă AI
+                                                </button>
+                                                <button
+                                                  onClick={() => { setActiveBadgeId(null); setExpandedId(line.id) }}
+                                                  className="px-3 py-2.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-600 dark:text-slate-400 rounded-xl text-xs font-black transition-all flex items-center gap-1.5"
+                                                >
+                                                  <Settings2 size={12} /> Manual
+                                                </button>
                                               </div>
-                                            ))}
-                                            <button
-                                              onClick={() => {
-                                                setActiveBadgeId(null)
-                                                setExpandedId(line.id)
-                                              }}
-                                              className="w-full mt-2 bg-gradient-to-r from-amber-400 to-orange-400 hover:from-amber-500 hover:to-orange-500 text-white py-2.5 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-2 shadow-md"
-                                            >
-                                              <Settings2 size={12} /> Deschide Rețeta & Corectează
-                                            </button>
-                                          </div>
+                                            </div>
+                                          )}
+
+                                          {/* Loading */}
+                                          {aiSuggestion?.lineId === line.id && aiSuggestion.loading && (
+                                            <div className="p-8 flex flex-col items-center gap-3">
+                                              <div className="w-8 h-8 border-[3px] border-amber-400 border-t-transparent rounded-full animate-spin" />
+                                              <p className="text-xs font-bold text-slate-500">Se generează rețeta conform normelor 2026...</p>
+                                            </div>
+                                          )}
+
+                                          {/* Phase 2: editable resource preview */}
+                                          {aiSuggestion?.lineId === line.id && !aiSuggestion.loading && !aiSuggestion.error && aiSuggestion.resources.length > 0 && (
+                                            <div className="p-3 space-y-3 max-h-[480px] overflow-y-auto">
+                                              {aiSuggestion.explanation && (
+                                                <p className="text-[11px] text-slate-500 italic p-2.5 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-700/50 leading-relaxed">
+                                                  {aiSuggestion.explanation}
+                                                </p>
+                                              )}
+                                              <div className="space-y-2">
+                                                {aiSuggestion.resources.map((res, resIdx) => (
+                                                  <div key={res.id} className="p-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-2.5">
+                                                    <div className="flex items-center gap-2">
+                                                      <select
+                                                        value={res.type}
+                                                        onChange={e => updateSuggestedResource(resIdx, 'type', e.target.value)}
+                                                        className="text-[9px] font-black uppercase bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded-lg outline-none shrink-0"
+                                                      >
+                                                        <option value="material">MAT</option>
+                                                        <option value="labor">MAN</option>
+                                                        <option value="equipment">UTIL</option>
+                                                        <option value="transport">TRANS</option>
+                                                      </select>
+                                                      <input
+                                                        value={res.name}
+                                                        onChange={e => updateSuggestedResource(resIdx, 'name', e.target.value)}
+                                                        className="flex-1 text-sm font-bold bg-transparent border-b border-slate-200 dark:border-slate-600 focus:border-primary outline-none text-slate-900 dark:text-white py-0.5"
+                                                      />
+                                                    </div>
+                                                    <div className="grid grid-cols-3 gap-2">
+                                                      <div className="space-y-1">
+                                                        <div className="text-[9px] font-black uppercase text-slate-400">Consum / {line.unit || line.items?.um || 'UM'}</div>
+                                                        <input
+                                                          type="number"
+                                                          value={res.consumption}
+                                                          onChange={e => updateSuggestedResource(resIdx, 'consumption', parseFloat(e.target.value) || 0)}
+                                                          className="w-full bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/50 rounded-lg px-2 py-1.5 font-mono font-black text-sm text-primary outline-none focus:border-primary"
+                                                        />
+                                                      </div>
+                                                      <div className="space-y-1">
+                                                        <div className="text-[9px] font-black uppercase text-slate-400">U.M.</div>
+                                                        <input
+                                                          value={res.um}
+                                                          onChange={e => updateSuggestedResource(resIdx, 'um', e.target.value)}
+                                                          className="w-full bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg px-2 py-1.5 font-mono font-black text-sm outline-none focus:border-primary"
+                                                        />
+                                                      </div>
+                                                      <div className="space-y-1">
+                                                        <div className="text-[9px] font-black uppercase text-slate-400">Preț / {res.um}</div>
+                                                        <input
+                                                          type="number"
+                                                          value={res.unit_price}
+                                                          onChange={e => updateSuggestedResource(resIdx, 'unit_price', parseFloat(e.target.value) || 0)}
+                                                          className="w-full bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/50 rounded-lg px-2 py-1.5 font-mono font-black text-sm text-emerald-700 outline-none focus:border-emerald-500"
+                                                        />
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                                ))}
+                                              </div>
+                                              <div className="flex gap-2 pt-1 border-t border-slate-100 dark:border-slate-700/50">
+                                                <button
+                                                  onClick={(e) => { e.stopPropagation(); applyAiRecipe(line.id) }}
+                                                  className="flex-1 bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600 text-white py-3 rounded-xl text-xs font-black flex items-center justify-center gap-2 shadow-md transition-all active:scale-95"
+                                                >
+                                                  <CheckCircle2 size={14} /> Aplică Rețeta în Deviz
+                                                </button>
+                                                <button
+                                                  onClick={(e) => { e.stopPropagation(); setAiSuggestion(null) }}
+                                                  className="px-3 py-3 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-black transition-all"
+                                                >
+                                                  Înapoi
+                                                </button>
+                                              </div>
+                                            </div>
+                                          )}
                                         </div>
                                       )}
                                     </div>
