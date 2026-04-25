@@ -484,19 +484,19 @@ export default function EstimateEditor({
               const isCollapsed = collapsedStages[stage] && !searchQuery.trim()
               
               return (
-                <div key={stage} className="bg-slate-200/50 dark:bg-white/[0.02]">
-                  <div className="px-6 py-3 bg-slate-300/40 dark:bg-slate-800/60 border-y border-slate-400/20 flex justify-between items-center">
+                <div key={stage} className="bg-slate-200/50 dark:bg-slate-800/30">
+                  <div className="px-6 py-3 bg-slate-300/40 dark:bg-slate-700/50 border-y border-slate-400/20 dark:border-slate-600/40 flex justify-between items-center">
                     <div className="flex items-center gap-2">
                       <button
                         type="button"
                         onClick={() => setCollapsedStages(prev => ({ ...prev, [stage]: !prev[stage] }))}
-                        className="p-1 rounded bg-white/60 dark:bg-slate-900/30 hover:bg-slate-200/60 dark:hover:bg-slate-700/40 text-slate-600 hover:text-primary transition-colors ring-1 ring-border/40"
+                        className="p-1 rounded bg-white/60 dark:bg-slate-800/80 hover:bg-slate-200/60 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 hover:text-primary transition-colors ring-1 ring-border/40 dark:ring-slate-600/40"
                         aria-label={isCollapsed ? 'Extinde categoria' : 'Restrânge categoria'}
                       >
                         {isCollapsed ? <ChevronDown size={18} /> : <ChevronUp size={18} />}
                       </button>
-                      <span className="text-xs font-black uppercase tracking-widest text-slate-500">{stage}</span>
-                      <span className="text-xs font-bold text-slate-400">({filteredStageLines.length})</span>
+                      <span className="text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-300">{stage}</span>
+                      <span className="text-xs font-bold text-slate-400 dark:text-slate-400">({filteredStageLines.length})</span>
                     </div>
                     <button 
                       onClick={() => handleAddManualLine(stage)} 
@@ -527,8 +527,8 @@ export default function EstimateEditor({
                     })() : null
 
                     return (
-                      <div key={line.id} className={`group transition-all duration-300 ${isExpanded ? 'my-6 bg-white dark:bg-slate-900 border border-primary/20 shadow-2xl rounded-2xl ring-4 ring-primary/5 z-10 relative' : 'border-b border-slate-300/30 last:border-0 hover:bg-slate-200/20'}`}>
-                        <div className={`p-4 md:p-6 transition-colors ${isExpanded ? 'rounded-t-2xl bg-white dark:bg-slate-900' : 'bg-slate-100/30'}`}>
+                      <div key={line.id} className={`group transition-all duration-300 ${isExpanded ? 'my-6 bg-white dark:bg-slate-900 border border-primary/20 shadow-2xl rounded-2xl ring-4 ring-primary/5 z-10 relative' : 'border-b border-slate-300/30 dark:border-slate-700/40 last:border-0 hover:bg-slate-200/20 dark:hover:bg-slate-700/30'}`}>
+                        <div className={`p-4 md:p-6 transition-colors ${isExpanded ? 'rounded-t-2xl bg-white dark:bg-slate-900' : 'bg-slate-100/30 dark:bg-slate-800/20'}`}>
                           <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
                             <div className="space-y-2 flex-1">
                               <div className="flex flex-col w-full">
@@ -538,9 +538,9 @@ export default function EstimateEditor({
                                       {line.code || line.metadata?.catalog_norm_symbol || (isManual ? 'MANUAL' : line.items!.normatives?.code || 'N/A')}
                                     </span>
                                     {hasCustomResources && (
-                                      <span className="text-[10px] font-bold bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full shrink-0">Personalizat</span>
+                                      <span className="text-[10px] font-bold bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 px-2 py-0.5 rounded-full shrink-0">Personalizat</span>
                                     )}
-                                    <span className="text-[10px] font-bold bg-slate-100 text-slate-500 border border-slate-200 px-2 py-0.5 rounded-full shrink-0">{analysis.origin}</span>
+                                    <span className="text-[10px] font-bold bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-300 border border-slate-200 dark:border-slate-600 px-2 py-0.5 rounded-full shrink-0">{analysis.origin}</span>
                                   </div>
                                   {lineIssues.length > 0 && (
                                     <button
@@ -563,7 +563,7 @@ export default function EstimateEditor({
                                 {isCatalogNorm ? (
                                   <div className="flex flex-col w-full">
                                     <h4 className="font-black text-lg md:text-2xl leading-tight break-words text-slate-900 dark:text-white">{line.name || line.manual_name || '—'}</h4>
-                                    <div className={`flex flex-wrap items-center gap-x-4 gap-y-1 text-xs md:text-sm font-bold uppercase tracking-wide mt-1.5 px-3 py-2 ${!analysis.isCalculable ? 'bg-red-600 text-white animate-pulse' : 'bg-slate-50 dark:bg-slate-900/50 text-slate-500'} rounded-lg border border-transparent`}>
+                                    <div className={`flex flex-wrap items-center gap-x-4 gap-y-1 text-xs md:text-sm font-bold uppercase tracking-wide mt-1.5 px-3 py-2 ${!analysis.isCalculable ? 'bg-red-600 text-white animate-pulse' : 'bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-300'} rounded-lg border border-transparent`}>
                                       {!analysis.isCalculable ? (
                                         <>
                                           <AlertCircle size={14} className="shrink-0" />
@@ -630,7 +630,7 @@ export default function EstimateEditor({
                                 ) : (
                                   <div className="flex flex-col w-full">
                                     <h4 className="font-black text-lg md:text-2xl leading-tight break-words text-slate-900 dark:text-white">{line.items!.name}</h4>
-                                    <div className={`flex flex-wrap items-center gap-x-4 gap-y-1 text-xs md:text-sm font-bold uppercase tracking-wide mt-1.5 px-3 py-2 ${!analysis.isCalculable ? 'bg-red-600 text-white animate-pulse' : 'bg-slate-50 dark:bg-slate-900/50 text-slate-500'} rounded-lg border border-transparent`}>
+                                    <div className={`flex flex-wrap items-center gap-x-4 gap-y-1 text-xs md:text-sm font-bold uppercase tracking-wide mt-1.5 px-3 py-2 ${!analysis.isCalculable ? 'bg-red-600 text-white animate-pulse' : 'bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-300'} rounded-lg border border-transparent`}>
                                       {!analysis.isCalculable ? (
                                         <>
                                           <AlertCircle size={14} className="shrink-0" />
@@ -648,9 +648,9 @@ export default function EstimateEditor({
                               </div>
 
                               {analysis.isCalculable && (
-                                <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 p-3 bg-slate-100/50 dark:bg-slate-950/20 rounded-xl border border-border/30 text-[11px] font-bold uppercase tracking-tight text-slate-500">
-                                  <span className="text-slate-400">Desfășurare Preț Final:</span>
-                                  <div className="flex items-center gap-1.5 bg-white dark:bg-slate-900 px-2 py-1 rounded-md border border-border/50">
+                                <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 p-3 bg-slate-100/50 dark:bg-slate-700/40 rounded-xl border border-border/30 dark:border-slate-600/30 text-[11px] font-bold uppercase tracking-tight text-slate-500 dark:text-slate-300">
+                                  <span className="text-slate-400 dark:text-slate-400">Desfășurare Preț Final:</span>
+                                  <div className="flex items-center gap-1.5 bg-white dark:bg-slate-800 px-2 py-1 rounded-md border border-border/50 dark:border-slate-600/50">
                                     <span>Bază: {fmtRon(lineCosts.unitDirectCost)}</span>
                                   </div>
                                   <span>+</span>
@@ -755,9 +755,9 @@ export default function EstimateEditor({
                               initial={{ height: 0, opacity: 0 }}
                               animate={{ height: 'auto', opacity: 1 }}
                               exit={{ height: 0, opacity: 0 }}
-                              className="overflow-hidden bg-slate-50/50 dark:bg-slate-800/20 border-t border-border/30"
+                              className="overflow-hidden bg-slate-50/50 dark:bg-slate-800/40 border-t border-border/30 dark:border-slate-700/50"
                             >
-                              <div className="bg-slate-100/30 dark:bg-white/[0.03] p-4 md:p-8 space-y-8">
+                              <div className="bg-slate-100/30 dark:bg-slate-900/60 p-4 md:p-8 space-y-8">
                                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-border/50 pb-6">
                                   <div className="flex items-center gap-3">
                                     <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
