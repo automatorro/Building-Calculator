@@ -11,10 +11,11 @@ import { EstimateLine, ProjectSettings } from '@/utils/calculators/estimate'
 import { Purchase, calculateFinancials } from '@/utils/calculators/financials'
 import {
   LayoutDashboard, ClipboardList, Wallet,
-  Settings as SettingsIcon, Plus, CalendarDays, ListTree, CheckCircle2, MessageSquare, Users, Sparkles
+  Settings as SettingsIcon, Plus, CalendarDays, ListTree, CheckCircle2, MessageSquare, Users, Sparkles, BookOpen
 } from 'lucide-react'
 import ProjectAssistantAI from './ProjectAssistantAI'
 import ProjectTeamSettings from './ProjectTeamSettings'
+import SiteJournal from './SiteJournal'
 import { motion, AnimatePresence } from 'framer-motion'
 import { createClient } from '@/utils/supabase/client'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -122,7 +123,7 @@ function exportCSV(lines: EstimateLine[], settings: ProjectSettings, projectName
   URL.revokeObjectURL(url)
 }
 
-type Tab = 'dashboard' | 'planning' | 'purchases' | 'timeline' | 'deviz' | 'team' | 'copilot'
+type Tab = 'dashboard' | 'planning' | 'purchases' | 'timeline' | 'deviz' | 'team' | 'copilot' | 'journal'
 
 export default function ProjectClientContainer({
   projectId,
@@ -378,6 +379,7 @@ export default function ProjectClientContainer({
       { id: 'planning', label: 'Editor Deviz', icon: ClipboardList },
       { id: 'deviz', label: 'Vizualizare & Export', icon: ListTree },
       { id: 'timeline', label: 'Cronologie', icon: CalendarDays },
+      { id: 'journal', label: 'Jurnal Șantier', icon: BookOpen },
       { id: 'purchases', label: 'Achiziții', icon: Wallet },
       { id: 'dashboard', label: 'Status', icon: LayoutDashboard },
       { id: 'copilot', label: 'AI', icon: Sparkles },
@@ -385,7 +387,7 @@ export default function ProjectClientContainer({
     ]
 
     // 1. Dacă nu avem niciun rând în deviz, arătăm doar editorul pentru simplitate
-    if (lines.length === 0) return allTabs.filter(t => t.id === 'planning')
+    if (lines.length === 0) return allTabs.filter(t => t.id === 'planning' || t.id === 'journal')
 
     // 2. Dacă avem deviz dar nu avem achiziții, nu arătăm încă Dashboard-ul (Status)
     if (purchases.length === 0) return allTabs.filter(t => t.id !== 'dashboard')
@@ -780,6 +782,20 @@ export default function ProjectClientContainer({
           <motion.div key="team"
             initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
             <ProjectTeamSettings projectId={projectId} />
+          </motion.div>
+        )}
+        {view === 'journal' && (
+          <motion.div key="journal"
+            initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
+            <SiteJournal
+              projectId={projectId}
+              projectName={projectName}
+              stages={stages}
+              lines={lines}
+              onUpdateLineProg={(lineId, progress) =>
+                handleUpdateLine(lineId, { progress_pct: progress } as any)
+              }
+            />
           </motion.div>
         )}
       </AnimatePresence>
