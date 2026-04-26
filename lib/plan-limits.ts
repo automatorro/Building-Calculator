@@ -7,7 +7,7 @@ export const PLANS = {
     price: 0,
     maxProjects: 1,
     aiRequestsPerDay: 5,
-    catalogArticles: 20,
+    catalogArticles: null as null, // acces complet la catalog, limitat la 1 proiect
     teamMembers: 1,
     stripePriceId: null as null,
   },

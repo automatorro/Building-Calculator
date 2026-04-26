@@ -2,7 +2,10 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/utils/supabase/server'
 import { stripe, STRIPE_PRICE_IDS } from '@/lib/stripe'
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://buildingcalculator.netlify.app'
+// Prioritate: env explicit → VERCEL_URL (auto-setat de Vercel) → localhost pentru dev
+const APP_URL =
+  process.env.NEXT_PUBLIC_APP_URL ??
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000')
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient()

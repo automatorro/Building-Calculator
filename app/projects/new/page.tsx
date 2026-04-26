@@ -100,7 +100,11 @@ export default function NewProjectPage() {
       .single()
 
     if (projectError) {
-      setError(projectError.message)
+      // Mesajul de la trigger-ul DB conține prefixul "PLAN_LIMIT: " — îl curățăm
+      const msg = projectError.message.includes('PLAN_LIMIT:')
+        ? projectError.message.replace('PLAN_LIMIT:', '').trim()
+        : projectError.message
+      setError(msg)
       setLoading(false)
       return
     }
