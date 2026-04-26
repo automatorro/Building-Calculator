@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { createClient } from '@/utils/supabase/server'
 import { acceptInvitationAction } from '@/lib/actions/invitations'
 import { redirect } from 'next/navigation'

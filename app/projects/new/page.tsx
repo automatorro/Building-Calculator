@@ -44,6 +44,31 @@ export default function NewProjectPage() {
     setLoading(true)
     setError(null)
 
+    // Verificăm limita de proiecte pentru planul gratuit
+    const { data: { user } } = await supabase.auth.getUser()
+    if (user) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('subscription_plan')
+        .eq('id', user.id)
+        .single()
+
+      const plan = profile?.subscription_plan ?? 'gratuit'
+
+      if (plan === 'gratuit') {
+        const { count } = await supabase
+          .from('projects')
+          .select('id', { count: 'exact', head: true })
+          .eq('user_id', user.id)
+
+        if ((count ?? 0) >= 1) {
+          setError('Planul Gratuit permite un singur proiect activ. Fă upgrade la Constructor pentru proiecte nelimitate.')
+          setLoading(false)
+          return
+        }
+      }
+    }
+
     let finalStages = DEFAULT_STAGES
     let templateLines: any[] = []
 

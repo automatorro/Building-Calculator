@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import Link from 'next/link'
 import HeroCalculator from '@/components/HeroCalculator'
 import FaqSection from '@/components/FaqSection'
+import PricingCheckoutButton from '@/components/PricingCheckoutButton'
 
 /* ─── Shared style helpers ────────────────────────────────────────────────── */
 const sans  = 'var(--font-dm-sans,"DM Sans",system-ui,sans-serif)'
@@ -704,14 +705,17 @@ export default function HomePage() {
                   </li>
                 ))}
               </ul>
-              <Link href="/auth/register" className="btn-link-orange" style={{
-                display:'block', width:'100%', padding:13, borderRadius:8, fontSize:15,
-                fontWeight:700, cursor:'pointer', fontFamily:sans, textAlign:'center',
-                textDecoration:'none', background:'#E8500A', color:'#FFFFFF',
-                border:'none', transition:'background .2s',
-              }}>
-                14 zile gratuit, apoi 89 lei/lună
-              </Link>
+              <PricingCheckoutButton
+                plan="constructor"
+                label="14 zile gratuit, apoi 89 lei/lună"
+                className="btn-link-orange"
+                style={{
+                  display:'block', width:'100%', padding:13, borderRadius:8, fontSize:15,
+                  fontWeight:700, fontFamily:sans, textAlign:'center',
+                  background:'#E8500A', color:'#FFFFFF',
+                  border:'none', transition:'background .2s',
+                }}
+              />
             </div>
 
             {/* Echipă */}
@@ -737,13 +741,17 @@ export default function HomePage() {
                   </li>
                 ))}
               </ul>
-              <Link href="/auth/register" style={{
-                display:'block', width:'100%', padding:13, borderRadius:8,
-                fontSize:14, fontWeight:600, cursor:'pointer', fontFamily:sans,
-                textAlign:'center', textDecoration:'none',
-                border:'1px solid #E5E3DE', background:'#FAFAF8', color:'#1E2329',
-                transition:'all .2s',
-              }}>Începe perioada de test</Link>
+              <PricingCheckoutButton
+                plan="echipa"
+                label="Începe perioada de test"
+                style={{
+                  display:'block', width:'100%', padding:13, borderRadius:8,
+                  fontSize:14, fontWeight:600, fontFamily:sans,
+                  textAlign:'center',
+                  border:'1px solid #E5E3DE', background:'#FAFAF8', color:'#1E2329',
+                  transition:'all .2s',
+                }}
+              />
             </div>
           </div>
 

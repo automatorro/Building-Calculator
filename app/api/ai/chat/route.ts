@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { geminiClient, GEMINI_MODEL } from '@/lib/gemini'
 import { checkRateLimit } from '@/lib/rate-limit'
+import { checkAndIncrementAiLimit } from '@/lib/check-ai-limit'
+import { createClient } from '@/utils/supabase/server'
 
 const MAX_HISTORY = 12
 
@@ -28,6 +30,7 @@ function buildLinesSummary(lines: any[]) {
 
 export async function POST(req: NextRequest) {
   try {
+    // Rate limit per IP (protecție burst)
     const ip = req.headers.get('x-forwarded-for') ?? req.headers.get('x-real-ip') ?? 'unknown'
     const { allowed, retryAfterSeconds } = checkRateLimit(ip)
     if (!allowed) {
@@ -35,6 +38,14 @@ export async function POST(req: NextRequest) {
         { error: `Prea multe cereri. Încearcă din nou în ${retryAfterSeconds} secunde.` },
         { status: 429, headers: { 'Retry-After': String(retryAfterSeconds) } }
       )
+    }
+
+    // Limita zilnică per utilizator (bazată pe planul de abonament)
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (user) {
+      const limitResult = await checkAndIncrementAiLimit(user.id)
+      if (limitResult instanceof NextResponse) return limitResult
     }
 
     const { message, history, lines, settings, projectName } = await req.json()
