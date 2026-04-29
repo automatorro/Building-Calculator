@@ -42,13 +42,16 @@ export function useSubscription(): SubscriptionInfo {
 
       const { data: profile } = await supabase
         .from('profiles')
-        .select('subscription_plan, subscription_status, subscription_period_end, trial_end')
+        .select('subscription_plan, subscription_status, subscription_period_end, trial_end, is_admin')
         .eq('id', user.id)
         .single()
 
       if (!mounted) return
 
-      const plan = (profile?.subscription_plan ?? 'gratuit') as PlanKey
+      let plan = (profile?.subscription_plan ?? 'gratuit') as PlanKey
+      if (profile?.is_admin) {
+        plan = 'echipa'
+      }
       const status = profile?.subscription_status ?? 'active'
       const isTrial = status === 'trialing'
       const isActive = status === 'active' || status === 'trialing'

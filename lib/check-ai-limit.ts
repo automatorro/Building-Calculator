@@ -26,13 +26,18 @@ export async function checkAndIncrementAiLimit(
 
   const { data: profile, error } = await supabase
     .from('profiles')
-    .select('subscription_plan, ai_requests_today, ai_requests_reset_at')
+    .select('subscription_plan, ai_requests_today, ai_requests_reset_at, is_admin')
     .eq('id', userId)
     .single()
 
   if (error || !profile) {
     // Dacă nu găsim profilul, tratăm ca gratuit
     return { allowed: true, plan: 'gratuit', remaining: null }
+  }
+
+  // Admin bypass
+  if (profile.is_admin) {
+    return { allowed: true, plan: 'echipa', remaining: 9999 }
   }
 
   const plan = (profile.subscription_plan ?? 'gratuit') as PlanKey

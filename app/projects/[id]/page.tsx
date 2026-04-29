@@ -15,14 +15,22 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
   const { data: { user } } = await supabase.auth.getUser()
   const userId = user?.id ?? ''
   let isPremium = false
+  let userPlan = 'gratuit'
   if (userId) {
     const { data: profile } = await supabase
       .from('profiles')
-      .select('subscription_plan')
+      .select('subscription_plan, is_admin')
       .eq('id', userId)
       .single()
-    const plan = profile?.subscription_plan ?? 'gratuit'
-    isPremium = plan === 'constructor' || plan === 'echipa'
+    
+    if (profile?.is_admin) {
+      userPlan = 'echipa'
+      isPremium = true
+    } else {
+      const plan = profile?.subscription_plan ?? 'gratuit'
+      userPlan = plan
+      isPremium = plan === 'constructor' || plan === 'echipa'
+    }
   }
 
   /* 1. Preia proiectul */
@@ -207,6 +215,7 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
         stages={stages}
         userId={userId}
         isPremium={isPremium}
+        userPlan={userPlan}
       />
     </main>
   )

@@ -37,6 +37,7 @@ interface ProjectClientContainerProps {
   stages: string[]   // ← din Supabase projects.stages
   userId?: string
   isPremium?: boolean
+  userPlan?: string
 }
 
 /* ─── Export Excel client-side ──────────────────────────────────────────── */
@@ -140,6 +141,7 @@ export default function ProjectClientContainer({
   stages,
   userId = '',
   isPremium = false,
+  userPlan = 'gratuit',
 }: ProjectClientContainerProps) {
   const searchParams = useSearchParams()
   const tabParam = searchParams.get('tab') as Tab | null
@@ -826,6 +828,7 @@ export default function ProjectClientContainer({
                 projectId={projectId}
                 userId={userId}
                 isPremium={isPremium}
+                userPlan={userPlan}
               />
             </div>
           </motion.div>

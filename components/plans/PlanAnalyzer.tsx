@@ -43,7 +43,8 @@ interface PlanData {
 interface PlanAnalyzerProps {
   projectId: string
   userId: string
-  isPremium: boolean
+  isPremium?: boolean
+  userPlan?: string
 }
 
 // ─── Tabel densitate liniară bare armare (kg/m) ─────────────────────────────
@@ -92,8 +93,11 @@ const LOADING_MESSAGES = [
 
 // ─── Componenta principală ───────────────────────────────────────────────────
 
-export default function PlanAnalyzer({ projectId, userId, isPremium }: PlanAnalyzerProps) {
+export default function PlanAnalyzer({ projectId, userId, isPremium, userPlan = 'gratuit' }: PlanAnalyzerProps) {
   const supabase = createClient()
+
+  // Acces permis doar pentru planurile plătite (constructor, echipa) SAU dacă isPremium e true explicit.
+  const canAnalyze = isPremium || userPlan === 'constructor' || userPlan === 'echipa'
 
   const [dragging, setDragging] = useState(false)
   const [file, setFile] = useState<File | null>(null)
@@ -140,8 +144,8 @@ export default function PlanAnalyzer({ projectId, userId, isPremium }: PlanAnaly
   // ─── Analiză via Supabase Edge Function ────────────────────────────────────
 
   const analyzeFile = async (f: File) => {
-    if (!isPremium) {
-      toast.error('Funcție premium. Abonează-te pentru a analiza planuri.')
+    if (!canAnalyze) {
+      toast.error('Funcție disponibilă pentru planurile Constructor și Echipă. Upgradează pentru a analiza planuri.')
       return
     }
 
@@ -319,7 +323,7 @@ export default function PlanAnalyzer({ projectId, userId, isPremium }: PlanAnaly
   if (!planData && !loading) {
     return (
       <div style={{ padding: '24px 0' }}>
-        {!isPremium && (
+        {!canAnalyze && (
           <div style={{
             background: '#FFF7ED', border: '1px solid #FDBA74',
             borderRadius: 10, padding: '12px 16px', marginBottom: 20,
@@ -327,7 +331,7 @@ export default function PlanAnalyzer({ projectId, userId, isPremium }: PlanAnaly
           }}>
             <AlertTriangle size={16} style={{ color: '#EA580C', flexShrink: 0 }} />
             <p style={{ fontSize: 13, color: '#C2410C', margin: 0 }}>
-              Analiza planurilor este o funcție premium. Abonează-te la planul Constructor sau Echipă.
+              Analiza planurilor este disponibilă pentru planurile Constructor și Echipă.
             </p>
           </div>
         )}
@@ -336,16 +340,16 @@ export default function PlanAnalyzer({ projectId, userId, isPremium }: PlanAnaly
           onDrop={handleDrop}
           onDragOver={e => { e.preventDefault(); setDragging(true) }}
           onDragLeave={() => setDragging(false)}
-          onClick={() => isPremium && fileInputRef.current?.click()}
+          onClick={() => canAnalyze && fileInputRef.current?.click()}
           style={{
             border: `2px dashed ${dragging ? '#E8500A' : '#D1CFC9'}`,
             borderRadius: 14,
             padding: '56px 32px',
             textAlign: 'center',
-            cursor: isPremium ? 'pointer' : 'not-allowed',
+            cursor: canAnalyze ? 'pointer' : 'not-allowed',
             background: dragging ? '#FFF0E8' : '#FAFAF8',
             transition: 'all .2s',
-            opacity: isPremium ? 1 : 0.6,
+            opacity: canAnalyze ? 1 : 0.6,
           }}
         >
           <div style={{
