@@ -11,11 +11,12 @@ import { EstimateLine, ProjectSettings } from '@/utils/calculators/estimate'
 import { Purchase, calculateFinancials } from '@/utils/calculators/financials'
 import {
   LayoutDashboard, ClipboardList, Wallet,
-  Settings as SettingsIcon, Plus, CalendarDays, ListTree, CheckCircle2, MessageSquare, Users, Sparkles, BookOpen
+  Settings as SettingsIcon, Plus, CalendarDays, ListTree, CheckCircle2, MessageSquare, Users, Sparkles, BookOpen, ScanLine
 } from 'lucide-react'
 import ProjectAssistantAI from './ProjectAssistantAI'
 import ProjectTeamSettings from './ProjectTeamSettings'
 import SiteJournal from './SiteJournal'
+import PlanAnalyzer from './plans/PlanAnalyzer'
 import { motion, AnimatePresence } from 'framer-motion'
 import { createClient } from '@/utils/supabase/client'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -34,6 +35,8 @@ interface ProjectClientContainerProps {
   dimensions: any
   totalEstimatedRevenue: number
   stages: string[]   // ← din Supabase projects.stages
+  userId?: string
+  isPremium?: boolean
 }
 
 /* ─── Export Excel client-side ──────────────────────────────────────────── */
@@ -123,7 +126,7 @@ function exportCSV(lines: EstimateLine[], settings: ProjectSettings, projectName
   URL.revokeObjectURL(url)
 }
 
-type Tab = 'dashboard' | 'planning' | 'purchases' | 'timeline' | 'deviz' | 'team' | 'copilot' | 'journal'
+type Tab = 'dashboard' | 'planning' | 'purchases' | 'timeline' | 'deviz' | 'team' | 'copilot' | 'journal' | 'plans'
 
 export default function ProjectClientContainer({
   projectId,
@@ -135,6 +138,8 @@ export default function ProjectClientContainer({
   dimensions,
   totalEstimatedRevenue: initialRevenue,
   stages,
+  userId = '',
+  isPremium = false,
 }: ProjectClientContainerProps) {
   const searchParams = useSearchParams()
   const tabParam = searchParams.get('tab') as Tab | null
@@ -377,6 +382,7 @@ export default function ProjectClientContainer({
   const TABS = useMemo(() => {
     const allTabs: Array<{ id: Tab; label: string; icon: React.ElementType }> = [
       { id: 'planning', label: 'Editor Deviz', icon: ClipboardList },
+      { id: 'plans', label: 'Planuri & Cantități', icon: ScanLine },
       { id: 'deviz', label: 'Vizualizare & Export', icon: ListTree },
       { id: 'timeline', label: 'Cronologie', icon: CalendarDays },
       { id: 'journal', label: 'Jurnal Șantier', icon: BookOpen },
@@ -386,8 +392,8 @@ export default function ProjectClientContainer({
       { id: 'team', label: 'Echipă', icon: Users },
     ]
 
-    // 1. Dacă nu avem niciun rând în deviz, arătăm doar editorul pentru simplitate
-    if (lines.length === 0) return allTabs.filter(t => t.id === 'planning' || t.id === 'journal')
+    // 1. Dacă nu avem niciun rând în deviz, arătăm doar editorul + plans
+    if (lines.length === 0) return allTabs.filter(t => t.id === 'planning' || t.id === 'journal' || t.id === 'plans')
 
     // 2. Dacă avem deviz dar nu avem achiziții, nu arătăm încă Dashboard-ul (Status)
     if (purchases.length === 0) return allTabs.filter(t => t.id !== 'dashboard')
@@ -796,6 +802,32 @@ export default function ProjectClientContainer({
                 handleUpdateLine(lineId, { progress_pct: progress } as any)
               }
             />
+          </motion.div>
+        )}
+        {view === 'plans' && (
+          <motion.div key="plans"
+            initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
+            <div style={{
+              background: 'white', border: '1px solid #E5E3DE',
+              borderRadius: 14, padding: '24px',
+            }}>
+              <div style={{ marginBottom: 20 }}>
+                <h3 style={{
+                  fontSize: 16, fontWeight: 700, color: '#1E2329', marginBottom: 4,
+                  fontFamily: 'var(--font-dm-sans,"DM Sans",system-ui,sans-serif)',
+                }}>
+                  Planuri & Cantități
+                </h3>
+                <p style={{ fontSize: 13, color: '#A8A59E', margin: 0 }}>
+                  Uploadează un plan de construcție (PDF sau imagine) și extrage automat cantitățile cu AI.
+                </p>
+              </div>
+              <PlanAnalyzer
+                projectId={projectId}
+                userId={userId}
+                isPremium={isPremium}
+              />
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

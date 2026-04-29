@@ -11,6 +11,20 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
   const supabase = await createClient()
   const { id } = await params
 
+  /* 0. Userul curent + plan abonament */
+  const { data: { user } } = await supabase.auth.getUser()
+  const userId = user?.id ?? ''
+  let isPremium = false
+  if (userId) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('subscription_plan')
+      .eq('id', userId)
+      .single()
+    const plan = profile?.subscription_plan ?? 'gratuit'
+    isPremium = plan === 'constructor' || plan === 'echipa'
+  }
+
   /* 1. Preia proiectul */
   const { data: project, error: projectError } = await supabase
     .from('projects')
@@ -191,6 +205,8 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
         dimensions={project.dimensions || {}}
         totalEstimatedRevenue={project.total_estimated_revenue || 0}
         stages={stages}
+        userId={userId}
+        isPremium={isPremium}
       />
     </main>
   )
