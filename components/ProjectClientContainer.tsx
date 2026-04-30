@@ -477,11 +477,11 @@ export default function ProjectClientContainer({
       </div>
 
       {/* ── Tab switcher ── */}
-      <div className="flex items-center justify-center -mx-4 md:mx-0 overflow-x-auto no-scrollbar">
+      <div className="flex md:justify-center overflow-x-auto no-scrollbar -mx-4 px-4 md:mx-0 md:px-0 pb-2">
         <div style={{
-          background: '#F3F2EF', padding: 4, borderRadius: 12,
-          display: 'flex', gap: 2, border: '1px solid #E5E3DE',
-          width: 'max-content', minWidth: 'min-content'
+          background: '#F3F2EF', padding: 6, borderRadius: 14,
+          display: 'flex', gap: 4, border: '1px solid #E5E3DE',
+          width: 'max-content'
         }}>
           {TABS.map(tab => {
             const Icon = tab.icon
@@ -489,17 +489,17 @@ export default function ProjectClientContainer({
             return (
               <button key={tab.id} onClick={() => setView(tab.id)}
                 style={{
-                  padding: '8px 12px', borderRadius: 8, border: 'none', cursor: 'pointer',
+                  padding: '10px 16px', borderRadius: 10, border: 'none', cursor: 'pointer',
                   fontFamily: 'var(--font-dm-sans,"DM Sans",system-ui,sans-serif)',
-                  fontSize: 12, fontWeight: active ? 600 : 500,
-                  display: 'flex', alignItems: 'center', gap: 6,
+                  fontSize: 14, fontWeight: active ? 600 : 500,
+                  display: 'flex', alignItems: 'center', gap: 8,
                   background: active ? 'white' : 'transparent',
                   color: active ? '#E8500A' : '#6B6860',
-                  boxShadow: active ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
+                  boxShadow: active ? '0 2px 4px rgba(0,0,0,0.06)' : 'none',
                   transition: 'all .15s',
                   whiteSpace: 'nowrap'
                 }}>
-                <Icon size={14} style={{ color: active ? '#E8500A' : '#A8A59E' }} />
+                <Icon size={16} style={{ color: active ? '#E8500A' : '#A8A59E' }} />
                 {tab.label}
               </button>
             )
