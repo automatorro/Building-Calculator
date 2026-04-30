@@ -141,7 +141,7 @@ export default function PlanAnalyzer({ projectId, userId, isPremium, userPlan = 
     analyzeFile(f)
   }
 
-  // ─── Analiză via Supabase Edge Function ────────────────────────────────────
+  // ─── Analiză via Next.js API route ────────────────────────────────────────
 
   const analyzeFile = async (f: File) => {
     if (!canAnalyze) {
@@ -164,11 +164,15 @@ export default function PlanAnalyzer({ projectId, userId, isPremium, userPlan = 
       for (let i = 0; i < uint8.length; i++) binary += String.fromCharCode(uint8[i])
       const fileBase64 = btoa(binary)
 
-      const { data, error } = await supabase.functions.invoke('analyze-plan', {
-        body: { fileBase64, mediaType: f.type },
+      const res = await fetch('/api/ai/analyze-plan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fileBase64, mediaType: f.type }),
       })
 
-      if (error) throw new Error(error.message || 'Eroare la Edge Function')
+      const data = await res.json()
+
+      if (!res.ok) throw new Error(data?.error || `Eroare server: ${res.status}`)
 
       if (data?.error) throw new Error(data.error)
 
