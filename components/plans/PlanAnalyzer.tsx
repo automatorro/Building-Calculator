@@ -5,8 +5,9 @@ import { createClient } from '@/utils/supabase/client'
 import { toast } from 'sonner'
 import {
   Upload, FileText, Image, Loader2, CheckCircle2,
-  ChevronDown, ChevronUp, Copy, Save, AlertTriangle, X
+  ChevronDown, ChevronUp, Copy, Save, AlertTriangle, X, History, ArrowRight
 } from 'lucide-react'
+import PlanToEstimateModal from './PlanToEstimateModal'
 
 // ─── Tipuri ─────────────────────────────────────────────────────────────────
 
@@ -45,6 +46,8 @@ interface PlanAnalyzerProps {
   userId: string
   isPremium?: boolean
   userPlan?: string
+  stages?: string[]
+  onImportToDeviz?: (lines: any[]) => void
 }
 
 // ─── Tabel densitate liniară bare armare (kg/m) ─────────────────────────────
@@ -107,8 +110,28 @@ export default function PlanAnalyzer({ projectId, userId, isPremium, userPlan = 
   const [activeTab, setActiveTab] = useState<string>('')
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [history, setHistory] = useState<any[]>([])
+  const [loadingHistory, setLoadingHistory] = useState(true)
+  const [showModal, setShowModal] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const loadingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
+  useEffect(() => {
+    async function fetchHistory() {
+      setLoadingHistory(true)
+      const { data, error } = await supabase
+        .from('plan_analyses')
+        .select('*')
+        .eq('project_id', projectId)
+        .order('created_at', { ascending: false })
+      
+      if (!error && data) {
+        setHistory(data)
+      }
+      setLoadingHistory(false)
+    }
+    fetchHistory()
+  }, [projectId, saved])
 
   // ─── Upload zone handlers ──────────────────────────────────────────────────
 
@@ -373,6 +396,62 @@ export default function PlanAnalyzer({ projectId, userId, isPremium, userPlan = 
             onChange={handleFileChange}
           />
         </div>
+
+        {/* Istoric Planuri */}
+        {history.length > 0 && (
+          <div style={{ marginTop: 32 }}>
+            <h3 style={{ fontSize: 16, fontWeight: 700, color: '#1E2329', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <History size={18} style={{ color: '#E8500A' }} />
+              Istoric Planuri Analizate
+            </h3>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 12 }}>
+              {history.map(item => (
+                <div key={item.id} 
+                  onClick={() => {
+                    setPlanData({
+                      tip_plan: item.tip_plan,
+                      element: item.element,
+                      scara: item.scara,
+                      faza: item.faza,
+                      categorii: item.categorii,
+                      note: item.note
+                    })
+                    setActiveTab(item.categorii?.[0]?.id ?? 'note')
+                    setSaved(true)
+                    toast.success('Plan deschis din istoric')
+                  }}
+                  style={{
+                    background: '#FAFAF8', border: '1px solid #E5E3DE', borderRadius: 12, padding: '16px',
+                    cursor: 'pointer', transition: 'all 0.2s', display: 'flex', flexDirection: 'column', gap: 8
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.borderColor = '#E8500A'}
+                  onMouseLeave={e => e.currentTarget.style.borderColor = '#E5E3DE'}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontWeight: 700, color: '#1E2329', fontSize: 14 }}>
+                      <FileText size={16} style={{ color: '#E8500A' }} />
+                      {item.tip_plan || 'Plan Necunoscut'}
+                    </div>
+                    <span style={{ fontSize: 11, color: '#A8A59E', fontWeight: 600 }}>
+                      {new Date(item.created_at).toLocaleDateString('ro-RO')}
+                    </span>
+                  </div>
+                  {(item.element || item.faza) && (
+                    <div style={{ fontSize: 12, color: '#6B6860' }}>
+                      {item.element && <span><strong>Elem:</strong> {item.element} </span>}
+                      {item.faza && <span><strong>Fază:</strong> {item.faza}</span>}
+                    </div>
+                  )}
+                  {item.file_name && (
+                    <div style={{ fontSize: 11, color: '#A8A59E', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      Fișier: {item.file_name}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     )
   }
@@ -627,37 +706,67 @@ export default function PlanAnalyzer({ projectId, userId, isPremium, userPlan = 
 
       {/* Acțiuni */}
       <div style={{
-        marginTop: 24, display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center',
+        marginTop: 24, display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between',
         paddingTop: 20, borderTop: '1px solid #E5E3DE',
       }}>
-        <button
-          onClick={handleSave}
-          disabled={saving || saved}
-          style={{
-            display: 'flex', alignItems: 'center', gap: 7,
-            background: saved ? '#16A34A' : '#E8500A', color: 'white',
-            border: 'none', borderRadius: 8, padding: '10px 18px',
-            fontSize: 13, fontWeight: 700, cursor: saving || saved ? 'default' : 'pointer',
-            opacity: saving ? 0.7 : 1,
-          }}
-        >
-          {saving ? <Loader2 size={15} style={{ animation: 'spin 1s linear infinite' }} /> : saved ? <CheckCircle2 size={15} /> : <Save size={15} />}
-          {saved ? 'Salvat în proiect' : saving ? 'Se salvează...' : 'Salvează în proiect'}
-        </button>
+        <div style={{ display: 'flex', gap: 10 }}>
+          <button
+            onClick={handleSave}
+            disabled={saving || saved}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 7,
+              background: saved ? '#16A34A' : '#E8500A', color: 'white',
+              border: 'none', borderRadius: 8, padding: '10px 18px',
+              fontSize: 13, fontWeight: 700, cursor: saving || saved ? 'default' : 'pointer',
+              opacity: saving ? 0.7 : 1,
+            }}
+          >
+            {saving ? <Loader2 size={15} style={{ animation: 'spin 1s linear infinite' }} /> : saved ? <CheckCircle2 size={15} /> : <Save size={15} />}
+            {saved ? 'Salvat în proiect' : saving ? 'Se salvează...' : 'Salvează în proiect'}
+          </button>
 
-        <button
-          onClick={handleGenerateReport}
-          style={{
-            display: 'flex', alignItems: 'center', gap: 7,
-            background: 'white', color: '#4A4744',
-            border: '1px solid #E5E3DE', borderRadius: 8, padding: '10px 18px',
-            fontSize: 13, fontWeight: 600, cursor: 'pointer',
-          }}
-        >
-          <Copy size={15} />
-          Copiază raport text
-        </button>
+          <button
+            onClick={handleGenerateReport}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 7,
+              background: 'white', color: '#4A4744',
+              border: '1px solid #E5E3DE', borderRadius: 8, padding: '10px 18px',
+              fontSize: 13, fontWeight: 600, cursor: 'pointer',
+            }}
+          >
+            <Copy size={15} />
+            Copiază raport text
+          </button>
+        </div>
+        
+        {onImportToDeviz && (
+          <button
+            onClick={() => setShowModal(true)}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 7,
+              background: '#FFF0E8', color: '#E8500A',
+              border: '1px solid #FDBA74', borderRadius: 8, padding: '10px 18px',
+              fontSize: 13, fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s',
+            }}
+            onMouseEnter={e => e.currentTarget.style.background = '#FFE4D6'}
+            onMouseLeave={e => e.currentTarget.style.background = '#FFF0E8'}
+          >
+            Trimite în Deviz <ArrowRight size={15} />
+          </button>
+        )}
       </div>
+
+      {showModal && (
+        <PlanToEstimateModal
+          planData={planData}
+          stages={stages || []}
+          onClose={() => setShowModal(false)}
+          onImport={(lines) => {
+            if (onImportToDeviz) onImportToDeviz(lines)
+            setShowModal(false)
+          }}
+        />
+      )}
     </div>
   )
 }

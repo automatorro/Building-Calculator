@@ -215,6 +215,13 @@ export default function ProjectClientContainer({
     setIsSaved(false)
   }
 
+  const handleImportFromPlan = (importedLines: EstimateLine[]) => {
+    setLines([...lines, ...importedLines])
+    setIsSaved(false)
+    toast.success(`${importedLines.length} rânduri importate din plan cu succes. Caută-le în deviz!`)
+    setView('planning')
+  }
+
   const supabase = createClient()
   const router = useRouter()
 
@@ -829,6 +836,8 @@ export default function ProjectClientContainer({
                 userId={userId}
                 isPremium={isPremium}
                 userPlan={userPlan}
+                stages={stages.length > 0 ? stages : [...new Set(lines.map(l => l.stage_name || 'Lucrări Generale'))]}
+                onImportToDeviz={handleImportFromPlan}
               />
             </div>
           </motion.div>
