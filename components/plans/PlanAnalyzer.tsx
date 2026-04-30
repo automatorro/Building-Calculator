@@ -316,17 +316,17 @@ export default function PlanAnalyzer({ projectId, userId, isPremium, userPlan = 
       `Element: ${planData.element}   Scară: ${planData.scara}   Fază: ${planData.faza}`,
       '',
     ]
-    for (const cat of planData.categorii) {
+    for (const cat of (planData.categorii || [])) {
       lines.push(`── ${cat.titlu.toUpperCase()} ──`)
       if (cat.tip === 'campuri' && cat.campuri) {
         for (const c of cat.campuri) {
           lines.push(`  ${c.label}: ${c.valoare} ${c.unitate}`)
         }
       } else if (cat.tip === 'tabel' && cat.randuri && cat.coloane) {
-        const header = cat.coloane.map(col => col.label.padEnd(16)).join(' ')
+        const header = cat.coloane.map(col => String(col.label || '').padEnd(16)).join(' ')
         lines.push('  ' + header)
         for (const rand of cat.randuri) {
-          const row = cat.coloane!.map(col => String(rand[col.cheie] ?? '').padEnd(16)).join(' ')
+          const row = cat.coloane.map(col => String(rand[col.cheie] ?? '').padEnd(16)).join(' ')
           lines.push('  ' + row)
         }
       }
@@ -485,7 +485,7 @@ export default function PlanAnalyzer({ projectId, userId, isPremium, userPlan = 
 
   if (!planData) return null
 
-  const tabIds = [...planData.categorii.map(c => c.id), 'note']
+  const tabIds = [...(planData.categorii || []).map(c => c.id), 'note']
 
   return (
     <div>
@@ -535,7 +535,7 @@ export default function PlanAnalyzer({ projectId, userId, isPremium, userPlan = 
         display: 'flex', gap: 4, overflowX: 'auto',
         borderBottom: '1px solid #E5E3DE', marginBottom: 20, paddingBottom: 0,
       }}>
-        {planData.categorii.map(cat => (
+        {(planData.categorii || []).map(cat => (
           <button
             key={cat.id}
             onClick={() => setActiveTab(cat.id)}
@@ -567,7 +567,7 @@ export default function PlanAnalyzer({ projectId, userId, isPremium, userPlan = 
       </div>
 
       {/* Conținut tab */}
-      {planData.categorii.map(cat => {
+      {(planData.categorii || []).map(cat => {
         if (cat.id !== activeTab) return null
         return (
           <div key={cat.id}>

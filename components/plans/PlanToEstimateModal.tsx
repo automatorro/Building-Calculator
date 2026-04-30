@@ -37,11 +37,17 @@ export default function PlanToEstimateModal({ planData, stages, onClose, onImpor
   useEffect(() => {
     const extracted: ExtractedItem[] = []
 
+    if (!planData || !Array.isArray(planData.categorii)) {
+      setItems([])
+      return
+    }
+
     // Extragere din câmpuri (Campuri singulare)
     planData.categorii.forEach(cat => {
-      if (cat.tip === 'campuri' && cat.campuri) {
+      if (cat.tip === 'campuri' && Array.isArray(cat.campuri)) {
         cat.campuri.forEach((camp: any, idx: number) => {
-          const numVal = parseFloat(camp.valoare.replace(/,/g, ''))
+          const valStr = camp?.valoare !== undefined && camp?.valoare !== null ? String(camp.valoare) : ''
+          const numVal = parseFloat(valStr.replace(/,/g, ''))
           if (!isNaN(numVal) && numVal > 0) {
             extracted.push({
               id: `camp-${cat.id}-${idx}`,
@@ -58,12 +64,12 @@ export default function PlanToEstimateModal({ planData, stages, onClose, onImpor
       }
 
       // Extragere din tabele (Sume pe coloane numerice relevante)
-      if (cat.tip === 'tabel' && cat.coloane && cat.randuri) {
+      if (cat.tip === 'tabel' && Array.isArray(cat.coloane) && Array.isArray(cat.randuri)) {
         // Căutăm coloane care par a fi cantități/totaluri
         const quantityKeywords = ['total', 'cantitat', 'masa', 'greutat', 'volum', 'suprafata', 'lungime']
         const relevantCols = cat.coloane.filter((col: any) => 
-          col.tip === 'numar' && 
-          quantityKeywords.some(kw => col.label.toLowerCase().includes(kw) || col.cheie.toLowerCase().includes(kw))
+          col?.tip === 'numar' && 
+          quantityKeywords.some(kw => (col.label || '').toLowerCase().includes(kw) || (col.cheie || '').toLowerCase().includes(kw))
         )
 
         relevantCols.forEach((col: any) => {
@@ -112,20 +118,28 @@ export default function PlanToEstimateModal({ planData, stages, onClose, onImpor
     const selectedItems = items.filter(i => i.selected)
     if (selectedItems.length === 0) return
 
-    const lines: EstimateLine[] = selectedItems.map(item => ({
-      id: crypto.randomUUID(),
-      quantity: item.quantity,
-      custom_prices: {},
-      excluded_resources: [],
-      metadata: { source: 'plan_ocr', plan_type: planData.tip_plan, autoExpand: true },
-      stage_name: item.stage,
-      name: item.name,
-      code: 'OCR',
-      unit: item.unit,
-      unit_price: 0,
-      resources_override: [],
-      items: null
-    }))
+    const lines: EstimateLine[] = selectedItems.map(item => {
+      let uid = ''
+      try {
+        uid = crypto.randomUUID()
+      } catch {
+        uid = `${Date.now()}-${Math.random().toString(16).slice(2)}`
+      }
+      return {
+        id: uid,
+        quantity: item.quantity,
+        custom_prices: {},
+        excluded_resources: [],
+        metadata: { source: 'plan_ocr', plan_type: planData.tip_plan, autoExpand: true },
+        stage_name: item.stage,
+        name: item.name,
+        code: 'OCR',
+        unit: item.unit,
+        unit_price: 0,
+        resources_override: [],
+        items: null
+      }
+    })
 
     onImport(lines)
   }
