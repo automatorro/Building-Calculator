@@ -416,7 +416,7 @@ export default function EstimateEditor({
               const invalidCount = lines.filter(l => !analyzeEstimateLine(l).isCalculable).length;
               const issueCount = lines.filter(l => {
                 const a = analyzeEstimateLine(l)
-                return a.isCalculable && detectLineIssues(l, a.origin === 'Adăugat manual').length > 0
+                return detectLineIssues(l, a.origin === 'Adăugat manual').length > 0
               }).length;
               if (invalidCount === 0 && issueCount === 0) return null;
               return (
@@ -513,7 +513,7 @@ export default function EstimateEditor({
                     const isExpanded = expandedId === line.id
                     const isCatalogNorm = !!(line.catalog_norm_id || (line.code && !line.items))
                     const isManual = analysis.origin === 'Adăugat manual'
-                    const lineIssues = analysis.isCalculable ? detectLineIssues(line, isManual) : []
+                    const lineIssues = detectLineIssues(line, isManual)
                     const isHintOnly = lineIssues.length > 0 && lineIssues.every(i => i.code === 'MANUAL_NO_RECIPE')
                     const hasCustomResources = (line.resources_override && line.resources_override.length > 0)
                     const resourceCostBreakdown = hasCustomResources ? getResourceCostBreakdown(line) : null
@@ -918,7 +918,7 @@ export default function EstimateEditor({
         if (!activeLine) return null
         const activeAnalysis = analyzeEstimateLine(activeLine)
         const activeIsManual = activeAnalysis.origin === 'Adăugat manual'
-        const activeLineIssues = activeAnalysis.isCalculable ? detectLineIssues(activeLine, activeIsManual) : []
+        const activeLineIssues = detectLineIssues(activeLine, activeIsManual)
         const activeIsHintOnly = activeLineIssues.length > 0 && activeLineIssues.every(i => i.code === 'MANUAL_NO_RECIPE')
         const activeUnit = activeLine.unit || activeLine.manual_um || activeLine.items?.um || 'UM'
 
