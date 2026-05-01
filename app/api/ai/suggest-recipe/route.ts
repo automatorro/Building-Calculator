@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const { lineName, lineCode, lineUnit, quantity, dimensions, existingUnitPrice } = await req.json()
+    const { lineName, lineCode, lineUnit, quantity, stageName, dimensions, existingUnitPrice } = await req.json()
 
     if (!lineName || !lineUnit) {
       return NextResponse.json({ error: 'Date insuficiente.' }, { status: 400 })
@@ -46,6 +46,7 @@ RETURNEAZĂ EXCLUSIV JSON VALID, fără text suplimentar, fără markdown, făr�
 Generează rețeta completă de resurse pentru:
 - Lucrare: ${lineName}
 - Cod normativ: ${lineCode || 'nedefinit'}
+- Etapă proiect: ${stageName || 'nedefinită'}
 - Unitate de măsură: ${lineUnit}
 - Cantitate totală în proiect: ${quantity} ${lineUnit}${dimText ? `\n- Context proiect: ${dimText}` : ''}${priceHint ? `\n${priceHint}` : ''}
 

@@ -303,6 +303,7 @@ export default function EstimateEditor({
           lineCode: line.code || line.items?.normatives?.code || '',
           lineUnit,
           quantity: line.quantity,
+          stageName: line.stage_name || '',
           dimensions,
           existingUnitPrice,
         }),
