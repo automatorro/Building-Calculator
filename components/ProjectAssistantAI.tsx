@@ -6,7 +6,7 @@ import {
   X, Send,
   Clock, Zap, Bot,
   ArrowRight, AlertCircle, ShoppingCart,
-  Calculator, ChefHat, CheckCircle2, Info,
+  Calculator, ChefHat, CheckCircle2, Info, RefreshCw,
 } from 'lucide-react'
 import type { OptimizationSuggestion, AIAction } from '@/lib/ai-types'
 import { toast } from 'sonner'
@@ -34,6 +34,8 @@ interface Props {
   projectName: string
   fullPage?: boolean
   onApplyAction?: (lineId: string, updates: Record<string, any>) => void
+  initialSuggestions?: OptimizationSuggestion[]
+  onSuggestionsChange?: (suggestions: OptimizationSuggestion[]) => void
 }
 
 const SUGGESTED_QUESTIONS_FULL = [
@@ -205,10 +207,10 @@ function ChatInput({
   )
 }
 
-export default function ProjectAssistantAI({ lines, settings, projectId, projectName, fullPage = false, onApplyAction }: Props) {
+export default function ProjectAssistantAI({ lines, settings, projectId, projectName, fullPage = false, onApplyAction, initialSuggestions, onSuggestionsChange }: Props) {
   const [isOpen, setIsOpen] = useState(false)
-  const [suggestions, setSuggestions] = useState<OptimizationSuggestion[]>([])
-  const [loading, setLoading] = useState(true)
+  const [suggestions, setSuggestions] = useState<OptimizationSuggestion[]>(initialSuggestions ?? [])
+  const [loading, setLoading] = useState((initialSuggestions ?? []).length === 0 && lines.length > 0)
   const [chatMessage, setChatMessage] = useState('')
   const [pendingAction, setPendingAction] = useState<PendingAction | null>(null)
   const chatEndRef = useRef<HTMLDivElement>(null)
@@ -220,9 +222,8 @@ export default function ProjectAssistantAI({ lines, settings, projectId, project
     },
   ])
 
-  useEffect(() => {
+  const runAnalysis = () => {
     if (lines.length === 0) { setLoading(false); return }
-
     setLoading(true)
     fetch('/api/ai/analyze', {
       method: 'POST',
@@ -230,10 +231,19 @@ export default function ProjectAssistantAI({ lines, settings, projectId, project
       body: JSON.stringify({ lines, settings }),
     })
       .then((r) => r.json())
-      .then((data) => setSuggestions(data.suggestions || []))
+      .then((data) => {
+        const s = data.suggestions || []
+        setSuggestions(s)
+        onSuggestionsChange?.(s)
+      })
       .catch(() => setSuggestions([]))
       .finally(() => setLoading(false))
-  }, [projectId, lines.length])
+  }
+
+  useEffect(() => {
+    if ((initialSuggestions ?? []).length > 0) return
+    runAnalysis()
+  }, [projectId])
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -444,11 +454,21 @@ export default function ProjectAssistantAI({ lines, settings, projectId, project
                   <h2 className="text-lg font-black dark:text-white">Audit & Optimizări</h2>
                 </div>
               </div>
-              {!loading && badgeCount > 0 && (
-                <span className="bg-primary/10 text-primary text-[10px] font-black uppercase px-2 py-1 rounded-full">
-                  {badgeCount} alerte
-                </span>
-              )}
+              <div className="flex items-center gap-2">
+                {!loading && badgeCount > 0 && (
+                  <span className="bg-primary/10 text-primary text-[10px] font-black uppercase px-2 py-1 rounded-full">
+                    {badgeCount} alerte
+                  </span>
+                )}
+                <button
+                  onClick={runAnalysis}
+                  disabled={loading}
+                  title="Regenerează analiza"
+                  className="p-1.5 rounded-lg hover:bg-primary/10 transition-colors disabled:opacity-40"
+                >
+                  <RefreshCw size={14} className={`text-primary ${loading ? 'animate-spin' : ''}`} />
+                </button>
+              </div>
             </div>
           </div>
 

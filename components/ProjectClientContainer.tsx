@@ -8,6 +8,7 @@ import ProjectTimeline from './ProjectTimeline'
 import ProjectDevizView from './ProjectDevizView'
 import ProjectStepper from './ProjectStepper'
 import { EstimateLine, ProjectSettings } from '@/utils/calculators/estimate'
+import type { OptimizationSuggestion } from '@/lib/ai-types'
 import { Purchase, calculateFinancials } from '@/utils/calculators/financials'
 import {
   LayoutDashboard, ClipboardList, Wallet,
@@ -164,6 +165,7 @@ export default function ProjectClientContainer({
 
   const [isSaved, setIsSaved] = useState(true)
   const [loading, setLoading] = useState(false)
+  const [aiSuggestions, setAiSuggestions] = useState<OptimizationSuggestion[]>([])
 
   // Note: Removed the useEffect that synced state from initialLines when isSaved is true.
   // This was causing local additions to disappear during auto-save because initialLines (props) 
@@ -796,6 +798,8 @@ export default function ProjectClientContainer({
               settings={settings}
               fullPage={true}
               onApplyAction={handleUpdateLine}
+              initialSuggestions={aiSuggestions}
+              onSuggestionsChange={setAiSuggestions}
             />
           </motion.div>
         )}

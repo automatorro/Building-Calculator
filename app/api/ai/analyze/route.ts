@@ -17,6 +17,7 @@ function buildLinesSummary(lines: any[]) {
       category: l.category,
       stage: l.stage_name,
       resources: resources.map((r: any) => ({
+        id: r.id,
         type: r.type,
         name: r.name,
         consumption: r.consumption,
