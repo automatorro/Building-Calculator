@@ -102,7 +102,7 @@ Răspunde STRICT în JSON, fără text suplimentar:
 {
   "suggestions": [
     {
-      "title": "string",
+      "title": "Titlu scurt în română, fără prefix tip (ex: 'Preț BCA prea mare', nu 'price_audit: ...')",
       "description": "string concis, max 2 propoziții, cu cifre concrete",
       "impactPrice": number,
       "impactTime": number,
@@ -118,6 +118,7 @@ Răspunde STRICT în JSON, fără text suplimentar:
     const response = await geminiClient.models.generateContent({
       model: GEMINI_MODEL,
       contents: prompt,
+      config: { responseMimeType: 'application/json' },
     })
 
     const text = response.text ?? ''
