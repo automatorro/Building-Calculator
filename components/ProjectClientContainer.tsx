@@ -188,10 +188,16 @@ export default function ProjectClientContainer({
     setIsSaved(false)
   }
 
-  const handleDeleteLine = (id: string) => {
+  const handleDeleteLine = async (id: string) => {
     setLines(lines.filter(l => l.id !== id))
     setIsSaved(false)
-    toast.success('Rând șters.')
+    const { error } = await supabase.from('estimate_lines').delete().eq('id', id)
+    if (error) {
+      console.error('Error deleting line:', error)
+      toast.error('Eroare la ștergerea rândului.')
+    } else {
+      toast.success('Rând șters.')
+    }
   }
 
   const handleDuplicateLine = (line: EstimateLine) => {
