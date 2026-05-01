@@ -96,7 +96,7 @@ const LOADING_MESSAGES = [
 
 // ─── Componenta principală ───────────────────────────────────────────────────
 
-export default function PlanAnalyzer({ projectId, userId, isPremium, userPlan = 'gratuit' }: PlanAnalyzerProps) {
+export default function PlanAnalyzer({ projectId, userId, isPremium, userPlan = 'gratuit', stages, onImportToDeviz }: PlanAnalyzerProps) {
   const supabase = createClient()
 
   // Acces permis doar pentru planurile plătite (constructor, echipa) SAU dacă isPremium e true explicit.
