@@ -414,14 +414,14 @@ export default function ProjectClientContainer({
   /* ── Tab config (Progressive Disclosure) ────────────────────────────────── */
   const TABS = useMemo(() => {
     const allTabs: Array<{ id: Tab; label: string; icon: React.ElementType }> = [
-      { id: 'today', label: 'Azi pe Șantier', icon: Sunrise },
       { id: 'planning', label: 'Editor Deviz', icon: ClipboardList },
       { id: 'plans', label: 'Planuri & Cantități', icon: ScanLine },
       { id: 'deviz', label: 'Vizualizare & Export', icon: ListTree },
       { id: 'timeline', label: 'Cronologie', icon: CalendarDays },
-      { id: 'journal', label: 'Jurnal Șantier', icon: BookOpen },
+      { id: 'today', label: 'Azi', icon: Sunrise },
       { id: 'purchases', label: 'Achiziții', icon: Wallet },
       { id: 'dashboard', label: 'Status', icon: LayoutDashboard },
+      { id: 'journal', label: 'Jurnal', icon: BookOpen },
       { id: 'copilot', label: 'AI', icon: Sparkles },
       { id: 'team', label: 'Echipă', icon: Users },
     ]
