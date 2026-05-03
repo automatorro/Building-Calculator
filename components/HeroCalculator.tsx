@@ -5,8 +5,8 @@ import Link from 'next/link'
 
 /* ─── Logica de calcul — identică cu JS-ul din HTML ──────────────────────── */
 const REGIM_MULT = [1.0, 1.07, 1.13]
-const FIN_BASE   = [4000, 5500, 7500]   // lei/mp fără TVA
-const FIN_LABEL  = ['~800 EUR/mp', '~1.100 EUR/mp', '~1.500 EUR/mp']
+const FIN_BASE   = [2800, 4200, 6500]   // lei/mp fără TVA — calibrat piață 2026
+const FIN_LABEL  = ['~560 EUR/mp', '~840 EUR/mp', '~1.300 EUR/mp']
 const EUR_RATE   = 5.0
 
 import { fmtRon } from '@/utils/format'
@@ -165,6 +165,9 @@ export default function HeroCalculator() {
       </Link>
       <p style={{ textAlign:'center', fontSize:12, color:'#A8A59E', marginTop:10 }}>
         Cont gratuit · Fără card · Deviz detaliat în câteva minute
+      </p>
+      <p style={{ fontSize:11, color:'#A8A59E', textAlign:'center', marginTop:6 }}>
+        Estimare orientativă ±20%. Nu include TVA, branșamente sau autorizații.
       </p>
 
       {/* Slider thumb CSS */}

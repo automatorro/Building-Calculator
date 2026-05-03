@@ -24,10 +24,21 @@ export default function ProjectsPage() {
 
     const load = async () => {
       setLoading(true)
-      const { data, error } = await supabase
+
+      // Get current user for explicit filter (defense-in-depth, alongside RLS)
+      const { data: { user } } = await supabase.auth.getUser()
+
+      let query = supabase
         .from('projects')
         .select('*')
         .order('created_at', { ascending: false })
+
+      // Filtru explicit pe user_id — previne expunere date dacă RLS e dezactivat accidental
+      if (user) {
+        query = query.eq('user_id', user.id)
+      }
+
+      const { data, error } = await query
 
       if (!alive) return
       if (error) setError({ message: error.message })

@@ -12,7 +12,7 @@ import type { OptimizationSuggestion } from '@/lib/ai-types'
 import { Purchase, calculateFinancials } from '@/utils/calculators/financials'
 import {
   LayoutDashboard, ClipboardList, Wallet,
-  Settings as SettingsIcon, Plus, CalendarDays, ListTree, CheckCircle2, MessageSquare, Users, Sparkles, BookOpen, ScanLine
+  Settings as SettingsIcon, Plus, CalendarDays, ListTree, CheckCircle2, MessageSquare, Users, Sparkles, BookOpen, ScanLine, Sunrise, AlertTriangle
 } from 'lucide-react'
 import ProjectAssistantAI from './ProjectAssistantAI'
 import ProjectTeamSettings from './ProjectTeamSettings'
@@ -96,8 +96,8 @@ async function exportExcel(lines: EstimateLine[], settings: ProjectSettings, pro
 }
 
 /* ─── Export CSV client-side ────────────────────────────────────────────── */
-function exportCSV(lines: EstimateLine[], settings: ProjectSettings, projectName: string) {
-  const { calculateLineCosts } = require('@/utils/calculators/estimate')
+async function exportCSV(lines: EstimateLine[], settings: ProjectSettings, projectName: string) {
+  const { calculateLineCosts } = await import('@/utils/calculators/estimate')
 
   const header = ['Cod normativ', 'Descriere', 'UM', 'Cantitate', 'Preț unitar (lei)',
     'Total direct (lei)', 'Total ofertat fără TVA (lei)', 'Etapă'].join(',')
@@ -128,7 +128,7 @@ function exportCSV(lines: EstimateLine[], settings: ProjectSettings, projectName
   URL.revokeObjectURL(url)
 }
 
-type Tab = 'dashboard' | 'planning' | 'purchases' | 'timeline' | 'deviz' | 'team' | 'copilot' | 'journal' | 'plans'
+type Tab = 'dashboard' | 'planning' | 'purchases' | 'timeline' | 'deviz' | 'team' | 'copilot' | 'journal' | 'plans' | 'today'
 
 export default function ProjectClientContainer({
   projectId,
@@ -190,16 +190,20 @@ export default function ProjectClientContainer({
     setIsSaved(false)
   }
 
+  const [deletingLineId, setDeletingLineId] = useState<string | null>(null)
+
   const handleDeleteLine = async (id: string) => {
-    setLines(lines.filter(l => l.id !== id))
-    setIsSaved(false)
+    setDeletingLineId(id)
     const { error } = await supabase.from('estimate_lines').delete().eq('id', id)
     if (error) {
-      console.error('Error deleting line:', error)
       toast.error('Eroare la ștergerea rândului.')
-    } else {
-      toast.success('Rând șters.')
+      setDeletingLineId(null)
+      return
     }
+    // Ștergem din state DUPĂ confirmare DB
+    setLines(lines.filter(l => l.id !== id))
+    setDeletingLineId(null)
+    toast.success('Rând șters.')
   }
 
   const handleDuplicateLine = (line: EstimateLine) => {
@@ -310,6 +314,18 @@ export default function ProjectClientContainer({
           const impact = -exceeded
           setBudgetAlert({ stage, exceeded, impact })
           toast.warning(`Atenție! Bugetul pentru etapa "${stage}" a fost depășit.`)
+
+          // Trimite notificare email (fire-and-forget)
+          fetch('/api/notifications/budget-alert', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              projectId,
+              projectName,
+              stage,
+              exceeded,
+            }),
+          }).catch(() => { /* silențios — emailul e opțional */ })
         }
       }
     }
@@ -398,6 +414,7 @@ export default function ProjectClientContainer({
   /* ── Tab config (Progressive Disclosure) ────────────────────────────────── */
   const TABS = useMemo(() => {
     const allTabs: Array<{ id: Tab; label: string; icon: React.ElementType }> = [
+      { id: 'today', label: 'Azi pe Șantier', icon: Sunrise },
       { id: 'planning', label: 'Editor Deviz', icon: ClipboardList },
       { id: 'plans', label: 'Planuri & Cantități', icon: ScanLine },
       { id: 'deviz', label: 'Vizualizare & Export', icon: ListTree },
@@ -568,6 +585,179 @@ export default function ProjectClientContainer({
 
       {/* ── Conținut tab activ ─────────────────────────────────────────────── */}
       <AnimatePresence mode="wait">
+        {view === 'today' && (
+          <motion.div key="today"
+            initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
+            {(() => {
+              // Etape cu 0 achiziții = "De comandat azi"
+              const stagesWithPurchases = new Set(purchases.map(p => p.stage_name).filter(Boolean))
+              const stagesNeedingOrders = stages.filter(s => !stagesWithPurchases.has(s))
+
+              // Alertele active (depășiri buget)
+              const activeAlerts = financials.alerts.filter(a => a.type === 'danger')
+
+              return (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+                  {/* Header */}
+                  <div style={{
+                    background: 'linear-gradient(135deg, #1E2329, #2E2D2A)',
+                    borderRadius: 16, padding: '28px 32px',
+                    color: 'white',
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
+                      <Sunrise size={22} style={{ color: '#E8500A' }} />
+                      <h2 style={{
+                        fontSize: 20, fontWeight: 700,
+                        fontFamily: 'var(--font-dm-serif,"DM Serif Display",Georgia,serif)',
+                      }}>
+                        Azi pe Șantier
+                      </h2>
+                    </div>
+                    <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', fontWeight: 400 }}>
+                      Rezumatul zilei pentru proiectul <strong style={{ color: 'rgba(255,255,255,0.8)' }}>{projectName}</strong>
+                    </p>
+                  </div>
+
+                  {/* De comandat azi */}
+                  <div style={{
+                    background: '#FAFAF8', border: '1px solid #E5E3DE',
+                    borderRadius: 14, overflow: 'hidden',
+                  }}>
+                    <div style={{
+                      padding: '14px 20px', borderBottom: '1px solid #E5E3DE',
+                      background: '#F3F2EF',
+                      display: 'flex', alignItems: 'center', gap: 10,
+                    }}>
+                      <div style={{
+                        width: 28, height: 28, borderRadius: 8,
+                        background: '#FFF0E8', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      }}>
+                        <Wallet size={14} style={{ color: '#E8500A' }} />
+                      </div>
+                      <h3 style={{ fontSize: 13, fontWeight: 700, color: '#1E2329', textTransform: 'uppercase', letterSpacing: '.04em' }}>
+                        Etape fără achiziții — De comandat
+                      </h3>
+                    </div>
+                    <div style={{ padding: '16px 20px' }}>
+                      {stagesNeedingOrders.length > 0 ? (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                          {stagesNeedingOrders.map(stage => (
+                            <div key={stage} style={{
+                              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                              padding: '12px 16px', background: '#FFF0E8', borderRadius: 10, border: '1px solid #E8500A22',
+                            }}>
+                              <span style={{ fontSize: 14, fontWeight: 600, color: '#1E2329' }}>📋 {stage}</span>
+                              <span style={{ fontSize: 11, color: '#E8500A', fontWeight: 700, textTransform: 'uppercase' }}>
+                                Fără achiziții
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <p style={{ fontSize: 13, color: '#2A7D4F', fontWeight: 500, textAlign: 'center', padding: 20 }}>
+                          ✓ Toate etapele au achiziții înregistrate.
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Alerte active */}
+                  {activeAlerts.length > 0 && (
+                    <div style={{
+                      background: '#FCEBEB', border: '1px solid #C0392B22',
+                      borderRadius: 14, overflow: 'hidden',
+                    }}>
+                      <div style={{
+                        padding: '14px 20px', borderBottom: '1px solid #C0392B22',
+                        display: 'flex', alignItems: 'center', gap: 10,
+                      }}>
+                        <AlertTriangle size={16} style={{ color: '#C0392B' }} />
+                        <h3 style={{ fontSize: 13, fontWeight: 700, color: '#791F1F', textTransform: 'uppercase', letterSpacing: '.04em' }}>
+                          Alerte active ({activeAlerts.length})
+                        </h3>
+                      </div>
+                      <div style={{ padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: 8 }}>
+                        {activeAlerts.map((alert, i) => (
+                          <div key={i} style={{
+                            padding: '10px 14px', background: 'rgba(192,57,43,0.06)', borderRadius: 8,
+                            fontSize: 13, color: '#C0392B', fontWeight: 500,
+                          }}>
+                            {alert.message}
+                            {alert.impact && alert.impact !== 0 && (
+                              <span style={{ marginLeft: 8, fontSize: 11, fontWeight: 700 }}>
+                                ({fmtRon(alert.impact)} lei)
+                              </span>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Acțiune rapidă */}
+                  <div style={{
+                    background: '#FAFAF8', border: '1px solid #E5E3DE',
+                    borderRadius: 14, padding: '24px 28px',
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    flexWrap: 'wrap', gap: 16,
+                  }}>
+                    <div>
+                      <p style={{ fontSize: 14, fontWeight: 600, color: '#1E2329', marginBottom: 4 }}>
+                        Acțiune rapidă
+                      </p>
+                      <p style={{ fontSize: 12, color: '#6B6860' }}>
+                        Înregistrează o achiziție fără a schimba tab-ul
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => setShowPurchaseForm(true)}
+                      style={{
+                        display: 'inline-flex', alignItems: 'center', gap: 8,
+                        background: '#E8500A', color: 'white', border: 'none',
+                        padding: '12px 24px', borderRadius: 10,
+                        fontSize: 14, fontWeight: 700, cursor: 'pointer',
+                        fontFamily: 'var(--font-dm-sans,"DM Sans",system-ui,sans-serif)',
+                        boxShadow: '0 4px 12px rgba(232,80,10,0.2)',
+                        transition: 'background .15s',
+                      }}
+                    >
+                      <Plus size={16} /> Înregistrează achiziție
+                    </button>
+                  </div>
+
+                  {/* Forecast rapid */}
+                  {financials.upcomingCosts.length > 0 && (
+                    <div style={{
+                      background: '#1E2329', borderRadius: 14, padding: '24px 28px',
+                      color: 'white',
+                    }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+                        <CalendarDays size={16} style={{ color: '#E8500A' }} />
+                        <h3 style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.06em', color: 'rgba(255,255,255,0.5)' }}>
+                          Necesar de plată — etape următoare
+                        </h3>
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                        {financials.upcomingCosts.slice(0, 4).map((cost, i) => (
+                          <div key={i} style={{
+                            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                            padding: '10px 14px', background: 'rgba(255,255,255,0.05)', borderRadius: 8,
+                          }}>
+                            <span style={{ fontSize: 13, fontWeight: 500 }}>{cost.stage}</span>
+                            <span style={{ fontSize: 14, fontWeight: 700, color: '#E8500A', fontFamily: 'monospace' }}>
+                              {fmtRon(cost.amount)} lei
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )
+            })()}
+          </motion.div>
+        )}
+
         {view === 'dashboard' && (
           <motion.div key="dashboard"
             initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>

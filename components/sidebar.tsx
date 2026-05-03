@@ -1,5 +1,6 @@
 "use client"
 
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
@@ -90,6 +91,24 @@ const PROJECT_NAV = [
 export function Sidebar() {
   const pathname = usePathname()
   const projectId = getProjectId(pathname)
+
+  // Citim tab-ul activ din query string cu window.location.search
+  // NU folosim useSearchParams() pentru a evita necesitatea Suspense boundary
+  const [activeTab, setActiveTab] = useState<string>('')
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    setActiveTab(params.get('tab') || '')
+  }, [pathname])
+
+  // Ascultăm și schimbările de URL via popstate (back/forward browser)
+  useEffect(() => {
+    const onPopState = () => {
+      const params = new URLSearchParams(window.location.search)
+      setActiveTab(params.get('tab') || '')
+    }
+    window.addEventListener('popstate', onPopState)
+    return () => window.removeEventListener('popstate', onPopState)
+  }, [])
 
   // Tab activ din query string (ex: ?tab=deviz)
   // Pe server-side rendering nu avem acces la searchParams, dar usePathname
@@ -183,15 +202,15 @@ export function Sidebar() {
           const Icon = item.icon
           const href = projectId ? item.href(projectId) : item.fallback
 
-          // Determină dacă e activ
+          // Determină dacă e activ — folosim activeTab din query string
           let isActive = false
           if (projectId) {
             if (item.matchSegment === null) {
               // Dashboard: activ când suntem pe /projects/[id] fără alt tab în URL
-              isActive = pathname === `/projects/${projectId}`
+              isActive = pathname === `/projects/${projectId}` && !activeTab
             } else {
-              // Alte tab-uri: le marcăm ca active dacă e sub-ruta corespunzătoare
-              isActive = pathname.startsWith(`/projects/${projectId}/${item.matchSegment}`)
+              // Alte tab-uri: comparăm cu ?tab= din query string
+              isActive = activeTab === item.matchSegment
             }
           } else {
             // Fără proiect activ: activ dacă suntem pe ruta mock

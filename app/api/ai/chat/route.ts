@@ -43,10 +43,12 @@ export async function POST(req: NextRequest) {
     // Limita zilnică per utilizator (bazată pe planul de abonament)
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
-    if (user) {
-      const limitResult = await checkAndIncrementAiLimit(user.id)
-      if (limitResult instanceof NextResponse) return limitResult
+    if (!user) {
+      return NextResponse.json({ error: 'Neautorizat' }, { status: 401 })
     }
+
+    const limitResult = await checkAndIncrementAiLimit(user.id)
+    if (limitResult instanceof NextResponse) return limitResult
 
     const { message, history, lines, settings, projectName } = await req.json()
 

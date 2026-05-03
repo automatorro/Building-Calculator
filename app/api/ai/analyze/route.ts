@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { geminiClient, GEMINI_MODEL } from '@/lib/gemini'
 import { checkRateLimit } from '@/lib/rate-limit'
+import { createClient } from '@/utils/supabase/server'
 import type { OptimizationSuggestion } from '@/lib/ai-types'
 
 function buildLinesSummary(lines: any[]) {
@@ -38,6 +39,13 @@ export async function POST(req: NextRequest) {
         { error: `Prea multe cereri. Încearcă din nou în ${retryAfterSeconds} secunde.` },
         { status: 429, headers: { 'Retry-After': String(retryAfterSeconds) } }
       )
+    }
+
+    // Auth guard — protejează costurile Gemini
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) {
+      return NextResponse.json({ error: 'Neautorizat' }, { status: 401 })
     }
 
     const { lines, settings } = await req.json()

@@ -10,6 +10,7 @@ import {
 } from 'lucide-react'
 
 import { FinancialsSummary, Purchase } from '@/utils/calculators/financials'
+import { calculateLineCosts } from '@/utils/calculators/estimate'
 
 interface ProjectDashboardProps {
   financials: FinancialsSummary
@@ -263,7 +264,7 @@ function FinanceCenter({ lines, purchases, settings, fmtCost, fmtPct1 }: {
   lines: any[], purchases: Purchase[], settings: any, fmtCost: any, fmtPct1: any 
 }) {
   const [activeTab, setActiveTab] = useState<'resources' | 'activity' | 'performance'>('resources')
-  const { calculateLineCosts } = require('@/utils/calculators/estimate')
+  // calculateLineCosts is available from top-level import
 
   const data = useMemo(() => {
     // 1. Resources Distribution

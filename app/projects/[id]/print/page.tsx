@@ -13,6 +13,19 @@ export default async function PrintPage({ params }: { params: { id: string } }) 
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/auth/login')
 
+  /* Citim datele firmei din profiles */
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('company_name, company_cui, company_address, company_phone')
+    .eq('id', user.id)
+    .single()
+
+  const companyName    = profile?.company_name || ''
+  const companyCui     = profile?.company_cui || ''
+  const companyAddress = profile?.company_address || ''
+  const companyPhone   = profile?.company_phone || ''
+  const hasCompanyData = !!(companyName || companyCui)
+
   const { data: project, error: projectError } = await supabase
     .from('projects')
     .select('*')
@@ -85,16 +98,26 @@ export default async function PrintPage({ params }: { params: { id: string } }) 
         {/* Antet */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24, borderBottom: '2px solid #1E2329', paddingBottom: 16 }}>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-              <div style={{ width: 22, height: 22, background: '#E8500A', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" width="14" height="14">
-                  <path d="M3 18h18" />
-                  <path d="M5 18v-1a7 7 0 0 1 14 0v1" />
-                  <path d="M10 11V7a2 2 0 0 1 4 0v4" />
-                </svg>
+            {/* Logo + date firmă */}
+            {hasCompanyData ? (
+              <div style={{ marginBottom: 10 }}>
+                <div style={{ fontSize: 14, fontWeight: 700, color: '#1E2329', marginBottom: 2 }}>{companyName}</div>
+                {companyCui && <div style={{ fontSize: 9, color: '#6B6860' }}>CUI: {companyCui}</div>}
+                {companyAddress && <div style={{ fontSize: 9, color: '#6B6860' }}>{companyAddress}</div>}
+                {companyPhone && <div style={{ fontSize: 9, color: '#6B6860' }}>Tel: {companyPhone}</div>}
               </div>
-              <span style={{ fontWeight: 700, fontSize: 14 }}>Santi<span style={{ color: '#E8500A' }}>er</span></span>
-            </div>
+            ) : (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+                <div style={{ width: 22, height: 22, background: '#E8500A', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" width="14" height="14">
+                    <path d="M3 18h18" />
+                    <path d="M5 18v-1a7 7 0 0 1 14 0v1" />
+                    <path d="M10 11V7a2 2 0 0 1 4 0v4" />
+                  </svg>
+                </div>
+                <span style={{ fontWeight: 700, fontSize: 14 }}>Santi<span style={{ color: '#E8500A' }}>er</span></span>
+              </div>
+            )}
             <div style={{ fontSize: 20, fontWeight: 700, letterSpacing: '-0.02em' }}>{project.name}</div>
             {project.location && <div style={{ color: '#6B6860', fontSize: 11, marginTop: 2 }}>{project.location}</div>}
           </div>
@@ -102,6 +125,11 @@ export default async function PrintPage({ params }: { params: { id: string } }) 
             <div style={{ fontWeight: 600, color: '#1E2329', fontSize: 12 }}>DEVIZ OFERTĂ</div>
             <div>Data: {today}</div>
             <div style={{ fontFamily: 'monospace', fontSize: 9, marginTop: 4 }}># {id.slice(0, 8).toUpperCase()}</div>
+            {!hasCompanyData && (
+              <div className="no-print" style={{ marginTop: 8, fontSize: 8, color: '#A8A59E', fontStyle: 'italic' }}>
+                Completați datele firmei în Setări
+              </div>
+            )}
           </div>
         </div>
 
