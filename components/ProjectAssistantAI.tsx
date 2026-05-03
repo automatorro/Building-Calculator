@@ -308,7 +308,11 @@ export default function ProjectAssistantAI({ lines, settings, projectId, project
   const confirmApply = () => {
     if (!pendingAction || !onApplyAction) return
     const { action, line } = pendingAction
-    if (!line) return
+    if (!line) {
+      toast.error('Linia din deviz nu a fost găsită. Regenerează analiza și încearcă din nou.')
+      setPendingAction(null)
+      return
+    }
 
     setPendingAction(prev => prev ? { ...prev, applying: true } : null)
 
