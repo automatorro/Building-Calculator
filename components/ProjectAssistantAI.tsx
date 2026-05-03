@@ -210,7 +210,7 @@ function ChatInput({
 export default function ProjectAssistantAI({ lines, settings, projectId, projectName, fullPage = false, onApplyAction, initialSuggestions, onSuggestionsChange }: Props) {
   const [isOpen, setIsOpen] = useState(false)
   const [suggestions, setSuggestions] = useState<OptimizationSuggestion[]>(initialSuggestions ?? [])
-  const [loading, setLoading] = useState((initialSuggestions ?? []).length === 0 && lines.length > 0)
+  const [loading, setLoading] = useState(false)
   const [chatMessage, setChatMessage] = useState('')
   const [pendingAction, setPendingAction] = useState<PendingAction | null>(null)
   const chatEndRef = useRef<HTMLDivElement>(null)
@@ -240,10 +240,7 @@ export default function ProjectAssistantAI({ lines, settings, projectId, project
       .finally(() => setLoading(false))
   }
 
-  useEffect(() => {
-    if ((initialSuggestions ?? []).length > 0) return
-    runAnalysis()
-  }, [projectId])
+  // Auto-fetch eliminat — utilizatorul declanșează manual analiza via butonul Regenerează
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' })
