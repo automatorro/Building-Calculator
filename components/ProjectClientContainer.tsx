@@ -815,6 +815,7 @@ export default function ProjectClientContainer({
               projectId={projectId}
               lines={lines}
               settings={settings}
+              onUpdateSettings={handleSaveSettings}
               dimensions={dimensions}
               onUpdateLine={handleUpdateLine}
               onAddLine={handleAddManualLine}

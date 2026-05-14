@@ -289,7 +289,7 @@ export default function NewProjectPage() {
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
               <TrendingUp className="w-6 h-6" style={{ color: '#E8500A' }} />
-              <h2 style={{ fontSize: 18, fontWeight: 600, color: '#1E2329' }}>Coeficienți & Recapitație</h2>
+              <h2 style={{ fontSize: 18, fontWeight: 600, color: '#1E2329' }}>Coeficienți & Recapitulație</h2>
             </div>
             <div style={{ padding: 6, background: '#FFF0E8', borderRadius: 7 }}
               title="Aceste valori vor fi folosite pentru calculul prețului final de ofertă.">

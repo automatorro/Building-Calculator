@@ -6,11 +6,12 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { 
   Wallet, DollarSign, TrendingUp, TrendingDown, 
   AlertTriangle, BarChart3, ArrowRight, Clock, Calendar,
-  ShoppingCart, Zap, Settings2, Save, X
+  ShoppingCart, Zap, Settings2, Save, X, Info
 } from 'lucide-react'
 
 import { FinancialsSummary, Purchase } from '@/utils/calculators/financials'
 import { calculateLineCosts } from '@/utils/calculators/estimate'
+import ProjectSettingsPanel from './ProjectSettingsPanel'
 
 interface ProjectDashboardProps {
   financials: FinancialsSummary
@@ -36,6 +37,7 @@ export default function ProjectDashboard({
     percentSpent,
     deviations,
     totalEstimatedRevenue,
+    totalEstimatedRevenueNet,
     upcomingCosts,
     alerts
   } = financials
@@ -95,11 +97,12 @@ export default function ProjectDashboard({
           trend={null}
         />
         <SummaryCard 
-          label="Profit Estimat" 
+          label="Profit Estimat (Net)" 
           value={`${fmtCost(netProfit)} Lei`}
           subValue={`${fmtPct1(marginPercent)}% Marjă Profit`}
           icon={<TrendingUp className="text-primary" />}
           trend={marginPercent > 10 ? 'positive' : 'negative'}
+          tooltip="Profitul real al firmei, calculat fără TVA-ul colectat."
         />
         <SummaryCard 
           label="Status Buget" 
@@ -135,9 +138,15 @@ export default function ProjectDashboard({
               </div>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 mt-6 md:mt-8 pt-6 md:pt-8 border-t border-border/30 gap-4 md:gap-8">
-                <div>
-                  <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Valoare Contract (Ofertată)</div>
+                <div className="group">
+                  <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 flex items-center gap-1">
+                    Valoare Contract (Brut)
+                    <div className="w-3 h-3 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center text-[8px] cursor-help" title="Include TVA">?</div>
+                  </div>
                   <div className="text-xl md:text-2xl lg:text-3xl font-bold font-mono text-primary">{fmtCost(totalEstimatedRevenue)} Lei</div>
+                  <div className="text-[10px] font-bold text-slate-400 mt-1">
+                    Net (fără TVA): <span className="text-slate-600 dark:text-slate-400">{fmtCost(totalEstimatedRevenueNet)} Lei</span>
+                  </div>
                 </div>
                 <div>
                   <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Cheltuieli Reale</div>
@@ -254,6 +263,21 @@ export default function ProjectDashboard({
             fmtCost={fmtCost} 
             fmtPct1={fmtPct1} 
           />
+        </div>
+      </div>
+
+      {/* Explicatii Financiare */}
+      <div className="p-6 bg-slate-50 dark:bg-slate-800/30 border border-slate-200 dark:border-slate-700/50 rounded-3xl">
+        <div className="flex items-start gap-3">
+          <Info size={18} className="text-primary shrink-0 mt-0.5" />
+          <div className="space-y-2">
+            <h4 className="text-xs font-black uppercase tracking-widest text-slate-900 dark:text-white">Cum calculăm profitabilitatea?</h4>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+              Sistemul Santier.app izolează <strong>TVA-ul colectat</strong> de la client pentru a-ți oferi o imagine reală asupra banilor care rămân în firmă. 
+              Toate costurile de achiziție sunt comparate cu <strong>Valoarea Netă</strong> a contractului. 
+              Dacă înregistrezi achiziții, asigură-te că introduci valorile <strong>fără TVA</strong> (sau folosește scannerul AI care face asta automat) pentru o precizie de 100%.
+            </p>
+          </div>
         </div>
       </div>
     </div>
@@ -426,9 +450,16 @@ function FinanceCenter({ lines, purchases, settings, fmtCost, fmtPct1 }: {
   )
 }
 
-function SummaryCard({ label, value, subValue, icon, trend }: { label: string, value: string, subValue: string, icon: React.ReactNode, trend: 'positive' | 'negative' | null }) {
+function SummaryCard({ label, value, subValue, icon, trend, tooltip }: { 
+  label: string, 
+  value: string, 
+  subValue: string, 
+  icon: React.ReactNode, 
+  trend: 'positive' | 'negative' | null,
+  tooltip?: string
+}) {
   return (
-    <div className="glass-card p-4 md:p-6 bg-white dark:bg-slate-900 border-border/50 shadow-sm transition-all hover:shadow-md hover:border-primary/20">
+    <div className="glass-card p-4 md:p-6 bg-white dark:bg-slate-900 border-border/50 shadow-sm transition-all hover:shadow-md hover:border-primary/20 relative group" title={tooltip}>
       <div className="flex justify-between items-start mb-4">
         <div className="p-2.5 bg-slate-50 dark:bg-slate-800 rounded-xl">{icon}</div>
         {trend && (
@@ -443,94 +474,6 @@ function SummaryCard({ label, value, subValue, icon, trend }: { label: string, v
         <div className="text-2xl font-black text-slate-900 dark:text-white mb-1 group-hover:text-primary transition-colors">{value}</div>
         <div className="text-[10px] font-bold text-slate-500">{subValue}</div>
       </div>
-    </div>
-  )
-}
-function ProjectSettingsPanel({ settings, onSave }: { settings: any, onSave: (s: any) => void }) {
-  const [isOpen, setIsOpen] = useState(false)
-  const [tempSettings, setTempSettings] = useState(settings)
-
-  const handleSave = () => {
-    onSave(tempSettings)
-    setIsOpen(false)
-  }
-
-  return (
-    <div className="relative">
-      <button
-        onClick={() => {
-          setTempSettings(settings)
-          setIsOpen(!isOpen)
-        }}
-        className="flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg text-xs font-bold transition-all"
-      >
-        <Settings2 size={16} /> Coeficienți
-      </button>
-
-      <AnimatePresence>
-        {isOpen && (
-          <>
-            <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
-            <motion.div
-              initial={{ opacity: 0, y: 10, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 10, scale: 0.95 }}
-              className="absolute right-0 top-full mt-2 w-72 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-border/50 p-6 z-50 ring-1 ring-black/5"
-            >
-              <div className="flex justify-between items-center mb-4">
-                <h4 className="font-black text-[10px] uppercase tracking-widest text-slate-400">Setări Recapitație</h4>
-                <button onClick={() => setIsOpen(false)} className="text-slate-400 hover:text-slate-600"><X size={14} /></button>
-              </div>
-
-              <div className="space-y-4">
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-black uppercase text-slate-500">Regie (%)</label>
-                  <input 
-                    type="number" 
-                    value={tempSettings.regie}
-                    onChange={e => setTempSettings({ ...tempSettings, regie: parseFloat(e.target.value) || 0 })}
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-border/50 rounded-lg outline-none font-bold text-sm focus:border-primary"
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-black uppercase text-slate-500">Profit (%)</label>
-                  <input 
-                    type="number" 
-                    value={tempSettings.profit}
-                    onChange={e => setTempSettings({ ...tempSettings, profit: parseFloat(e.target.value) || 0 })}
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-border/50 rounded-lg outline-none font-bold text-sm focus:border-primary"
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-black uppercase text-slate-500">Taxe Manoperă (%)</label>
-                  <input 
-                    type="number" 
-                    value={tempSettings.taxe_manopera || 0}
-                    onChange={e => setTempSettings({ ...tempSettings, taxe_manopera: parseFloat(e.target.value) || 0 })}
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-border/50 rounded-lg outline-none font-bold text-sm focus:border-primary"
-                  />
-                </div>
-                <div className="space-y-1.5 pb-2 border-b border-border/30">
-                  <label className="text-[10px] font-black uppercase text-slate-500">TVA (%)</label>
-                  <input 
-                    type="number" 
-                    value={tempSettings.tva}
-                    onChange={e => setTempSettings({ ...tempSettings, tva: parseFloat(e.target.value) || 0 })}
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-border/50 rounded-lg outline-none font-bold text-sm focus:border-primary"
-                  />
-                </div>
-
-                <button
-                  onClick={handleSave}
-                  className="w-full flex items-center justify-center gap-2 bg-primary text-white py-2.5 rounded-xl text-xs font-black uppercase tracking-widest shadow-lg shadow-primary/20 hover:bg-primary-dark transition-all"
-                >
-                  <Save size={14} /> Salvează
-                </button>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
     </div>
   )
 }

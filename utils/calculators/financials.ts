@@ -12,13 +12,14 @@ export interface Purchase {
 }
 
 export interface FinancialsSummary {
-  totalBudget: number       // What we planned (direct + margin + tva)
-  totalPlannedDirect: number // Direct material + labor + eq + trans
-  totalSpent: number        // Actual money out
-  remainingBudget: number    // Budget - Spent
-  projectedMargin: number   // Profit defined in settings + any savings
-  totalEstimatedRevenue: number
-  netProfit: number         // Revenue - Total Real Cost
+  totalBudget: number       // What we planned (direct + regie) - NET
+  totalPlannedDirect: number // Direct material + labor + eq + trans - NET
+  totalSpent: number        // Actual money out - NET
+  remainingBudget: number    // Budget - Spent - NET
+  projectedMargin: number   // Profit defined in settings + any savings - NET
+  totalEstimatedRevenue: number // Gross value (with TVA)
+  totalEstimatedRevenueNet: number // Net value (without TVA)
+  netProfit: number         // Net Revenue - Total Real Cost (Net)
   percentSpent: number
   deviations: {
     stage: string
@@ -64,7 +65,7 @@ export function calculateFinancials(
     const costBudgetForLine = costs.totalDirectCost + costs.regieAmount
 
     totalCostBudget += costBudgetForLine
-    totalSalePrice += costs.totalWithTVA
+    totalSalePrice += costs.totalWithTVA // Acesta este Brut (cu TVA)
     totalBudget += costs.totalWithTVA
     
     // Alocăm bugetul de cheltuieli (fără TVA, pentru comparație cu achiziții nete)
@@ -132,13 +133,19 @@ export function calculateFinancials(
   })
 
   // Dacă utilizatorul nu a introdus un venit ferm (sau l-a lăsat 0), venitul estimat este egal cu devizul (Sale Price)
-  const effectiveRevenue = totalEstimatedRevenue > 0 ? totalEstimatedRevenue : totalSalePrice
+  const effectiveRevenueGross = totalEstimatedRevenue > 0 ? totalEstimatedRevenue : totalSalePrice
   
-  // Profitul este Venitul (efectiv) minus totalul cheltuit minus estimatul de cheltuit rămas (din totalCostBudget)
-  const netProfit = effectiveRevenue - totalSpent - Math.max(0, totalCostBudget - totalSpent)
-  const marginPercent = effectiveRevenue > 0 ? (netProfit / effectiveRevenue) * 100 : 0
+  // Calculăm Venitul Net (fără TVA) pentru a avea o bază reală de profit
+  // RevenueNet = RevenueGross / (1 + TVA/100)
+  const tvaDivisor = 1 + (settings.tva / 100)
+  const effectiveRevenueNet = effectiveRevenueGross / tvaDivisor
   
-  if (marginPercent < 5 && effectiveRevenue > 0) {
+  // Profitul Real (Net) = Venit Net - Cheltuieli Reale (Net) - Estimare cheltuieli viitoare (Net)
+  // Nota: totalCostBudget este deja NET (direct + regie)
+  const netProfit = effectiveRevenueNet - totalSpent - Math.max(0, totalCostBudget - totalSpent)
+  const marginPercent = effectiveRevenueNet > 0 ? (netProfit / effectiveRevenueNet) * 100 : 0
+  
+  if (marginPercent < 5 && effectiveRevenueNet > 0) {
     alerts.push({
       type: 'danger',
       message: `Profitabilitate critică: Marja a scăzut sub 5% (${marginPercent.toFixed(1)}%)`,
@@ -153,8 +160,9 @@ export function calculateFinancials(
     totalPlannedDirect,
     totalSpent,
     remainingBudget: Math.max(0, totalCostBudget - totalSpent),
-    projectedMargin: totalSalePrice - totalCostBudget,
-    totalEstimatedRevenue: effectiveRevenue,
+    projectedMargin: (totalSalePrice / tvaDivisor) - totalCostBudget,
+    totalEstimatedRevenue: effectiveRevenueGross,
+    totalEstimatedRevenueNet: effectiveRevenueNet,
     netProfit,
     percentSpent,
     deviations,

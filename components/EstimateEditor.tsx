@@ -11,6 +11,7 @@ import VendorOfferPicker from './VendorOfferPicker'
 import EstimateImporter from './EstimateImporter'
 import { FileSpreadsheet } from 'lucide-react'
 import { fmtRon } from '@/utils/format'
+import ProjectSettingsPanel from './ProjectSettingsPanel'
 
 interface EstimateEditorProps {
   projectId: string
@@ -22,6 +23,7 @@ interface EstimateEditorProps {
   onDeleteLine: (id: string) => void
   onDuplicateLine: (line: EstimateLine) => void
   onImport: (lines: EstimateLine[]) => void
+  onUpdateSettings: (settings: ProjectSettings) => void
   isSaving: boolean
   isSaved: boolean
 }
@@ -79,6 +81,7 @@ export default function EstimateEditor({
   onDeleteLine,
   onDuplicateLine,
   onImport,
+  onUpdateSettings,
   isSaving,
   isSaved
 }: EstimateEditorProps) {
@@ -339,7 +342,10 @@ export default function EstimateEditor({
       {/* Sidebar Info Proiect */}
       <div className="space-y-4 md:space-y-6 order-1 lg:order-1">
         <div className="glass-card p-4 md:p-6 shadow-sm" style={{ borderColor: '#E5E3DE' }}>
-          <h3 className="font-bold mb-3 md:mb-4 uppercase text-[10px] tracking-widest text-slate-400">Recapitație Proiect</h3>
+          <div className="flex justify-between items-center mb-3 md:mb-4">
+            <h3 className="font-bold uppercase text-[10px] tracking-widest text-slate-400">Recapitulație Proiect</h3>
+            <ProjectSettingsPanel settings={settings} onSave={onUpdateSettings} variant="minimal" />
+          </div>
           <div className="space-y-2 md:space-y-3">
             <div className="flex justify-between text-xs md:text-sm">
               <span className="text-slate-500">Profit:</span>
@@ -353,6 +359,12 @@ export default function EstimateEditor({
               <span className="text-slate-500">TVA:</span>
               <span className="font-bold">{settings.tva}%</span>
             </div>
+          </div>
+          <div className="mt-4 pt-3 border-t border-border/30">
+            <p className="text-[9px] text-slate-400 italic leading-relaxed">
+              💡 Marjele comerciale se aplică peste costul direct al resurselor. 
+              Modifică-le folosind iconița <Settings2 size={10} className="inline" /> de mai sus.
+            </p>
           </div>
         </div>
 

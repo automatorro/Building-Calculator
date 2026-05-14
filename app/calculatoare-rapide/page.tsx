@@ -5,10 +5,10 @@ export default function Page() {
   const cards = [
     { title: 'Calculator necesar polistiren (EPS)', href: '/calculatoare-rapide/eps', subtitle: 'Termosistem EPS — materiale și cost estimativ' },
     { title: 'Calculator necesar vată minerală', href: '/calculatoare-rapide/vata-minerala', subtitle: 'Termosistem vată minerală — materiale și cost estimativ' },
-    { title: 'Calculator necesar BCA', href: '/calculatoare-rapide/bca', subtitle: 'Zidărie BCA — în curând' },
-    { title: 'Calculator necesar cărămidă cu goluri', href: '/calculatoare-rapide/caramida-goluri', subtitle: 'Zidărie cărămidă — în curând' },
-    { title: 'Calculator tencuială', href: '/calculatoare-rapide/tencuiala', subtitle: 'Tencuieli — în curând' },
-    { title: 'Calculator beton și armătură fundație', href: '/calculatoare-rapide/beton-armatura-fundatie', subtitle: 'Beton & oțel — în curând' },
+    { title: 'Calculator necesar BCA', href: '/calculatoare-rapide/bca', subtitle: 'Zidărie BCA — materiale și cost estimativ' },
+    { title: 'Calculator necesar cărămidă cu goluri', href: '/calculatoare-rapide/caramida-goluri', subtitle: 'Zidărie cărămidă — materiale și cost estimativ' },
+    { title: 'Calculator tencuială', href: '/calculatoare-rapide/tencuiala', subtitle: 'Tencuieli — materiale și cost estimativ' },
+    { title: 'Calculator beton și armătură fundație', href: '/calculatoare-rapide/beton-armatura-fundatie', subtitle: 'Fundații — materiale și cost estimativ' },
   ]
 
   return (
