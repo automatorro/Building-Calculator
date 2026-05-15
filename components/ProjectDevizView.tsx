@@ -80,8 +80,12 @@ export default function ProjectDevizView({
       : line.items?.resources || []
 
     if (resourcesToUse.length === 0) {
-      // Linie simplă (fără rețetă) — discount pe tot dacă nu știm tipul
-      const discountedUnitPrice = (line.unit_price || line.manual_price || 0) * (1 - discountB2B / 100)
+      const resourceType = line.metadata?.resource_type || 'material'
+      const applyDiscount = resourceType === 'material'
+      const basePrice = line.unit_price || line.manual_price || 0
+      const discountedUnitPrice = applyDiscount
+        ? basePrice * (1 - discountB2B / 100)
+        : basePrice
       const pierderi = includePierderi ? (1 + getPierderi(line.name || line.manual_name || '')) : 1
       const adjustedLine = { ...line, unit_price: discountedUnitPrice, quantity: line.quantity * pierderi }
       return calculateLineCosts(adjustedLine, settings)

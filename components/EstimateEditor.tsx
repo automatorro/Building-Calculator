@@ -182,7 +182,10 @@ export default function EstimateEditor({
 
       const price = line.custom_prices[res.id] ?? res.unit_price
       const wasteMultiplier = 1 + ((res.waste_percent || 0) / 100)
-      const cost = (res.consumption || 0) * price * wasteMultiplier
+      const taxeManoperaMultiplier = res.type === 'labor'
+        ? (1 + (settings.taxe_manopera || 0) / 100)
+        : 1
+      const cost = (res.consumption || 0) * price * wasteMultiplier * taxeManoperaMultiplier
 
       if (res.type === 'material') breakdown.directMaterialUnit += cost
       else if (res.type === 'labor') breakdown.directLaborUnit += cost
