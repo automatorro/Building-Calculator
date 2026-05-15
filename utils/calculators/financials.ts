@@ -50,8 +50,7 @@ export function calculateFinancials(
   let totalCostBudget = 0 // Cheltuielile estimate (fără profit)
   let totalSalePrice = 0  // Totalul devizului (inclusiv profit și TVA)
   let totalPlannedDirect = 0
-  let totalBudget = 0
-  
+
   const stagePlanned: Record<string, number> = {}
   const stageItems: Record<string, string[]> = {}
 
@@ -66,7 +65,6 @@ export function calculateFinancials(
 
     totalCostBudget += costBudgetForLine
     totalSalePrice += costs.totalWithTVA // Acesta este Brut (cu TVA)
-    totalBudget += costs.totalWithTVA
     
     // Alocăm bugetul de cheltuieli (fără TVA, pentru comparație cu achiziții nete)
     stagePlanned[stage] = (stagePlanned[stage] || 0) + costBudgetForLine
@@ -107,15 +105,26 @@ export function calculateFinancials(
 
   // 4. Forecast & Alerts
   const upcomingCosts = deviations
-    .filter(d => d.spent === 0 && d.planned > 0)
+    .filter(d => d.planned > d.spent && d.planned > 0)
     .map(d => ({
       stage: d.stage,
-      amount: d.planned,
-      description: `Urmează etapa ${d.stage} (${(stageItems[d.stage] || []).slice(0, 2).join(', ')}...)`
+      amount: d.planned - d.spent,
+      description: d.spent === 0
+        ? `Urmează etapa ${d.stage} (${(stageItems[d.stage] || []).slice(0, 2).join(', ')}...)`
+        : `Etapa ${d.stage}: mai rămân ${(d.planned - d.spent).toFixed(0)} Lei din ${d.planned.toFixed(0)} Lei planificați`
     }))
 
   const alerts: FinancialsSummary['alerts'] = []
-  
+
+  // Alertă preventivă: 90%+ din bugetul total consumat
+  const percentSpentOverall = totalCostBudget > 0 ? (totalSpent / totalCostBudget) * 100 : 0
+  if (percentSpentOverall >= 90 && percentSpentOverall < 100 && totalSpent > 0) {
+    alerts.push({
+      type: 'info',
+      message: `Atenție: ${percentSpentOverall.toFixed(0)}% din bugetul total de execuție a fost consumat. Mai rămân ${(100 - percentSpentOverall).toFixed(0)}% înainte de limita planificată.`,
+    })
+  }
+
   deviations.forEach(d => {
     if (d.percent > 5) {
       alerts.push({

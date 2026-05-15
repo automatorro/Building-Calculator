@@ -43,7 +43,7 @@ export default function ProjectDashboard({
   } = financials
 
   const isOverBudget = totalSpent > totalBudget
-  const marginPercent = totalEstimatedRevenue > 0 ? (netProfit / totalEstimatedRevenue) * 100 : 0
+  const marginPercent = totalEstimatedRevenueNet > 0 ? (netProfit / totalEstimatedRevenueNet) * 100 : 0
 
   const fmtCost = (n: number) => new Intl.NumberFormat('ro-RO', { 
     minimumFractionDigits: 2, 
@@ -99,10 +99,10 @@ export default function ProjectDashboard({
         <SummaryCard 
           label="Profit Estimat (Net)" 
           value={`${fmtCost(netProfit)} Lei`}
-          subValue={`${fmtPct1(marginPercent)}% Marjă Profit`}
+          subValue={`${fmtPct1(marginPercent)}% Marjă Netă (fără TVA)`}
           icon={<TrendingUp className="text-primary" />}
           trend={marginPercent > 10 ? 'positive' : 'negative'}
-          tooltip="Profitul real al firmei, calculat fără TVA-ul colectat."
+          tooltip="Marja calculată pe valoarea netă a contractului (fără TVA), deoarece TVA-ul colectat se predă integral la stat."
         />
         <SummaryCard 
           label="Status Buget" 
@@ -305,10 +305,12 @@ function FinanceCenter({ lines, purchases, settings, fmtCost, fmtPct1 }: {
     const total = totalMat + totalLab + totalEq + totalTr
     
     // 2. Performance (Planned Material Budget vs Actual Material Spent)
+    const uncategorizedPurchases = purchases.filter(p => !p.category || p.category.trim() === '')
     const totalMatSpent = purchases
-      .filter(p => p.category?.toLowerCase().includes('material') || !p.category)
+      .filter(p => p.category?.toLowerCase().includes('material'))
       .reduce((sum, p) => sum + p.amount_total, 0)
-    
+    const uncategorizedAmount = uncategorizedPurchases.reduce((sum, p) => sum + p.amount_total, 0)
+
     const performancePct = totalMat > 0 ? ((totalMat - totalMatSpent) / totalMat) * 100 : 0
 
     return {
@@ -329,7 +331,9 @@ function FinanceCenter({ lines, purchases, settings, fmtCost, fmtPct1 }: {
         plannedMat: totalMat,
         spentMat: totalMatSpent,
         savings: totalMat - totalMatSpent,
-        pct: performancePct
+        pct: performancePct,
+        uncategorizedCount: uncategorizedPurchases.length,
+        uncategorizedAmount
       }
     }
   }, [lines, purchases, settings])
@@ -401,7 +405,7 @@ function FinanceCenter({ lines, purchases, settings, fmtCost, fmtPct1 }: {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="text-xs font-bold truncate">{p.name}</div>
-                    <div className="text-[10px] text-slate-400 font-medium">{new Date(p.date).toLocaleDateString('ro-RO')} • {p.category || 'General'}</div>
+                    <div className="text-[10px] text-slate-400 font-medium">{new Date(p.date).toLocaleDateString('ro-RO')} • {p.category || 'Alte achiziții'}</div>
                   </div>
                   <div className="text-xs font-black text-slate-900 dark:text-white">
                     {fmtCost(p.amount_total)}
@@ -439,6 +443,16 @@ function FinanceCenter({ lines, purchases, settings, fmtCost, fmtPct1 }: {
                 </div>
               </div>
               
+              {data.performance.uncategorizedCount > 0 && (
+                <div style={{
+                  marginTop: 8, padding: '8px 12px',
+                  background: 'rgba(232,80,10,0.08)', borderRadius: 8,
+                  fontSize: 10, color: '#E8500A', fontWeight: 600
+                }}>
+                  + {fmtCost(data.performance.uncategorizedAmount)} Lei achiziții fără categorie (excluse din comparație)
+                </div>
+              )}
+
               <p className="text-[9px] text-center text-slate-400 italic">
                 * Comparăm totalul planificat al materialelor din deviz cu achizițiile înregistrate ca fiind materiale.
               </p>

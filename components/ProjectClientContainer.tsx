@@ -52,10 +52,11 @@ async function exportExcel(lines: EstimateLine[], settings: ProjectSettings, pro
   const rows = lines.map((line, i) => {
     const costs = calculateLineCosts(line, settings)
     const isManual = !line.items
-    const code = isManual
-      ? (line.metadata?.catalog_norm_symbol || 'MANUAL')
-      : `${line.items?.normatives?.code || ''} ${line.items?.code || ''}`.trim()
-    const name = line.manual_name || line.items?.name || ''
+    const code = line.code
+      || (isManual
+        ? (line.metadata?.catalog_norm_symbol || 'MANUAL')
+        : `${line.items?.normatives?.code || ''} ${line.items?.code || ''}`.trim())
+    const name = line.name || line.manual_name || line.items?.name || ''
     const um = line.manual_um || line.items?.um || ''
     return [
       i + 1, code, name, um,
@@ -106,7 +107,7 @@ async function exportCSV(lines: EstimateLine[], settings: ProjectSettings, proje
     const costs = calculateLineCosts(line, settings)
     const isManual = !line.items
     const code = isManual ? 'MANUAL' : `${line.items?.normatives?.code || ''} ${line.items?.code || ''}`.trim()
-    const name = (line.manual_name || line.items?.name || '').replace(/,/g, ';')
+    const name = (line.name || line.manual_name || line.items?.name || '').replace(/,/g, ';')
     const um = line.manual_um || line.items?.um || ''
     return [
       code, `"${name}"`, um,

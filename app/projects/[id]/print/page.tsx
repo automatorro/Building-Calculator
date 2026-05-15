@@ -137,8 +137,12 @@ export default async function PrintPage({ params }: { params: { id: string } }) 
         {Array.from(grouped.entries()).map(([stage, stageLines], idx) => {
           const stageTotals = stageLines.reduce((acc, line) => {
             const c = calculateLineCosts(line, settings)
-            return { direct: acc.direct + c.totalDirectCost, total: acc.total + c.totalWithTVA }
-          }, { direct: 0, total: 0 })
+            return {
+              direct: acc.direct + c.totalDirectCost,
+              ofertat: acc.ofertat + c.totalOfertatWithoutTVA,
+              total: acc.total + c.totalWithTVA
+            }
+          }, { direct: 0, ofertat: 0, total: 0 })
 
           return (
             <div key={stage} style={{ marginBottom: 16, pageBreakInside: 'avoid' }}>
@@ -150,7 +154,7 @@ export default async function PrintPage({ params }: { params: { id: string } }) 
               <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: 4 }}>
                 <thead>
                   <tr style={{ background: '#F3F2EF', borderBottom: '1px solid #E5E3DE' }}>
-                    {['Cod', 'Denumire Lucrare', 'UM', 'Cant.', 'Cost unit. (Lei)', 'Total + TVA (Lei)'].map(h => (
+                    {['Cod', 'Denumire Lucrare', 'UM', 'Cant.', 'Cost unit. (Lei)', 'Total fără TVA (Lei)', 'Total cu TVA (Lei)'].map(h => (
                       <th key={h} style={{ padding: '5px 8px', fontSize: 9, fontWeight: 600, color: '#6B6860', textAlign: h.includes('Total') || h.includes('Cost') || h.includes('Cant') ? 'right' : 'left' }}>{h}</th>
                     ))}
                   </tr>
@@ -160,7 +164,10 @@ export default async function PrintPage({ params }: { params: { id: string } }) 
                     const c = calculateLineCosts(line, settings)
                     const name = line.name || line.manual_name || line.items?.name || '—'
                     const um   = line.unit || line.manual_um   || line.items?.um   || '—'
-                    const code = line.items?.normatives?.code || line.items?.code || '—'
+                    const code = line.code
+                      || line.items?.normatives?.code
+                      || line.items?.code
+                      || '—'
                     return (
                       <tr key={line.id} style={{ background: i % 2 === 0 ? '#fff' : '#FAFAF8', borderBottom: '1px solid #E5E3DE' }}>
                         <td style={{ padding: '4px 8px', fontFamily: 'monospace', fontSize: 9, color: '#A8A59E' }}>{code}</td>
@@ -168,6 +175,7 @@ export default async function PrintPage({ params }: { params: { id: string } }) 
                         <td style={{ padding: '4px 8px', textAlign: 'right', fontSize: 9 }}>{um}</td>
                         <td style={{ padding: '4px 8px', textAlign: 'right', fontFamily: 'monospace', fontSize: 9 }}>{fmtQty(line.quantity)}</td>
                         <td style={{ padding: '4px 8px', textAlign: 'right', fontFamily: 'monospace', fontSize: 9 }}>{fmtLei(c.unitDirectCost)}</td>
+                        <td style={{ padding: '4px 8px', textAlign: 'right', fontFamily: 'monospace', fontSize: 9 }}>{fmtLei(c.totalOfertatWithoutTVA)}</td>
                         <td style={{ padding: '4px 8px', textAlign: 'right', fontFamily: 'monospace', fontSize: 9, fontWeight: 700, color: '#E8500A' }}>{fmtLei(c.totalWithTVA)}</td>
                       </tr>
                     )
