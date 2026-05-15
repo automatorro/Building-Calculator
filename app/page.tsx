@@ -1,10 +1,25 @@
-'use client'
-
-import { useEffect } from 'react'
 import Link from 'next/link'
+import type { Metadata } from 'next'
 import HeroCalculator from '@/components/HeroCalculator'
 import FaqSection from '@/components/FaqSection'
 import PricingCheckoutButton from '@/components/PricingCheckoutButton'
+import RevealObserver from '@/components/RevealObserver'
+
+export const metadata: Metadata = {
+  title: 'Program Devize Construcții Online — Gratuit pentru Primul Proiect',
+  description:
+    'Cel mai simplu program de devize construcții pentru constructori mici din România. Creează devize profesionale în 5 minute, urmărește cheltuielile reale pe șantier, exportă PDF cu un click. Fără instalare, funcționează pe telefon.',
+  alternates: {
+    canonical: 'https://santier.app',
+  },
+  openGraph: {
+    title: 'Program Devize Construcții Online — Șantier.app',
+    description:
+      'Cel mai simplu program de devize construcții pentru constructori din România. Devize precise în 5 minute, alerte depășire buget, PDF instant.',
+    url: 'https://santier.app',
+    type: 'website',
+  },
+}
 
 /* ─── Shared style helpers ────────────────────────────────────────────────── */
 const sans  = 'var(--font-dm-sans,"DM Sans",system-ui,sans-serif)'
@@ -38,23 +53,62 @@ function Check({ orange = false }: { orange?: boolean }) {
 }
 
 export default function HomePage() {
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-    if (!('IntersectionObserver' in window)) return
-
-    const obs = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) {
-        if (e.isIntersecting) e.target.classList.add('visible')
-      })
-    }, { threshold: 0.1 })
-
-    document.querySelectorAll('.reveal').forEach(function (el) { obs.observe(el) })
-
-    return () => obs.disconnect()
-  }, [])
-
   return (
     <>
+      <RevealObserver />
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'FAQPage',
+            mainEntity: [
+              {
+                '@type': 'Question',
+                name: 'Ce este Șantier.app?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'Șantier.app este un program online gratuit de devize construcții pentru constructori mici și mijlocii din România. Permite crearea de devize profesionale în 5 minute, urmărirea cheltuielilor reale pe șantier și exportul PDF profesional.',
+                },
+              },
+              {
+                '@type': 'Question',
+                name: 'Pot folosi aplicația fără să mă înregistrez?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'Da. Calculatorul de estimare din pagina principală funcționează fără cont. Pentru a salva devize, urmări cheltuieli și genera PDF-uri ai nevoie de un cont gratuit — care se creează în 30 de secunde, fără card.',
+                },
+              },
+              {
+                '@type': 'Question',
+                name: 'Cât costă programul de devize Șantier.app?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'Șantier.app are un plan gratuit permanent pentru 1 proiect activ complet. Planul Constructor costă 89 lei/lună cu proiecte nelimitate, catalog complet de 1100+ articole și toate funcționalitățile. Există și un plan Echipă la 169 lei/lună pentru 5 utilizatori.',
+                },
+              },
+              {
+                '@type': 'Question',
+                name: 'Funcționează pe telefon?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'Da, pe orice telefon sau tabletă cu un browser modern (Chrome, Safari, Firefox). Nu necesită instalare. Interfața este optimizată pentru ecrane mici — toate acțiunile frecvente sunt accesibile în maximum 2 tap-uri.',
+                },
+              },
+              {
+                '@type': 'Question',
+                name: 'Cum se face un deviz de construcții?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'Cu Șantier.app, faci un deviz de construcții în 3 pași: 1) Creezi proiectul cu coeficienții tăi (profit, regie, TVA). 2) Selectezi articolele din catalogul de 1100+ norme românești sau adaugi manual. 3) Aplici prețurile tale reale și generezi PDF-ul profesional.',
+                },
+              },
+            ],
+          }),
+        }}
+      />
+
       {/* ── Scroll + pulse animations ── */}
       <style>{`
         @keyframes pulse {
