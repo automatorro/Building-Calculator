@@ -50,7 +50,7 @@ export default async function BlogPostPage({ params }: Props) {
 
   const { data: post } = await supabase
     .from('blog_posts')
-    .select('*, profiles(full_name)')
+    .select('*, profiles(full_name), author_name')
     .eq('slug', slug)
     .eq('published', true)
     .single()
@@ -68,7 +68,7 @@ export default async function BlogPostPage({ params }: Props) {
     dateModified: post.updated_at || post.published_at || post.created_at,
     author: {
       '@type': 'Person',
-      name: post.profiles?.full_name || 'Echipa Șantier.app',
+      name: post.author_name || post.profiles?.full_name || 'Echipa Șantier.app',
     },
     publisher: {
       '@type': 'Organization',

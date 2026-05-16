@@ -16,7 +16,7 @@ export default function BlogIndex() {
     async function fetchPosts() {
       const { data, error } = await supabase
         .from('blog_posts')
-        .select('*, profiles(full_name)')
+        .select('*, profiles(full_name), author_name')
         .eq('published', true)
         .order('published_at', { ascending: false })
 
@@ -102,7 +102,7 @@ export default function BlogIndex() {
                     </span>
                     <span className="flex items-center gap-1">
                       <User size={14} />
-                      {post.profiles?.full_name || 'Echipa Șantier.app'}
+                      {post.author_name || post.profiles?.full_name || 'Echipa Șantier.app'}
                     </span>
                   </div>
 

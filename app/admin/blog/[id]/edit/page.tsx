@@ -20,6 +20,7 @@ export default function EditBlogPost() {
     excerpt: '',
     content: '',
     featured_image: '',
+    author_name: '',
     published: false
   })
   
@@ -44,6 +45,7 @@ export default function EditBlogPost() {
           excerpt: data.excerpt || '',
           content: data.content,
           featured_image: data.featured_image || '',
+          author_name: data.author_name || '',
           published: data.published
         })
         setLoading(false)
@@ -156,8 +158,19 @@ export default function EditBlogPost() {
             </div>
             
             <div>
+              <label className="text-xs font-semibold uppercase tracking-wider text-[#6B6860]">Autor</label>
+              <input
+                type="text"
+                value={formData.author_name}
+                onChange={(e) => setFormData(p => ({ ...p, author_name: e.target.value }))}
+                placeholder="Ex: Lucian Popescu"
+                className="input mt-1"
+              />
+            </div>
+
+            <div>
               <label className="text-xs font-semibold uppercase tracking-wider text-[#6B6860]">Sumar (Excerpt)</label>
-              <textarea 
+              <textarea
                 value={formData.excerpt}
                 onChange={(e) => setFormData(p => ({ ...p, excerpt: e.target.value }))}
                 className="input mt-1 h-20 resize-none"
