@@ -243,7 +243,8 @@ export default function ProjectAssistantAI({ lines, settings, projectId, project
   // Auto-fetch eliminat — utilizatorul declanșează manual analiza via butonul Regenerează
 
   useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+    if (history.length === 0) return
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
   }, [history])
 
   const handleSendChat = async (text?: string) => {
