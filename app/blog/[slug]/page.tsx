@@ -50,7 +50,7 @@ export default async function BlogPostPage({ params }: Props) {
 
   const { data: post } = await supabase
     .from('blog_posts')
-    .select('*, profiles(full_name), author_name')
+    .select('*, profiles(full_name), author_name, faq_schema')
     .eq('slug', slug)
     .eq('published', true)
     .single()
@@ -59,26 +59,34 @@ export default async function BlogPostPage({ params }: Props) {
     notFound()
   }
 
-  const jsonLd = {
+  const authorName = post.author_name || post.profiles?.full_name || 'Echipa Șantier.app'
+
+  const articleJsonLd = {
     '@context': 'https://schema.org',
-    '@type': 'BlogPosting',
+    '@type': 'Article',
     headline: post.title,
     description: post.excerpt || '',
     datePublished: post.published_at || post.created_at,
     dateModified: post.updated_at || post.published_at || post.created_at,
     author: {
       '@type': 'Person',
-      name: post.author_name || post.profiles?.full_name || 'Echipa Șantier.app',
+      name: authorName,
+      url: 'https://santier.app/despre',
     },
     publisher: {
       '@type': 'Organization',
       name: 'Șantier.app',
       url: 'https://santier.app',
+      logo: {
+        '@type': 'ImageObject',
+        url: 'https://santier.app/logo.png',
+      },
     },
     mainEntityOfPage: {
       '@type': 'WebPage',
       '@id': `https://santier.app/blog/${slug}`,
     },
+    inLanguage: 'ro-RO',
     ...(post.featured_image && { image: post.featured_image }),
   }
 
@@ -86,8 +94,14 @@ export default async function BlogPostPage({ params }: Props) {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
       />
+      {post.faq_schema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: post.faq_schema }}
+        />
+      )}
       <BlogPostClient post={post} />
     </>
   )
