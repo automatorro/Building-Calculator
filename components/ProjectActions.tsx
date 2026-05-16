@@ -211,7 +211,7 @@ export default function ProjectActions({ projectId, initialDimensions, initialSt
 
   return (
     <>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
 
         {/* ── Dropdown "Operații ▾" ─────────────────────────────────────── */}
         <div style={{ position: 'relative' }} ref={dropdownRef}>
@@ -485,12 +485,13 @@ export default function ProjectActions({ projectId, initialDimensions, initialSt
               Copiază link-ul de mai jos și trimite-l beneficiarului — nu necesită cont.
             </div>
 
-            <div style={{ display: 'flex', gap: 10 }}>
+            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
               <input
                 value={shareUrl}
                 readOnly
                 style={{
-                  flex: 1,
+                  flex: '1 1 180px',
+                  minWidth: 0,
                   border: '1px solid #E5E3DE',
                   borderRadius: 10,
                   padding: '10px 12px',

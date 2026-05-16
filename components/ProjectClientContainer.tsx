@@ -514,6 +514,7 @@ export default function ProjectClientContainer({
             const active = view === tab.id
             return (
               <button key={tab.id} onClick={() => setView(tab.id)}
+                className="bc-project-tab-btn"
                 style={{
                   padding: '10px 16px', borderRadius: 10, border: 'none', cursor: 'pointer',
                   fontFamily: 'var(--font-dm-sans,"DM Sans",system-ui,sans-serif)',
@@ -538,7 +539,7 @@ export default function ProjectClientContainer({
         <div style={{
           background: '#FCEBEB', border: '1px solid #C0392B33',
           borderRadius: 12, padding: '16px 20px',
-          display: 'flex', alignItems: 'flex-start', gap: 14,
+          display: 'flex', alignItems: 'flex-start', gap: 14, flexWrap: 'wrap',
         }}>
           <div style={{
             width: 36, height: 36, background: '#C0392B', borderRadius: '50%',
@@ -797,7 +798,7 @@ export default function ProjectClientContainer({
                       style={{
                         background: 'transparent', borderBottom: '2px solid #E8500A',
                         border: 'none', outline: 'none', fontSize: 20, fontWeight: 700,
-                        color: '#1E2329', fontFamily: 'inherit', width: 180
+                        color: '#1E2329', fontFamily: 'inherit', width: 'clamp(100px, 50%, 180px)'
                       }}
                       value={revenue}
                       onChange={e => handleUpdateRevenue(parseFloat(e.target.value) || 0)} />
@@ -1176,7 +1177,7 @@ function PurchaseFormModal({
           </div>
         )}
 
-        <div style={{ display: 'grid', gridTemplateColumns: ocrResult ? '1fr 1.5fr' : '1fr', gap: 28 }}>
+        <div className="ocr-purchase-grid" style={{ display: 'grid', gridTemplateColumns: ocrResult ? '1fr 1.5fr' : '1fr', gap: 28 }}>
           
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
             <div>

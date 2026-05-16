@@ -177,7 +177,7 @@ export default function Navigation() {
         <>
           <div onClick={()=>setOpen(false)} style={{ position:'fixed', inset:0, zIndex:200, background:'rgba(55,65,81,0.75)', backdropFilter:'blur(4px)' }} />
           <div style={{
-            position:'fixed', top:0, right:0, bottom:0, width:280, zIndex:201,
+            position:'fixed', top:0, right:0, bottom:0, width:'min(280px, calc(100vw - 20px))', zIndex:201,
             background:'#374151', borderLeft:'1px solid rgba(255,255,255,0.12)',
             display:'flex', flexDirection:'column', padding:'24px 24px 32px',
             fontFamily:'var(--font-dm-sans,"DM Sans",system-ui,sans-serif)',
