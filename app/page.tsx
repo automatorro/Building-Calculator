@@ -285,12 +285,13 @@ export default function HomePage() {
             color:'#E8500A', marginBottom:14 }}>De ce e diferit</p>
           <h2 className="section-title" style={{ fontFamily:serif, fontSize:44, lineHeight:1.1,
             letterSpacing:'-.02em', color:'#FFFFFF', marginBottom:18 }}>
-            Nu e un alt program<br />de devize pentru birou.
+            Nu e un alt program<br />de devize greoi și complicat.
           </h2>
           <p style={{ fontSize:18, color:'#FFFFFF', lineHeight:1.65,
             maxWidth:520, fontWeight:400 }}>
-            Programele clasice au fost construite pentru proiectanți autorizați care stau la birou.
-            Noi am construit pentru tine — pe teren, cu telefonul în buzunar.
+            Programele clasice au fost gândite pentru fluxuri rigide, formulare complexe și
+            utilizare exclusiv la desktop. Noi am construit ceva mai rapid — funcționează
+            la fel de bine pe teren și la birou.
           </p>
 
           <div className="contrast-grid reveal" style={{
@@ -336,7 +337,7 @@ export default function HomePage() {
                 'Construit pentru teren: 2 tap-uri pentru orice acțiune frecventă',
                 'PDF instant și link pentru beneficiar, trimis pe WhatsApp în 10 secunde',
                 'Alertă imediată când o etapă depășește bugetul planificat',
-                'Construit pentru constructorul cu 3–15 angajați care execută lucrări',
+                'Optimizat pentru echipe mici de construcții cu 3–15 angajați',
               ].map(item => (
                 <div key={item} style={{ display:'flex', alignItems:'flex-start', gap:12,
                   marginBottom:18, fontSize:15, color:'#FFFFFF', lineHeight:1.5 }}>

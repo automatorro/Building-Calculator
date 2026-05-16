@@ -53,8 +53,8 @@ export default function Footer({ variant = 'public' }: { variant?: 'public' | 'd
           </div>
           <p style={{ fontSize:15, color: variant === 'dashboard' ? '#6B6860' : '#FFFFFF', lineHeight:1.65,
             marginTop:16, fontWeight:400, maxWidth:280 }}>
-            Devize de construcții pentru oamenii care execută lucrări,
-            nu pentru cei care stau la birou.
+            Software de devize gândit pentru echipele care construiesc —
+            pe teren sau la birou.
           </p>
         </div>
         {[
