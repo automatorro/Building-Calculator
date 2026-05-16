@@ -95,6 +95,14 @@ export const metadata: Metadata = {
     },
   },
   category: 'technology',
+  icons: {
+    icon: [
+      { url: '/icon.svg', type: 'image/svg+xml' },
+    ],
+    apple: [
+      { url: '/apple-icon.svg', type: 'image/svg+xml' },
+    ],
+  },
 }
 
 const jsonLd = {
