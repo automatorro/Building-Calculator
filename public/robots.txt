@@ -1,0 +1,19 @@
+User-agent: *
+Allow: /
+Allow: /blog
+Allow: /calculatoare-rapide
+Allow: /cum-functioneaza
+Allow: /contact
+Allow: /termeni-si-conditii
+Allow: /politica-confidentialitate
+Allow: /gdpr
+
+Disallow: /api/
+Disallow: /auth/
+Disallow: /projects/
+Disallow: /settings/
+Disallow: /admin/
+Disallow: /invite/
+Disallow: /share/
+
+Sitemap: https://santier.app/sitemap.xml
