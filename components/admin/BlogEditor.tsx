@@ -1,14 +1,15 @@
 'use client'
 
 import { useRef, useState } from 'react'
-import { useEditor, EditorContent } from '@tiptap/react'
+import { useEditor, EditorContent, NodeViewWrapper, ReactNodeViewRenderer } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Link from '@tiptap/extension-link'
 import Image from '@tiptap/extension-image'
 import Placeholder from '@tiptap/extension-placeholder'
-import { 
-  Bold, Italic, List, ListOrdered, Quote, Heading1, Heading2, 
-  Link as LinkIcon, Image as ImageIcon, Undo, Redo, Code, Loader2
+import {
+  Bold, Italic, List, ListOrdered, Quote, Heading1, Heading2,
+  Link as LinkIcon, Image as ImageIcon, Undo, Redo, Code, Loader2,
+  Trash2, RefreshCw
 } from 'lucide-react'
 import { createClient } from '@/utils/supabase/client'
 import { toast } from 'sonner'
@@ -17,6 +18,83 @@ interface BlogEditorProps {
   value: string
   onChange: (value: string) => void
 }
+
+// ─── NodeView custom pentru imagini ───────────────────────────────────────────
+
+const ImageNodeView = ({ node, deleteNode, updateAttributes }: any) => {
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [replacing, setReplacing] = useState(false)
+  const supabase = createClient()
+
+  const handleReplace = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setReplacing(true)
+    try {
+      const { optimizeImage } = await import('@/utils/image-optimizer')
+      const optimized = await optimizeImage(file)
+      const fileExt = optimized.name.split('.').pop()
+      const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`
+      const filePath = `post-content/${fileName}`
+
+      const { error } = await supabase.storage.from('blog-images').upload(filePath, optimized)
+      if (error) throw error
+
+      const { data: { publicUrl } } = supabase.storage.from('blog-images').getPublicUrl(filePath)
+      updateAttributes({ src: publicUrl })
+      toast.success('Imagine înlocuită')
+    } catch {
+      toast.error('Eroare la înlocuire imagine')
+    } finally {
+      setReplacing(false)
+      if (fileInputRef.current) fileInputRef.current.value = ''
+    }
+  }
+
+  return (
+    <NodeViewWrapper className="relative group my-8 w-full">
+      <img
+        src={node.attrs.src}
+        alt={node.attrs.alt || ''}
+        className="rounded-xl max-w-full h-auto mx-auto block"
+      />
+      <div className="absolute top-2 right-2 flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+        <button
+          type="button"
+          onClick={() => fileInputRef.current?.click()}
+          disabled={replacing}
+          title="Înlocuiește imaginea"
+          className="p-1.5 rounded-lg bg-white/90 backdrop-blur text-[#6B6860] hover:text-[#E8500A] hover:bg-white shadow border border-[#E5E3DE] transition-colors"
+        >
+          {replacing ? <Loader2 size={16} className="animate-spin" /> : <RefreshCw size={16} />}
+        </button>
+        <button
+          type="button"
+          onClick={deleteNode}
+          title="Șterge imaginea"
+          className="p-1.5 rounded-lg bg-white/90 backdrop-blur text-[#6B6860] hover:text-red-500 hover:bg-white shadow border border-[#E5E3DE] transition-colors"
+        >
+          <Trash2 size={16} />
+        </button>
+      </div>
+      <input
+        type="file"
+        ref={fileInputRef}
+        className="hidden"
+        accept="image/*"
+        onChange={handleReplace}
+      />
+    </NodeViewWrapper>
+  )
+}
+
+const CustomImage = Image.extend({
+  addNodeView() {
+    return ReactNodeViewRenderer(ImageNodeView)
+  },
+})
+
+// ─── MenuBar ──────────────────────────────────────────────────────────────────
 
 const MenuBar = ({ editor }: { editor: any }) => {
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -38,8 +116,7 @@ const MenuBar = ({ editor }: { editor: any }) => {
       if (!file) return
 
       setUploading(true)
-      
-      // Optimizare automată înainte de upload
+
       const { optimizeImage } = await import('@/utils/image-optimizer')
       file = await optimizeImage(file)
 
@@ -83,12 +160,12 @@ const MenuBar = ({ editor }: { editor: any }) => {
 
   return (
     <div className="flex flex-wrap items-center gap-1 border-b border-[#E5E3DE] bg-[#F9F9F8] p-2 rounded-t-xl">
-      <input 
-        type="file" 
-        ref={fileInputRef} 
-        className="hidden" 
-        accept="image/*" 
-        onChange={handleImageUpload} 
+      <input
+        type="file"
+        ref={fileInputRef}
+        className="hidden"
+        accept="image/*"
+        onChange={handleImageUpload}
       />
       {buttons.map((btn, i) => (
         <button
@@ -96,8 +173,8 @@ const MenuBar = ({ editor }: { editor: any }) => {
           disabled={btn.loading}
           onClick={(e) => { e.preventDefault(); btn.action(); }}
           className={`p-2 rounded-md transition-colors relative ${
-            editor.isActive(btn.active, btn.props || {}) 
-              ? 'bg-[#E8500A] text-white' 
+            editor.isActive(btn.active, btn.props || {})
+              ? 'bg-[#E8500A] text-white'
               : 'text-[#6B6860] hover:bg-[#E5E3DE]'
           } ${btn.loading ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
@@ -127,13 +204,15 @@ const MenuBar = ({ editor }: { editor: any }) => {
   )
 }
 
+// ─── BlogEditor ───────────────────────────────────────────────────────────────
+
 export default function BlogEditor({ value, onChange }: BlogEditorProps) {
   const editor = useEditor({
     immediatelyRender: false,
     extensions: [
       StarterKit,
       Link.configure({ openOnClick: false }),
-      Image,
+      CustomImage,
       Placeholder.configure({
         placeholder: 'Începe să scrii povestea de pe șantier...',
       }),
@@ -153,7 +232,7 @@ export default function BlogEditor({ value, onChange }: BlogEditorProps) {
     <div className="w-full border border-[#E5E3DE] rounded-xl bg-white shadow-sm overflow-hidden focus-within:border-[#E8500A]/30 transition-colors">
       <MenuBar editor={editor} />
       <EditorContent editor={editor} />
-      
+
       <style jsx global>{`
         .ProseMirror p.is-editor-empty:first-child::before {
           content: attr(data-placeholder);
