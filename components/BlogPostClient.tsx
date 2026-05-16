@@ -13,6 +13,7 @@ type BlogPost = {
   published_at?: string
   created_at: string
   featured_image?: string
+  author_name?: string | null
   profiles?: { full_name?: string } | null
 }
 
@@ -47,7 +48,7 @@ export default function BlogPostClient({ post }: { post: BlogPost }) {
               <span className="w-1 h-1 bg-[#E5E3DE] rounded-full" />
               <span className="flex items-center gap-1.5">
                 <User size={14} className="text-[#E8500A]" />
-                {post.profiles?.full_name || 'Echipa Șantier.app'}
+                {post.author_name || post.profiles?.full_name || 'Echipa Șantier.app'}
               </span>
             </div>
 
@@ -93,7 +94,7 @@ export default function BlogPostClient({ post }: { post: BlogPost }) {
               <User size={20} />
             </div>
             <div>
-              <div className="text-sm font-semibold">{post.profiles?.full_name || 'Echipa Șantier.app'}</div>
+              <div className="text-sm font-semibold">{post.author_name || post.profiles?.full_name || 'Echipa Șantier.app'}</div>
               <div className="text-xs text-[#6B6860]">Autor, Șantier.app</div>
             </div>
           </div>

@@ -18,6 +18,7 @@ export default function NewBlogPost() {
     excerpt: '',
     content: '',
     featured_image: '',
+    author_name: '',
     published: false
   })
   
@@ -118,8 +119,19 @@ export default function NewBlogPost() {
             </div>
             
             <div>
+              <label className="text-xs font-semibold uppercase tracking-wider text-[#6B6860]">Autor</label>
+              <input
+                type="text"
+                value={formData.author_name}
+                onChange={(e) => setFormData(p => ({ ...p, author_name: e.target.value }))}
+                placeholder="Ex: Lucian Popescu"
+                className="input mt-1"
+              />
+            </div>
+
+            <div>
               <label className="text-xs font-semibold uppercase tracking-wider text-[#6B6860]">Sumar (Excerpt)</label>
-              <textarea 
+              <textarea
                 value={formData.excerpt}
                 onChange={(e) => setFormData(p => ({ ...p, excerpt: e.target.value }))}
                 placeholder="O scurtă descriere care apare în listă..."
