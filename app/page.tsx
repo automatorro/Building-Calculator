@@ -148,6 +148,7 @@ export default function HomePage() {
           .terrain-grid { grid-template-columns:1fr !important; }
           .testi-grid { grid-template-columns:1fr !important; }
           .pricing-grid { grid-template-columns:1fr !important; }
+          .ai-cards-grid { grid-template-columns:1fr !important; }
           .hero-h1 { font-size:40px !important; }
           .section-title { font-size:32px !important; }
         }
@@ -275,6 +276,150 @@ export default function HomePage() {
           ))}
         </div>
       </div>
+
+      {/* ══════════════════════════════════════════════════════════════
+          AI INTEGRAT
+      ══════════════════════════════════════════════════════════════ */}
+      <section className="section-pad" style={{ background:'#FAFAF8', padding:'96px 32px', fontFamily:sans }}>
+        <div style={{ maxWidth:1160, margin:'0 auto' }}>
+
+          {/* Eyebrow + titlu */}
+          <div style={{ textAlign:'center', marginBottom:56 }}>
+            <div className="reveal" style={{
+              display:'inline-flex', alignItems:'center', gap:8,
+              background:'rgba(232,80,10,0.08)', border:'1px solid rgba(232,80,10,0.2)',
+              borderRadius:100, padding:'5px 16px', marginBottom:20,
+            }}>
+              <div style={{ width:6, height:6, borderRadius:'50%', background:'#E8500A' }} />
+              <span style={{ fontSize:12, fontWeight:700, color:'#E8500A', letterSpacing:'.08em', textTransform:'uppercase' }}>
+                AI Integrat
+              </span>
+            </div>
+            <h2 className="section-title reveal" style={{
+              fontFamily:serif, fontSize:44, lineHeight:1.1,
+              letterSpacing:'-.02em', color:'#1E2329', marginBottom:18,
+            }}>
+              Devizul care înainte lua o zi<br />
+              <em style={{ color:'#E8500A', fontStyle:'italic' }}>acum ia 10 minute.</em>
+            </h2>
+            <p className="reveal reveal-d1" style={{
+              fontSize:17, color:'#6B6860', lineHeight:1.65,
+              maxWidth:500, margin:'0 auto', fontWeight:400,
+            }}>
+              Nu pentru că muncești mai repede — ci pentru că aplicația face
+              calculele în locul tău. Fără configurare, fără formule, fără greșeli de transcriere.
+            </p>
+          </div>
+
+          {/* 3 carduri AI */}
+          <div className="reveal ai-cards-grid" style={{
+            display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:24,
+            marginBottom:48,
+          }}>
+            {[
+              {
+                icon: (
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#E8500A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+                  </svg>
+                ),
+                input: 'Introduci suprafața, numărul de etaje și tipul de fundație',
+                output: 'Primești cantitățile calculate automat pentru toate etapele constructive',
+              },
+              {
+                icon: (
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#E8500A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+                  </svg>
+                ),
+                input: 'Faci o fotografie facturii de la furnizor',
+                output: 'Furnizorul, suma și TVA-ul sunt extrase și înregistrate automat în proiect',
+              },
+              {
+                icon: (
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#E8500A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                  </svg>
+                ),
+                input: 'Descrii lucrarea în cuvinte simple: „tencuială exterioară 200mp"',
+                output: 'AI-ul găsește normele potrivite din catalog și completează cantitățile',
+              },
+            ].map((card, i) => (
+              <div key={i} className={`reveal ${i > 0 ? `reveal-d${i}` : ''}`} style={{
+                background:'white', border:'1px solid #E5E3DE', borderRadius:16,
+                padding:28, display:'flex', flexDirection:'column', gap:20,
+              }}>
+                {/* Icon */}
+                <div style={{
+                  width:44, height:44, borderRadius:12,
+                  background:'rgba(232,80,10,0.08)',
+                  display:'flex', alignItems:'center', justifyContent:'center',
+                }}>
+                  {card.icon}
+                </div>
+
+                {/* Input */}
+                <div>
+                  <div style={{ fontSize:10, fontWeight:700, color:'#A8A59E', textTransform:'uppercase', letterSpacing:'.08em', marginBottom:6 }}>
+                    Tu introduci
+                  </div>
+                  <p style={{ fontSize:14, color:'#6B6860', lineHeight:1.55, margin:0 }}>
+                    {card.input}
+                  </p>
+                </div>
+
+                {/* Arrow */}
+                <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                  <div style={{ flex:1, height:1, background:'#E5E3DE' }} />
+                  <div style={{
+                    width:24, height:24, borderRadius:'50%',
+                    background:'#E8500A',
+                    display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0,
+                  }}>
+                    <svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round">
+                      <path d="M8 3v10M3 8l5 5 5-5"/>
+                    </svg>
+                  </div>
+                  <div style={{ flex:1, height:1, background:'#E5E3DE' }} />
+                </div>
+
+                {/* Output */}
+                <div style={{
+                  background:'#F3F2EF', borderRadius:10, padding:'14px 16px',
+                }}>
+                  <div style={{ fontSize:10, fontWeight:700, color:'#2A7D4F', textTransform:'uppercase', letterSpacing:'.08em', marginBottom:6 }}>
+                    Aplicația face
+                  </div>
+                  <p style={{ fontSize:14, color:'#1E2329', lineHeight:1.55, margin:0, fontWeight:500 }}>
+                    {card.output}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* CTA */}
+          <div className="reveal" style={{ textAlign:'center' }}>
+            <Link href="/auth/register"
+              style={{
+                display:'inline-flex', alignItems:'center', gap:8,
+                background:'#E8500A', color:'white', textDecoration:'none',
+                padding:'13px 28px', borderRadius:8,
+                fontSize:15, fontWeight:500, fontFamily:sans,
+                transition:'background .15s',
+              }}
+              className="btn-primary"
+            >
+              Încearcă gratuit — primul proiect e 0 lei
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+            </Link>
+            <p style={{ fontSize:13, color:'#A8A59E', marginTop:12 }}>
+              Fără card de credit · Fără instalare · Funcționează pe telefon
+            </p>
+          </div>
+
+        </div>
+      </section>
 
       {/* ══════════════════════════════════════════════════════════════
           CONTRAST — DE CE E DIFERIT
