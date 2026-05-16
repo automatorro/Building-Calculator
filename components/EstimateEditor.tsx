@@ -606,8 +606,8 @@ export default function EstimateEditor({
                                         e.target.style.height = e.target.scrollHeight + 'px';
                                       }}
                                     />
-                                    <div className="grid grid-cols-5 gap-2 mt-3">
-                                      <div className="flex flex-col gap-1 col-span-3">
+                                    <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 mt-3">
+                                      <div className="flex flex-col gap-1 col-span-2 sm:col-span-3">
                                         <span className="text-[9px] font-black uppercase tracking-widest text-slate-500">Preț Unitar Direct:</span>
                                         <div className="relative flex items-center">
                                           <input
@@ -862,7 +862,7 @@ export default function EstimateEditor({
                                               />
                                             </div>
 
-                                            <div className="grid grid-cols-2 gap-4 pt-2 border-t border-slate-50 dark:border-slate-800">
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-slate-50 dark:border-slate-800">
                                               <div className="space-y-1">
                                                 <span className="text-[9px] font-black uppercase text-slate-400">Consum / {line.unit || 'UM'}</span>
                                                 <div className="flex items-center gap-2">
@@ -1050,7 +1050,7 @@ export default function EstimateEditor({
                             className="flex-1 text-sm font-bold bg-transparent border-b border-slate-200 dark:border-slate-600 focus:border-primary outline-none text-slate-900 dark:text-white py-0.5"
                           />
                         </div>
-                        <div className="grid grid-cols-3 gap-2">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                           <div className="space-y-1">
                             <div className="text-[9px] font-black uppercase text-slate-400">Consum / {activeUnit}</div>
                             <input

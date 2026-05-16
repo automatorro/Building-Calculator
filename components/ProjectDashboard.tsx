@@ -62,7 +62,7 @@ export default function ProjectDashboard({
         <p style={{ fontSize: 11, fontWeight: 700, color: '#A8A59E', letterSpacing: '.08em', textTransform: 'uppercase' }}>
           Situație Financiară Proiect (în timp real)
         </p>
-        <div className="flex items-center gap-3 w-full sm:w-auto">
+        <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
           <ProjectSettingsPanel settings={settings} onSave={onUpdateSettings} />
           <button
             onClick={onAddPurchase}

@@ -224,7 +224,7 @@ export default function ProjectDevizView({
             {projectName}{projectLocation ? ` · ${projectLocation}` : ''} · {lines.length} articole
           </p>
         </div>
-        <div style={{ display:'flex', gap:10 }}>
+        <div style={{ display:'flex', gap:10, flexWrap:'wrap' }}>
           <button onClick={onExportCSV}
             style={{ display:'flex', alignItems:'center', gap:7, padding:'9px 18px',
               background:'#FAFAF8', border:'1px solid #E5E3DE', borderRadius:8,

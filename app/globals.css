@@ -329,3 +329,24 @@ h1, h2, h3 {
     margin: 1.5cm 1.5cm 2cm;
   }
 }
+
+/* ─── Mobile responsive fixes ───────────────────────────────────────────── */
+@media (max-width: 640px) {
+  /* Grila OCR/formular achiziție: 2 coloane → 1 coloană pe mobil */
+  .ocr-purchase-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Tabela deviz: scroll orizontal pe mobil */
+  .deviz-table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Tab-uri proiect: padding mai mic pe mobil */
+  .bc-project-tab-btn {
+    padding: 8px 10px !important;
+    font-size: 12px !important;
+    gap: 5px !important;
+  }
+}

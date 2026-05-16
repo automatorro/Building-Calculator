@@ -192,7 +192,7 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
           </div>
         )}
 
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap' }}>
           <ProjectActions
             projectId={id}
             initialDimensions={project.dimensions || {}}
