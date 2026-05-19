@@ -204,27 +204,39 @@ export default function HomePage() {
               fontFamily: serif, fontSize:58, lineHeight:1.08,
               color:'#FFFFFF', marginBottom:20, letterSpacing:'-.02em',
             }}>
-              Știi <em style={{ fontStyle:'italic', color:'#E8500A' }}>exact cât costă</em>{' '}
-              înainte să semnezi.
+              Devize, cheltuieli și{' '}
+              <em style={{ fontStyle:'italic', color:'#E8500A' }}>jurnal de șantier</em>{' '}
+              — din telefon, pe loc.
             </h1>
 
             <p style={{
               fontSize:18, lineHeight:1.65, color:'#FFFFFF',
-              marginBottom:40, maxWidth:420, fontWeight:400,
+              marginBottom:16, maxWidth:420, fontWeight:400,
             }}>
-              Devize precise, urmărire cheltuieli reale și oferte pentru beneficiari — de pe telefon,
-              de pe șantier. Fără instalare, fără Excel, fără surprize.
+              Calculezi devizul în 5 minute din dimensiuni reale. Urmărești cât s-a cheltuit
+              vs. cât ai planificat. Documentezi lucrările zilnic. Fără Excel, fără birou.
+            </p>
+
+            <p style={{
+              fontSize:14, lineHeight:1.55, color:'rgba(255,255,255,0.55)',
+              marginBottom:32, maxWidth:420,
+            }}>
+              Manager sau contabil?{' '}
+              <a href="#pricing" style={{ color:'#F4835A', textDecoration:'underline' }}>
+                Planul Echipă
+              </a>{' '}
+              include rapoarte, coordonare maiștri și ofertă PDF pentru beneficiar.
             </p>
 
             <div style={{ display:'flex', gap:14, flexWrap:'wrap' }}>
-              <a href="#calculator" className="btn-primary" style={{
+              <Link href="/demo" className="btn-primary" style={{
                 display:'inline-flex', alignItems:'center', gap:8,
                 background:'#E8500A', color:'#FFFFFF', padding:'14px 28px',
                 borderRadius:8, fontSize:15, fontWeight:600, textDecoration:'none',
                 border:'none', cursor:'pointer', transition:'background .2s, transform .15s',
               }}>
-                Calculează acum — gratuit <IconArrow />
-              </a>
+                Încearcă demo — fără cont <IconArrow />
+              </Link>
               <a href="#cum-functioneaza" className="btn-ghost" style={{
                 display:'inline-flex', alignItems:'center', gap:8,
                 background:'transparent', color:'#FFFFFF',
@@ -237,7 +249,7 @@ export default function HomePage() {
             </div>
 
             <div style={{ marginTop:40, display:'flex', alignItems:'center', gap:20 }}>
-              {['Fără card la înregistrare','Deviz complet în 5 minute'].map(t => (
+              {['Demo fără cont, imediat','Cont gratuit când vrei să salvezi'].map(t => (
                 <div key={t} style={{ display:'flex', alignItems:'center', gap:7,
                   fontSize:14, color:'rgba(255,255,255,0.8)' }}>
                   <div style={{ width:6, height:6, borderRadius:'50%', background:'#2A7D4F' }} />
@@ -410,7 +422,7 @@ export default function HomePage() {
               }}
               className="btn-primary"
             >
-              Încearcă gratuit — primul proiect e 0 lei
+              Creează cont gratuit — primul proiect e 0 lei
               <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
             </Link>
             <p style={{ fontSize:13, color:'#A8A59E', marginTop:12 }}>

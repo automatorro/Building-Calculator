@@ -153,7 +153,7 @@ export default function HeroCalculator() {
       </div>
 
       {/* CTA */}
-      <Link href="/auth/register" style={{
+      <Link href={`/demo?mp=${mp}&regim=${regim}&fin=${fin}`} style={{
         display:'block', width:'100%', background:'#E8500A', color:'#FFFFFF',
         border:'none', borderRadius:8, padding:14, fontSize:15, fontWeight:700,
         cursor:'pointer', fontFamily:'inherit', letterSpacing:'-.01em',
@@ -161,10 +161,10 @@ export default function HeroCalculator() {
       }}
         onMouseEnter={e=>(e.currentTarget.style.background='#C43F06')}
         onMouseLeave={e=>(e.currentTarget.style.background='#E8500A')}>
-        Creează deviz complet — gratuit →
+        Generează deviz complet cu norme reale →
       </Link>
       <p style={{ textAlign:'center', fontSize:12, color:'#A8A59E', marginTop:10 }}>
-        Cont gratuit · Fără card · Deviz detaliat în câteva minute
+        Fără cont · Fără card · Cont gratuit când vrei să salvezi
       </p>
       <p style={{ fontSize:11, color:'#A8A59E', textAlign:'center', marginTop:6 }}>
         Estimare orientativă ±20%. Nu include TVA, branșamente sau autorizații.
