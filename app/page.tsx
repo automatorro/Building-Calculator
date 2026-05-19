@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import type { Metadata } from 'next'
-import HeroCalculator from '@/components/HeroCalculator'
+import HeroVideoPlaceholder from '@/components/HeroVideoPlaceholder'
 import FaqSection from '@/components/FaqSection'
 import PricingCheckoutButton from '@/components/PricingCheckoutButton'
 import RevealObserver from '@/components/RevealObserver'
@@ -259,8 +259,8 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Right — calculator */}
-          <HeroCalculator />
+          {/* Right — video demo */}
+          <HeroVideoPlaceholder />
         </div>
       </section>
 
