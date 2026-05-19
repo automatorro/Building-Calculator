@@ -149,6 +149,7 @@ export default function HomePage() {
           .testi-grid { grid-template-columns:1fr !important; }
           .pricing-grid { grid-template-columns:1fr !important; }
           .ai-cards-grid { grid-template-columns:1fr !important; }
+          .wow-grid { grid-template-columns:1fr !important; }
           .hero-h1 { font-size:40px !important; }
           .section-title { font-size:32px !important; }
         }
@@ -159,7 +160,7 @@ export default function HomePage() {
           .final-h2 { font-size:32px !important; }
         }
         .btn-primary:hover { background:#C43F06 !important; transform:translateY(-1px); }
-        .btn-ghost:hover { background:rgba(255,255,255,0.05) !important; color:#FAFAF8 !important; }
+        .btn-ghost:hover { background:rgba(0,0,0,0.06) !important; color:#1E2329 !important; }
         .btn-link-orange:hover { background:#C43F06 !important; }
         .btn-cta-white:hover { transform:translateY(-2px); }
       `}</style>
@@ -168,9 +169,9 @@ export default function HomePage() {
           HERO
       ══════════════════════════════════════════════════════════════ */}
       <section className="hero-section" style={{
-        background:'#374151', minHeight:'100vh',
+        background:'#F0EFEC', minHeight:'100vh',
         display:'flex', flexDirection:'column',
-        padding:'120px 32px 80px', position:'relative', overflow:'hidden',
+        padding:'140px 32px 96px', position:'relative', overflow:'hidden',
         fontFamily: sans,
       }}>
         {/* BG decoration */}
@@ -191,18 +192,18 @@ export default function HomePage() {
           <div>
             <div style={{
               display:'inline-flex', alignItems:'center', gap:7,
-              background:'rgba(232,80,10,0.15)', border:'1px solid rgba(232,80,10,0.35)',
-              color:'#F4835A', fontSize:12, fontWeight:500,
+              background:'rgba(232,80,10,0.12)', border:'1px solid rgba(232,80,10,0.3)',
+              color:'#C43F06', fontSize:12, fontWeight:600,
               padding:'5px 14px', borderRadius:100, marginBottom:28, letterSpacing:'.03em',
             }}>
               <div style={{ width:6, height:6, borderRadius:'50%', background:'#E8500A',
                 animation:'pulse 2s infinite' }} />
-              Funcționează pe orice telefon, acum
+              Program de devize pentru constructori din România
             </div>
 
             <h1 className="hero-h1" style={{
-              fontFamily: serif, fontSize:58, lineHeight:1.08,
-              color:'#FFFFFF', marginBottom:20, letterSpacing:'-.02em',
+              fontFamily: serif, fontSize:64, lineHeight:1.05,
+              color:'#1E2329', marginBottom:24, letterSpacing:'-.02em',
             }}>
               Devize, cheltuieli și{' '}
               <em style={{ fontStyle:'italic', color:'#E8500A' }}>jurnal de șantier</em>{' '}
@@ -210,19 +211,19 @@ export default function HomePage() {
             </h1>
 
             <p style={{
-              fontSize:18, lineHeight:1.65, color:'#FFFFFF',
-              marginBottom:16, maxWidth:420, fontWeight:400,
+              fontSize:20, lineHeight:1.7, color:'#4A4744',
+              marginBottom:20, maxWidth:460, fontWeight:400,
             }}>
-              Calculezi devizul în 5 minute din dimensiuni reale. Urmărești cât s-a cheltuit
-              vs. cât ai planificat. Documentezi lucrările zilnic. Fără Excel, fără birou.
+              Calculezi cantitățile direct din planuri. Urmărești cheltuielile reale față de deviz.
+              Știi în orice moment dacă lucrarea e profitabilă.
             </p>
 
             <p style={{
-              fontSize:14, lineHeight:1.55, color:'rgba(255,255,255,0.55)',
-              marginBottom:32, maxWidth:420,
+              fontSize:14, lineHeight:1.55, color:'#6B6860',
+              marginBottom:36, maxWidth:420,
             }}>
               Manager sau contabil?{' '}
-              <a href="#pricing" style={{ color:'#F4835A', textDecoration:'underline' }}>
+              <a href="#pricing" style={{ color:'#E8500A', textDecoration:'underline' }}>
                 Planul Echipă
               </a>{' '}
               include rapoarte, coordonare maiștri și ofertă PDF pentru beneficiar.
@@ -239,19 +240,19 @@ export default function HomePage() {
               </Link>
               <a href="#cum-functioneaza" className="btn-ghost" style={{
                 display:'inline-flex', alignItems:'center', gap:8,
-                background:'transparent', color:'#FFFFFF',
+                background:'transparent', color:'#1E2329',
                 padding:'14px 24px', borderRadius:8, fontSize:15, fontWeight:500,
-                textDecoration:'none', border:'1px solid rgba(255,255,255,0.4)',
+                textDecoration:'none', border:'1px solid rgba(30,35,41,0.35)',
                 transition:'all .2s',
               }}>
                 Cum funcționează
               </a>
             </div>
 
-            <div style={{ marginTop:40, display:'flex', alignItems:'center', gap:20 }}>
+            <div style={{ marginTop:40, display:'flex', alignItems:'center', gap:20, flexWrap:'wrap' }}>
               {['Demo fără cont, imediat','Cont gratuit când vrei să salvezi'].map(t => (
                 <div key={t} style={{ display:'flex', alignItems:'center', gap:7,
-                  fontSize:14, color:'rgba(255,255,255,0.8)' }}>
+                  fontSize:14, color:'#6B6860' }}>
                   <div style={{ width:6, height:6, borderRadius:'50%', background:'#2A7D4F' }} />
                   {t}
                 </div>
@@ -261,6 +262,78 @@ export default function HomePage() {
 
           {/* Right — video demo */}
           <HeroVideoPlaceholder />
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════════════════
+          WOW — CE FACE APLICATIA
+      ══════════════════════════════════════════════════════════════ */}
+      <section style={{ background:'#FFFFFF', padding:'80px 32px', fontFamily:sans }}>
+        <div style={{ maxWidth:1160, margin:'0 auto' }}>
+          <div className="reveal" style={{ textAlign:'center', marginBottom:52 }}>
+            <h2 style={{ fontFamily:serif, fontSize:36, lineHeight:1.15,
+              letterSpacing:'-.02em', color:'#1E2329', marginBottom:0 }}>
+              Trei lucruri pe care le faci acum în Excel sau pe hârtie.<br />
+              <span style={{ color:'#E8500A' }}>Acum le faci din telefon, în 30 de secunde.</span>
+            </h2>
+          </div>
+
+          <div className="wow-grid" style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:24 }}>
+            {[
+              {
+                icon: <path d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>,
+                situation: 'Factură de la furnizor pe bordul mașinii',
+                action: 'Faci o poză',
+                result: 'Cheltuiala e înregistrată automat — furnizor, sumă, TVA extrase instantaneu',
+                ai: true,
+              },
+              {
+                icon: <path d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 11h.01M12 11h.01M15 11h.01M4 19h16a2 2 0 002-2V7a2 2 0 00-2-2H4a2 2 0 00-2 2v10a2 2 0 002 2z"/>,
+                situation: 'Nu știi câte materiale îți trebuie pentru o casă de 120mp',
+                action: 'Introduci dimensiunile',
+                result: 'Devizul complet generat automat din norme tehnice românești',
+                ai: true,
+              },
+              {
+                icon: <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>,
+                situation: 'Simți că depășești bugetul dar nu știi cu cât',
+                action: 'Înregistrezi o achiziție',
+                result: 'Alertă exactă: −4.800 lei profit, depășire 17% pe etapa Fundații',
+                ai: false,
+              },
+            ].map((card, i) => (
+              <div key={i} className={`reveal ${i > 0 ? `reveal-d${i}` : ''}`} style={{
+                background:'#FAFAF8', border:'1px solid #E5E3DE', borderRadius:14, padding:28,
+              }}>
+                <div style={{ width:44, height:44, borderRadius:10, background:'#FFF0E8',
+                  display:'flex', alignItems:'center', justifyContent:'center', marginBottom:20 }}>
+                  <svg viewBox="0 0 24 24" width={22} height={22} fill="none"
+                    stroke="#E8500A" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                    {card.icon}
+                  </svg>
+                </div>
+                <div style={{ fontSize:12, fontWeight:600, color:'#A8A59E', textTransform:'uppercase',
+                  letterSpacing:'.06em', marginBottom:8 }}>Situație reală</div>
+                <div style={{ fontSize:15, color:'#1E2329', fontWeight:500, marginBottom:16,
+                  lineHeight:1.4 }}>{card.situation}</div>
+                <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:14 }}>
+                  <div style={{ width:24, height:24, borderRadius:'50%', background:'#E8500A',
+                    display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                    <svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="white"
+                      strokeWidth="2.5" strokeLinecap="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+                  </div>
+                  <span style={{ fontSize:14, fontWeight:600, color:'#E8500A' }}>{card.action}</span>
+                </div>
+                <div style={{ fontSize:14, color:'#4A4744', lineHeight:1.55 }}>{card.result}</div>
+                {card.ai && (
+                  <div style={{ marginTop:14, display:'inline-flex', alignItems:'center', gap:5,
+                    fontSize:11, fontWeight:600, color:'#6B6860', letterSpacing:'.04em' }}>
+                    ✦ AI integrat
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -865,13 +938,22 @@ export default function HomePage() {
               </div>
               <div style={{ fontSize:13, color:'#A8A59E', marginBottom:28 }}>pentru totdeauna</div>
               <div style={{ height:1, background:'#E5E3DE', marginBottom:24 }} />
-              <ul style={{ listStyle:'none', marginBottom:28 }}>
-                {['1 proiect activ complet','Calculator estimare rapidă',
-                  'Catalog 20 articole standard','Export PDF deviz',
-                  'Urmărire cheltuieli de bază'].map(f => (
-                  <li key={f} style={{ display:'flex', alignItems:'flex-start', gap:10,
-                    fontSize:14, color:'#2E2D2A', marginBottom:12, lineHeight:1.45, fontWeight:300 }}>
-                    <Check /> {f}
+              <ul style={{ listStyle:'none', marginBottom:16 }}>
+                {[
+                  { text:'1 proiect activ complet', strike:false },
+                  { text:'Catalog 20 articole standard', strike:false },
+                  { text:'Urmărire cheltuieli reale + alerte buget', strike:false },
+                  { text:'20 tokeni AI / an', strike:false },
+                  { text:'Export PDF deviz', strike:true },
+                  { text:'Lucru în echipă', strike:true },
+                ].map(f => (
+                  <li key={f.text} style={{ display:'flex', alignItems:'flex-start', gap:10,
+                    fontSize:14, color: f.strike ? '#A8A59E' : '#2E2D2A',
+                    marginBottom:12, lineHeight:1.45, fontWeight:300,
+                    textDecoration: f.strike ? 'line-through' : 'none' }}>
+                    <Check /> {f.text}{f.strike ? <span style={{ fontSize:11, color:'#A8A59E',
+                      fontStyle:'italic', marginLeft:4, textDecoration:'none',
+                      display:'inline-block' }}> (din Constructor)</span> : null}
                   </li>
                 ))}
               </ul>
@@ -969,6 +1051,10 @@ export default function HomePage() {
 
           <p style={{ textAlign:'center', marginTop:28, fontSize:14, color:'#A8A59E' }}>
             Toate prețurile includ TVA. Poți anula oricând. Fără contracte pe termen lung.
+          </p>
+          <p style={{ textAlign:'center', marginTop:12, fontSize:13, color:'#6B6860',
+            background:'#F3F2EF', borderRadius:8, padding:'10px 20px', maxWidth:560, margin:'12px auto 0' }}>
+            La atingerea oricărei limite: notificare în aplicație, niciodată blocare bruscă.
           </p>
         </div>
       </section>
