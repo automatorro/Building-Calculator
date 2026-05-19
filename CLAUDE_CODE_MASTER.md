@@ -27,6 +27,11 @@ middleware.ts                      ← protecție rute, COMPLET
 supabase/schema.sql                ← doar CITEȘTE, nu modifica direct
 ```
 
+### ⛔ TVA — REGULĂ ABSOLUTĂ:
+- **TVA implicit = 21% MEREU** — orice `|| 0`, `?? 0`, `default: 0` pe câmpul `tva` = BUG CRITIC
+- Orice fallback pe TVA se scrie `|| 21` sau `?? 21`, NICIODATĂ `|| 0` sau `|| 19`
+- Proiectele vechi create cu TVA 19% vor folosi 21% la orice recalcul nou
+
 ### ⛔ NU FACE niciodată:
 - NU rescrie componente mari (ProjectClientContainer, EstimateEditor) — le EXTINDE
 - NU schimba structura tabelelor existente — doar ADD COLUMN cu IF NOT EXISTS
@@ -58,10 +63,28 @@ supabase/schema.sql                ← doar CITEȘTE, nu modifica direct
 
 ## 3. VALORI FIXE — NU MODIFICA
 
+### ⛔⛔⛔ OBLIGATORIU — TVA = 21% PRETUTINDENI ÎN APLICAȚIE ⛔⛔⛔
+
 ```
-TVA standard (România, din 1 aug 2025):  21%   ← NU 19%!
-TVA redus (locuințe sociale):             11%   ← NU 5% sau 9%!
-TVA tranzitoriu (până 1 aug 2026):         9%   ← doar cu avans plătit înainte 1 aug 2025
+ORICE valoare implicită (default / fallback / placeholder / hardcode)
+pentru TVA în ORICE fișier din proiect TREBUIE să fie 21.
+
+NU 19. NU 0. NU alt număr.
+
+Verificări obligatorii:
+  ✅  settings.tva || 21         (NU || 0, NU || 19)
+  ✅  tva: 21                    în orice obiect de setări default
+  ✅  useState(21)               pentru orice state TVA
+  ✅  placeholder="21"           pe orice input TVA
+  ✅  ?? 21                      în orice nullish coalescing pe tva
+
+Rata legală (Legea 141/2025, în vigoare din 1 august 2025):
+  TVA standard:              21%   ← NU 19%!
+  TVA redus locuințe sociale: 11%   ← NU 5% sau 9%!
+  TVA tranzitoriu:            9%   ← DOAR dacă avans plătit înainte 1 aug 2025
+```
+
+```
 Stack: Next.js 16, Supabase, Tailwind v4, Framer Motion
 Supabase: vwcwsxvmkxmcwjtlikcq.supabase.co
 ```

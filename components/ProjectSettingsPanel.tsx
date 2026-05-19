@@ -75,11 +75,13 @@ export default function ProjectSettingsPanel({ settings, onSave, variant = 'full
                   />
                 </div>
                 <div className="space-y-1.5 pb-2 border-b border-border/30">
-                  <label className="text-[10px] font-black uppercase text-slate-500">TVA (%)</label>
-                  <input 
-                    type="number" 
+                  <label className="text-[10px] font-black uppercase text-slate-500">TVA (%) — standard 21%</label>
+                  <input
+                    type="number"
                     value={tempSettings.tva}
-                    onChange={e => setTempSettings({ ...tempSettings, tva: parseFloat(e.target.value) || 0 })}
+                    placeholder="21"
+                    min="0"
+                    onChange={e => setTempSettings({ ...tempSettings, tva: parseFloat(e.target.value) || 21 })}
                     className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-border/50 rounded-lg outline-none font-bold text-sm focus:border-primary"
                   />
                 </div>
