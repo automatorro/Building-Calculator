@@ -1382,8 +1382,10 @@ function PurchaseFormModal({
           <button
             onClick={() => {
               const amountRaw = parseFloat(formData.amount_total) || 0
-              const amountFinal = tvaInclus 
-                ? (amountRaw / (1 + (settings.tva || 0) / 100))
+              const amountFinal = tvaInclus
+                ? (ocrResult?.tvaAmount != null
+                    ? amountRaw - ocrResult.tvaAmount
+                    : amountRaw / (1 + (settings.tva || 21) / 100))
                 : amountRaw
 
               onSave({ 
