@@ -2,49 +2,46 @@
 
 export const dynamic = 'force-dynamic'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/utils/supabase/client'
-import { ArrowLeft, Save, Building2, MapPin, Percent, TrendingUp, Info, LayoutTemplate, Check, ChevronDown } from 'lucide-react'
 import Link from 'next/link'
+import { ArrowLeft, ArrowRight, Check } from 'lucide-react'
+
+const sans  = 'var(--font-dm-sans,"DM Sans",system-ui,sans-serif)'
+const serif = 'var(--font-dm-serif,"DM Serif Display",Georgia,serif)'
+
+const PROJECT_TYPES = [
+  { key: 'casa',      label: 'Casă nouă',        icon: '🏠', stages: ['Organizare Șantier','Fundație','Structură','Zidărie','Instalații','Finisaje Interioare','Finisaje Exterioare'] },
+  { key: 'renovare',  label: 'Renovare',          icon: '🔨', stages: ['Demolări','Zidărie','Instalații','Finisaje Interioare','Finisaje Exterioare'] },
+  { key: 'comercial', label: 'Spațiu comercial',  icon: '🏢', stages: ['Organizare Șantier','Fundație','Structură','Instalații','Finisaje Interioare','Finisaje Exterioare'] },
+  { key: 'altceva',   label: 'Altceva',           icon: '📋', stages: ['Organizare Șantier','Fundație','Structură','Zidărie','Instalații','Finisaje Interioare','Finisaje Exterioare'] },
+]
 
 export default function NewProjectPage() {
   const router = useRouter()
   const supabase = createClient()
+
+  const [step, setStep]       = useState(1)
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [startMode, setStartMode] = useState<'manual' | 'smart'>('manual')
-  const [showAdvanced, setShowAdvanced] = useState(false)
+  const [error, setError]     = useState<string | null>(null)
 
-  const [formData, setFormData] = useState({
-    name: '',
-    location: '',
-    profit: 5,
-    regie: 10,
-    tva: 21,
-    taxe_manopera: 2.25,
-    total_estimated_revenue: 0
-  })
+  const [projectType, setProjectType] = useState<string | null>(null)
+  const [name,        setName]        = useState('')
+  const [location,    setLocation]    = useState('')
 
-  const [templates, setTemplates] = useState<any[]>([])
-  const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null)
+  const [regie,  setRegie]  = useState(15)
+  const [profit, setProfit] = useState(10)
+  const [tva,    setTva]    = useState(21)
 
-  useEffect(() => {
-    const fetchTemplates = async () => {
-      const { data } = await supabase.from('project_templates').select('*').order('created_at', { ascending: false })
-      if (data) setTemplates(data)
-    }
-    fetchTemplates()
-  }, [])
+  const selectedType = PROJECT_TYPES.find(t => t.key === projectType) ?? PROJECT_TYPES[3]
 
-  const DEFAULT_STAGES = ["Organizare Șantier", "Fundație", "Structură", "Zidărie", "Instalații", "Finisaje Interioare", "Finisaje Exterioare"]
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleCreate = async () => {
     setLoading(true)
     setError(null)
 
-    // Verificăm limita de proiecte pentru planul gratuit
+    const finalName = name.trim() || selectedType.label + ' nou'
+
     const { data: { user } } = await supabase.auth.getUser()
     if (user) {
       const { data: profile } = await supabase
@@ -69,360 +66,321 @@ export default function NewProjectPage() {
       }
     }
 
-    let finalStages = DEFAULT_STAGES
-    let templateLines: any[] = []
-
-    if (startMode === 'manual' && selectedTemplateId) {
-      const t = templates.find(tpl => tpl.id === selectedTemplateId)
-      if (t) {
-        finalStages = t.stages
-        templateLines = t.lines_snapshot
-      }
-    }
-
     const { data: project, error: projectError } = await supabase
       .from('projects')
-      .insert([
-        { 
-          name: formData.name, 
-          location: formData.location,
-          settings: {
-            profit: formData.profit,
-            regie: formData.regie,
-            tva: formData.tva,
-            taxe_manopera: formData.taxe_manopera
-          },
-          stages: finalStages,
-          total_estimated_revenue: formData.total_estimated_revenue
-        }
-      ])
+      .insert([{
+        name: finalName,
+        location: location.trim(),
+        settings: { profit, regie, tva, taxe_manopera: 2.25 },
+        stages: selectedType.stages,
+        total_estimated_revenue: 0,
+      }])
       .select()
       .single()
 
+    setLoading(false)
+
     if (projectError) {
-      // Mesajul de la trigger-ul DB conține prefixul "PLAN_LIMIT: " — îl curățăm
       const msg = projectError.message.includes('PLAN_LIMIT:')
         ? projectError.message.replace('PLAN_LIMIT:', '').trim()
         : projectError.message
       setError(msg)
-      setLoading(false)
       return
     }
 
-    if (project && templateLines.length > 0) {
-      const { error: linesError } = await supabase
-        .from('estimate_lines')
-        .insert(templateLines.map(l => ({
-          project_id: project.id,
-          name: l.name || l.manual_name,
-          unit: l.unit || l.manual_um,
-          unit_price: l.unit_price || l.manual_price || 0,
-          quantity: l.quantity,
-          stage_name: l.stage_name,
-          resources_override: l.resources || [],
-          category_id: l.category_id,
-          normative_id: l.normative_id
-        })))
-      if (linesError) console.error('Error cloning template lines:', linesError)
-    }
-
     if (project) {
-      if (startMode === 'smart') {
-        router.push(`/projects/${project.id}?tab=planning&openSmartCalc=1`)
-      } else {
-        router.push(`/projects/${project.id}?tab=planning`)
-      }
+      router.push(`/projects/${project.id}?tab=planning`)
       router.refresh()
     }
   }
 
+  const canGoStep2 = !!projectType
+  const inputStyle: React.CSSProperties = {
+    width: '100%', padding: '12px 16px', background: '#F3F2EF',
+    border: '1px solid #E5E3DE', borderRadius: 8,
+    fontSize: 15, color: '#1E2329', fontFamily: sans, outline: 'none',
+    transition: 'border-color .15s', boxSizing: 'border-box',
+  }
+
   return (
-    <main className="min-h-screen max-w-2xl mx-auto px-6 py-8">
-      <Link href="/projects" className="inline-flex items-center gap-2 text-slate-500 hover:text-primary mb-6 sm:mb-8 transition-colors group">
-        <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-        Înapoi la Proiecte
-      </Link>
+    <div style={{ minHeight: '100vh', background: '#F3F2EF', fontFamily: sans }}>
+      <style>{`
+        .wiz-type-btn:hover { border-color: #E8500A !important; background: #FFF8F5 !important; }
+        .wiz-input:focus { border-color: #E8500A !important; }
+        @media (max-width: 600px) {
+          .wiz-types { grid-template-columns: 1fr 1fr !important; }
+          .wiz-coef  { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
 
-      <div className="mb-8 sm:mb-12">
-        <h1 className="page-title" style={{ fontSize: 32, marginBottom: 8 }}>Creează Proiect Nou</h1>
-        <p style={{ color: '#6B6860', fontSize: 15, fontWeight: 300 }}>Configurează datele de bază pentru noul tău deviz.</p>
-      </div>
-
-      <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
-        {/* Sectiune Informatii Generale */}
-        <div className="glass-card p-5 sm:p-8">
-          <div className="flex items-center gap-3 mb-6">
-            <Building2 className="w-6 h-6" style={{ color: '#E8500A' }} />
-            <h2 style={{ fontSize: 18, fontWeight: 600, color: '#1E2329' }}>Informații Generale</h2>
-          </div>
-          
-          <div className="grid gap-6">
-            <div>
-              <label className="block text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-wide">
-                Nume Proiect *
-              </label>
-              <input
-                required
-                type="text"
-                placeholder="ex: Vila P+1 Tunari"
-                className="w-full p-4 bg-slate-50 dark:bg-slate-800/50 border border-border rounded-xl focus:border-primary/50 focus:outline-none transition-all text-base sm:text-lg"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              />
-            </div>
-            <div>
-              <label className="block text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-wide">
-                Locație
-              </label>
-              <div className="relative">
-                <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
-                <input
-                  type="text"
-                  placeholder="Localitate / Județ"
-                  className="w-full p-4 pl-12 bg-slate-50 dark:bg-slate-800/50 border border-border rounded-xl focus:border-primary/50 focus:outline-none transition-all text-sm sm:text-base"
-                  value={formData.location}
-                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="glass-card p-5 sm:p-8">
-          <div className="flex items-center gap-3 mb-6">
-            <div style={{ width: 30, height: 30, borderRadius: 10, background: '#FFF0E8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Info className="w-4 h-4" style={{ color: '#E8500A' }} />
-            </div>
-            <h2 style={{ fontSize: 18, fontWeight: 600, color: '#1E2329' }}>Cum vrei să începi?</h2>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <button
-              type="button"
-              onClick={() => setStartMode('smart')}
-              style={{
-                padding: 16, borderRadius: 10, textAlign: 'left', transition: 'all .15s',
-                border: startMode === 'smart' ? '2px solid #E8500A' : '2px solid #E5E3DE',
-                background: startMode === 'smart' ? '#FFF0E8' : '#FAFAF8',
-                cursor: 'pointer', fontFamily: 'inherit',
-              }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
-                <div style={{ padding: 6, background: '#F3F2EF', borderRadius: 7 }}><TrendingUp size={16} color="#A8A59E" /></div>
-                {startMode === 'smart' && <Check size={18} color="#E8500A" />}
-              </div>
-              <h4 style={{ fontSize: 13, fontWeight: 600, color: '#1E2329', marginBottom: 4 }}>Deviz rapid (Smart Calc)</h4>
-              <p style={{ fontSize: 11, color: '#A8A59E' }}>Generează automat articolele și cantitățile din câțiva parametri.</p>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setStartMode('manual')}
-              style={{
-                padding: 16, borderRadius: 10, textAlign: 'left', transition: 'all .15s',
-                border: startMode === 'manual' ? '2px solid #E8500A' : '2px solid #E5E3DE',
-                background: startMode === 'manual' ? '#FFF0E8' : '#FAFAF8',
-                cursor: 'pointer', fontFamily: 'inherit',
-              }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
-                <div style={{ padding: 6, background: '#F3F2EF', borderRadius: 7 }}><LayoutTemplate size={16} color="#A8A59E" /></div>
-                {startMode === 'manual' && <Check size={18} color="#E8500A" />}
-              </div>
-              <h4 style={{ fontSize: 13, fontWeight: 600, color: '#1E2329', marginBottom: 4 }}>Deviz manual (Catalog / Șablon)</h4>
-              <p style={{ fontSize: 11, color: '#A8A59E' }}>Adaugi norme din Catalog sau pornești dintr-un șablon salvat.</p>
-            </button>
-          </div>
-        </div>
-
-        {/* Sectiune Alegere Sablon */}
-        <div className={`glass-card p-5 sm:p-8 ${startMode === 'smart' ? 'opacity-60 pointer-events-none' : ''}`}>
-          <div className="flex items-center gap-3 mb-6" style={{ color: '#E8500A' }}>
-            <LayoutTemplate className="w-6 h-6" />
-            <h2 style={{ fontSize: 18, fontWeight: 600, color: '#1E2329' }}>Alege un Șablon</h2>
-          </div>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <button
-              type="button"
-              onClick={() => setSelectedTemplateId(null)}
-              style={{
-                padding: 16, borderRadius: 10, textAlign: 'left', transition: 'all .15s',
-                border: !selectedTemplateId ? '2px solid #E8500A' : '2px solid #E5E3DE',
-                background: !selectedTemplateId ? '#FFF0E8' : '#FAFAF8',
-                cursor: 'pointer', fontFamily: 'inherit',
-              }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
-                <div style={{ padding: 6, background: '#F3F2EF', borderRadius: 7 }}><Building2 size={16} color="#A8A59E" /></div>
-                {!selectedTemplateId && <Check size={18} color="#E8500A" />}
-              </div>
-              <h4 style={{ fontSize: 13, fontWeight: 600, color: '#1E2329', marginBottom: 4 }}>Standard (Goluț)</h4>
-              <p style={{ fontSize: 11, color: '#A8A59E' }}>Doar etapele de bază, fără articole pre-configurate.</p>
-            </button>
-
-            {templates.map(t => (
-              <button
-                key={t.id}
-                type="button"
-                onClick={() => setSelectedTemplateId(t.id)}
-                style={{
-                  padding: 16, borderRadius: 10, textAlign: 'left', transition: 'all .15s',
-                  border: selectedTemplateId === t.id ? '2px solid #E8500A' : '2px solid #E5E3DE',
-                  background: selectedTemplateId === t.id ? '#FFF0E8' : '#FAFAF8',
-                  cursor: 'pointer', fontFamily: 'inherit',
-                }}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
-                  <div style={{ padding: 6, background: '#FFF0E8', borderRadius: 7 }}><LayoutTemplate size={16} color="#E8500A" /></div>
-                  {selectedTemplateId === t.id && <Check size={18} color="#E8500A" />}
+      {/* Header */}
+      <div style={{ background: '#FFFFFF', borderBottom: '1px solid #E5E3DE', padding: '16px 24px' }}>
+        <div style={{ maxWidth: 640, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 16 }}>
+          <Link href="/projects" style={{ display: 'flex', alignItems: 'center', gap: 6,
+            color: '#6B6860', textDecoration: 'none', fontSize: 14 }}>
+            <ArrowLeft size={16} /> Proiecte
+          </Link>
+          <div style={{ flex: 1, display: 'flex', justifyContent: 'center', gap: 8 }}>
+            {[1, 2, 3].map(s => (
+              <div key={s} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <div style={{
+                  width: 28, height: 28, borderRadius: '50%',
+                  background: step > s ? '#2A7D4F' : step === s ? '#E8500A' : '#E5E3DE',
+                  color: step >= s ? '#FFFFFF' : '#A8A59E',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 12, fontWeight: 700,
+                }}>
+                  {step > s ? <Check size={13} /> : s}
                 </div>
-                <h4 style={{ fontSize: 13, fontWeight: 600, color: '#1E2329', marginBottom: 4 }}>{t.name}</h4>
-                <p style={{ fontSize: 11, color: '#A8A59E' }}>{t.lines_snapshot?.length || 0} articole salvate.</p>
-              </button>
+                {s < 3 && <div style={{ width: 32, height: 1, background: step > s ? '#2A7D4F' : '#E5E3DE' }} />}
+              </div>
             ))}
           </div>
+          <Link href="/projects" style={{ fontSize: 13, color: '#A8A59E', textDecoration: 'none' }}>
+            Sari peste →
+          </Link>
         </div>
+      </div>
 
-        {/* Sectiune Setări Economice (Coeficienți) */}
-        <div className="glass-card p-5 sm:p-8">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
-              <TrendingUp className="w-6 h-6" style={{ color: '#E8500A' }} />
-              <h2 style={{ fontSize: 18, fontWeight: 600, color: '#1E2329' }}>Coeficienți & Recapitulație</h2>
-            </div>
-            <div style={{ padding: 6, background: '#FFF0E8', borderRadius: 7 }}
-              title="Aceste valori vor fi folosite pentru calculul prețului final de ofertă.">
-              <Info className="w-4 h-4" style={{ color: '#E8500A' }} />
-            </div>
-          </div>
+      <div style={{ maxWidth: 640, margin: '0 auto', padding: '32px 24px 64px' }}>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-            <div className="p-4 bg-white dark:bg-slate-950 border border-border rounded-xl">
-              <label className="block text-[10px] sm:text-xs font-black text-slate-400 mb-2 uppercase tracking-widest">
-                Marjă Profit (%)
+        {/* ── Step 1 ── */}
+        {step === 1 && (
+          <div>
+            <p style={{ fontSize: 12, fontWeight: 700, letterSpacing: '.08em', textTransform: 'uppercase',
+              color: '#E8500A', marginBottom: 10 }}>Pasul 1 din 3</p>
+            <h1 style={{ fontFamily: serif, fontSize: 32, color: '#1E2329', lineHeight: 1.1,
+              letterSpacing: '-.02em', marginBottom: 8 }}>
+              Ce construiești?
+            </h1>
+            <p style={{ fontSize: 15, color: '#6B6860', marginBottom: 32, lineHeight: 1.5 }}>
+              Selectează tipul lucrării — etapele se configurează automat.
+            </p>
+
+            <div className="wiz-types" style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 12, marginBottom: 28 }}>
+              {PROJECT_TYPES.map(t => (
+                <button key={t.key} type="button" className="wiz-type-btn" onClick={() => setProjectType(t.key)}
+                  style={{
+                    padding: '20px 16px', borderRadius: 12, textAlign: 'left', cursor: 'pointer',
+                    fontFamily: sans, transition: 'all .15s',
+                    border: projectType === t.key ? '2px solid #E8500A' : '2px solid #E5E3DE',
+                    background: projectType === t.key ? '#FFF0E8' : '#FFFFFF',
+                    position: 'relative',
+                  }}>
+                  {projectType === t.key && (
+                    <div style={{ position: 'absolute', top: 10, right: 10,
+                      width: 18, height: 18, borderRadius: '50%', background: '#E8500A',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Check size={11} color="white" />
+                    </div>
+                  )}
+                  <div style={{ fontSize: 28, marginBottom: 10 }}>{t.icon}</div>
+                  <div style={{ fontSize: 15, fontWeight: 600, color: '#1E2329' }}>{t.label}</div>
+                  <div style={{ fontSize: 12, color: '#A8A59E', marginTop: 4 }}>
+                    {t.stages.length} etape
+                  </div>
+                </button>
+              ))}
+            </div>
+
+            {/* Nume proiect */}
+            <div style={{ marginBottom: 16 }}>
+              <label style={{ fontSize: 13, fontWeight: 500, color: '#1E2329', display: 'block', marginBottom: 6 }}>
+                Nume proiect
               </label>
-              <div className="flex items-center gap-3">
-                <Percent className="w-4 h-4 text-primary shrink-0" />
-                <input
-                  type="number"
-                  step="0.1"
-                  className="w-full text-xl sm:text-2xl font-bold bg-transparent focus:outline-none"
-                  value={formData.profit}
-                  onChange={(e) => setFormData({ ...formData, profit: parseFloat(e.target.value) })}
-                />
-              </div>
-              <p className="text-[10px] text-slate-400 mt-2 leading-relaxed">Procentul tău de câștig peste costul direct. Constructorii mici: 5-10%. Firmele mari: 10-15%.</p>
+              <input type="text" className="wiz-input"
+                placeholder={projectType ? `${selectedType.label} — ${new Date().getFullYear()}` : 'ex: Casă nouă P+1, Florești'}
+                value={name} onChange={e => setName(e.target.value)}
+                style={inputStyle} />
             </div>
 
-            <div className="p-4 bg-white dark:bg-slate-950 border border-border rounded-xl">
-              <label className="block text-[10px] sm:text-xs font-black text-slate-400 mb-2 uppercase tracking-widest">
-                Cheltuieli Indirecte — Regie (%)
+            {/* Locație */}
+            <div style={{ marginBottom: 32 }}>
+              <label style={{ fontSize: 13, fontWeight: 500, color: '#1E2329', display: 'block', marginBottom: 6 }}>
+                Locație <span style={{ color: '#A8A59E', fontWeight: 400 }}>(opțional)</span>
               </label>
-              <div className="flex items-center gap-3">
-                <Percent className="w-4 h-4 text-primary shrink-0" />
-                <input
-                  type="number"
-                  step="0.1"
-                  className="w-full text-xl sm:text-2xl font-bold bg-transparent focus:outline-none"
-                  value={formData.regie}
-                  onChange={(e) => setFormData({ ...formData, regie: parseFloat(e.target.value) })}
-                />
-              </div>
-              <p className="text-[10px] text-slate-400 mt-2 leading-relaxed">Cheltuieli de firmă: chirie, contabilitate, asigurări, uzura sculelor. Uzual: 7-12%.</p>
+              <input type="text" className="wiz-input"
+                placeholder="ex: Florești, Cluj"
+                value={location} onChange={e => setLocation(e.target.value)}
+                style={inputStyle} />
             </div>
 
-            <div className="p-4 bg-white dark:bg-slate-950 border border-border rounded-xl">
-              <label className="block text-[10px] sm:text-xs font-black text-slate-400 mb-2 uppercase tracking-widest">
-                Cota TVA (%)
-              </label>
-              <div className="flex items-center gap-3">
-                <Percent className="w-4 h-4 text-primary shrink-0" />
-                <input
-                  type="number"
-                  className="w-full text-xl sm:text-2xl font-bold bg-transparent focus:outline-none"
-                  value={formData.tva}
-                  onChange={(e) => setFormData({ ...formData, tva: parseFloat(e.target.value) })}
-                />
-              </div>
-              <p className="text-[10px] text-slate-400 mt-2 leading-relaxed">TVA conform legislației în vigoare. Din 2025: 21% cota standard.</p>
-            </div>
-          </div>
-
-          {/* Setări avansate — collapsed */}
-          <button
-            type="button"
-            onClick={() => setShowAdvanced(!showAdvanced)}
-            className="flex items-center gap-2 mt-4 text-xs font-bold text-slate-400 hover:text-primary transition-colors"
-          >
-            <ChevronDown size={14} className={`transition-transform ${showAdvanced ? 'rotate-180' : ''}`} />
-            Setări avansate
-          </button>
-
-          {showAdvanced && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mt-4">
-              <div className="p-4 bg-white dark:bg-slate-950 border border-border rounded-xl">
-                <label className="block text-[10px] sm:text-xs font-black text-slate-400 mb-2 uppercase tracking-widest">
-                  Taxe manoperă (%)
-                </label>
-                <div className="flex items-center gap-3">
-                  <Percent className="w-4 h-4 text-primary shrink-0" />
-                  <input
-                    type="number"
-                    step="0.01"
-                    className="w-full text-xl sm:text-2xl font-bold bg-transparent focus:outline-none"
-                    value={formData.taxe_manopera}
-                    onChange={(e) => setFormData({ ...formData, taxe_manopera: parseFloat(e.target.value) })}
-                  />
-                </div>
-                <p className="text-[10px] text-slate-400 mt-2 leading-relaxed">CAS, CASS și impozit pe manoperă. Se aplică automat la calculul costurilor de manoperă.</p>
-              </div>
-
-              <div className="p-4 bg-white dark:bg-slate-950 border border-border rounded-xl ring-2 ring-primary/20">
-                <label className="block text-[10px] sm:text-xs font-black text-primary mb-2 uppercase tracking-widest">
-                  Venit Estimat Proiect (Vânzare)
-                </label>
-                <div className="flex items-center gap-3">
-                  <TrendingUp className="w-4 h-4 text-primary shrink-0" />
-                  <input
-                    type="number"
-                    placeholder="ex: 500000"
-                    className="w-full text-xl sm:text-2xl font-black bg-transparent focus:outline-none"
-                    value={formData.total_estimated_revenue}
-                    onChange={(e) => setFormData({ ...formData, total_estimated_revenue: parseFloat(e.target.value) || 0 })}
-                  />
-                </div>
-                <p className="text-[9px] text-slate-400 mt-1 italic">Prețul pe care îl negociezi cu beneficiarul. Folosit pentru calculul ROI și marjă profit reală.</p>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {error && (
-          <div className="p-4 bg-red-50 dark:bg-red-900/30 border border-red-100 dark:border-red-900/50 text-red-600 dark:text-red-400 rounded-xl text-sm font-medium">
-            {error}
+            <button type="button" disabled={!canGoStep2} onClick={() => setStep(2)}
+              style={{
+                width: '100%', padding: '14px', borderRadius: 8,
+                background: canGoStep2 ? '#E8500A' : '#E5E3DE',
+                color: canGoStep2 ? '#FFFFFF' : '#A8A59E',
+                border: 'none', fontSize: 15, fontWeight: 600,
+                fontFamily: sans, cursor: canGoStep2 ? 'pointer' : 'not-allowed',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+              }}>
+              Continuă <ArrowRight size={16} />
+            </button>
           </div>
         )}
 
-        <button
-          type="submit"
-          disabled={loading}
-          className={`
-            w-full flex items-center justify-center gap-3 p-4 sm:p-5 rounded-2xl text-lg sm:text-xl font-black transition-all shadow-xl active:scale-[0.98]
-            ${loading 
-              ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 cursor-not-allowed' 
-              : 'bg-primary text-white shadow-primary/20 hover:shadow-primary/40'
-            }
-          `}
-        >
-          {loading ? 'Se creează...' : (
-            <>
-              <Save className="w-6 h-6" />
-              {startMode === 'smart' ? 'Salvează și Pornește Smart Calc' : 'Salvează și Începe Devizul'}
-            </>
-          )}
-        </button>
-      </form>
-    </main>
+        {/* ── Step 2 ── */}
+        {step === 2 && (
+          <div>
+            <p style={{ fontSize: 12, fontWeight: 700, letterSpacing: '.08em', textTransform: 'uppercase',
+              color: '#E8500A', marginBottom: 10 }}>Pasul 2 din 3</p>
+            <h1 style={{ fontFamily: serif, fontSize: 32, color: '#1E2329', lineHeight: 1.1,
+              letterSpacing: '-.02em', marginBottom: 8 }}>
+              Coeficienții tăi
+            </h1>
+            <p style={{ fontSize: 15, color: '#6B6860', marginBottom: 32, lineHeight: 1.5 }}>
+              Poți schimba oricând din setările proiectului.
+            </p>
+
+            <div className="wiz-coef" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 12, marginBottom: 32 }}>
+              {([
+                { label: 'Regie', key: 'regie', val: regie, set: setRegie, hint: 'Cheltuieli indirecte: birou, utilaje, deplasări' },
+                { label: 'Profit', key: 'profit', val: profit, set: setProfit, hint: 'Marja ta de câștig peste costul direct' },
+                { label: 'TVA', key: 'tva', val: tva, set: setTva, hint: 'Cota standard 21% din aug. 2025' },
+              ] as const).map(f => (
+                <div key={f.label} style={{ background: '#FFFFFF', border: '1px solid #E5E3DE',
+                  borderRadius: 12, padding: '16px 14px', textAlign: 'center' }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: '#A8A59E', textTransform: 'uppercase',
+                    letterSpacing: '.06em', marginBottom: 10 }}>{f.label}</div>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
+                    <input type="number" min={0} max={100} step={0.5}
+                      value={f.val}
+                      onChange={e => f.set(parseFloat(e.target.value) || 0)}
+                      style={{ width: 56, textAlign: 'center', fontFamily: serif,
+                        fontSize: 28, color: '#1E2329', fontWeight: 400,
+                        border: 'none', background: 'transparent', outline: 'none' }} />
+                    <span style={{ fontFamily: serif, fontSize: 20, color: '#A8A59E' }}>%</span>
+                  </div>
+                  <div style={{ fontSize: 11, color: '#A8A59E', lineHeight: 1.4, marginTop: 8 }}>{f.hint}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* Quick presets */}
+            <div style={{ marginBottom: 32 }}>
+              <div style={{ fontSize: 12, fontWeight: 600, color: '#6B6860', marginBottom: 10 }}>
+                Preseturi rapide:
+              </div>
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                {[
+                  { label: 'Constructor mic (standard)', r: 15, p: 10, t: 21 },
+                  { label: 'Marjă mai mare', r: 15, p: 15, t: 21 },
+                  { label: 'Fără profit (cost)', r: 10, p: 0, t: 21 },
+                ].map(preset => (
+                  <button key={preset.label} type="button"
+                    onClick={() => { setRegie(preset.r); setProfit(preset.p); setTva(preset.t) }}
+                    style={{ padding: '6px 14px', borderRadius: 100, border: '1px solid #E5E3DE',
+                      background: '#FAFAF8', fontSize: 13, color: '#6B6860',
+                      cursor: 'pointer', fontFamily: sans, transition: 'all .15s' }}>
+                    {preset.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: 10 }}>
+              <button type="button" onClick={() => setStep(1)}
+                style={{ padding: '14px 20px', borderRadius: 8, border: '1px solid #E5E3DE',
+                  background: '#FFFFFF', color: '#6B6860', fontSize: 15,
+                  fontFamily: sans, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+                <ArrowLeft size={16} /> Înapoi
+              </button>
+              <button type="button" onClick={() => setStep(3)}
+                style={{ flex: 1, padding: '14px', borderRadius: 8, background: '#E8500A',
+                  color: '#FFFFFF', border: 'none', fontSize: 15, fontWeight: 600,
+                  fontFamily: sans, cursor: 'pointer', display: 'flex', alignItems: 'center',
+                  justifyContent: 'center', gap: 8 }}>
+                Continuă <ArrowRight size={16} />
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ── Step 3 ── */}
+        {step === 3 && (
+          <div>
+            <p style={{ fontSize: 12, fontWeight: 700, letterSpacing: '.08em', textTransform: 'uppercase',
+              color: '#E8500A', marginBottom: 10 }}>Pasul 3 din 3</p>
+            <h1 style={{ fontFamily: serif, fontSize: 32, color: '#1E2329', lineHeight: 1.1,
+              letterSpacing: '-.02em', marginBottom: 8 }}>
+              Totul e pregătit.
+            </h1>
+            <p style={{ fontSize: 15, color: '#6B6860', marginBottom: 28, lineHeight: 1.5 }}>
+              Verifică datele și creează proiectul.
+            </p>
+
+            {/* Summary card */}
+            <div style={{ background: '#FFFFFF', border: '1px solid #E5E3DE', borderRadius: 14,
+              padding: '24px 24px', marginBottom: 24 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 20,
+                paddingBottom: 20, borderBottom: '1px solid #F3F2EF' }}>
+                <div style={{ fontSize: 32 }}>{selectedType.icon}</div>
+                <div>
+                  <div style={{ fontSize: 18, fontWeight: 600, color: '#1E2329' }}>
+                    {name.trim() || `${selectedType.label} nou`}
+                  </div>
+                  {location && <div style={{ fontSize: 13, color: '#6B6860', marginTop: 3 }}>{location}</div>}
+                  <div style={{ fontSize: 12, color: '#A8A59E', marginTop: 3 }}>{selectedType.label}</div>
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 12, marginBottom: 20 }}>
+                {[
+                  { label: 'Regie', val: `${regie}%` },
+                  { label: 'Profit', val: `${profit}%` },
+                  { label: 'TVA', val: `${tva}%` },
+                ].map(f => (
+                  <div key={f.label} style={{ textAlign: 'center', background: '#F3F2EF',
+                    borderRadius: 8, padding: '10px 8px' }}>
+                    <div style={{ fontSize: 11, color: '#A8A59E', textTransform: 'uppercase',
+                      letterSpacing: '.06em', marginBottom: 4 }}>{f.label}</div>
+                    <div style={{ fontFamily: serif, fontSize: 22, color: '#1E2329' }}>{f.val}</div>
+                  </div>
+                ))}
+              </div>
+
+              <div>
+                <div style={{ fontSize: 11, fontWeight: 600, color: '#A8A59E', textTransform: 'uppercase',
+                  letterSpacing: '.06em', marginBottom: 10 }}>Etape incluse</div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                  {selectedType.stages.map(s => (
+                    <span key={s} style={{ fontSize: 12, background: '#F3F2EF', color: '#6B6860',
+                      padding: '3px 10px', borderRadius: 100 }}>{s}</span>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {error && (
+              <div style={{ background: '#FCECEA', border: '1px solid #C0392B22',
+                color: '#C0392B', padding: '10px 16px', borderRadius: 8, fontSize: 13,
+                marginBottom: 20, lineHeight: 1.4 }}>
+                {error}
+              </div>
+            )}
+
+            <button type="button" disabled={loading} onClick={handleCreate}
+              style={{ width: '100%', padding: '15px', borderRadius: 8,
+                background: loading ? '#E5E3DE' : '#E8500A',
+                color: loading ? '#A8A59E' : '#FFFFFF',
+                border: 'none', fontSize: 16, fontWeight: 700,
+                fontFamily: sans, cursor: loading ? 'not-allowed' : 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                marginBottom: 12 }}>
+              {loading ? 'Se creează proiectul...' : <>Deschide proiectul <ArrowRight size={16} /></>}
+            </button>
+
+            <button type="button" onClick={() => setStep(2)}
+              style={{ width: '100%', padding: '12px', borderRadius: 8,
+                border: '1px solid #E5E3DE', background: 'transparent', color: '#6B6860',
+                fontSize: 14, fontFamily: sans, cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+              <ArrowLeft size={14} /> Modifică coeficienții
+            </button>
+          </div>
+        )}
+
+      </div>
+    </div>
   )
 }
