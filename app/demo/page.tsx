@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { fmtRon } from '@/utils/format'
 
 const sans  = 'var(--font-dm-sans,"DM Sans",system-ui,sans-serif)'
@@ -103,9 +103,16 @@ function Chip({ children, color = '#6B6860' }: { children: React.ReactNode; colo
 }
 
 export default function DemoPage() {
-  const [activeTab, setActiveTab]     = useState<'deviz' | 'cheltuieli'>('deviz')
+  const [activeTab, setActiveTab]     = useState<'azi' | 'deviz' | 'cheltuieli'>('azi')
   const [expanded, setExpanded]       = useState<Record<number, boolean>>({ 0: true })
+  const [showSticky, setShowSticky]   = useState(false)
   const progressPct = Math.round((totalSpent / costDirect) * 100)
+
+  useEffect(() => {
+    const onScroll = () => setShowSticky(window.scrollY > 100)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
 
   return (
     <div style={{ minHeight: '100vh', background: '#F3F2EF', fontFamily: sans, overflowX: 'hidden' }}>
@@ -150,22 +157,6 @@ export default function DemoPage() {
           .banner-inner { flex-direction:column !important; align-items:flex-start !important; gap:8px !important; }
         }
       `}</style>
-
-      {/* ── Banner ── */}
-      <div style={{ background: '#1E2329', padding: '10px 16px' }}>
-        <div className="banner-inner" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
-          <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.55)' }}>
-            Proiect demo · Datele sunt fictive și nu se salvează
-          </span>
-          <Link href="/auth/register" style={{
-            background: '#E8500A', color: '#FFFFFF',
-            padding: '7px 16px', borderRadius: 6,
-            fontSize: 13, fontWeight: 700, textDecoration: 'none', whiteSpace: 'nowrap',
-          }}>
-            Creează cont gratuit →
-          </Link>
-        </div>
-      </div>
 
       {/* ── Header proiect ── */}
       <div style={{ background: '#374151' }}>
@@ -233,7 +224,7 @@ export default function DemoPage() {
           background: '#FFFFFF', borderRadius: 10, border: '1px solid #E5E3DE',
           padding: 4, width: 'fit-content',
         }}>
-          {([['deviz', 'Deviz'], ['cheltuieli', 'Cheltuieli']] as const).map(([key, label]) => (
+          {([['azi', 'Azi pe șantier'], ['deviz', 'Deviz'], ['cheltuieli', 'Cheltuieli']] as const).map(([key, label]) => (
             <button key={key} className="tab-btn" onClick={() => setActiveTab(key)} style={{
               padding: '9px 20px', borderRadius: 7, border: 'none', cursor: 'pointer',
               fontSize: 14, fontWeight: activeTab === key ? 600 : 400,
@@ -243,6 +234,91 @@ export default function DemoPage() {
             }}>{label}</button>
           ))}
         </div>
+
+        {/* ── Tab Azi ── */}
+        {activeTab === 'azi' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 20 }}>
+
+            {/* Lucrările zilei */}
+            <div style={{ background: '#FFFFFF', border: '1px solid #E5E3DE', borderRadius: 12, padding: '16px 18px' }}>
+              <div style={{ fontSize: 10, fontWeight: 700, color: '#A8A59E', textTransform: 'uppercase', letterSpacing: '.06em', marginBottom: 14 }}>
+                Lucrările zilei · 14 mai
+              </div>
+              {[
+                { etapa: 'Fundații', desc: 'Turnare beton C20/25 — fundații continue sector B', done: true },
+                { etapa: 'Fundații', desc: 'Cofrare stâlpi D+P, ax 3-4', done: false },
+                { etapa: 'Instalații', desc: 'Trasare instalații electrice, parter', done: false },
+              ].map((item, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 12, paddingBottom: 12,
+                  borderBottom: i < 2 ? '1px solid #F3F2EF' : 'none', marginBottom: i < 2 ? 12 : 0 }}>
+                  <div style={{ width: 20, height: 20, borderRadius: '50%', flexShrink: 0,
+                    background: item.done ? 'rgba(42,125,79,0.15)' : '#F3F2EF',
+                    border: item.done ? '1px solid rgba(42,125,79,0.4)' : '1px solid #E5E3DE',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 1 }}>
+                    {item.done && <svg width="8" height="6" viewBox="0 0 8 6" fill="none">
+                      <path d="M1 3l2 2 4-4" stroke="#2A7D4F" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>}
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 13, color: '#1E2329', fontWeight: 500, lineHeight: 1.4,
+                      textDecoration: item.done ? 'line-through' : 'none', opacity: item.done ? 0.5 : 1 }}>{item.desc}</div>
+                    <div style={{ fontSize: 11, color: '#A8A59E', marginTop: 2 }}>{item.etapa}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Ultima cheltuială */}
+            <div style={{ background: '#FFFFFF', border: '1px solid #E5E3DE', borderRadius: 12, padding: '16px 18px' }}>
+              <div style={{ fontSize: 10, fontWeight: 700, color: '#A8A59E', textTransform: 'uppercase', letterSpacing: '.06em', marginBottom: 14 }}>
+                Ultima cheltuială înregistrată
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 }}>
+                <div>
+                  <div style={{ fontSize: 15, fontWeight: 600, color: '#1E2329', marginBottom: 4 }}>
+                    Beton C20/25 — Lafarge Holcim
+                  </div>
+                  <div style={{ fontSize: 12, color: '#6B6860' }}>Etapa: Fundații · Acum 2h</div>
+                </div>
+                <div style={{ fontFamily: serif, fontSize: 20, color: '#E8500A', flexShrink: 0 }}>
+                  18.400 lei
+                </div>
+              </div>
+            </div>
+
+            {/* Buget etapă curentă cu depășire */}
+            <div style={{ background: '#FFFFFF', border: '1px solid #E5E3DE', borderRadius: 12, padding: '16px 18px' }}>
+              <div style={{ fontSize: 10, fontWeight: 700, color: '#A8A59E', textTransform: 'uppercase', letterSpacing: '.06em', marginBottom: 14 }}>
+                Buget etapă curentă — Fundații
+              </div>
+              {overstage && (
+                <>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8, fontSize: 13 }}>
+                    <span style={{ color: '#1E2329', fontWeight: 500 }}>Cheltuit: {fmtRon(overstage.spent)} lei</span>
+                    <span style={{ color: '#C0392B', fontWeight: 600 }}>Devizat: {fmtRon(stageTotal(overstage))} lei</span>
+                  </div>
+                  <div style={{ height: 8, background: '#F3F2EF', borderRadius: 4, overflow: 'hidden', marginBottom: 10 }}>
+                    <div style={{ height: '100%', width: `${Math.min(100, Math.round((overstage.spent / stageTotal(overstage)) * 100))}%`,
+                      background: '#C0392B', borderRadius: 4 }} />
+                  </div>
+                  <div style={{ background: 'rgba(192,57,43,0.07)', border: '1px solid rgba(192,57,43,0.3)',
+                    borderRadius: 8, padding: '10px 14px', display: 'flex', gap: 10, alignItems: 'center' }}>
+                    <span style={{ fontSize: 16 }}>⚠️</span>
+                    <div>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: '#C0392B' }}>
+                        Depășire {Math.round((overAmt / stageTotal(overstage)) * 100)}% — Impact profit: −{fmtRon(overAmt)} lei
+                      </div>
+                      <div style={{ fontSize: 12, color: '#6B6860', marginTop: 2 }}>
+                        +{fmtRon(overAmt)} lei peste bugetul planificat
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+
+          </div>
+        )}
 
         {/* ── Tab Deviz ── */}
         {activeTab === 'deviz' && (
@@ -451,6 +527,29 @@ export default function DemoPage() {
         </div>
 
       </div>
+
+      {/* ── Sticky footer CTA ── */}
+      {showSticky && (
+        <div style={{
+          position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 100,
+          background: '#1E2329', borderTop: '1px solid rgba(255,255,255,0.1)',
+          padding: '10px 20px',
+        }}>
+          <div style={{ maxWidth: 1040, margin: '0 auto', display: 'flex',
+            alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
+            <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)' }}>
+              Lucrezi pe un proiect real?
+            </span>
+            <Link href="/auth/register" style={{
+              background: '#E8500A', color: '#FFFFFF',
+              padding: '9px 20px', borderRadius: 7,
+              fontSize: 14, fontWeight: 700, textDecoration: 'none', whiteSpace: 'nowrap',
+            }}>
+              Creează cont gratuit →
+            </Link>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
