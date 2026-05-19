@@ -286,13 +286,19 @@ export default function ProjectClientContainer({
       }
     }
 
-    const toInsert = { ...newPurchase }
-    delete toInsert.photosFiles
-    if (photos.length > 0) toInsert.photos = photos
+    const toInsert = {
+      project_id:   projectId,
+      name:         newPurchase.name,
+      amount_total: newPurchase.amount_total,
+      stage_name:   newPurchase.stage_name,
+      category:     newPurchase.category,
+      date:         newPurchase.date,
+      ...(photos.length > 0 ? { photos } : {}),
+    }
 
     const { data, error } = await supabase
       .from('purchases')
-      .insert([{ ...toInsert, project_id: projectId }])
+      .insert([toInsert])
       .select()
       .single()
 
@@ -350,7 +356,15 @@ export default function ProjectClientContainer({
 
   /* ── Editare achiziție ──────────────────────────────────────────────── */
   const handleUpdatePurchase = async (updated: any) => {
-    const { id, photosFiles: _files, ...fields } = updated
+    const { id } = updated
+    const fields = {
+      name:         updated.name,
+      amount_total: updated.amount_total,
+      stage_name:   updated.stage_name,
+      category:     updated.category,
+      date:         updated.date,
+      ...(updated.photos ? { photos: updated.photos } : {}),
+    }
     const { data, error } = await supabase
       .from('purchases')
       .update(fields)
