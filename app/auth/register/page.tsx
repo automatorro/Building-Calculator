@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/utils/supabase/client'
-import { Eye, EyeOff, CheckCircle2 } from 'lucide-react'
+import { Eye, EyeOff, CheckCircle2, ArrowRight } from 'lucide-react'
 
 const C = {
   black:      '#1E2329',
@@ -51,39 +51,27 @@ const BENEFITS = [
 ]
 
 export default function RegisterPage() {
-  const [fullName,        setFullName]        = useState('')
-  const [email,           setEmail]           = useState('')
-  const [password,        setPassword]        = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
-  const [showPass,        setShowPass]        = useState(false)
-  const [showConf,        setShowConf]        = useState(false)
-  const [loading,         setLoading]         = useState(false)
-  const [error,           setError]           = useState<string | null>(null)
-  const [success,         setSuccess]         = useState(false)
+  const [email,    setEmail]   = useState('')
+  const [password, setPassword] = useState('')
+  const [showPass, setShowPass] = useState(false)
+  const [loading,  setLoading]  = useState(false)
+  const [error,    setError]    = useState<string | null>(null)
+  const [success,  setSuccess]  = useState(false)
 
   const router   = useRouter()
   const supabase = createClient()
-
-  /* Indicator putere parolă */
-  const passStrength = password.length === 0 ? null
-    : password.length < 6  ? { label:'Prea scurtă', pct: 25, color: C.red }
-    : password.length < 8  ? { label:'Slabă',       pct: 50, color: '#D97706' }
-    : password.length < 12 ? { label:'Bună',        pct: 75, color: C.green }
-    :                        { label:'Excelentă',   pct:100, color: C.green }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
 
-    if (password !== confirmPassword) { setError('Parolele nu coincid.'); return }
-    if (password.length < 8)          { setError('Parola trebuie să aibă minim 8 caractere.'); return }
+    if (password.length < 8) { setError('Parola trebuie să aibă minim 8 caractere.'); return }
 
     setLoading(true)
 
     const { error: err } = await supabase.auth.signUp({
       email: email.trim(),
       password,
-      options: { data: { full_name: fullName.trim() } },
     })
 
     setLoading(false)
@@ -98,8 +86,7 @@ export default function RegisterPage() {
     }
 
     setSuccess(true)
-    /* Dacă email confirmation e dezactivat în Supabase, redirect automat */
-    setTimeout(() => { router.push('/projects'); router.refresh() }, 2500)
+    setTimeout(() => { router.push('/projects/new'); router.refresh() }, 1500)
   }
 
   const inputStyle: React.CSSProperties = {
@@ -124,12 +111,12 @@ export default function RegisterPage() {
           <h2 style={{ fontFamily:C.serif, fontSize:26, fontWeight:400,
             color:C.black, marginBottom:10 }}>Cont creat!</h2>
           <p style={{ fontSize:14, color:C.gray600, lineHeight:1.6, marginBottom:24 }}>
-            Verifică emailul dacă e nevoie de confirmare, sau vei fi redirecționat automat.
+            Te ducem direct la primul tău proiect.
           </p>
-          <Link href="/projects" style={{ display:'inline-block', background:C.orange,
-            color:'white', padding:'11px 28px', borderRadius:8, textDecoration:'none',
-            fontSize:14, fontWeight:500 }}>
-            Mergi la proiecte →
+          <Link href="/projects/new" style={{ display:'inline-flex', alignItems:'center', gap:8,
+            background:C.orange, color:'white', padding:'11px 28px', borderRadius:8,
+            textDecoration:'none', fontSize:14, fontWeight:500 }}>
+            Creează primul proiect <ArrowRight size={14} />
           </Link>
         </div>
       </div>
@@ -203,7 +190,7 @@ export default function RegisterPage() {
             Creează cont gratuit
           </h1>
           <p style={{ fontSize:14, color:C.gray600, marginBottom:28, lineHeight:1.5 }}>
-            Primele 14 zile fără restricții, fără card.
+            Primul proiect complet gratuit, fără card.
           </p>
 
           {error && (
@@ -215,16 +202,6 @@ export default function RegisterPage() {
           )}
 
           <form onSubmit={handleSubmit} style={{ display:'flex', flexDirection:'column', gap:16 }}>
-
-            {/* Nume */}
-            <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
-              <label style={labelStyle}>Nume complet</label>
-              <input type="text" required autoComplete="name" placeholder="Ion Ionescu"
-                value={fullName} onChange={e=>setFullName(e.target.value)}
-                style={inputStyle}
-                onFocus={e=>(e.target.style.borderColor=C.orange)}
-                onBlur={e=>(e.target.style.borderColor=C.gray200)} />
-            </div>
 
             {/* Email */}
             <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
@@ -252,41 +229,6 @@ export default function RegisterPage() {
                   {showPass ? <EyeOff size={17}/> : <Eye size={17}/>}
                 </button>
               </div>
-              {/* Indicator putere */}
-              {passStrength && (
-                <div style={{ display:'flex', alignItems:'center', gap:8, marginTop:2 }}>
-                  <div style={{ flex:1, height:3, background:C.gray200, borderRadius:99, overflow:'hidden' }}>
-                    <div style={{ height:'100%', background:passStrength.color,
-                      width:`${passStrength.pct}%`, transition:'width .3s' }} />
-                  </div>
-                  <span style={{ fontSize:11, color:passStrength.color, fontWeight:500, minWidth:60, textAlign:'right' }}>
-                    {passStrength.label}
-                  </span>
-                </div>
-              )}
-            </div>
-
-            {/* Confirmare parolă */}
-            <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
-              <label style={labelStyle}>Confirmă parola</label>
-              <div style={{ position:'relative' }}>
-                <input type={showConf ? 'text' : 'password'} required autoComplete="new-password"
-                  placeholder="Repetă parola"
-                  value={confirmPassword} onChange={e=>setConfirmPassword(e.target.value)}
-                  style={{ ...inputStyle, paddingRight:44,
-                    borderColor: confirmPassword && confirmPassword !== password ? C.red : C.gray200 }}
-                  onFocus={e=>(e.target.style.borderColor=C.orange)}
-                  onBlur={e=>(e.target.style.borderColor=
-                    confirmPassword && confirmPassword !== password ? C.red : C.gray200)} />
-                <button type="button" onClick={()=>setShowConf(!showConf)}
-                  style={{ position:'absolute', right:14, top:'50%', transform:'translateY(-50%)',
-                    background:'none', border:'none', cursor:'pointer', color:C.gray400, display:'flex', padding:0 }}>
-                  {showConf ? <EyeOff size={17}/> : <Eye size={17}/>}
-                </button>
-              </div>
-              {confirmPassword && confirmPassword !== password && (
-                <span style={{ fontSize:12, color:C.red }}>Parolele nu coincid.</span>
-              )}
             </div>
 
             {/* Submit */}
