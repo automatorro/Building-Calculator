@@ -25,6 +25,7 @@ import { toast } from 'sonner'
 import { fmtRon } from '@/utils/format'
 import { processPurchaseDocument, PurchaseOcrResult } from '@/utils/purchase-ocr'
 import { Camera, Scan, Loader2, Info } from 'lucide-react'
+import DedemanCatalogDrawer, { type DedemanOrderItem } from './achizitii/DedemanCatalogDrawer'
 
 interface ProjectClientContainerProps {
   projectId: string
@@ -160,6 +161,7 @@ export default function ProjectClientContainer({
   const [purchases, setPurchases] = useState<Purchase[]>(initialPurchases)
   const [revenue, setRevenue] = useState(initialRevenue)
   const [showPurchaseForm, setShowPurchaseForm] = useState(false)
+  const [showDedemanDrawer, setShowDedemanDrawer] = useState(false)
   const [editingPurchase, setEditingPurchase] = useState<Purchase | null>(null)
   const [budgetAlert, setBudgetAlert] = useState<{
     stage: string; exceeded: number; impact: number
@@ -352,6 +354,43 @@ export default function ProjectClientContainer({
     }
     setPurchases(prev => prev.filter(p => p.id !== id))
     toast.success('Achiziție ștearsă.')
+  }
+
+  /* ── Comandă Dedeman → comenzi_achizitie + comanda_linii ───────────── */
+  const handleAddDedemanItems = async (items: DedemanOrderItem[]) => {
+    const total = items.reduce((s, i) => s + (i.total || 0), 0)
+    const { data: comanda, error: errComanda } = await supabase
+      .from('comenzi_achizitie')
+      .insert({ project_id: projectId, furnizor: 'Dedeman', status: 'draft', total })
+      .select()
+      .single()
+
+    if (errComanda) {
+      toast.error('Eroare la crearea comenzii Dedeman: ' + errComanda.message)
+      return
+    }
+
+    const linii = items.map((item) => ({
+      comanda_id: comanda.id,
+      cod_produs: item.cod_produs,
+      ean: item.ean,
+      nume_produs: item.nume,
+      brand: item.brand,
+      furnizor: 'Dedeman',
+      cantitate: item.cantitate,
+      unitate_masura: item.unitate_masura,
+      pret_unitar: item.pret_unitar,
+      url_produs: item.url,
+      imagine_url: item.imagine_url,
+    }))
+
+    const { error: errLinii } = await supabase.from('comanda_linii').insert(linii)
+    if (errLinii) {
+      toast.error('Eroare la salvarea liniilor comenzii: ' + errLinii.message)
+      return
+    }
+
+    toast.success(`Comandă Dedeman salvată — ${items.length} produse, ${total.toFixed(2)} RON`)
   }
 
   /* ── Editare achiziție ──────────────────────────────────────────────── */
@@ -923,14 +962,29 @@ export default function ProjectClientContainer({
                 <h3 style={{ fontFamily: 'inherit', fontSize: 15, fontWeight: 600, color: '#1E2329' }}>
                   Registru Achiziții Reale
                 </h3>
-                <button onClick={() => setShowPurchaseForm(true)}
-                  style={{
-                    background: '#E8500A', color: 'white', border: 'none',
-                    padding: '8px 10px', borderRadius: 8, cursor: 'pointer',
-                    display: 'flex', alignItems: 'center'
-                  }}>
-                  <Plus size={18} />
-                </button>
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                  <button
+                    onClick={() => setShowDedemanDrawer(true)}
+                    style={{
+                      background: '#16a34a', color: 'white', border: 'none',
+                      padding: '8px 14px', borderRadius: 8, cursor: 'pointer',
+                      display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600
+                    }}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>
+                    </svg>
+                    Catalog Dedeman
+                  </button>
+                  <button onClick={() => setShowPurchaseForm(true)}
+                    style={{
+                      background: '#E8500A', color: 'white', border: 'none',
+                      padding: '8px 10px', borderRadius: 8, cursor: 'pointer',
+                      display: 'flex', alignItems: 'center'
+                    }}>
+                    <Plus size={18} />
+                  </button>
+                </div>
               </div>
               <div className="overflow-x-auto relative">
                 <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: 0, fontSize: 13 }}>
@@ -1125,6 +1179,14 @@ export default function ProjectClientContainer({
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* ── Catalog Dedeman Drawer ──────────────────────────────────────── */}
+      <DedemanCatalogDrawer
+        open={showDedemanDrawer}
+        onClose={() => setShowDedemanDrawer(false)}
+        onAddItems={handleAddDedemanItems}
+        projectName={projectName}
+      />
 
       {/* ── Modal achiziție ─────────────────────────────────────────────── */}
       {showPurchaseForm && (
