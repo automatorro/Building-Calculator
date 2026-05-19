@@ -12,7 +12,7 @@ import type { OptimizationSuggestion } from '@/lib/ai-types'
 import { Purchase, calculateFinancials } from '@/utils/calculators/financials'
 import {
   LayoutDashboard, ClipboardList, Wallet,
-  Settings as SettingsIcon, Plus, CalendarDays, ListTree, CheckCircle2, MessageSquare, Users, Sparkles, BookOpen, ScanLine, Sunrise, AlertTriangle
+  Settings as SettingsIcon, Plus, CalendarDays, ListTree, CheckCircle2, MessageSquare, Users, Sparkles, BookOpen, ScanLine, Sunrise, AlertTriangle, Pencil, Trash2
 } from 'lucide-react'
 import ProjectAssistantAI from './ProjectAssistantAI'
 import ProjectTeamSettings from './ProjectTeamSettings'
@@ -160,6 +160,7 @@ export default function ProjectClientContainer({
   const [purchases, setPurchases] = useState<Purchase[]>(initialPurchases)
   const [revenue, setRevenue] = useState(initialRevenue)
   const [showPurchaseForm, setShowPurchaseForm] = useState(false)
+  const [editingPurchase, setEditingPurchase] = useState<Purchase | null>(null)
   const [budgetAlert, setBudgetAlert] = useState<{
     stage: string; exceeded: number; impact: number
   } | null>(null)
@@ -334,6 +335,36 @@ export default function ProjectClientContainer({
       console.error('Error adding purchase:', error)
       toast.error('Eroare la adăugarea achiziției: ' + (error.message || 'Eroare necunoscută'))
     }
+  }
+
+  /* ── Ștergere achiziție ─────────────────────────────────────────────── */
+  const handleDeletePurchase = async (id: string) => {
+    const { error } = await supabase.from('purchases').delete().eq('id', id)
+    if (error) {
+      toast.error('Eroare la ștergerea achiziției: ' + error.message)
+      return
+    }
+    setPurchases(prev => prev.filter(p => p.id !== id))
+    toast.success('Achiziție ștearsă.')
+  }
+
+  /* ── Editare achiziție ──────────────────────────────────────────────── */
+  const handleUpdatePurchase = async (updated: any) => {
+    const { id, photosFiles: _files, ...fields } = updated
+    const { data, error } = await supabase
+      .from('purchases')
+      .update(fields)
+      .eq('id', id)
+      .select()
+      .single()
+    if (error) {
+      toast.error('Eroare la actualizarea achiziției: ' + error.message)
+      return
+    }
+    setPurchases(prev => prev.map(p => p.id === id ? (data as Purchase) : p))
+    setEditingPurchase(null)
+    setShowPurchaseForm(false)
+    toast.success('Achiziție actualizată.')
   }
 
   /* ── Actualizare linie din orice tab (Planificare/Deviz) ────────────── */
@@ -900,7 +931,7 @@ export default function ProjectClientContainer({
                       }}>
                         Articol / Notă
                       </th>
-                      {['Dată', 'Poze', 'Etapă', 'Categorie', 'Sumă'].map(h => (
+                      {['Dată', 'Poze', 'Etapă', 'Categorie', 'Sumă', ''].map(h => (
                         <th key={h} style={{
                           padding: '10px 20px', textAlign: h === 'Sumă' ? 'right' : 'left',
                           fontSize: 11, fontWeight: 600, color: '#6B6860',
@@ -971,6 +1002,40 @@ export default function ProjectClientContainer({
                             fontWeight: 700, color: '#E8500A', whiteSpace: 'nowrap'
                           }}>
                             {fmtRon(Number(p.amount_total))} lei
+                          </td>
+                          <td style={{ padding: '12px 12px', whiteSpace: 'nowrap' }}>
+                            <div style={{ display: 'flex', gap: 4, justifyContent: 'flex-end' }}>
+                              <button
+                                title="Editează"
+                                onClick={() => { setEditingPurchase(p); setShowPurchaseForm(true) }}
+                                style={{
+                                  padding: '5px 7px', borderRadius: 6, border: '1px solid #E5E3DE',
+                                  background: '#F3F2EF', cursor: 'pointer', color: '#4A4744',
+                                  display: 'flex', alignItems: 'center', transition: 'all .15s'
+                                }}
+                                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = '#E8500A20'; (e.currentTarget as HTMLButtonElement).style.borderColor = '#E8500A'; (e.currentTarget as HTMLButtonElement).style.color = '#E8500A' }}
+                                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = '#F3F2EF'; (e.currentTarget as HTMLButtonElement).style.borderColor = '#E5E3DE'; (e.currentTarget as HTMLButtonElement).style.color = '#4A4744' }}
+                              >
+                                <Pencil size={13} />
+                              </button>
+                              <button
+                                title="Șterge"
+                                onClick={() => {
+                                  if (confirm(`Ștergi achiziția "${p.name}" (${fmtRon(Number(p.amount_total))} lei)? Această acțiune nu poate fi anulată.`)) {
+                                    handleDeletePurchase(p.id)
+                                  }
+                                }}
+                                style={{
+                                  padding: '5px 7px', borderRadius: 6, border: '1px solid #E5E3DE',
+                                  background: '#F3F2EF', cursor: 'pointer', color: '#4A4744',
+                                  display: 'flex', alignItems: 'center', transition: 'all .15s'
+                                }}
+                                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = '#FEE2E2'; (e.currentTarget as HTMLButtonElement).style.borderColor = '#FCA5A5'; (e.currentTarget as HTMLButtonElement).style.color = '#DC2626' }}
+                                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = '#F3F2EF'; (e.currentTarget as HTMLButtonElement).style.borderColor = '#E5E3DE'; (e.currentTarget as HTMLButtonElement).style.color = '#4A4744' }}
+                              >
+                                <Trash2 size={13} />
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       ))
@@ -1050,8 +1115,10 @@ export default function ProjectClientContainer({
       {/* ── Modal achiziție ─────────────────────────────────────────────── */}
       {showPurchaseForm && (
         <PurchaseFormModal
-          onClose={() => setShowPurchaseForm(false)}
+          onClose={() => { setShowPurchaseForm(false); setEditingPurchase(null) }}
           onSave={handleAddPurchase}
+          onUpdate={handleUpdatePurchase}
+          initialPurchase={editingPurchase}
           financials={financials}
           settings={settings}
           stages={stages.length > 0
@@ -1064,23 +1131,27 @@ export default function ProjectClientContainer({
   )
 }
 
-/* ─── Modal înregistrare achiziție ──────────────────────────────────────── */
+/* ─── Modal înregistrare / editare achiziție ─────────────────────────────── */
 function PurchaseFormModal({
-  onClose, onSave, stages, financials, settings,
+  onClose, onSave, onUpdate, initialPurchase, stages, financials, settings,
 }: {
   onClose: () => void
   onSave: (p: any) => void
+  onUpdate?: (p: any) => void
+  initialPurchase?: any
   stages: string[]
   financials: any
   settings: any
 }) {
+  const isEditing = !!initialPurchase
   const [formData, setFormData] = useState({
-    name: '', amount_total: '',
-    stage_name: stages[0] || 'Lucrări Generale',
-    category: 'Material',
-    date: new Date().toISOString().split('T')[0],
+    name: initialPurchase?.name ?? '',
+    amount_total: initialPurchase?.amount_total?.toString() ?? '',
+    stage_name: initialPurchase?.stage_name ?? stages[0] ?? 'Lucrări Generale',
+    category: initialPurchase?.category ?? 'Material',
+    date: initialPurchase?.date ?? new Date().toISOString().split('T')[0],
   })
-  const [tvaInclus, setTvaInclus] = useState(true)
+  const [tvaInclus, setTvaInclus] = useState(!isEditing)
   const [photosFiles, setPhotosFiles] = useState<File[]>([])
   const [isScanning, setIsScanning] = useState(false)
   const [ocrResult, setOcrResult] = useState<PurchaseOcrResult | null>(null)
@@ -1129,40 +1200,42 @@ function PurchaseFormModal({
             fontFamily: 'var(--font-dm-serif,"DM Serif Display",Georgia,serif)',
             fontSize: 22, fontWeight: 400, color: '#1E2329'
           }}>
-            Înregistrare Achiziție
+            {isEditing ? 'Editare Achiziție' : 'Înregistrare Achiziție'}
           </h3>
-          <div style={{ display: 'flex', gap: 8 }}>
-            <label style={{
-              display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px',
-              background: '#F3F2EF', borderRadius: 8, fontSize: 11, fontWeight: 800,
-              cursor: 'pointer', color: '#4A4744', textTransform: 'uppercase', letterSpacing: '0.05em'
-            }}>
-              <Camera size={14} /> Foto Cameră
-              <input type="file" accept="image/*" capture="environment" style={{ display: 'none' }}
-                onChange={e => {
-                  const file = e.target.files?.[0]
-                  if (file) {
-                    setPhotosFiles([file])
-                    handleScan(file)
-                  }
-                }} />
-            </label>
-            <label style={{
-              display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px',
-              background: '#E8500A15', borderRadius: 8, fontSize: 11, fontWeight: 800,
-              cursor: 'pointer', color: '#E8500A', textTransform: 'uppercase', letterSpacing: '0.05em'
-            }}>
-              <Scan size={14} /> Încarcă & Scan
-              <input type="file" accept="image/*" style={{ display: 'none' }}
-                onChange={e => {
-                  const file = e.target.files?.[0]
-                  if (file) {
-                    setPhotosFiles([file])
-                    handleScan(file)
-                  }
-                }} />
-            </label>
-          </div>
+          {!isEditing && (
+            <div style={{ display: 'flex', gap: 8 }}>
+              <label style={{
+                display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px',
+                background: '#F3F2EF', borderRadius: 8, fontSize: 11, fontWeight: 800,
+                cursor: 'pointer', color: '#4A4744', textTransform: 'uppercase', letterSpacing: '0.05em'
+              }}>
+                <Camera size={14} /> Foto Cameră
+                <input type="file" accept="image/*" capture="environment" style={{ display: 'none' }}
+                  onChange={e => {
+                    const file = e.target.files?.[0]
+                    if (file) {
+                      setPhotosFiles([file])
+                      handleScan(file)
+                    }
+                  }} />
+              </label>
+              <label style={{
+                display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px',
+                background: '#E8500A15', borderRadius: 8, fontSize: 11, fontWeight: 800,
+                cursor: 'pointer', color: '#E8500A', textTransform: 'uppercase', letterSpacing: '0.05em'
+              }}>
+                <Scan size={14} /> Încarcă & Scan
+                <input type="file" accept="image/*" style={{ display: 'none' }}
+                  onChange={e => {
+                    const file = e.target.files?.[0]
+                    if (file) {
+                      setPhotosFiles([file])
+                      handleScan(file)
+                    }
+                  }} />
+              </label>
+            </div>
+          )}
         </div>
 
         {isScanning && (
@@ -1388,18 +1461,24 @@ function PurchaseFormModal({
                     : amountRaw / (1 + (settings.tva || 21) / 100))
                 : amountRaw
 
-              onSave({ 
-                ...formData, 
-                amount_total: amountFinal, 
+              const payload = {
+                ...formData,
+                amount_total: amountFinal,
                 photosFiles,
-                metadata: { 
+                metadata: {
                   vendor_cui: ocrResult?.vendorCui,
                   tva_amount: ocrResult?.tvaAmount,
                   items: ocrResult?.items,
                   tva_inclus_la_introducere: tvaInclus,
                   suma_bruta_originala: amountRaw
                 }
-              })
+              }
+
+              if (isEditing && onUpdate) {
+                onUpdate({ id: initialPurchase.id, ...payload })
+              } else {
+                onSave(payload)
+              }
             }}
             disabled={!formData.name || !formData.amount_total || isScanning}
             style={{
@@ -1409,7 +1488,7 @@ function PurchaseFormModal({
               fontFamily: 'inherit', opacity: (!formData.name || !formData.amount_total || isScanning) ? 0.5 : 1,
               transition: 'background .15s'
             }}>
-            {isScanning ? 'Se analizează...' : 'Salvează'}
+            {isScanning ? 'Se analizează...' : isEditing ? 'Actualizează' : 'Salvează'}
           </button>
         </div>
       </div>
