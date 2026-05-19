@@ -1,10 +1,18 @@
 'use server'
 
 import { createClient } from '@/utils/supabase/server'
-import { Resend } from 'resend'
+import nodemailer from 'nodemailer'
 
-function getResend() {
-  return new Resend(process.env.RESEND_API_KEY ?? 'placeholder')
+function getMailTransporter() {
+  return nodemailer.createTransport({
+    host: 'smtp.zoho.com',
+    port: 465,
+    secure: true,
+    auth: {
+      user: process.env.ZOHO_SMTP_USER,
+      pass: process.env.ZOHO_SMTP_PASS,
+    },
+  })
 }
 
 export async function inviteMemberAction(projectId: string, email: string, role: string) {
@@ -49,11 +57,11 @@ export async function inviteMemberAction(projectId: string, email: string, role:
   const inviteLink = `${baseUrl}/invite/${token}`
   
   try {
-    const { data, error } = await getResend().emails.send({
-      from: 'Santier.app <onboarding@resend.dev>',
+    await getMailTransporter().sendMail({
+      from: `Santier.app <${process.env.ZOHO_SMTP_USER}>`,
       to: email,
       subject: `Invitație colaborare proiect: ${project.name}`,
-        html: `
+      html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
           <h2 style="color: #E8500A; margin-bottom: 20px;">Salut!</h2>
           <p style="font-size: 16px; color: #1E2329; line-height: 1.5;">
@@ -78,22 +86,13 @@ export async function inviteMemberAction(projectId: string, email: string, role:
             © 2026 Santier.app — Software pentru Construcții
           </p>
         </div>
-      `
+      `,
     })
-
-    if (error) {
-        console.error('Resend error:', error)
-        // Dăm un mesaj mai specific dacă eroarea e de la domenii neverificate
-        const errorMsg = error.message.includes('verify your domain') 
-          ? 'Resend permite trimiterea email-urilor doar către adresa ta proprie (lucian.cebuc@gmail.com) până când îți verifici un domeniu propriu.'
-          : 'Eroare Resend: ' + error.message;
-        return { error: errorMsg }
-    }
 
     return { success: true }
   } catch (e: any) {
     console.error('Email send exception:', e)
-    return { error: 'Eroare neprevăzută la trimiterea email-ului.' }
+    return { error: 'Eroare la trimiterea email-ului: ' + (e.message ?? 'eroare neprevăzută') }
   }
 }
 

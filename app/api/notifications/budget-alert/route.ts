@@ -1,9 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/utils/supabase/server'
-import { Resend } from 'resend'
+import nodemailer from 'nodemailer'
 
-function getResend() {
-  return new Resend(process.env.RESEND_API_KEY ?? 'placeholder')
+function getMailTransporter() {
+  return nodemailer.createTransport({
+    host: 'smtp.zoho.com',
+    port: 465,
+    secure: true,
+    auth: {
+      user: process.env.ZOHO_SMTP_USER,
+      pass: process.env.ZOHO_SMTP_PASS,
+    },
+  })
 }
 
 const APP_URL =
@@ -36,8 +44,8 @@ export async function POST(req: NextRequest) {
       maximumFractionDigits: 2,
     })
 
-    const { data, error } = await getResend().emails.send({
-      from: 'Santier.app <onboarding@resend.dev>',
+    await getMailTransporter().sendMail({
+      from: `Santier.app <${process.env.ZOHO_SMTP_USER}>`,
       to: recipientEmail,
       subject: `⚠️ Depășire buget: etapa "${stage}" pe proiect "${projectName}"`,
       html: `
@@ -77,10 +85,6 @@ export async function POST(req: NextRequest) {
         </div>
       `,
     })
-
-    if (error) {
-      return NextResponse.json({ error: error.message || 'Eroare la trimiterea emailului.' }, { status: 500 })
-    }
 
     return NextResponse.json({ success: true })
   } catch (error: any) {
