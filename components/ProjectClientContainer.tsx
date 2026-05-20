@@ -356,41 +356,60 @@ export default function ProjectClientContainer({
     toast.success('Achiziție ștearsă.')
   }
 
-  /* ── Comandă Dedeman → comenzi_achizitie + comanda_linii ───────────── */
+  /* ── Comandă Dedeman → purchases (vizibil în registru) + comenzi_achizitie ── */
   const handleAddDedemanItems = async (items: DedemanOrderItem[]) => {
+    const today = new Date().toISOString().slice(0, 10)
     const total = items.reduce((s, i) => s + (i.total || 0), 0)
+
+    // 1. Insert în purchases — apare imediat în Registrul Achiziții
+    const purchaseRows = items.map((item) => ({
+      project_id: projectId,
+      name: `[Dedeman] ${item.brand ? item.brand + ' — ' : ''}${item.nume}`.slice(0, 254),
+      amount_total: (item.total || 0),
+      category: 'Material',
+      date: today,
+    }))
+
+    const { data: newPurchases, error: errPurchases } = await supabase
+      .from('purchases')
+      .insert(purchaseRows)
+      .select()
+
+    if (errPurchases) {
+      toast.error('Eroare la salvarea achizițiilor: ' + errPurchases.message)
+      return
+    }
+
+    // Actualizează lista locală imediat (fără refresh)
+    if (newPurchases) {
+      setPurchases(prev => [...prev, ...(newPurchases as Purchase[])])
+    }
+
+    // 2. Insert în comenzi_achizitie — pentru istoric comenzi Dedeman
     const { data: comanda, error: errComanda } = await supabase
       .from('comenzi_achizitie')
       .insert({ project_id: projectId, furnizor: 'Dedeman', status: 'draft', total })
       .select()
       .single()
 
-    if (errComanda) {
-      toast.error('Eroare la crearea comenzii Dedeman: ' + errComanda.message)
-      return
+    if (!errComanda && comanda) {
+      const linii = items.map((item) => ({
+        comanda_id: comanda.id,
+        cod_produs: item.cod_produs,
+        ean: item.ean,
+        nume_produs: item.nume,
+        brand: item.brand,
+        furnizor: 'Dedeman',
+        cantitate: item.cantitate,
+        unitate_masura: item.unitate_masura,
+        pret_unitar: item.pret_unitar,
+        url_produs: item.url,
+        imagine_url: item.imagine_url,
+      }))
+      await supabase.from('comanda_linii').insert(linii)
     }
 
-    const linii = items.map((item) => ({
-      comanda_id: comanda.id,
-      cod_produs: item.cod_produs,
-      ean: item.ean,
-      nume_produs: item.nume,
-      brand: item.brand,
-      furnizor: 'Dedeman',
-      cantitate: item.cantitate,
-      unitate_masura: item.unitate_masura,
-      pret_unitar: item.pret_unitar,
-      url_produs: item.url,
-      imagine_url: item.imagine_url,
-    }))
-
-    const { error: errLinii } = await supabase.from('comanda_linii').insert(linii)
-    if (errLinii) {
-      toast.error('Eroare la salvarea liniilor comenzii: ' + errLinii.message)
-      return
-    }
-
-    toast.success(`Comandă Dedeman salvată — ${items.length} produse, ${total.toFixed(2)} RON`)
+    toast.success(`${items.length} produse Dedeman adăugate — ${total.toFixed(2)} RON`)
   }
 
   /* ── Editare achiziție ──────────────────────────────────────────────── */
