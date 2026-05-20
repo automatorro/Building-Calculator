@@ -137,7 +137,7 @@ class DedemanScraper:
 
         context = await self._browser.new_context(**self._new_context_kwargs())
         nav_page = await context.new_page()
-        self._block_media(nav_page)
+        await self._block_media(nav_page)
 
         try:
             for page_num in range(1, max_pages + 1):
@@ -209,10 +209,10 @@ class DedemanScraper:
         return all_products
 
     # ── Helpers ──────────────────────────────────────────────────
-    def _block_media(self, page: Page):
+    async def _block_media(self, page: Page):
         async def handler(route):
             await route.abort()
-        page.route("**/*.{png,jpg,jpeg,gif,webp,svg,woff,woff2,ttf}", handler)
+        await page.route("**/*.{png,jpg,jpeg,gif,webp,svg,woff,woff2,ttf}", handler)
 
     def _paginate(self, base_url: str, page: int) -> str:
         if page == 1:
@@ -290,7 +290,7 @@ class DedemanScraper:
     async def _scrape_one(self, url: str, category_url: str) -> Optional[DedemanProduct]:
         context = await self._browser.new_context(**self._new_context_kwargs())
         page = await context.new_page()
-        self._block_media(page)
+        await self._block_media(page)
         try:
             await page.goto(url, wait_until="domcontentloaded", timeout=30_000)
             await asyncio.sleep(0.5)
@@ -387,6 +387,11 @@ class DedemanScraper:
             sku = _extract_sku_from_url(url) or url.split("/p/")[-1].split("?")[0]
 
             pret_text = await self._text(page, [
+                "[data-price-type='finalPrice'] .price",
+                ".price-box [data-price-type='finalPrice'] .price",
+                ".price-container.alternative .price",
+                ".alternative .price",
+                ".price-box .price-wrapper .price",
                 ".price-box .price", ".product-price .price",
                 "[itemprop='price']", ".current-price", ".sales-price",
                 ".price--selling", ".pdp-price", ".product__price"
@@ -428,7 +433,16 @@ class DedemanScraper:
             rating_text = await self._text(page, [
                 "[itemprop='ratingValue']", ".rating-value", ".product-rating .value"
             ])
-            rating = float(rating_text) if rating_text else None
+            rating = None
+            if rating_text:
+                try:
+                    r_val = float(re.sub(r"[^\d.]", "", rating_text.replace(",", ".")))
+                    if r_val > 5.0:
+                        rating = round(r_val / 20.0, 1)
+                    else:
+                        rating = round(r_val, 1)
+                except ValueError:
+                    rating = None
 
             nr_text = await self._text(page, [
                 "[itemprop='reviewCount']", ".review-count", ".ratings-count"

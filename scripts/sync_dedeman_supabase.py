@@ -52,16 +52,16 @@ MAX_PAGES     = 20    # pagini per categorie (sync complet)
 MAX_PRODUCTS  = 1000  # produse per categorie
 
 DEFAULT_CATEGORIES = [
-    "https://www.dedeman.ro/ro/materiale-de-constructii/c/241",
-    "https://www.dedeman.ro/ro/izolatie/c/242",
-    "https://www.dedeman.ro/ro/tencuieli-si-gleturi/c/244",
-    "https://www.dedeman.ro/ro/adezivi-si-chituri/c/245",
-    "https://www.dedeman.ro/ro/pardoseli/c/321",
-    "https://www.dedeman.ro/ro/gresie-si-faianta/c/322",
-    "https://www.dedeman.ro/ro/instalatii-sanitare/c/401",
-    "https://www.dedeman.ro/ro/vopsele-si-lacuri/c/351",
-    "https://www.dedeman.ro/ro/instalatii-electrice/c/501",
-    "https://www.dedeman.ro/ro/usi-si-ferestre/c/361",
+    "https://www.dedeman.ro/ro/materiale-de-constructii/c/21",
+    "https://www.dedeman.ro/ro/gresie-si-faianta/c/1068",
+    "https://www.dedeman.ro/ro/gleturi/c/152",
+    "https://www.dedeman.ro/ro/adezivi-standard/c/1350",
+    "https://www.dedeman.ro/ro/adezivi-polistiren/c/3354",
+    "https://www.dedeman.ro/ro/adezivi-de-montaj-speciali/c/3374",
+    "https://www.dedeman.ro/ro/ciment-lianti-var/c/150",
+    "https://www.dedeman.ro/ro/sape/c/153",
+    "https://www.dedeman.ro/ro/mortare-si-tinciuri/c/155",
+    "https://www.dedeman.ro/ro/siliconi-si-accesorii/c/410"
 ]
 
 Path("logs").mkdir(exist_ok=True)
@@ -98,7 +98,7 @@ def to_row(p: DedemanProduct) -> dict:
         "descriere_scurta": p.descriere_scurta or None,
         "specificatii":     p.specificatii or {},
         "imagini":          p.imagini or [],
-        "rating":           float(p.rating) if p.rating else None,
+        "rating":           min(5.0, round(float(p.rating) / 20.0, 1) if float(p.rating) > 5.0 else round(float(p.rating), 1)) if p.rating else None,
         "nr_review":        p.nr_review or 0,
         "url":              p.url or None,
         "sync_at":          datetime.utcnow().isoformat(),
@@ -276,7 +276,7 @@ if __name__ == "__main__":
     if args.test:
         # Mod test: o singura categorie mica, 1 pagina, 5 produse, dry-run
         log.info("=== MOD TEST: 1 pagina, max 5 produse, fara scriere in DB ===")
-        cats = ["https://www.dedeman.ro/ro/adezivi-si-chituri/c/245"]
+        cats = ["https://www.dedeman.ro/ro/adezivi-standard/c/1350"]
         asyncio.run(run(cats, dry_run=True, max_pages=1, max_products=5))
     else:
         if args.category:

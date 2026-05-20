@@ -1,0 +1,56 @@
+2026-05-20 06:31:21,606 [INFO] === MOD TEST: 1 pagina, max 5 produse, fara scriere in DB ===
+2026-05-20 06:31:26,690 [INFO] Browser pornit.
+2026-05-20 06:31:27,343 [INFO]   Pagina 1: https://www.dedeman.ro/ro/adezivi-si-chituri/c/245
+2026-05-20 06:31:34,276 [INFO] Browser oprit.
+2026-05-20 06:31:34,285 [INFO] Raport: logs/sync_report_20260520_0631.json
+2026-05-20 06:31:49,808 [INFO] === MOD TEST: 1 pagina, max 5 produse, fara scriere in DB ===
+2026-05-20 06:31:53,802 [INFO] Browser pornit.
+2026-05-20 06:31:54,102 [INFO]   Pagina 1: https://www.dedeman.ro/ro/adezivi-si-chituri/c/245
+2026-05-20 06:31:58,747 [INFO] Browser oprit.
+2026-05-20 06:31:58,754 [INFO] Raport: logs/sync_report_20260520_0631.json
+2026-05-20 06:50:42,013 [INFO] === MOD TEST: 1 pagina, max 5 produse, fara scriere in DB ===
+2026-05-20 06:50:45,919 [INFO] Browser pornit.
+2026-05-20 06:50:45,920 [INFO] 
+→ Categorie: https://www.dedeman.ro/ro/adezivi-standard/c/1350
+2026-05-20 06:50:46,234 [INFO]   Pagina 1: https://www.dedeman.ro/ro/adezivi-standard/c/1350
+2026-05-20 06:50:52,356 [INFO]   → 5 produse de scraped pe pagina 1
+2026-05-20 06:51:16,123 [INFO]   Pagina terminata: 5 produse noi (total: 5)
+2026-05-20 06:51:16,124 [INFO]   [DRY] 4005902 | Adeziv pentru gresie si faianta Mapei Adesilex P9, | 3.6 RON | None | https://www.dedeman.ro/ro/adeziv-pentru-gresie-si-faianta-mapei-adesilex-p9-interior/-exterior-alb-25-kg/p/4005902
+2026-05-20 06:51:16,124 [INFO]   [DRY] 5008530 | Adeziv gresie si faianta Ceresit CM 11 Plus, gri,  | 2.24 RON | None | https://www.dedeman.ro/ro/adeziv-gresie-si-faianta-ceresit-cm-11-plus-gri-pentru-interior/-exterior-25-kg/p/5008530
+2026-05-20 06:51:16,125 [INFO]   [DRY] 5006142 | Latex pentru adezivi pe baza de ciment, Mapei Isol | 35.2 RON | None | https://www.dedeman.ro/ro/latex-pentru-adezivi-pe-baza-de-ciment-mapei-isolastic-10-kg/p/5006142
+2026-05-20 06:51:16,184 [INFO]   → Ultima pagina (1), stop.
+2026-05-20 06:51:16,711 [INFO] Browser oprit.
+2026-05-20 06:51:16,712 [INFO] 
+╔══════════════════════════════════════════╗
+║        SYNC DEDEMAN → SUPABASE           ║
+╠══════════════════════════════════════════╣
+║ Categorii   : 1                          ║
+║ Scraped     : 5                          ║
+║ Upserted    : 0                          ║
+║ Erori       : 0                          ║
+║ Durata      : 32                    s    ║
+╚══════════════════════════════════════════╝
+2026-05-20 06:51:16,714 [INFO] Raport: logs/sync_report_20260520_0651.json
+2026-05-20 06:53:45,729 [INFO] === MOD TEST: 1 pagina, max 5 produse, fara scriere in DB ===
+2026-05-20 06:53:49,425 [INFO] Browser pornit.
+2026-05-20 06:53:49,425 [INFO] 
+→ Categorie: https://www.dedeman.ro/ro/adezivi-standard/c/1350
+2026-05-20 06:53:49,687 [INFO]   Pagina 1: https://www.dedeman.ro/ro/adezivi-standard/c/1350
+2026-05-20 06:53:55,791 [INFO]   → 5 produse de scraped pe pagina 1
+2026-05-20 06:54:16,276 [INFO]   Pagina terminata: 5 produse noi (total: 5)
+2026-05-20 06:54:16,276 [INFO]   [DRY] 4006637 | Adeziv gresie si faianta Mapei Kerabond T-R, inter | 45.64 RON | None | https://www.dedeman.ro/ro/adeziv-gresie-si-faianta-mapei-kerabond-t-r-interior/-exterior-gri-25-kg/p/4006637
+2026-05-20 06:54:16,277 [INFO]   [DRY] 4000239 | Adeziv gresie si faianta Ceresit CM9, pentru inter | 36.91 RON | None | https://www.dedeman.ro/ro/adeziv-gresie-si-faianta-ceresit-cm9-pentru-interior-25-kg/p/4000239
+2026-05-20 06:54:16,277 [INFO]   [DRY] 5003858 | Adeziv gresie si faianta Mapei Kerabond T-R, inter | 63.98 RON | None | https://www.dedeman.ro/ro/adeziv-gresie-si-faianta-mapei-kerabond-t-r-interior/-exterior-alb-25-kg/p/5003858
+2026-05-20 06:54:16,339 [INFO]   → Ultima pagina (1), stop.
+2026-05-20 06:54:16,774 [INFO] Browser oprit.
+2026-05-20 06:54:16,774 [INFO] 
+╔══════════════════════════════════════════╗
+║        SYNC DEDEMAN → SUPABASE           ║
+╠══════════════════════════════════════════╣
+║ Categorii   : 1                          ║
+║ Scraped     : 5                          ║
+║ Upserted    : 0                          ║
+║ Erori       : 0                          ║
+║ Durata      : 29                    s    ║
+╚══════════════════════════════════════════╝
+2026-05-20 06:54:16,776 [INFO] Raport: logs/sync_report_20260520_0654.json

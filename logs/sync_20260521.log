@@ -1,0 +1,74 @@
+2026-05-21 00:27:49,393 [INFO] Browser pornit.
+2026-05-21 00:27:49,394 [INFO] 
+→ Categorie: https://www.dedeman.ro/ro/adezivi-standard/c/1350
+2026-05-21 00:27:50,211 [INFO]   Pagina 1: https://www.dedeman.ro/ro/adezivi-standard/c/1350
+2026-05-21 00:27:59,294 [INFO]   → 21 produse de scraped pe pagina 1
+2026-05-21 00:30:12,048 [INFO]   Pagina terminata: 21 produse noi (total: 21)
+2026-05-21 00:30:15,597 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22pret%22%2C%22brand%22%2C%22disponibilitate%22%2C%22nr_review%22%2C%22descriere_scurta%22%2C%22discount_procent%22%2C%22pret_vechi%22%2C%22moneda%22%2C%22sync_at%22%2C%22unitate_masura%22%2C%22cod_produs%22%2C%22imagini%22%2C%22activ%22%2C%22nume%22%2C%22rating%22%2C%22ean%22%2C%22categorie%22%2C%22subcategorie%22%2C%22specificatii%22%2C%22url%22 "HTTP/2 400 Bad Request"
+2026-05-21 00:30:15,603 [ERROR]     ✗ Batch error: {'message': 'numeric field overflow', 'code': '22003', 'hint': None, 'details': 'A field with precision 3, scale 1 must round to an absolute value less than 10^2.'}
+2026-05-21 00:30:15,811 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs "HTTP/2 400 Bad Request"
+2026-05-21 00:30:15,813 [WARNING]     Skip 5008940: {'message': 'numeric field overflow', 'code': '22003', 'hint': None, 'details': 'A field with precision 3, scale 1 must round to an absolute value less than 10^2.'}
+2026-05-21 00:30:16,029 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs "HTTP/2 201 Created"
+2026-05-21 00:30:16,223 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs "HTTP/2 201 Created"
+2026-05-21 00:30:16,356 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs "HTTP/2 201 Created"
+2026-05-21 00:30:16,445 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs "HTTP/2 201 Created"
+2026-05-21 00:30:16,530 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs "HTTP/2 201 Created"
+2026-05-21 00:30:16,620 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs "HTTP/2 201 Created"
+2026-05-21 00:30:16,754 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs "HTTP/2 201 Created"
+2026-05-21 00:30:16,886 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs "HTTP/2 201 Created"
+2026-05-21 00:30:16,987 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs "HTTP/2 400 Bad Request"
+2026-05-21 00:30:16,989 [WARNING]     Skip 5009321: {'message': 'numeric field overflow', 'code': '22003', 'hint': None, 'details': 'A field with precision 3, scale 1 must round to an absolute value less than 10^2.'}
+2026-05-21 00:30:17,102 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs "HTTP/2 400 Bad Request"
+2026-05-21 00:30:17,103 [WARNING]     Skip 5008530: {'message': 'numeric field overflow', 'code': '22003', 'hint': None, 'details': 'A field with precision 3, scale 1 must round to an absolute value less than 10^2.'}
+2026-05-21 00:30:17,191 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs "HTTP/2 201 Created"
+2026-05-21 00:30:17,276 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs "HTTP/2 201 Created"
+2026-05-21 00:30:17,455 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs "HTTP/2 201 Created"
+2026-05-21 00:30:17,552 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs "HTTP/2 400 Bad Request"
+2026-05-21 00:30:17,554 [WARNING]     Skip 5009135: {'message': 'numeric field overflow', 'code': '22003', 'hint': None, 'details': 'A field with precision 3, scale 1 must round to an absolute value less than 10^2.'}
+2026-05-21 00:30:17,646 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs "HTTP/2 201 Created"
+2026-05-21 00:30:17,730 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs "HTTP/2 201 Created"
+2026-05-21 00:30:17,818 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs "HTTP/2 400 Bad Request"
+2026-05-21 00:30:17,820 [WARNING]     Skip 5011017: {'message': 'numeric field overflow', 'code': '22003', 'hint': None, 'details': 'A field with precision 3, scale 1 must round to an absolute value less than 10^2.'}
+2026-05-21 00:30:17,900 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs "HTTP/2 400 Bad Request"
+2026-05-21 00:30:17,901 [WARNING]     Skip 5008939: {'message': 'numeric field overflow', 'code': '22003', 'hint': None, 'details': 'A field with precision 3, scale 1 must round to an absolute value less than 10^2.'}
+2026-05-21 00:30:17,987 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs "HTTP/2 201 Created"
+2026-05-21 00:30:18,074 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs "HTTP/2 400 Bad Request"
+2026-05-21 00:30:18,076 [WARNING]     Skip 5008941: {'message': 'numeric field overflow', 'code': '22003', 'hint': None, 'details': 'A field with precision 3, scale 1 must round to an absolute value less than 10^2.'}
+2026-05-21 00:30:18,120 [INFO]   → Ultima pagina (1), stop.
+2026-05-21 00:30:18,306 [INFO] HTTP Request: PATCH https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?sync_at=lt.2026-05-18T21%3A30%3A18.214959 "HTTP/2 200 OK"
+2026-05-21 00:30:18,308 [INFO] Marcate inactive (>48h): 0
+2026-05-21 00:30:19,314 [INFO] Browser oprit.
+2026-05-21 00:30:19,314 [INFO] 
+╔══════════════════════════════════════════╗
+║        SYNC DEDEMAN → SUPABASE           ║
+╠══════════════════════════════════════════╣
+║ Categorii   : 1                          ║
+║ Scraped     : 21                         ║
+║ Upserted    : 14                         ║
+║ Erori       : 7                          ║
+║ Durata      : 153                   s    ║
+╚══════════════════════════════════════════╝
+2026-05-21 00:30:19,315 [INFO] Raport: logs/sync_report_20260521_0030.json
+2026-05-21 00:31:10,401 [INFO] Browser pornit.
+2026-05-21 00:31:10,401 [INFO] 
+→ Categorie: https://www.dedeman.ro/ro/adezivi-standard/c/1350
+2026-05-21 00:31:10,976 [INFO]   Pagina 1: https://www.dedeman.ro/ro/adezivi-standard/c/1350
+2026-05-21 00:31:21,016 [INFO]   → 21 produse de scraped pe pagina 1
+2026-05-21 00:32:48,319 [INFO]   Pagina terminata: 21 produse noi (total: 21)
+2026-05-21 00:32:50,792 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22pret%22%2C%22sync_at%22%2C%22cod_produs%22%2C%22imagini%22%2C%22url%22%2C%22nume%22%2C%22descriere_scurta%22%2C%22nr_review%22%2C%22brand%22%2C%22pret_vechi%22%2C%22activ%22%2C%22categorie%22%2C%22ean%22%2C%22rating%22%2C%22subcategorie%22%2C%22moneda%22%2C%22specificatii%22%2C%22disponibilitate%22%2C%22unitate_masura%22%2C%22discount_procent%22 "HTTP/2 201 Created"
+2026-05-21 00:32:50,796 [INFO]     ✓ Upsert 21 produse (total ok: 21)
+2026-05-21 00:32:50,817 [INFO]   → Ultima pagina (1), stop.
+2026-05-21 00:32:51,102 [INFO] HTTP Request: PATCH https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?sync_at=lt.2026-05-18T21%3A32%3A50.893784 "HTTP/2 200 OK"
+2026-05-21 00:32:51,104 [INFO] Marcate inactive (>48h): 0
+2026-05-21 00:32:51,478 [INFO] Browser oprit.
+2026-05-21 00:32:51,478 [INFO] 
+╔══════════════════════════════════════════╗
+║        SYNC DEDEMAN → SUPABASE           ║
+╠══════════════════════════════════════════╣
+║ Categorii   : 1                          ║
+║ Scraped     : 21                         ║
+║ Upserted    : 21                         ║
+║ Erori       : 0                          ║
+║ Durata      : 106                   s    ║
+╚══════════════════════════════════════════╝
+2026-05-21 00:32:51,480 [INFO] Raport: logs/sync_report_20260521_0032.json
