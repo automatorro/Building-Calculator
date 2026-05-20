@@ -518,7 +518,6 @@ export default function DedemanCatalogDrawer({
   const cartItems  = Object.values(cart)
   const cartCount  = cartItems.reduce((s, i) => s + i.qty, 0)
   const cartTotal  = cartItems.reduce((s, i) => s + (i.product.pret || 0) * i.qty, 0)
-  const [showCart, setShowCart] = useState(false)
 
   useEffect(() => {
     if (!open) return
@@ -591,68 +590,10 @@ export default function DedemanCatalogDrawer({
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-3">
-            {cartCount > 0 && (
-              <button
-                onClick={() => setShowCart(!showCart)}
-                className="relative flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-blue-700"
-              >
-                <ShoppingCart className="w-5 h-5" />
-                Comandă ({cartCount})
-                <span className="ml-1 text-blue-200 text-xs">{cartTotal.toFixed(0)} RON</span>
-              </button>
-            )}
-            <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
-              <X className="w-6 h-6" />
-            </button>
-          </div>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+            <X className="w-6 h-6" />
+          </button>
         </div>
-
-        {/* Cart panel */}
-        {showCart && cartItems.length > 0 && (
-          <div className="bg-blue-50 border-b border-blue-200 p-4">
-            <h3 className="text-sm font-semibold text-blue-800 mb-3">
-              Comandă curentă ({cartItems.length} produse)
-            </h3>
-            <div className="space-y-2 max-h-48 overflow-y-auto">
-              {cartItems.map(({ product, qty }) => (
-                <div key={product.cod_produs} className="flex items-center justify-between bg-white rounded-lg px-3 py-2 text-sm">
-                  <span className="text-gray-700 flex-1 truncate">{product.nume}</span>
-                  <div className="flex items-center gap-2 ml-3">
-                    <button onClick={() => removeFromCart(product)} className="text-gray-400 hover:text-red-500">
-                      <Minus className="w-4 h-4" />
-                    </button>
-                    <span className="font-semibold w-6 text-center">{qty}</span>
-                    <button onClick={() => addToCart(product)} className="text-gray-400 hover:text-blue-600">
-                      <Plus className="w-4 h-4" />
-                    </button>
-                    <span className="text-gray-500 ml-2 w-20 text-right">
-                      {product.pret ? `${(product.pret * qty).toFixed(2)} RON` : '—'}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div className="flex items-center justify-between mt-3 pt-3 border-t border-blue-200">
-              <span className="font-bold text-blue-900">Total: {cartTotal.toFixed(2)} RON</span>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => generatePurchaseOrderPDF(cartItems, projectName)}
-                  className="flex items-center gap-1 text-sm border border-blue-300 text-blue-700 px-3 py-1.5 rounded-lg hover:bg-blue-100"
-                >
-                  <FileDown className="w-4 h-4" />
-                  PDF
-                </button>
-                <button
-                  onClick={handleConfirmOrder}
-                  className="flex items-center gap-1 text-sm bg-blue-600 text-white px-4 py-1.5 rounded-lg hover:bg-blue-700 font-semibold"
-                >
-                  Adaugă în Achiziții
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* Filters */}
         <div className="bg-white border-b px-5 py-3 space-y-3">
@@ -758,6 +699,39 @@ export default function DedemanCatalogDrawer({
             </div>
           )}
         </div>
+
+        {/* Footer sticky coș — apare automat când ai produse selectate */}
+        {cartCount > 0 && (
+          <div className="bg-green-600 px-5 py-4 flex items-center justify-between gap-4 shadow-lg">
+            <div className="flex-1 min-w-0">
+              <p className="text-white font-bold text-base">
+                {cartCount} {cartCount === 1 ? 'produs selectat' : 'produse selectate'}
+                <span className="ml-3 text-green-200 text-sm font-normal">
+                  Total: {cartTotal.toFixed(2)} RON
+                </span>
+              </p>
+              <p className="text-green-200 text-xs truncate">
+                {cartItems.map(i => `${i.qty}× ${i.product.nume}`).join(' · ')}
+              </p>
+            </div>
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <button
+                onClick={() => generatePurchaseOrderPDF(cartItems, projectName)}
+                className="flex items-center gap-1.5 text-sm border border-green-400 text-white px-3 py-2 rounded-xl hover:bg-green-700"
+              >
+                <FileDown className="w-4 h-4" />
+                PDF
+              </button>
+              <button
+                onClick={handleConfirmOrder}
+                className="flex items-center gap-2 bg-white text-green-700 font-bold px-5 py-2 rounded-xl hover:bg-green-50 text-sm shadow"
+              >
+                <ShoppingCart className="w-4 h-4" />
+                Adaugă în Achiziții
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {detailProduct && (
