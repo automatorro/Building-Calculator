@@ -48,20 +48,24 @@ load_dotenv()
 SUPABASE_URL  = os.environ["SUPABASE_URL"]
 SUPABASE_KEY  = os.environ["SUPABASE_SERVICE_KEY"]
 BATCH_SIZE    = 25    # upsert per batch (mai mic = inserare mai frecventa)
-MAX_PAGES     = 20    # pagini per categorie (sync complet)
-MAX_PRODUCTS  = 1000  # produse per categorie
+MAX_PAGES     = 100   # pagini per categorie (sync complet)
+MAX_PRODUCTS  = 15000 # produse per categorie
 
 DEFAULT_CATEGORIES = [
+    # Constructii - 1249 produse, 18 pagini
     "https://www.dedeman.ro/ro/materiale-de-constructii/c/21",
+    # Instalatii sanitare - 2329 produse, 33 pagini
+    "https://www.dedeman.ro/ro/instalatii-sanitare/c/8035",
+    # Gresie si faianta - 4082 produse
     "https://www.dedeman.ro/ro/gresie-si-faianta/c/1068",
-    "https://www.dedeman.ro/ro/gleturi/c/152",
-    "https://www.dedeman.ro/ro/adezivi-standard/c/1350",
-    "https://www.dedeman.ro/ro/adezivi-polistiren/c/3354",
-    "https://www.dedeman.ro/ro/adezivi-de-montaj-speciali/c/3374",
-    "https://www.dedeman.ro/ro/ciment-lianti-var/c/150",
-    "https://www.dedeman.ro/ro/sape/c/153",
-    "https://www.dedeman.ro/ro/mortare-si-tinciuri/c/155",
-    "https://www.dedeman.ro/ro/siliconi-si-accesorii/c/410"
+    # Parchet, mocheta, covoare - 2733 produse
+    "https://www.dedeman.ro/ro/parchet-mocheta-si-covoare/c/7729",
+    # Usi si ferestre - 6120 produse
+    "https://www.dedeman.ro/ro/usi-si-ferestre/c/7759",
+    # Vopsele si tencuieli - 3944 produse
+    "https://www.dedeman.ro/ro/vopsele-si-tencuieli/c/7912",
+    # Baie - 12312 produse
+    "https://www.dedeman.ro/ro/baie/c/1528",
 ]
 
 Path("logs").mkdir(exist_ok=True)

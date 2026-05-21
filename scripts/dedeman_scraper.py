@@ -127,13 +127,18 @@ class DedemanScraper:
         max_products: int = 1000,
         concurrency: int = 2,
         on_page_done: Optional[Callable[[int, int], None]] = None,
+        fast_mode: bool = True,
     ) -> AsyncGenerator[list[DedemanProduct], None]:
         """
         Yield cate un batch de produse per pagina de listare.
         Inserarea in Supabase se face imediat dupa fiecare batch.
+
+        fast_mode=True (default): extrage datele direct de pe pagina de listing
+        (mult mai rapid, ~3s per 72 produse in loc de ~5s per produs).
+        fast_mode=False: viziteaza fiecare pagina de produs individual (mai detaliat).
         """
         total_scraped = 0
-        seen_urls: set[str] = set()
+        seen_skus: set[str] = set()
 
         context = await self._browser.new_context(**self._new_context_kwargs())
         nav_page = await context.new_page()
@@ -152,33 +157,62 @@ class DedemanScraper:
                     await asyncio.sleep(PAGE_DELAY)
                     await self._accept_cookies(nav_page)
 
-                    page_urls = await self._extract_product_links(nav_page)
-                    new_urls = [u for u in page_urls if u not in seen_urls]
+                    if fast_mode:
+                        # === MOD RAPID: extrage direct de pe listing ===
+                        batch = await self._extract_from_listing(nav_page, category_url)
+                        # Deduplica
+                        new_batch = []
+                        for p in batch:
+                            if p.cod_produs not in seen_skus:
+                                seen_skus.add(p.cod_produs)
+                                new_batch.append(p)
 
-                    if not new_urls:
-                        log.info(f"  → Nicio URL nouă pe pagina {page_num}, stop.")
-                        break
+                        if not new_batch:
+                            log.info(f"  → Niciun produs nou pe pagina {page_num}, stop.")
+                            break
 
-                    seen_urls.update(new_urls)
-                    remaining = max_products - total_scraped
-                    batch_urls = new_urls[:remaining]
+                        remaining = max_products - total_scraped
+                        new_batch = new_batch[:remaining]
+                        total_scraped += len(new_batch)
 
-                    log.info(f"  → {len(batch_urls)} produse de scraped pe pagina {page_num}")
+                        log.info(f"  → {len(new_batch)} produse extrase de pe pagina {page_num}")
 
-                    # Scrapeaza batch-ul curent
-                    batch = await self._scrape_urls_parallel(batch_urls, concurrency, category_url)
-                    total_scraped += len(batch)
+                        if on_page_done:
+                            on_page_done(page_num, len(new_batch))
 
-                    if on_page_done:
-                        on_page_done(page_num, len(batch))
+                        yield new_batch
+                    else:
+                        # === MOD DETALIAT: viziteaza fiecare pagina de produs ===
+                        page_urls = await self._extract_product_links(nav_page)
+                        new_urls = [u for u in page_urls if _extract_sku_from_url(u) not in seen_skus]
 
-                    yield batch
+                        if not new_urls:
+                            log.info(f"  → Nicio URL nouă pe pagina {page_num}, stop.")
+                            break
+
+                        for u in new_urls:
+                            sku = _extract_sku_from_url(u)
+                            if sku:
+                                seen_skus.add(sku)
+                        remaining = max_products - total_scraped
+                        batch_urls = new_urls[:remaining]
+
+                        log.info(f"  → {len(batch_urls)} produse de scraped pe pagina {page_num}")
+
+                        batch = await self._scrape_urls_parallel(batch_urls, concurrency, category_url)
+                        total_scraped += len(batch)
+
+                        if on_page_done:
+                            on_page_done(page_num, len(batch))
+
+                        yield batch
 
                     # Verifica daca mai exista pagina urmatoare
                     has_next = await nav_page.locator(
-                        "a[aria-label='Next page'], "
-                        ".pagination__next:not(.disabled), "
-                        "a.next-page, [class*='pagination'] a[rel='next']"
+                        "a.pagination-next, "
+                        "a[class*='pagination-next'], "
+                        "a[class*='next'][href*='page='], "
+                        "a[aria-label='Next page']"
                     ).count()
                     if not has_next:
                         log.info(f"  → Ultima pagina ({page_num}), stop.")
@@ -217,9 +251,9 @@ class DedemanScraper:
     def _paginate(self, base_url: str, page: int) -> str:
         if page == 1:
             return base_url
-        # Dedeman foloseste ?start=N unde N = (page-1) * produse_per_pagina
+        # Dedeman foloseste ?page=N
         sep = "&" if "?" in base_url else "?"
-        return f"{base_url}{sep}start={(page - 1) * 36}"
+        return f"{base_url}{sep}page={page}"
 
     async def _accept_cookies(self, page: Page):
         try:
@@ -233,6 +267,106 @@ class DedemanScraper:
                 await asyncio.sleep(0.5)
         except Exception:
             pass
+
+    async def _extract_from_listing(self, page: Page, category_url: str) -> list[DedemanProduct]:
+        """
+        Extrage produse direct de pe pagina de listing (fara a vizita fiecare produs).
+        Mult mai rapid: ~3s per 72 produse vs ~5s per produs.
+        """
+        # Extrage categorie din URL
+        cat_path = category_url.split("/ro/")[-1].split("/c/")[0] if "/ro/" in category_url else ""
+        categorie = cat_path.replace("-", " ").title() if cat_path else None
+
+        raw = await page.eval_on_selector_all(
+            ".product-item",
+            """els => els.map(el => {
+                const link = el.querySelector('a.product-item-photo, a.product-item-link, a[href*="/p/"]');
+                const href = link ? link.href : '';
+                const nameEl = el.querySelector('.product-item-link, .product-item-name a, a.product-item-link');
+                const name = nameEl ? nameEl.innerText.trim() : '';
+
+                // Price: prefer finalPrice, fallback to .price
+                const priceEl = el.querySelector("[data-price-type='finalPrice'] .price") 
+                              || el.querySelector('.price-box .price');
+                const price = priceEl ? priceEl.innerText.trim() : '';
+
+                // Old price
+                const oldPriceEl = el.querySelector('.old-price .price, .price-box .old-price .price');
+                const oldPrice = oldPriceEl ? oldPriceEl.innerText.trim() : '';
+
+                // Image
+                const imgEl = el.querySelector('img.product-image-photo');
+                const img = imgEl ? (imgEl.src || imgEl.dataset.src || '') : '';
+
+                // Rating
+                const ratingEl = el.querySelector('.rating-result');
+                let ratingPct = '';
+                if (ratingEl) {
+                    // style width is percentage like "width: 87%"
+                    const style = ratingEl.getAttribute('style') || '';
+                    const m = style.match(/(\\d+)/);
+                    ratingPct = m ? m[1] : '';
+                }
+
+                // Review count
+                const reviewEl = el.querySelector('.reviews-actions a, .review-count');
+                const reviewText = reviewEl ? reviewEl.innerText.trim() : '';
+
+                // SKU from URL
+                const idMatch = href.match(/\\/p\\/(\\d+)/);
+                const sku = idMatch ? idMatch[1] : '';
+
+                return { sku, name, price, oldPrice, href, img, ratingPct, reviewText };
+            })"""
+        )
+
+        products: list[DedemanProduct] = []
+        for item in raw:
+            if not item.get("sku") or not item.get("name"):
+                continue
+
+            pret = _parse_price(item.get("price", ""))
+            pret_vechi = _parse_price(item.get("oldPrice", ""))
+            discount = None
+            if pret and pret_vechi and pret_vechi > pret:
+                discount = round((pret_vechi - pret) / pret_vechi * 100, 1)
+
+            # Rating: convert percentage (0-100) to 0-5 scale
+            rating = None
+            rp = item.get("ratingPct", "")
+            if rp:
+                try:
+                    rating = round(float(rp) / 20.0, 1)
+                    rating = min(5.0, rating)
+                except ValueError:
+                    pass
+
+            # Review count
+            nr_review = 0
+            rt = item.get("reviewText", "")
+            if rt:
+                nums = re.sub(r"\D", "", rt)
+                if nums:
+                    nr_review = int(nums)
+
+            # Image
+            img_url = item.get("img", "")
+            imagini = [img_url] if img_url and not img_url.startswith("data:") else []
+
+            products.append(DedemanProduct(
+                cod_produs=item["sku"],
+                nume=item["name"],
+                url=item.get("href", ""),
+                categorie=categorie,
+                pret=pret,
+                pret_vechi=pret_vechi,
+                discount_procent=discount,
+                imagini=imagini,
+                rating=rating,
+                nr_review=nr_review,
+            ))
+
+        return products
 
     async def _extract_product_links(self, page: Page) -> list[str]:
         links: set[str] = set()

@@ -77,3 +77,858 @@
 → Categorie: https://www.dedeman.ro/ro/materiale-de-constructii/c/21
 2026-05-21 00:37:23,522 [INFO]   Pagina 1: https://www.dedeman.ro/ro/materiale-de-constructii/c/21
 2026-05-21 00:37:38,974 [INFO]   → 190 produse de scraped pe pagina 1
+2026-05-21 00:52:17,941 [INFO]   Pagina terminata: 190 produse noi (total: 190)
+2026-05-21 00:52:20,181 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22cod_produs%22%2C%22imagini%22%2C%22descriere_scurta%22%2C%22pret%22%2C%22pret_vechi%22%2C%22ean%22%2C%22disponibilitate%22%2C%22brand%22%2C%22sync_at%22%2C%22rating%22%2C%22subcategorie%22%2C%22moneda%22%2C%22discount_procent%22%2C%22activ%22%2C%22url%22%2C%22unitate_masura%22%2C%22nr_review%22%2C%22categorie%22%2C%22nume%22%2C%22specificatii%22 "HTTP/2 201 Created"
+2026-05-21 00:52:20,187 [INFO]     ✓ Upsert 25 produse (total ok: 25)
+2026-05-21 00:52:20,528 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22cod_produs%22%2C%22imagini%22%2C%22descriere_scurta%22%2C%22pret%22%2C%22pret_vechi%22%2C%22ean%22%2C%22disponibilitate%22%2C%22brand%22%2C%22sync_at%22%2C%22rating%22%2C%22subcategorie%22%2C%22moneda%22%2C%22discount_procent%22%2C%22activ%22%2C%22url%22%2C%22unitate_masura%22%2C%22nr_review%22%2C%22categorie%22%2C%22nume%22%2C%22specificatii%22 "HTTP/2 201 Created"
+2026-05-21 00:52:20,533 [INFO]     ✓ Upsert 25 produse (total ok: 50)
+2026-05-21 00:52:20,773 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22cod_produs%22%2C%22imagini%22%2C%22descriere_scurta%22%2C%22pret%22%2C%22pret_vechi%22%2C%22ean%22%2C%22disponibilitate%22%2C%22brand%22%2C%22sync_at%22%2C%22rating%22%2C%22subcategorie%22%2C%22moneda%22%2C%22discount_procent%22%2C%22activ%22%2C%22url%22%2C%22unitate_masura%22%2C%22nr_review%22%2C%22categorie%22%2C%22nume%22%2C%22specificatii%22 "HTTP/2 201 Created"
+2026-05-21 00:52:20,777 [INFO]     ✓ Upsert 25 produse (total ok: 75)
+2026-05-21 00:52:21,212 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22cod_produs%22%2C%22imagini%22%2C%22descriere_scurta%22%2C%22pret%22%2C%22pret_vechi%22%2C%22ean%22%2C%22disponibilitate%22%2C%22brand%22%2C%22sync_at%22%2C%22rating%22%2C%22subcategorie%22%2C%22moneda%22%2C%22discount_procent%22%2C%22activ%22%2C%22url%22%2C%22unitate_masura%22%2C%22nr_review%22%2C%22categorie%22%2C%22nume%22%2C%22specificatii%22 "HTTP/2 500 Internal Server Error"
+2026-05-21 00:52:21,213 [ERROR]     ✗ Batch error: {'message': 'ON CONFLICT DO UPDATE command cannot affect row a second time', 'code': '21000', 'hint': 'Ensure that no rows proposed for insertion within the same command have duplicate constrained values.', 'details': None}
+2026-05-21 00:52:22,083 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs "HTTP/2 201 Created"
+2026-05-21 00:52:22,181 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs "HTTP/2 201 Created"
+2026-05-21 00:52:22,269 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs "HTTP/2 201 Created"
+2026-05-21 00:52:22,362 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs "HTTP/2 201 Created"
+2026-05-21 00:52:22,489 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs "HTTP/2 201 Created"
+2026-05-21 00:52:22,583 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs "HTTP/2 201 Created"
+2026-05-21 00:52:22,679 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs "HTTP/2 201 Created"
+2026-05-21 00:52:22,771 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs "HTTP/2 201 Created"
+2026-05-21 00:52:22,862 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs "HTTP/2 201 Created"
+2026-05-21 00:52:22,953 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs "HTTP/2 201 Created"
+2026-05-21 00:52:23,087 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs "HTTP/2 201 Created"
+2026-05-21 00:52:23,236 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs "HTTP/2 201 Created"
+2026-05-21 00:52:23,324 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs "HTTP/2 201 Created"
+2026-05-21 00:52:23,413 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs "HTTP/2 200 OK"
+2026-05-21 00:52:23,498 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs "HTTP/2 201 Created"
+2026-05-21 00:52:23,589 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs "HTTP/2 201 Created"
+2026-05-21 00:52:23,679 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs "HTTP/2 201 Created"
+2026-05-21 00:52:23,768 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs "HTTP/2 201 Created"
+2026-05-21 00:52:23,855 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs "HTTP/2 201 Created"
+2026-05-21 00:52:23,943 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs "HTTP/2 201 Created"
+2026-05-21 00:52:24,029 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs "HTTP/2 201 Created"
+2026-05-21 00:52:24,117 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs "HTTP/2 201 Created"
+2026-05-21 00:52:24,202 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs "HTTP/2 200 OK"
+2026-05-21 00:52:24,298 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs "HTTP/2 201 Created"
+2026-05-21 00:52:24,383 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs "HTTP/2 201 Created"
+2026-05-21 00:52:24,485 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22cod_produs%22%2C%22imagini%22%2C%22descriere_scurta%22%2C%22pret%22%2C%22pret_vechi%22%2C%22ean%22%2C%22disponibilitate%22%2C%22brand%22%2C%22sync_at%22%2C%22rating%22%2C%22subcategorie%22%2C%22moneda%22%2C%22discount_procent%22%2C%22activ%22%2C%22url%22%2C%22unitate_masura%22%2C%22nr_review%22%2C%22categorie%22%2C%22nume%22%2C%22specificatii%22 "HTTP/2 201 Created"
+2026-05-21 00:52:24,494 [INFO]     ✓ Upsert 25 produse (total ok: 125)
+2026-05-21 00:52:24,591 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22cod_produs%22%2C%22imagini%22%2C%22descriere_scurta%22%2C%22pret%22%2C%22pret_vechi%22%2C%22ean%22%2C%22disponibilitate%22%2C%22brand%22%2C%22sync_at%22%2C%22rating%22%2C%22subcategorie%22%2C%22moneda%22%2C%22discount_procent%22%2C%22activ%22%2C%22url%22%2C%22unitate_masura%22%2C%22nr_review%22%2C%22categorie%22%2C%22nume%22%2C%22specificatii%22 "HTTP/2 201 Created"
+2026-05-21 00:52:24,596 [INFO]     ✓ Upsert 25 produse (total ok: 150)
+2026-05-21 00:52:24,694 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22cod_produs%22%2C%22imagini%22%2C%22descriere_scurta%22%2C%22pret%22%2C%22pret_vechi%22%2C%22ean%22%2C%22disponibilitate%22%2C%22brand%22%2C%22sync_at%22%2C%22rating%22%2C%22subcategorie%22%2C%22moneda%22%2C%22discount_procent%22%2C%22activ%22%2C%22url%22%2C%22unitate_masura%22%2C%22nr_review%22%2C%22categorie%22%2C%22nume%22%2C%22specificatii%22 "HTTP/2 201 Created"
+2026-05-21 00:52:24,699 [INFO]     ✓ Upsert 25 produse (total ok: 175)
+2026-05-21 00:52:24,792 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22cod_produs%22%2C%22imagini%22%2C%22descriere_scurta%22%2C%22pret%22%2C%22pret_vechi%22%2C%22ean%22%2C%22disponibilitate%22%2C%22brand%22%2C%22sync_at%22%2C%22rating%22%2C%22subcategorie%22%2C%22moneda%22%2C%22discount_procent%22%2C%22activ%22%2C%22url%22%2C%22unitate_masura%22%2C%22nr_review%22%2C%22categorie%22%2C%22nume%22%2C%22specificatii%22 "HTTP/2 201 Created"
+2026-05-21 00:52:24,795 [INFO]     ✓ Upsert 15 produse (total ok: 190)
+2026-05-21 00:52:24,830 [INFO]   → Ultima pagina (1), stop.
+2026-05-21 00:52:24,926 [INFO] 
+→ Categorie: https://www.dedeman.ro/ro/gresie-si-faianta/c/1068
+2026-05-21 00:52:25,083 [INFO]   Pagina 1: https://www.dedeman.ro/ro/gresie-si-faianta/c/1068
+2026-05-21 00:52:29,361 [INFO]   → 24 produse de scraped pe pagina 1
+2026-05-21 00:53:43,864 [INFO]   Pagina terminata: 24 produse noi (total: 214)
+2026-05-21 00:53:44,868 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22cod_produs%22%2C%22imagini%22%2C%22descriere_scurta%22%2C%22pret%22%2C%22pret_vechi%22%2C%22ean%22%2C%22disponibilitate%22%2C%22brand%22%2C%22sync_at%22%2C%22rating%22%2C%22subcategorie%22%2C%22moneda%22%2C%22discount_procent%22%2C%22activ%22%2C%22url%22%2C%22unitate_masura%22%2C%22nr_review%22%2C%22categorie%22%2C%22nume%22%2C%22specificatii%22 "HTTP/2 201 Created"
+2026-05-21 00:53:44,874 [INFO]     ✓ Upsert 24 produse (total ok: 24)
+2026-05-21 00:53:44,900 [INFO]   → Ultima pagina (1), stop.
+2026-05-21 00:53:44,979 [INFO] 
+→ Categorie: https://www.dedeman.ro/ro/gleturi/c/152
+2026-05-21 00:53:45,137 [INFO]   Pagina 1: https://www.dedeman.ro/ro/gleturi/c/152
+2026-05-21 00:53:53,156 [INFO]   → 54 produse de scraped pe pagina 1
+2026-05-21 00:56:36,074 [INFO]   Pagina terminata: 54 produse noi (total: 268)
+2026-05-21 00:56:37,082 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22cod_produs%22%2C%22imagini%22%2C%22descriere_scurta%22%2C%22pret%22%2C%22pret_vechi%22%2C%22ean%22%2C%22disponibilitate%22%2C%22brand%22%2C%22sync_at%22%2C%22rating%22%2C%22subcategorie%22%2C%22moneda%22%2C%22discount_procent%22%2C%22activ%22%2C%22url%22%2C%22unitate_masura%22%2C%22nr_review%22%2C%22categorie%22%2C%22nume%22%2C%22specificatii%22 "HTTP/2 201 Created"
+2026-05-21 00:56:37,086 [INFO]     ✓ Upsert 25 produse (total ok: 25)
+2026-05-21 00:56:37,414 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22cod_produs%22%2C%22imagini%22%2C%22descriere_scurta%22%2C%22pret%22%2C%22pret_vechi%22%2C%22ean%22%2C%22disponibilitate%22%2C%22brand%22%2C%22sync_at%22%2C%22rating%22%2C%22subcategorie%22%2C%22moneda%22%2C%22discount_procent%22%2C%22activ%22%2C%22url%22%2C%22unitate_masura%22%2C%22nr_review%22%2C%22categorie%22%2C%22nume%22%2C%22specificatii%22 "HTTP/2 201 Created"
+2026-05-21 00:56:37,418 [INFO]     ✓ Upsert 25 produse (total ok: 50)
+2026-05-21 00:56:37,957 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22cod_produs%22%2C%22imagini%22%2C%22descriere_scurta%22%2C%22pret%22%2C%22pret_vechi%22%2C%22ean%22%2C%22disponibilitate%22%2C%22brand%22%2C%22sync_at%22%2C%22rating%22%2C%22subcategorie%22%2C%22moneda%22%2C%22discount_procent%22%2C%22activ%22%2C%22url%22%2C%22unitate_masura%22%2C%22nr_review%22%2C%22categorie%22%2C%22nume%22%2C%22specificatii%22 "HTTP/2 201 Created"
+2026-05-21 00:56:37,958 [INFO]     ✓ Upsert 4 produse (total ok: 54)
+2026-05-21 00:56:37,984 [INFO]   → Ultima pagina (1), stop.
+2026-05-21 00:56:38,058 [INFO] 
+→ Categorie: https://www.dedeman.ro/ro/adezivi-standard/c/1350
+2026-05-21 00:56:38,262 [INFO]   Pagina 1: https://www.dedeman.ro/ro/adezivi-standard/c/1350
+2026-05-21 00:56:43,727 [INFO]   → 21 produse de scraped pe pagina 1
+2026-05-21 00:57:48,610 [INFO]   Pagina terminata: 21 produse noi (total: 289)
+2026-05-21 00:57:49,363 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22cod_produs%22%2C%22imagini%22%2C%22descriere_scurta%22%2C%22pret%22%2C%22pret_vechi%22%2C%22ean%22%2C%22disponibilitate%22%2C%22brand%22%2C%22sync_at%22%2C%22rating%22%2C%22subcategorie%22%2C%22moneda%22%2C%22discount_procent%22%2C%22activ%22%2C%22url%22%2C%22unitate_masura%22%2C%22nr_review%22%2C%22categorie%22%2C%22nume%22%2C%22specificatii%22 "HTTP/2 200 OK"
+2026-05-21 00:57:49,367 [INFO]     ✓ Upsert 21 produse (total ok: 21)
+2026-05-21 00:57:49,392 [INFO]   → Ultima pagina (1), stop.
+2026-05-21 00:57:49,505 [INFO] 
+→ Categorie: https://www.dedeman.ro/ro/adezivi-polistiren/c/3354
+2026-05-21 00:57:49,639 [INFO]   Pagina 1: https://www.dedeman.ro/ro/adezivi-polistiren/c/3354
+2026-05-21 00:57:54,466 [INFO]   → 13 produse de scraped pe pagina 1
+2026-05-21 00:58:33,829 [INFO]   Pagina terminata: 13 produse noi (total: 302)
+2026-05-21 00:58:34,623 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22cod_produs%22%2C%22imagini%22%2C%22descriere_scurta%22%2C%22pret%22%2C%22pret_vechi%22%2C%22ean%22%2C%22disponibilitate%22%2C%22brand%22%2C%22sync_at%22%2C%22rating%22%2C%22subcategorie%22%2C%22moneda%22%2C%22discount_procent%22%2C%22activ%22%2C%22url%22%2C%22unitate_masura%22%2C%22nr_review%22%2C%22categorie%22%2C%22nume%22%2C%22specificatii%22 "HTTP/2 500 Internal Server Error"
+2026-05-21 00:58:34,624 [ERROR]     ✗ Batch error: {'message': 'ON CONFLICT DO UPDATE command cannot affect row a second time', 'code': '21000', 'hint': 'Ensure that no rows proposed for insertion within the same command have duplicate constrained values.', 'details': None}
+2026-05-21 00:58:34,871 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs "HTTP/2 201 Created"
+2026-05-21 00:58:35,100 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs "HTTP/2 201 Created"
+2026-05-21 00:58:35,279 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs "HTTP/2 201 Created"
+2026-05-21 00:58:35,488 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs "HTTP/2 201 Created"
+2026-05-21 00:58:35,656 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs "HTTP/2 201 Created"
+2026-05-21 00:58:35,849 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs "HTTP/2 201 Created"
+2026-05-21 00:58:35,937 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs "HTTP/2 201 Created"
+2026-05-21 00:58:36,046 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs "HTTP/2 201 Created"
+2026-05-21 00:58:36,138 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs "HTTP/2 201 Created"
+2026-05-21 00:58:36,226 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs "HTTP/2 201 Created"
+2026-05-21 00:58:36,309 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs "HTTP/2 201 Created"
+2026-05-21 00:58:36,398 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs "HTTP/2 200 OK"
+2026-05-21 00:58:36,500 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs "HTTP/2 201 Created"
+2026-05-21 00:58:36,527 [INFO]   → Ultima pagina (1), stop.
+2026-05-21 00:58:36,609 [INFO] 
+→ Categorie: https://www.dedeman.ro/ro/adezivi-de-montaj-speciali/c/3374
+2026-05-21 00:58:36,755 [INFO]   Pagina 1: https://www.dedeman.ro/ro/adezivi-de-montaj-speciali/c/3374
+2026-05-21 00:58:45,767 [INFO]   → 81 produse de scraped pe pagina 1
+2026-05-21 01:02:38,579 [INFO]   Pagina terminata: 81 produse noi (total: 383)
+2026-05-21 01:02:39,584 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22cod_produs%22%2C%22imagini%22%2C%22descriere_scurta%22%2C%22pret%22%2C%22pret_vechi%22%2C%22ean%22%2C%22disponibilitate%22%2C%22brand%22%2C%22sync_at%22%2C%22rating%22%2C%22subcategorie%22%2C%22moneda%22%2C%22discount_procent%22%2C%22activ%22%2C%22url%22%2C%22unitate_masura%22%2C%22nr_review%22%2C%22categorie%22%2C%22nume%22%2C%22specificatii%22 "HTTP/2 201 Created"
+2026-05-21 01:02:39,589 [INFO]     ✓ Upsert 25 produse (total ok: 25)
+2026-05-21 01:02:39,894 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22cod_produs%22%2C%22imagini%22%2C%22descriere_scurta%22%2C%22pret%22%2C%22pret_vechi%22%2C%22ean%22%2C%22disponibilitate%22%2C%22brand%22%2C%22sync_at%22%2C%22rating%22%2C%22subcategorie%22%2C%22moneda%22%2C%22discount_procent%22%2C%22activ%22%2C%22url%22%2C%22unitate_masura%22%2C%22nr_review%22%2C%22categorie%22%2C%22nume%22%2C%22specificatii%22 "HTTP/2 201 Created"
+2026-05-21 01:02:39,898 [INFO]     ✓ Upsert 25 produse (total ok: 50)
+2026-05-21 01:02:40,188 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22cod_produs%22%2C%22imagini%22%2C%22descriere_scurta%22%2C%22pret%22%2C%22pret_vechi%22%2C%22ean%22%2C%22disponibilitate%22%2C%22brand%22%2C%22sync_at%22%2C%22rating%22%2C%22subcategorie%22%2C%22moneda%22%2C%22discount_procent%22%2C%22activ%22%2C%22url%22%2C%22unitate_masura%22%2C%22nr_review%22%2C%22categorie%22%2C%22nume%22%2C%22specificatii%22 "HTTP/2 201 Created"
+2026-05-21 01:02:40,192 [INFO]     ✓ Upsert 25 produse (total ok: 75)
+2026-05-21 01:02:40,448 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22cod_produs%22%2C%22imagini%22%2C%22descriere_scurta%22%2C%22pret%22%2C%22pret_vechi%22%2C%22ean%22%2C%22disponibilitate%22%2C%22brand%22%2C%22sync_at%22%2C%22rating%22%2C%22subcategorie%22%2C%22moneda%22%2C%22discount_procent%22%2C%22activ%22%2C%22url%22%2C%22unitate_masura%22%2C%22nr_review%22%2C%22categorie%22%2C%22nume%22%2C%22specificatii%22 "HTTP/2 201 Created"
+2026-05-21 01:02:40,449 [INFO]     ✓ Upsert 6 produse (total ok: 81)
+2026-05-21 01:02:40,482 [INFO]   → Ultima pagina (1), stop.
+2026-05-21 01:02:40,541 [INFO] 
+→ Categorie: https://www.dedeman.ro/ro/ciment-lianti-var/c/150
+2026-05-21 01:02:40,752 [INFO]   Pagina 1: https://www.dedeman.ro/ro/ciment-lianti-var/c/150
+2026-05-21 01:02:46,321 [INFO]   → 19 produse de scraped pe pagina 1
+2026-05-21 01:03:43,070 [INFO]   Pagina terminata: 19 produse noi (total: 402)
+2026-05-21 01:03:44,246 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22cod_produs%22%2C%22imagini%22%2C%22descriere_scurta%22%2C%22pret%22%2C%22pret_vechi%22%2C%22ean%22%2C%22disponibilitate%22%2C%22brand%22%2C%22sync_at%22%2C%22rating%22%2C%22subcategorie%22%2C%22moneda%22%2C%22discount_procent%22%2C%22activ%22%2C%22url%22%2C%22unitate_masura%22%2C%22nr_review%22%2C%22categorie%22%2C%22nume%22%2C%22specificatii%22 "HTTP/2 201 Created"
+2026-05-21 01:03:44,249 [INFO]     ✓ Upsert 19 produse (total ok: 19)
+2026-05-21 01:03:44,270 [INFO]   → Ultima pagina (1), stop.
+2026-05-21 01:03:44,343 [INFO] 
+→ Categorie: https://www.dedeman.ro/ro/sape/c/153
+2026-05-21 01:03:44,513 [INFO]   Pagina 1: https://www.dedeman.ro/ro/sape/c/153
+2026-05-21 01:03:51,825 [INFO]   → 52 produse de scraped pe pagina 1
+2026-05-21 01:06:22,779 [INFO]   Pagina terminata: 52 produse noi (total: 454)
+2026-05-21 01:06:23,782 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22cod_produs%22%2C%22imagini%22%2C%22descriere_scurta%22%2C%22pret%22%2C%22pret_vechi%22%2C%22ean%22%2C%22disponibilitate%22%2C%22brand%22%2C%22sync_at%22%2C%22rating%22%2C%22subcategorie%22%2C%22moneda%22%2C%22discount_procent%22%2C%22activ%22%2C%22url%22%2C%22unitate_masura%22%2C%22nr_review%22%2C%22categorie%22%2C%22nume%22%2C%22specificatii%22 "HTTP/2 201 Created"
+2026-05-21 01:06:23,786 [INFO]     ✓ Upsert 25 produse (total ok: 25)
+2026-05-21 01:06:24,076 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22cod_produs%22%2C%22imagini%22%2C%22descriere_scurta%22%2C%22pret%22%2C%22pret_vechi%22%2C%22ean%22%2C%22disponibilitate%22%2C%22brand%22%2C%22sync_at%22%2C%22rating%22%2C%22subcategorie%22%2C%22moneda%22%2C%22discount_procent%22%2C%22activ%22%2C%22url%22%2C%22unitate_masura%22%2C%22nr_review%22%2C%22categorie%22%2C%22nume%22%2C%22specificatii%22 "HTTP/2 201 Created"
+2026-05-21 01:06:24,081 [INFO]     ✓ Upsert 25 produse (total ok: 50)
+2026-05-21 01:06:24,316 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22cod_produs%22%2C%22imagini%22%2C%22descriere_scurta%22%2C%22pret%22%2C%22pret_vechi%22%2C%22ean%22%2C%22disponibilitate%22%2C%22brand%22%2C%22sync_at%22%2C%22rating%22%2C%22subcategorie%22%2C%22moneda%22%2C%22discount_procent%22%2C%22activ%22%2C%22url%22%2C%22unitate_masura%22%2C%22nr_review%22%2C%22categorie%22%2C%22nume%22%2C%22specificatii%22 "HTTP/2 200 OK"
+2026-05-21 01:06:24,317 [INFO]     ✓ Upsert 2 produse (total ok: 52)
+2026-05-21 01:06:24,350 [INFO]   → Ultima pagina (1), stop.
+2026-05-21 01:06:24,431 [INFO] 
+→ Categorie: https://www.dedeman.ro/ro/mortare-si-tinciuri/c/155
+2026-05-21 01:06:24,582 [INFO]   Pagina 1: https://www.dedeman.ro/ro/mortare-si-tinciuri/c/155
+2026-05-21 01:06:33,029 [INFO]   → 72 produse de scraped pe pagina 1
+2026-05-21 01:10:08,011 [INFO]   Pagina terminata: 72 produse noi (total: 526)
+2026-05-21 01:10:09,035 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22cod_produs%22%2C%22imagini%22%2C%22descriere_scurta%22%2C%22pret%22%2C%22pret_vechi%22%2C%22ean%22%2C%22disponibilitate%22%2C%22brand%22%2C%22sync_at%22%2C%22rating%22%2C%22subcategorie%22%2C%22moneda%22%2C%22discount_procent%22%2C%22activ%22%2C%22url%22%2C%22unitate_masura%22%2C%22nr_review%22%2C%22categorie%22%2C%22nume%22%2C%22specificatii%22 "HTTP/2 201 Created"
+2026-05-21 01:10:09,041 [INFO]     ✓ Upsert 25 produse (total ok: 25)
+2026-05-21 01:10:09,319 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22cod_produs%22%2C%22imagini%22%2C%22descriere_scurta%22%2C%22pret%22%2C%22pret_vechi%22%2C%22ean%22%2C%22disponibilitate%22%2C%22brand%22%2C%22sync_at%22%2C%22rating%22%2C%22subcategorie%22%2C%22moneda%22%2C%22discount_procent%22%2C%22activ%22%2C%22url%22%2C%22unitate_masura%22%2C%22nr_review%22%2C%22categorie%22%2C%22nume%22%2C%22specificatii%22 "HTTP/2 201 Created"
+2026-05-21 01:10:09,323 [INFO]     ✓ Upsert 25 produse (total ok: 50)
+2026-05-21 01:10:09,598 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22cod_produs%22%2C%22imagini%22%2C%22descriere_scurta%22%2C%22pret%22%2C%22pret_vechi%22%2C%22ean%22%2C%22disponibilitate%22%2C%22brand%22%2C%22sync_at%22%2C%22rating%22%2C%22subcategorie%22%2C%22moneda%22%2C%22discount_procent%22%2C%22activ%22%2C%22url%22%2C%22unitate_masura%22%2C%22nr_review%22%2C%22categorie%22%2C%22nume%22%2C%22specificatii%22 "HTTP/2 201 Created"
+2026-05-21 01:10:09,602 [INFO]     ✓ Upsert 22 produse (total ok: 72)
+2026-05-21 01:10:09,635 [INFO]   → Ultima pagina (1), stop.
+2026-05-21 01:10:09,709 [INFO] 
+→ Categorie: https://www.dedeman.ro/ro/siliconi-si-accesorii/c/410
+2026-05-21 01:10:09,862 [INFO]   Pagina 1: https://www.dedeman.ro/ro/siliconi-si-accesorii/c/410
+2026-05-21 01:10:20,128 [INFO]   → 133 produse de scraped pe pagina 1
+2026-05-21 01:17:17,323 [INFO]   Pagina terminata: 133 produse noi (total: 659)
+2026-05-21 01:17:18,591 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22cod_produs%22%2C%22imagini%22%2C%22descriere_scurta%22%2C%22pret%22%2C%22pret_vechi%22%2C%22ean%22%2C%22disponibilitate%22%2C%22brand%22%2C%22sync_at%22%2C%22rating%22%2C%22subcategorie%22%2C%22moneda%22%2C%22discount_procent%22%2C%22activ%22%2C%22url%22%2C%22unitate_masura%22%2C%22nr_review%22%2C%22categorie%22%2C%22nume%22%2C%22specificatii%22 "HTTP/2 201 Created"
+2026-05-21 01:17:18,596 [INFO]     ✓ Upsert 25 produse (total ok: 25)
+2026-05-21 01:17:18,893 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22cod_produs%22%2C%22imagini%22%2C%22descriere_scurta%22%2C%22pret%22%2C%22pret_vechi%22%2C%22ean%22%2C%22disponibilitate%22%2C%22brand%22%2C%22sync_at%22%2C%22rating%22%2C%22subcategorie%22%2C%22moneda%22%2C%22discount_procent%22%2C%22activ%22%2C%22url%22%2C%22unitate_masura%22%2C%22nr_review%22%2C%22categorie%22%2C%22nume%22%2C%22specificatii%22 "HTTP/2 201 Created"
+2026-05-21 01:17:18,897 [INFO]     ✓ Upsert 25 produse (total ok: 50)
+2026-05-21 01:17:19,171 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22cod_produs%22%2C%22imagini%22%2C%22descriere_scurta%22%2C%22pret%22%2C%22pret_vechi%22%2C%22ean%22%2C%22disponibilitate%22%2C%22brand%22%2C%22sync_at%22%2C%22rating%22%2C%22subcategorie%22%2C%22moneda%22%2C%22discount_procent%22%2C%22activ%22%2C%22url%22%2C%22unitate_masura%22%2C%22nr_review%22%2C%22categorie%22%2C%22nume%22%2C%22specificatii%22 "HTTP/2 201 Created"
+2026-05-21 01:17:19,176 [INFO]     ✓ Upsert 25 produse (total ok: 75)
+2026-05-21 01:17:19,426 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22cod_produs%22%2C%22imagini%22%2C%22descriere_scurta%22%2C%22pret%22%2C%22pret_vechi%22%2C%22ean%22%2C%22disponibilitate%22%2C%22brand%22%2C%22sync_at%22%2C%22rating%22%2C%22subcategorie%22%2C%22moneda%22%2C%22discount_procent%22%2C%22activ%22%2C%22url%22%2C%22unitate_masura%22%2C%22nr_review%22%2C%22categorie%22%2C%22nume%22%2C%22specificatii%22 "HTTP/2 201 Created"
+2026-05-21 01:17:19,438 [INFO]     ✓ Upsert 25 produse (total ok: 100)
+2026-05-21 01:17:19,564 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22cod_produs%22%2C%22imagini%22%2C%22descriere_scurta%22%2C%22pret%22%2C%22pret_vechi%22%2C%22ean%22%2C%22disponibilitate%22%2C%22brand%22%2C%22sync_at%22%2C%22rating%22%2C%22subcategorie%22%2C%22moneda%22%2C%22discount_procent%22%2C%22activ%22%2C%22url%22%2C%22unitate_masura%22%2C%22nr_review%22%2C%22categorie%22%2C%22nume%22%2C%22specificatii%22 "HTTP/2 201 Created"
+2026-05-21 01:17:19,569 [INFO]     ✓ Upsert 25 produse (total ok: 125)
+2026-05-21 01:17:19,692 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22cod_produs%22%2C%22imagini%22%2C%22descriere_scurta%22%2C%22pret%22%2C%22pret_vechi%22%2C%22ean%22%2C%22disponibilitate%22%2C%22brand%22%2C%22sync_at%22%2C%22rating%22%2C%22subcategorie%22%2C%22moneda%22%2C%22discount_procent%22%2C%22activ%22%2C%22url%22%2C%22unitate_masura%22%2C%22nr_review%22%2C%22categorie%22%2C%22nume%22%2C%22specificatii%22 "HTTP/2 201 Created"
+2026-05-21 01:17:19,695 [INFO]     ✓ Upsert 8 produse (total ok: 133)
+2026-05-21 01:17:19,741 [INFO]   → Ultima pagina (1), stop.
+2026-05-21 01:17:19,926 [INFO] HTTP Request: PATCH https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?sync_at=lt.2026-05-18T22%3A17%3A19.815253 "HTTP/2 200 OK"
+2026-05-21 01:17:19,927 [INFO] Marcate inactive (>48h): 0
+2026-05-21 01:17:20,338 [INFO] Browser oprit.
+2026-05-21 01:17:20,338 [INFO] 
+╔══════════════════════════════════════════╗
+║        SYNC DEDEMAN → SUPABASE           ║
+╠══════════════════════════════════════════╣
+║ Categorii   : 10                         ║
+║ Scraped     : 659                        ║
+║ Upserted    : 659                        ║
+║ Erori       : 0                          ║
+║ Durata      : 2399                  s    ║
+╚══════════════════════════════════════════╝
+2026-05-21 01:17:20,340 [INFO] Raport: logs/sync_report_20260521_0117.json
+2026-05-21 06:14:36,978 [INFO] === MOD TEST: 1 pagina, max 5 produse, fara scriere in DB ===
+2026-05-21 06:14:40,877 [INFO] Browser pornit.
+2026-05-21 06:14:40,878 [INFO] 
+→ Categorie: https://www.dedeman.ro/ro/adezivi-standard/c/1350
+2026-05-21 06:14:41,127 [INFO]   Pagina 1: https://www.dedeman.ro/ro/adezivi-standard/c/1350
+2026-05-21 06:14:46,141 [INFO]   → 5 produse extrase de pe pagina 1
+2026-05-21 06:14:46,141 [INFO]   Pagina terminata: 5 produse noi (total: 5)
+2026-05-21 06:14:46,141 [INFO]   [DRY] 5008530 | Adeziv gresie si faianta Ceresit CM 11 Plus, gri,  | 55.9 RON | None | https://www.dedeman.ro/ro/adeziv-gresie-si-faianta-ceresit-cm-11-plus-gri-pentru-interior/-exterior-25-kg/p/5008530
+2026-05-21 06:14:46,142 [INFO]   [DRY] 5009224 | Adeziv pentru gresie si faianta Primus MacroGranul | 49.99 RON | None | https://www.dedeman.ro/ro/adeziv-pentru-gresie-si-faianta-primus-macrogranular-interior/-exterior-alb-25-kg/p/5009224
+2026-05-21 06:14:46,142 [INFO]   [DRY] 5002910 | Adeziv gresie si faianta Baudeman AD5, pentru inte | 21.9 RON | None | https://www.dedeman.ro/ro/adeziv-gresie-si-faianta-baudeman-ad5-pentru-interior-25-kg/p/5002910
+2026-05-21 06:14:46,164 [INFO]   → Ultima pagina (1), stop.
+2026-05-21 06:14:46,612 [INFO] Browser oprit.
+2026-05-21 06:14:46,612 [INFO] 
+╔══════════════════════════════════════════╗
+║        SYNC DEDEMAN → SUPABASE           ║
+╠══════════════════════════════════════════╣
+║ Categorii   : 1                          ║
+║ Scraped     : 5                          ║
+║ Upserted    : 0                          ║
+║ Erori       : 0                          ║
+║ Durata      : 7                     s    ║
+╚══════════════════════════════════════════╝
+2026-05-21 06:14:46,614 [INFO] Raport: logs/sync_report_20260521_0614.json
+2026-05-21 06:15:03,912 [INFO] Browser pornit.
+2026-05-21 06:15:03,912 [INFO] 
+→ Categorie: https://www.dedeman.ro/ro/materiale-de-constructii/c/21
+2026-05-21 06:15:04,249 [INFO]   Pagina 1: https://www.dedeman.ro/ro/materiale-de-constructii/c/21
+2026-05-21 06:15:10,230 [INFO]   → 70 produse extrase de pe pagina 1
+2026-05-21 06:15:10,231 [INFO]   Pagina terminata: 70 produse noi (total: 70)
+2026-05-21 06:15:12,669 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22cod_produs%22%2C%22nr_review%22%2C%22discount_procent%22%2C%22disponibilitate%22%2C%22url%22%2C%22ean%22%2C%22rating%22%2C%22moneda%22%2C%22categorie%22%2C%22nume%22%2C%22sync_at%22%2C%22brand%22%2C%22imagini%22%2C%22pret_vechi%22%2C%22descriere_scurta%22%2C%22unitate_masura%22%2C%22subcategorie%22%2C%22activ%22%2C%22pret%22%2C%22specificatii%22 "HTTP/2 200 OK"
+2026-05-21 06:15:12,673 [INFO]     ✓ Upsert 25 produse (total ok: 25)
+2026-05-21 06:15:12,950 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22cod_produs%22%2C%22nr_review%22%2C%22discount_procent%22%2C%22disponibilitate%22%2C%22url%22%2C%22ean%22%2C%22rating%22%2C%22moneda%22%2C%22categorie%22%2C%22nume%22%2C%22sync_at%22%2C%22brand%22%2C%22imagini%22%2C%22pret_vechi%22%2C%22descriere_scurta%22%2C%22unitate_masura%22%2C%22subcategorie%22%2C%22activ%22%2C%22pret%22%2C%22specificatii%22 "HTTP/2 200 OK"
+2026-05-21 06:15:12,954 [INFO]     ✓ Upsert 25 produse (total ok: 50)
+2026-05-21 06:15:13,239 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22cod_produs%22%2C%22nr_review%22%2C%22discount_procent%22%2C%22disponibilitate%22%2C%22url%22%2C%22ean%22%2C%22rating%22%2C%22moneda%22%2C%22categorie%22%2C%22nume%22%2C%22sync_at%22%2C%22brand%22%2C%22imagini%22%2C%22pret_vechi%22%2C%22descriere_scurta%22%2C%22unitate_masura%22%2C%22subcategorie%22%2C%22activ%22%2C%22pret%22%2C%22specificatii%22 "HTTP/2 200 OK"
+2026-05-21 06:15:13,243 [INFO]     ✓ Upsert 20 produse (total ok: 70)
+2026-05-21 06:15:13,288 [INFO]   → Ultima pagina (1), stop.
+2026-05-21 06:15:13,380 [INFO] 
+→ Categorie: https://www.dedeman.ro/ro/instalatii-sanitare/c/8035
+2026-05-21 06:15:13,565 [INFO]   Pagina 1: https://www.dedeman.ro/ro/instalatii-sanitare/c/8035
+2026-05-21 06:15:19,763 [INFO]   → 72 produse extrase de pe pagina 1
+2026-05-21 06:15:19,763 [INFO]   Pagina terminata: 72 produse noi (total: 142)
+2026-05-21 06:15:20,293 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22cod_produs%22%2C%22nr_review%22%2C%22discount_procent%22%2C%22disponibilitate%22%2C%22url%22%2C%22ean%22%2C%22rating%22%2C%22moneda%22%2C%22categorie%22%2C%22nume%22%2C%22sync_at%22%2C%22brand%22%2C%22imagini%22%2C%22pret_vechi%22%2C%22descriere_scurta%22%2C%22unitate_masura%22%2C%22subcategorie%22%2C%22activ%22%2C%22pret%22%2C%22specificatii%22 "HTTP/2 201 Created"
+2026-05-21 06:15:20,298 [INFO]     ✓ Upsert 25 produse (total ok: 25)
+2026-05-21 06:15:20,542 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22cod_produs%22%2C%22nr_review%22%2C%22discount_procent%22%2C%22disponibilitate%22%2C%22url%22%2C%22ean%22%2C%22rating%22%2C%22moneda%22%2C%22categorie%22%2C%22nume%22%2C%22sync_at%22%2C%22brand%22%2C%22imagini%22%2C%22pret_vechi%22%2C%22descriere_scurta%22%2C%22unitate_masura%22%2C%22subcategorie%22%2C%22activ%22%2C%22pret%22%2C%22specificatii%22 "HTTP/2 201 Created"
+2026-05-21 06:15:20,549 [INFO]     ✓ Upsert 25 produse (total ok: 50)
+2026-05-21 06:15:20,706 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22cod_produs%22%2C%22nr_review%22%2C%22discount_procent%22%2C%22disponibilitate%22%2C%22url%22%2C%22ean%22%2C%22rating%22%2C%22moneda%22%2C%22categorie%22%2C%22nume%22%2C%22sync_at%22%2C%22brand%22%2C%22imagini%22%2C%22pret_vechi%22%2C%22descriere_scurta%22%2C%22unitate_masura%22%2C%22subcategorie%22%2C%22activ%22%2C%22pret%22%2C%22specificatii%22 "HTTP/2 201 Created"
+2026-05-21 06:15:20,715 [INFO]     ✓ Upsert 22 produse (total ok: 72)
+2026-05-21 06:15:20,756 [INFO]   → Ultima pagina (1), stop.
+2026-05-21 06:15:20,857 [INFO] 
+→ Categorie: https://www.dedeman.ro/ro/gresie-si-faianta/c/1068
+2026-05-21 06:15:21,002 [INFO]   Pagina 1: https://www.dedeman.ro/ro/gresie-si-faianta/c/1068
+2026-05-21 06:15:25,480 [INFO]   → 19 produse extrase de pe pagina 1
+2026-05-21 06:15:25,480 [INFO]   Pagina terminata: 19 produse noi (total: 161)
+2026-05-21 06:15:25,641 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22cod_produs%22%2C%22nr_review%22%2C%22discount_procent%22%2C%22disponibilitate%22%2C%22url%22%2C%22ean%22%2C%22rating%22%2C%22moneda%22%2C%22categorie%22%2C%22nume%22%2C%22sync_at%22%2C%22brand%22%2C%22imagini%22%2C%22pret_vechi%22%2C%22descriere_scurta%22%2C%22unitate_masura%22%2C%22subcategorie%22%2C%22activ%22%2C%22pret%22%2C%22specificatii%22 "HTTP/2 200 OK"
+2026-05-21 06:15:25,647 [INFO]     ✓ Upsert 19 produse (total ok: 19)
+2026-05-21 06:15:25,771 [INFO]   → Ultima pagina (1), stop.
+2026-05-21 06:15:25,888 [INFO] 
+→ Categorie: https://www.dedeman.ro/ro/parchet-mocheta-si-covoare/c/7729
+2026-05-21 06:15:26,023 [INFO]   Pagina 1: https://www.dedeman.ro/ro/parchet-mocheta-si-covoare/c/7729
+2026-05-21 06:15:30,433 [INFO]   → 19 produse extrase de pe pagina 1
+2026-05-21 06:15:30,433 [INFO]   Pagina terminata: 19 produse noi (total: 180)
+2026-05-21 06:15:30,565 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22cod_produs%22%2C%22nr_review%22%2C%22discount_procent%22%2C%22disponibilitate%22%2C%22url%22%2C%22ean%22%2C%22rating%22%2C%22moneda%22%2C%22categorie%22%2C%22nume%22%2C%22sync_at%22%2C%22brand%22%2C%22imagini%22%2C%22pret_vechi%22%2C%22descriere_scurta%22%2C%22unitate_masura%22%2C%22subcategorie%22%2C%22activ%22%2C%22pret%22%2C%22specificatii%22 "HTTP/2 201 Created"
+2026-05-21 06:15:30,569 [INFO]     ✓ Upsert 19 produse (total ok: 19)
+2026-05-21 06:15:30,600 [INFO]   → Ultima pagina (1), stop.
+2026-05-21 06:15:30,674 [INFO] 
+→ Categorie: https://www.dedeman.ro/ro/usi-si-ferestre/c/7759
+2026-05-21 06:15:30,849 [INFO]   Pagina 1: https://www.dedeman.ro/ro/usi-si-ferestre/c/7759
+2026-05-21 06:15:35,115 [INFO]   → 19 produse extrase de pe pagina 1
+2026-05-21 06:15:35,115 [INFO]   Pagina terminata: 19 produse noi (total: 199)
+2026-05-21 06:15:35,293 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22cod_produs%22%2C%22nr_review%22%2C%22discount_procent%22%2C%22disponibilitate%22%2C%22url%22%2C%22ean%22%2C%22rating%22%2C%22moneda%22%2C%22categorie%22%2C%22nume%22%2C%22sync_at%22%2C%22brand%22%2C%22imagini%22%2C%22pret_vechi%22%2C%22descriere_scurta%22%2C%22unitate_masura%22%2C%22subcategorie%22%2C%22activ%22%2C%22pret%22%2C%22specificatii%22 "HTTP/2 201 Created"
+2026-05-21 06:15:35,296 [INFO]     ✓ Upsert 19 produse (total ok: 19)
+2026-05-21 06:15:35,323 [INFO]   → Ultima pagina (1), stop.
+2026-05-21 06:15:35,389 [INFO] 
+→ Categorie: https://www.dedeman.ro/ro/vopsele-si-tencuieli/c/7912
+2026-05-21 06:15:35,556 [INFO]   Pagina 1: https://www.dedeman.ro/ro/vopsele-si-tencuieli/c/7912
+2026-05-21 06:15:40,197 [INFO]   → 19 produse extrase de pe pagina 1
+2026-05-21 06:15:40,197 [INFO]   Pagina terminata: 19 produse noi (total: 218)
+2026-05-21 06:15:40,293 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22cod_produs%22%2C%22nr_review%22%2C%22discount_procent%22%2C%22disponibilitate%22%2C%22url%22%2C%22ean%22%2C%22rating%22%2C%22moneda%22%2C%22categorie%22%2C%22nume%22%2C%22sync_at%22%2C%22brand%22%2C%22imagini%22%2C%22pret_vechi%22%2C%22descriere_scurta%22%2C%22unitate_masura%22%2C%22subcategorie%22%2C%22activ%22%2C%22pret%22%2C%22specificatii%22 "HTTP/2 201 Created"
+2026-05-21 06:15:40,298 [INFO]     ✓ Upsert 19 produse (total ok: 19)
+2026-05-21 06:15:40,352 [INFO]   → Ultima pagina (1), stop.
+2026-05-21 06:15:40,454 [INFO] 
+→ Categorie: https://www.dedeman.ro/ro/baie/c/1528
+2026-05-21 06:15:40,585 [INFO]   Pagina 1: https://www.dedeman.ro/ro/baie/c/1528
+2026-05-21 06:15:44,892 [INFO]   → 17 produse extrase de pe pagina 1
+2026-05-21 06:15:44,892 [INFO]   Pagina terminata: 17 produse noi (total: 235)
+2026-05-21 06:15:44,983 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22cod_produs%22%2C%22nr_review%22%2C%22discount_procent%22%2C%22disponibilitate%22%2C%22url%22%2C%22ean%22%2C%22rating%22%2C%22moneda%22%2C%22categorie%22%2C%22nume%22%2C%22sync_at%22%2C%22brand%22%2C%22imagini%22%2C%22pret_vechi%22%2C%22descriere_scurta%22%2C%22unitate_masura%22%2C%22subcategorie%22%2C%22activ%22%2C%22pret%22%2C%22specificatii%22 "HTTP/2 201 Created"
+2026-05-21 06:15:44,988 [INFO]     ✓ Upsert 17 produse (total ok: 17)
+2026-05-21 06:15:45,016 [INFO]   → Ultima pagina (1), stop.
+2026-05-21 06:15:45,216 [INFO] HTTP Request: PATCH https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?sync_at=lt.2026-05-19T03%3A15%3A45.121308 "HTTP/2 200 OK"
+2026-05-21 06:15:45,217 [INFO] Marcate inactive (>48h): 0
+2026-05-21 06:15:45,553 [INFO] Browser oprit.
+2026-05-21 06:15:45,554 [INFO] 
+╔══════════════════════════════════════════╗
+║        SYNC DEDEMAN → SUPABASE           ║
+╠══════════════════════════════════════════╣
+║ Categorii   : 7                          ║
+║ Scraped     : 235                        ║
+║ Upserted    : 235                        ║
+║ Erori       : 0                          ║
+║ Durata      : 44                    s    ║
+╚══════════════════════════════════════════╝
+2026-05-21 06:15:45,555 [INFO] Raport: logs/sync_report_20260521_0615.json
+2026-05-21 06:16:17,762 [INFO] Browser pornit.
+2026-05-21 06:16:17,762 [INFO] 
+→ Categorie: https://www.dedeman.ro/ro/materiale-de-constructii/c/21
+2026-05-21 06:16:18,072 [INFO]   Pagina 1: https://www.dedeman.ro/ro/materiale-de-constructii/c/21
+2026-05-21 06:16:25,236 [INFO]   → 70 produse extrase de pe pagina 1
+2026-05-21 06:16:25,236 [INFO]   Pagina terminata: 70 produse noi (total: 70)
+2026-05-21 06:16:27,336 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22brand%22%2C%22nr_review%22%2C%22disponibilitate%22%2C%22subcategorie%22%2C%22moneda%22%2C%22rating%22%2C%22sync_at%22%2C%22imagini%22%2C%22url%22%2C%22activ%22%2C%22unitate_masura%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22ean%22%2C%22specificatii%22%2C%22pret%22%2C%22pret_vechi%22%2C%22descriere_scurta%22%2C%22nume%22%2C%22categorie%22 "HTTP/2 200 OK"
+2026-05-21 06:16:27,342 [INFO]     ✓ Upsert 25 produse (total ok: 25)
+2026-05-21 06:16:27,567 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22brand%22%2C%22nr_review%22%2C%22disponibilitate%22%2C%22subcategorie%22%2C%22moneda%22%2C%22rating%22%2C%22sync_at%22%2C%22imagini%22%2C%22url%22%2C%22activ%22%2C%22unitate_masura%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22ean%22%2C%22specificatii%22%2C%22pret%22%2C%22pret_vechi%22%2C%22descriere_scurta%22%2C%22nume%22%2C%22categorie%22 "HTTP/2 200 OK"
+2026-05-21 06:16:27,572 [INFO]     ✓ Upsert 25 produse (total ok: 50)
+2026-05-21 06:16:27,821 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22brand%22%2C%22nr_review%22%2C%22disponibilitate%22%2C%22subcategorie%22%2C%22moneda%22%2C%22rating%22%2C%22sync_at%22%2C%22imagini%22%2C%22url%22%2C%22activ%22%2C%22unitate_masura%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22ean%22%2C%22specificatii%22%2C%22pret%22%2C%22pret_vechi%22%2C%22descriere_scurta%22%2C%22nume%22%2C%22categorie%22 "HTTP/2 200 OK"
+2026-05-21 06:16:27,825 [INFO]     ✓ Upsert 20 produse (total ok: 70)
+2026-05-21 06:16:27,876 [INFO]   → Ultima pagina (1), stop.
+2026-05-21 06:16:28,187 [INFO] HTTP Request: PATCH https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?sync_at=lt.2026-05-19T03%3A16%3A27.966965 "HTTP/2 200 OK"
+2026-05-21 06:16:28,188 [INFO] Marcate inactive (>48h): 0
+2026-05-21 06:16:28,465 [INFO] Browser oprit.
+2026-05-21 06:16:28,465 [INFO] 
+╔══════════════════════════════════════════╗
+║        SYNC DEDEMAN → SUPABASE           ║
+╠══════════════════════════════════════════╣
+║ Categorii   : 1                          ║
+║ Scraped     : 70                         ║
+║ Upserted    : 70                         ║
+║ Erori       : 0                          ║
+║ Durata      : 12                    s    ║
+╚══════════════════════════════════════════╝
+2026-05-21 06:16:28,467 [INFO] Raport: logs/sync_report_20260521_0616.json
+2026-05-21 06:17:35,902 [INFO] Browser pornit.
+2026-05-21 06:17:35,902 [INFO] 
+→ Categorie: https://www.dedeman.ro/ro/materiale-de-constructii/c/21
+2026-05-21 06:17:36,385 [INFO]   Pagina 1: https://www.dedeman.ro/ro/materiale-de-constructii/c/21
+2026-05-21 06:17:43,291 [INFO]   → 70 produse extrase de pe pagina 1
+2026-05-21 06:17:43,291 [INFO]   Pagina terminata: 70 produse noi (total: 70)
+2026-05-21 06:17:45,921 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22pret_vechi%22%2C%22rating%22%2C%22discount_procent%22%2C%22activ%22%2C%22imagini%22%2C%22ean%22%2C%22nume%22%2C%22url%22%2C%22pret%22%2C%22moneda%22%2C%22descriere_scurta%22%2C%22disponibilitate%22%2C%22specificatii%22%2C%22cod_produs%22%2C%22nr_review%22%2C%22categorie%22%2C%22unitate_masura%22%2C%22brand%22%2C%22sync_at%22%2C%22subcategorie%22 "HTTP/2 200 OK"
+2026-05-21 06:17:45,928 [INFO]     ✓ Upsert 25 produse (total ok: 25)
+2026-05-21 06:17:46,219 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22pret_vechi%22%2C%22rating%22%2C%22discount_procent%22%2C%22activ%22%2C%22imagini%22%2C%22ean%22%2C%22nume%22%2C%22url%22%2C%22pret%22%2C%22moneda%22%2C%22descriere_scurta%22%2C%22disponibilitate%22%2C%22specificatii%22%2C%22cod_produs%22%2C%22nr_review%22%2C%22categorie%22%2C%22unitate_masura%22%2C%22brand%22%2C%22sync_at%22%2C%22subcategorie%22 "HTTP/2 200 OK"
+2026-05-21 06:17:46,223 [INFO]     ✓ Upsert 25 produse (total ok: 50)
+2026-05-21 06:17:46,438 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22pret_vechi%22%2C%22rating%22%2C%22discount_procent%22%2C%22activ%22%2C%22imagini%22%2C%22ean%22%2C%22nume%22%2C%22url%22%2C%22pret%22%2C%22moneda%22%2C%22descriere_scurta%22%2C%22disponibilitate%22%2C%22specificatii%22%2C%22cod_produs%22%2C%22nr_review%22%2C%22categorie%22%2C%22unitate_masura%22%2C%22brand%22%2C%22sync_at%22%2C%22subcategorie%22 "HTTP/2 200 OK"
+2026-05-21 06:17:46,443 [INFO]     ✓ Upsert 20 produse (total ok: 70)
+2026-05-21 06:17:48,492 [INFO]   Pagina 2: https://www.dedeman.ro/ro/materiale-de-constructii/c/21?page=2
+2026-05-21 06:17:54,173 [INFO]   → 72 produse extrase de pe pagina 2
+2026-05-21 06:17:54,173 [INFO]   Pagina terminata: 72 produse noi (total: 142)
+2026-05-21 06:17:54,519 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22pret_vechi%22%2C%22rating%22%2C%22discount_procent%22%2C%22activ%22%2C%22imagini%22%2C%22ean%22%2C%22nume%22%2C%22url%22%2C%22pret%22%2C%22moneda%22%2C%22descriere_scurta%22%2C%22disponibilitate%22%2C%22specificatii%22%2C%22cod_produs%22%2C%22nr_review%22%2C%22categorie%22%2C%22unitate_masura%22%2C%22brand%22%2C%22sync_at%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:17:54,527 [INFO]     ✓ Upsert 25 produse (total ok: 25)
+2026-05-21 06:17:54,691 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22pret_vechi%22%2C%22rating%22%2C%22discount_procent%22%2C%22activ%22%2C%22imagini%22%2C%22ean%22%2C%22nume%22%2C%22url%22%2C%22pret%22%2C%22moneda%22%2C%22descriere_scurta%22%2C%22disponibilitate%22%2C%22specificatii%22%2C%22cod_produs%22%2C%22nr_review%22%2C%22categorie%22%2C%22unitate_masura%22%2C%22brand%22%2C%22sync_at%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:17:54,696 [INFO]     ✓ Upsert 25 produse (total ok: 50)
+2026-05-21 06:17:54,798 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22pret_vechi%22%2C%22rating%22%2C%22discount_procent%22%2C%22activ%22%2C%22imagini%22%2C%22ean%22%2C%22nume%22%2C%22url%22%2C%22pret%22%2C%22moneda%22%2C%22descriere_scurta%22%2C%22disponibilitate%22%2C%22specificatii%22%2C%22cod_produs%22%2C%22nr_review%22%2C%22categorie%22%2C%22unitate_masura%22%2C%22brand%22%2C%22sync_at%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:17:54,804 [INFO]     ✓ Upsert 22 produse (total ok: 72)
+2026-05-21 06:17:56,875 [INFO]   Pagina 3: https://www.dedeman.ro/ro/materiale-de-constructii/c/21?page=3
+2026-05-21 06:18:02,509 [INFO]   → 72 produse extrase de pe pagina 3
+2026-05-21 06:18:02,510 [INFO]   Pagina terminata: 72 produse noi (total: 214)
+2026-05-21 06:18:02,694 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22pret_vechi%22%2C%22rating%22%2C%22discount_procent%22%2C%22activ%22%2C%22imagini%22%2C%22ean%22%2C%22nume%22%2C%22url%22%2C%22pret%22%2C%22moneda%22%2C%22descriere_scurta%22%2C%22disponibilitate%22%2C%22specificatii%22%2C%22cod_produs%22%2C%22nr_review%22%2C%22categorie%22%2C%22unitate_masura%22%2C%22brand%22%2C%22sync_at%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:18:02,698 [INFO]     ✓ Upsert 25 produse (total ok: 25)
+2026-05-21 06:18:02,799 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22pret_vechi%22%2C%22rating%22%2C%22discount_procent%22%2C%22activ%22%2C%22imagini%22%2C%22ean%22%2C%22nume%22%2C%22url%22%2C%22pret%22%2C%22moneda%22%2C%22descriere_scurta%22%2C%22disponibilitate%22%2C%22specificatii%22%2C%22cod_produs%22%2C%22nr_review%22%2C%22categorie%22%2C%22unitate_masura%22%2C%22brand%22%2C%22sync_at%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:18:02,803 [INFO]     ✓ Upsert 25 produse (total ok: 50)
+2026-05-21 06:18:02,945 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22pret_vechi%22%2C%22rating%22%2C%22discount_procent%22%2C%22activ%22%2C%22imagini%22%2C%22ean%22%2C%22nume%22%2C%22url%22%2C%22pret%22%2C%22moneda%22%2C%22descriere_scurta%22%2C%22disponibilitate%22%2C%22specificatii%22%2C%22cod_produs%22%2C%22nr_review%22%2C%22categorie%22%2C%22unitate_masura%22%2C%22brand%22%2C%22sync_at%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:18:02,961 [INFO]     ✓ Upsert 22 produse (total ok: 72)
+2026-05-21 06:18:05,178 [INFO] HTTP Request: PATCH https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?sync_at=lt.2026-05-19T03%3A18%3A05.082368 "HTTP/2 200 OK"
+2026-05-21 06:18:05,179 [INFO] Marcate inactive (>48h): 0
+2026-05-21 06:18:05,636 [INFO] Browser oprit.
+2026-05-21 06:18:05,636 [INFO] 
+╔══════════════════════════════════════════╗
+║        SYNC DEDEMAN → SUPABASE           ║
+╠══════════════════════════════════════════╣
+║ Categorii   : 1                          ║
+║ Scraped     : 214                        ║
+║ Upserted    : 214                        ║
+║ Erori       : 0                          ║
+║ Durata      : 31                    s    ║
+╚══════════════════════════════════════════╝
+2026-05-21 06:18:05,638 [INFO] Raport: logs/sync_report_20260521_0618.json
+2026-05-21 06:18:22,669 [INFO] Browser pornit.
+2026-05-21 06:18:22,669 [INFO] 
+→ Categorie: https://www.dedeman.ro/ro/materiale-de-constructii/c/21
+2026-05-21 06:18:22,935 [INFO]   Pagina 1: https://www.dedeman.ro/ro/materiale-de-constructii/c/21
+2026-05-21 06:18:29,924 [INFO]   → 70 produse extrase de pe pagina 1
+2026-05-21 06:18:29,924 [INFO]   Pagina terminata: 70 produse noi (total: 70)
+2026-05-21 06:18:31,792 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 200 OK"
+2026-05-21 06:18:31,798 [INFO]     ✓ Upsert 25 produse (total ok: 25)
+2026-05-21 06:18:31,949 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 200 OK"
+2026-05-21 06:18:31,953 [INFO]     ✓ Upsert 25 produse (total ok: 50)
+2026-05-21 06:18:32,132 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 200 OK"
+2026-05-21 06:18:32,136 [INFO]     ✓ Upsert 20 produse (total ok: 70)
+2026-05-21 06:18:34,196 [INFO]   Pagina 2: https://www.dedeman.ro/ro/materiale-de-constructii/c/21?page=2
+2026-05-21 06:18:39,608 [INFO]   → 72 produse extrase de pe pagina 2
+2026-05-21 06:18:39,608 [INFO]   Pagina terminata: 72 produse noi (total: 142)
+2026-05-21 06:18:39,857 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 200 OK"
+2026-05-21 06:18:39,863 [INFO]     ✓ Upsert 25 produse (total ok: 25)
+2026-05-21 06:18:40,044 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 200 OK"
+2026-05-21 06:18:40,048 [INFO]     ✓ Upsert 25 produse (total ok: 50)
+2026-05-21 06:18:40,194 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 200 OK"
+2026-05-21 06:18:40,200 [INFO]     ✓ Upsert 22 produse (total ok: 72)
+2026-05-21 06:18:42,258 [INFO]   Pagina 3: https://www.dedeman.ro/ro/materiale-de-constructii/c/21?page=3
+2026-05-21 06:18:47,396 [INFO]   → 72 produse extrase de pe pagina 3
+2026-05-21 06:18:47,396 [INFO]   Pagina terminata: 72 produse noi (total: 214)
+2026-05-21 06:18:47,604 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 200 OK"
+2026-05-21 06:18:47,609 [INFO]     ✓ Upsert 25 produse (total ok: 25)
+2026-05-21 06:18:47,716 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 200 OK"
+2026-05-21 06:18:47,720 [INFO]     ✓ Upsert 25 produse (total ok: 50)
+2026-05-21 06:18:47,838 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 200 OK"
+2026-05-21 06:18:47,845 [INFO]     ✓ Upsert 22 produse (total ok: 72)
+2026-05-21 06:18:49,892 [INFO]   Pagina 4: https://www.dedeman.ro/ro/materiale-de-constructii/c/21?page=4
+2026-05-21 06:18:55,390 [INFO]   → 72 produse extrase de pe pagina 4
+2026-05-21 06:18:55,390 [INFO]   Pagina terminata: 72 produse noi (total: 286)
+2026-05-21 06:18:55,655 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:18:55,664 [INFO]     ✓ Upsert 25 produse (total ok: 25)
+2026-05-21 06:18:55,858 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:18:55,865 [INFO]     ✓ Upsert 25 produse (total ok: 50)
+2026-05-21 06:18:55,979 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:18:55,985 [INFO]     ✓ Upsert 22 produse (total ok: 72)
+2026-05-21 06:18:58,039 [INFO]   Pagina 5: https://www.dedeman.ro/ro/materiale-de-constructii/c/21?page=5
+2026-05-21 06:19:03,837 [INFO]   → 72 produse extrase de pe pagina 5
+2026-05-21 06:19:03,837 [INFO]   Pagina terminata: 72 produse noi (total: 358)
+2026-05-21 06:19:03,998 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:19:04,005 [INFO]     ✓ Upsert 25 produse (total ok: 25)
+2026-05-21 06:19:04,100 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:19:04,107 [INFO]     ✓ Upsert 25 produse (total ok: 50)
+2026-05-21 06:19:04,202 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:19:04,208 [INFO]     ✓ Upsert 22 produse (total ok: 72)
+2026-05-21 06:19:06,254 [INFO]   Pagina 6: https://www.dedeman.ro/ro/materiale-de-constructii/c/21?page=6
+2026-05-21 06:19:11,699 [INFO]   → 71 produse extrase de pe pagina 6
+2026-05-21 06:19:11,699 [INFO]   Pagina terminata: 71 produse noi (total: 429)
+2026-05-21 06:19:13,122 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:19:13,125 [INFO]     ✓ Upsert 25 produse (total ok: 25)
+2026-05-21 06:19:13,335 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:19:13,340 [INFO]     ✓ Upsert 25 produse (total ok: 50)
+2026-05-21 06:19:13,547 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:19:13,551 [INFO]     ✓ Upsert 21 produse (total ok: 71)
+2026-05-21 06:19:15,599 [INFO]   Pagina 7: https://www.dedeman.ro/ro/materiale-de-constructii/c/21?page=7
+2026-05-21 06:19:21,171 [INFO]   → 72 produse extrase de pe pagina 7
+2026-05-21 06:19:21,172 [INFO]   Pagina terminata: 72 produse noi (total: 501)
+2026-05-21 06:19:21,412 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:19:21,416 [INFO]     ✓ Upsert 25 produse (total ok: 25)
+2026-05-21 06:19:21,512 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:19:21,516 [INFO]     ✓ Upsert 25 produse (total ok: 50)
+2026-05-21 06:19:21,626 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:19:21,630 [INFO]     ✓ Upsert 22 produse (total ok: 72)
+2026-05-21 06:19:23,677 [INFO]   Pagina 8: https://www.dedeman.ro/ro/materiale-de-constructii/c/21?page=8
+2026-05-21 06:19:28,971 [INFO]   → 72 produse extrase de pe pagina 8
+2026-05-21 06:19:28,971 [INFO]   Pagina terminata: 72 produse noi (total: 573)
+2026-05-21 06:19:29,169 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:19:29,174 [INFO]     ✓ Upsert 25 produse (total ok: 25)
+2026-05-21 06:19:29,278 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:19:29,282 [INFO]     ✓ Upsert 25 produse (total ok: 50)
+2026-05-21 06:19:29,392 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:19:29,397 [INFO]     ✓ Upsert 22 produse (total ok: 72)
+2026-05-21 06:19:31,437 [INFO]   Pagina 9: https://www.dedeman.ro/ro/materiale-de-constructii/c/21?page=9
+2026-05-21 06:19:37,603 [INFO]   → 72 produse extrase de pe pagina 9
+2026-05-21 06:19:37,603 [INFO]   Pagina terminata: 72 produse noi (total: 645)
+2026-05-21 06:19:37,853 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:19:37,859 [INFO]     ✓ Upsert 25 produse (total ok: 25)
+2026-05-21 06:19:37,955 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:19:37,960 [INFO]     ✓ Upsert 25 produse (total ok: 50)
+2026-05-21 06:19:38,063 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:19:38,067 [INFO]     ✓ Upsert 22 produse (total ok: 72)
+2026-05-21 06:19:40,118 [INFO]   Pagina 10: https://www.dedeman.ro/ro/materiale-de-constructii/c/21?page=10
+2026-05-21 06:19:45,628 [INFO]   → 72 produse extrase de pe pagina 10
+2026-05-21 06:19:45,628 [INFO]   Pagina terminata: 72 produse noi (total: 717)
+2026-05-21 06:19:45,786 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:19:45,793 [INFO]     ✓ Upsert 25 produse (total ok: 25)
+2026-05-21 06:19:45,915 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:19:45,921 [INFO]     ✓ Upsert 25 produse (total ok: 50)
+2026-05-21 06:19:46,016 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:19:46,021 [INFO]     ✓ Upsert 22 produse (total ok: 72)
+2026-05-21 06:19:48,087 [INFO]   Pagina 11: https://www.dedeman.ro/ro/materiale-de-constructii/c/21?page=11
+2026-05-21 06:19:54,179 [INFO]   → 72 produse extrase de pe pagina 11
+2026-05-21 06:19:54,179 [INFO]   Pagina terminata: 72 produse noi (total: 789)
+2026-05-21 06:19:54,335 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:19:54,340 [INFO]     ✓ Upsert 25 produse (total ok: 25)
+2026-05-21 06:19:54,428 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:19:54,432 [INFO]     ✓ Upsert 25 produse (total ok: 50)
+2026-05-21 06:19:54,531 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:19:54,535 [INFO]     ✓ Upsert 22 produse (total ok: 72)
+2026-05-21 06:19:56,582 [INFO]   Pagina 12: https://www.dedeman.ro/ro/materiale-de-constructii/c/21?page=12
+2026-05-21 06:20:02,796 [INFO]   → 72 produse extrase de pe pagina 12
+2026-05-21 06:20:02,796 [INFO]   Pagina terminata: 72 produse noi (total: 861)
+2026-05-21 06:20:04,029 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:20:04,035 [INFO]     ✓ Upsert 25 produse (total ok: 25)
+2026-05-21 06:20:04,155 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:20:04,159 [INFO]     ✓ Upsert 25 produse (total ok: 50)
+2026-05-21 06:20:04,262 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:20:04,268 [INFO]     ✓ Upsert 22 produse (total ok: 72)
+2026-05-21 06:20:06,314 [INFO]   Pagina 13: https://www.dedeman.ro/ro/materiale-de-constructii/c/21?page=13
+2026-05-21 06:20:13,248 [INFO]   → 72 produse extrase de pe pagina 13
+2026-05-21 06:20:13,248 [INFO]   Pagina terminata: 72 produse noi (total: 933)
+2026-05-21 06:20:13,476 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:20:13,484 [INFO]     ✓ Upsert 25 produse (total ok: 25)
+2026-05-21 06:20:13,610 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:20:13,618 [INFO]     ✓ Upsert 25 produse (total ok: 50)
+2026-05-21 06:20:13,721 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:20:13,725 [INFO]     ✓ Upsert 22 produse (total ok: 72)
+2026-05-21 06:20:15,777 [INFO]   Pagina 14: https://www.dedeman.ro/ro/materiale-de-constructii/c/21?page=14
+2026-05-21 06:20:21,380 [INFO]   → 72 produse extrase de pe pagina 14
+2026-05-21 06:20:21,380 [INFO]   Pagina terminata: 72 produse noi (total: 1005)
+2026-05-21 06:20:21,563 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:20:21,570 [INFO]     ✓ Upsert 25 produse (total ok: 25)
+2026-05-21 06:20:21,669 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:20:21,676 [INFO]     ✓ Upsert 25 produse (total ok: 50)
+2026-05-21 06:20:21,823 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:20:21,830 [INFO]     ✓ Upsert 22 produse (total ok: 72)
+2026-05-21 06:20:23,942 [INFO]   Pagina 15: https://www.dedeman.ro/ro/materiale-de-constructii/c/21?page=15
+2026-05-21 06:20:29,343 [INFO]   → 72 produse extrase de pe pagina 15
+2026-05-21 06:20:29,343 [INFO]   Pagina terminata: 72 produse noi (total: 1077)
+2026-05-21 06:20:29,519 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:20:29,524 [INFO]     ✓ Upsert 25 produse (total ok: 25)
+2026-05-21 06:20:29,628 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:20:29,632 [INFO]     ✓ Upsert 25 produse (total ok: 50)
+2026-05-21 06:20:29,730 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:20:29,735 [INFO]     ✓ Upsert 22 produse (total ok: 72)
+2026-05-21 06:20:31,777 [INFO]   Pagina 16: https://www.dedeman.ro/ro/materiale-de-constructii/c/21?page=16
+2026-05-21 06:20:37,354 [INFO]   → 72 produse extrase de pe pagina 16
+2026-05-21 06:20:37,355 [INFO]   Pagina terminata: 72 produse noi (total: 1149)
+2026-05-21 06:20:37,540 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:20:37,547 [INFO]     ✓ Upsert 25 produse (total ok: 25)
+2026-05-21 06:20:37,648 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:20:37,655 [INFO]     ✓ Upsert 25 produse (total ok: 50)
+2026-05-21 06:20:37,747 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:20:37,752 [INFO]     ✓ Upsert 22 produse (total ok: 72)
+2026-05-21 06:20:39,803 [INFO]   Pagina 17: https://www.dedeman.ro/ro/materiale-de-constructii/c/21?page=17
+2026-05-21 06:20:46,054 [INFO]   → 72 produse extrase de pe pagina 17
+2026-05-21 06:20:46,054 [INFO]   Pagina terminata: 72 produse noi (total: 1221)
+2026-05-21 06:20:46,224 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:20:46,229 [INFO]     ✓ Upsert 25 produse (total ok: 25)
+2026-05-21 06:20:46,336 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:20:46,341 [INFO]     ✓ Upsert 25 produse (total ok: 50)
+2026-05-21 06:20:46,431 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:20:46,436 [INFO]     ✓ Upsert 22 produse (total ok: 72)
+2026-05-21 06:20:48,493 [INFO]   Pagina 18: https://www.dedeman.ro/ro/materiale-de-constructii/c/21?page=18
+2026-05-21 06:20:52,636 [INFO]   → 25 produse extrase de pe pagina 18
+2026-05-21 06:20:52,636 [INFO]   Pagina terminata: 25 produse noi (total: 1246)
+2026-05-21 06:20:52,801 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:20:52,805 [INFO]     ✓ Upsert 25 produse (total ok: 25)
+2026-05-21 06:20:54,838 [INFO]   Pagina 19: https://www.dedeman.ro/ro/materiale-de-constructii/c/21?page=19
+2026-05-21 06:20:58,507 [INFO]   → Niciun produs nou pe pagina 19, stop.
+2026-05-21 06:20:58,628 [INFO] 
+→ Categorie: https://www.dedeman.ro/ro/instalatii-sanitare/c/8035
+2026-05-21 06:20:58,865 [INFO]   Pagina 1: https://www.dedeman.ro/ro/instalatii-sanitare/c/8035
+2026-05-21 06:21:10,007 [INFO]   → 72 produse extrase de pe pagina 1
+2026-05-21 06:21:10,007 [INFO]   Pagina terminata: 72 produse noi (total: 1318)
+2026-05-21 06:21:10,850 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 200 OK"
+2026-05-21 06:21:10,857 [INFO]     ✓ Upsert 25 produse (total ok: 25)
+2026-05-21 06:21:10,972 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 200 OK"
+2026-05-21 06:21:10,982 [INFO]     ✓ Upsert 25 produse (total ok: 50)
+2026-05-21 06:21:11,153 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 200 OK"
+2026-05-21 06:21:11,160 [INFO]     ✓ Upsert 22 produse (total ok: 72)
+2026-05-21 06:21:13,310 [INFO]   Pagina 2: https://www.dedeman.ro/ro/instalatii-sanitare/c/8035?page=2
+2026-05-21 06:21:19,630 [INFO]   → 72 produse extrase de pe pagina 2
+2026-05-21 06:21:19,630 [INFO]   Pagina terminata: 72 produse noi (total: 1390)
+2026-05-21 06:21:20,071 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:21:20,078 [INFO]     ✓ Upsert 25 produse (total ok: 25)
+2026-05-21 06:21:20,264 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:21:20,271 [INFO]     ✓ Upsert 25 produse (total ok: 50)
+2026-05-21 06:21:20,412 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:21:20,416 [INFO]     ✓ Upsert 22 produse (total ok: 72)
+2026-05-21 06:21:22,472 [INFO]   Pagina 3: https://www.dedeman.ro/ro/instalatii-sanitare/c/8035?page=3
+2026-05-21 06:21:29,379 [INFO]   → 72 produse extrase de pe pagina 3
+2026-05-21 06:21:29,379 [INFO]   Pagina terminata: 72 produse noi (total: 1462)
+2026-05-21 06:21:29,770 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:21:29,777 [INFO]     ✓ Upsert 25 produse (total ok: 25)
+2026-05-21 06:21:29,917 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:21:29,924 [INFO]     ✓ Upsert 25 produse (total ok: 50)
+2026-05-21 06:21:30,078 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:21:30,083 [INFO]     ✓ Upsert 22 produse (total ok: 72)
+2026-05-21 06:21:32,134 [INFO]   Pagina 4: https://www.dedeman.ro/ro/instalatii-sanitare/c/8035?page=4
+2026-05-21 06:21:38,972 [INFO]   → 72 produse extrase de pe pagina 4
+2026-05-21 06:21:38,972 [INFO]   Pagina terminata: 72 produse noi (total: 1534)
+2026-05-21 06:21:39,184 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:21:39,189 [INFO]     ✓ Upsert 25 produse (total ok: 25)
+2026-05-21 06:21:39,307 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:21:39,312 [INFO]     ✓ Upsert 25 produse (total ok: 50)
+2026-05-21 06:21:39,417 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:21:39,423 [INFO]     ✓ Upsert 22 produse (total ok: 72)
+2026-05-21 06:21:41,517 [INFO]   Pagina 5: https://www.dedeman.ro/ro/instalatii-sanitare/c/8035?page=5
+2026-05-21 06:21:47,947 [INFO]   → 72 produse extrase de pe pagina 5
+2026-05-21 06:21:47,947 [INFO]   Pagina terminata: 72 produse noi (total: 1606)
+2026-05-21 06:21:48,125 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:21:48,133 [INFO]     ✓ Upsert 25 produse (total ok: 25)
+2026-05-21 06:21:48,378 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:21:48,382 [INFO]     ✓ Upsert 25 produse (total ok: 50)
+2026-05-21 06:21:48,478 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:21:48,482 [INFO]     ✓ Upsert 22 produse (total ok: 72)
+2026-05-21 06:21:50,531 [INFO]   Pagina 6: https://www.dedeman.ro/ro/instalatii-sanitare/c/8035?page=6
+2026-05-21 06:21:57,180 [INFO]   → 72 produse extrase de pe pagina 6
+2026-05-21 06:21:57,180 [INFO]   Pagina terminata: 72 produse noi (total: 1678)
+2026-05-21 06:21:57,381 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:21:57,388 [INFO]     ✓ Upsert 25 produse (total ok: 25)
+2026-05-21 06:21:57,493 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:21:57,503 [INFO]     ✓ Upsert 25 produse (total ok: 50)
+2026-05-21 06:21:57,617 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:21:57,625 [INFO]     ✓ Upsert 22 produse (total ok: 72)
+2026-05-21 06:21:59,692 [INFO]   Pagina 7: https://www.dedeman.ro/ro/instalatii-sanitare/c/8035?page=7
+2026-05-21 06:22:06,058 [INFO]   → 72 produse extrase de pe pagina 7
+2026-05-21 06:22:06,058 [INFO]   Pagina terminata: 72 produse noi (total: 1750)
+2026-05-21 06:22:06,234 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:22:06,241 [INFO]     ✓ Upsert 25 produse (total ok: 25)
+2026-05-21 06:22:06,346 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:22:06,353 [INFO]     ✓ Upsert 25 produse (total ok: 50)
+2026-05-21 06:22:06,502 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:22:06,508 [INFO]     ✓ Upsert 22 produse (total ok: 72)
+2026-05-21 06:22:08,571 [INFO]   Pagina 8: https://www.dedeman.ro/ro/instalatii-sanitare/c/8035?page=8
+2026-05-21 06:22:14,506 [INFO]   → 72 produse extrase de pe pagina 8
+2026-05-21 06:22:14,507 [INFO]   Pagina terminata: 72 produse noi (total: 1822)
+2026-05-21 06:22:14,724 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:22:14,730 [INFO]     ✓ Upsert 25 produse (total ok: 25)
+2026-05-21 06:22:14,829 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:22:14,834 [INFO]     ✓ Upsert 25 produse (total ok: 50)
+2026-05-21 06:22:14,929 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:22:14,933 [INFO]     ✓ Upsert 22 produse (total ok: 72)
+2026-05-21 06:22:16,977 [INFO]   Pagina 9: https://www.dedeman.ro/ro/instalatii-sanitare/c/8035?page=9
+2026-05-21 06:22:23,442 [INFO]   → 72 produse extrase de pe pagina 9
+2026-05-21 06:22:23,443 [INFO]   Pagina terminata: 72 produse noi (total: 1894)
+2026-05-21 06:22:23,616 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:22:23,623 [INFO]     ✓ Upsert 25 produse (total ok: 25)
+2026-05-21 06:22:23,720 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:22:23,728 [INFO]     ✓ Upsert 25 produse (total ok: 50)
+2026-05-21 06:22:23,869 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:22:23,873 [INFO]     ✓ Upsert 22 produse (total ok: 72)
+2026-05-21 06:22:25,932 [INFO]   Pagina 10: https://www.dedeman.ro/ro/instalatii-sanitare/c/8035?page=10
+2026-05-21 06:22:32,039 [INFO]   → 72 produse extrase de pe pagina 10
+2026-05-21 06:22:32,040 [INFO]   Pagina terminata: 72 produse noi (total: 1966)
+2026-05-21 06:22:32,224 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:22:32,229 [INFO]     ✓ Upsert 25 produse (total ok: 25)
+2026-05-21 06:22:32,321 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:22:32,326 [INFO]     ✓ Upsert 25 produse (total ok: 50)
+2026-05-21 06:22:32,428 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:22:32,434 [INFO]     ✓ Upsert 22 produse (total ok: 72)
+2026-05-21 06:22:34,487 [INFO]   Pagina 11: https://www.dedeman.ro/ro/instalatii-sanitare/c/8035?page=11
+2026-05-21 06:22:39,895 [INFO]   → 72 produse extrase de pe pagina 11
+2026-05-21 06:22:39,895 [INFO]   Pagina terminata: 72 produse noi (total: 2038)
+2026-05-21 06:22:40,067 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:22:40,073 [INFO]     ✓ Upsert 25 produse (total ok: 25)
+2026-05-21 06:22:40,163 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:22:40,167 [INFO]     ✓ Upsert 25 produse (total ok: 50)
+2026-05-21 06:22:40,262 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:22:40,268 [INFO]     ✓ Upsert 22 produse (total ok: 72)
+2026-05-21 06:22:42,313 [INFO]   Pagina 12: https://www.dedeman.ro/ro/instalatii-sanitare/c/8035?page=12
+2026-05-21 06:22:48,984 [INFO]   → 71 produse extrase de pe pagina 12
+2026-05-21 06:22:48,984 [INFO]   Pagina terminata: 71 produse noi (total: 2109)
+2026-05-21 06:22:49,162 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:22:49,166 [INFO]     ✓ Upsert 25 produse (total ok: 25)
+2026-05-21 06:22:49,256 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:22:49,261 [INFO]     ✓ Upsert 25 produse (total ok: 50)
+2026-05-21 06:22:49,362 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:22:49,367 [INFO]     ✓ Upsert 21 produse (total ok: 71)
+2026-05-21 06:22:51,422 [INFO]   Pagina 13: https://www.dedeman.ro/ro/instalatii-sanitare/c/8035?page=13
+2026-05-21 06:22:59,946 [INFO]   → 72 produse extrase de pe pagina 13
+2026-05-21 06:22:59,946 [INFO]   Pagina terminata: 72 produse noi (total: 2181)
+2026-05-21 06:23:00,129 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:23:00,136 [INFO]     ✓ Upsert 25 produse (total ok: 25)
+2026-05-21 06:23:00,234 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:23:00,241 [INFO]     ✓ Upsert 25 produse (total ok: 50)
+2026-05-21 06:23:00,332 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:23:00,336 [INFO]     ✓ Upsert 22 produse (total ok: 72)
+2026-05-21 06:23:02,383 [INFO]   Pagina 14: https://www.dedeman.ro/ro/instalatii-sanitare/c/8035?page=14
+2026-05-21 06:23:08,300 [INFO]   → 72 produse extrase de pe pagina 14
+2026-05-21 06:23:08,300 [INFO]   Pagina terminata: 72 produse noi (total: 2253)
+2026-05-21 06:23:08,573 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:23:08,579 [INFO]     ✓ Upsert 25 produse (total ok: 25)
+2026-05-21 06:23:08,695 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:23:08,702 [INFO]     ✓ Upsert 25 produse (total ok: 50)
+2026-05-21 06:23:08,798 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:23:08,804 [INFO]     ✓ Upsert 22 produse (total ok: 72)
+2026-05-21 06:23:10,854 [INFO]   Pagina 15: https://www.dedeman.ro/ro/instalatii-sanitare/c/8035?page=15
+2026-05-21 06:23:17,096 [INFO]   → 72 produse extrase de pe pagina 15
+2026-05-21 06:23:17,097 [INFO]   Pagina terminata: 72 produse noi (total: 2325)
+2026-05-21 06:23:17,321 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:23:17,328 [INFO]     ✓ Upsert 25 produse (total ok: 25)
+2026-05-21 06:23:17,463 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:23:17,467 [INFO]     ✓ Upsert 25 produse (total ok: 50)
+2026-05-21 06:23:17,591 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:23:17,595 [INFO]     ✓ Upsert 22 produse (total ok: 72)
+2026-05-21 06:23:19,633 [INFO]   Pagina 16: https://www.dedeman.ro/ro/instalatii-sanitare/c/8035?page=16
+2026-05-21 06:23:25,262 [INFO]   → 72 produse extrase de pe pagina 16
+2026-05-21 06:23:25,262 [INFO]   Pagina terminata: 72 produse noi (total: 2397)
+2026-05-21 06:23:25,427 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:23:25,433 [INFO]     ✓ Upsert 25 produse (total ok: 25)
+2026-05-21 06:23:25,523 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:23:25,528 [INFO]     ✓ Upsert 25 produse (total ok: 50)
+2026-05-21 06:23:25,625 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:23:25,631 [INFO]     ✓ Upsert 22 produse (total ok: 72)
+2026-05-21 06:23:27,672 [INFO]   Pagina 17: https://www.dedeman.ro/ro/instalatii-sanitare/c/8035?page=17
+2026-05-21 06:23:33,780 [INFO]   → 70 produse extrase de pe pagina 17
+2026-05-21 06:23:33,781 [INFO]   Pagina terminata: 70 produse noi (total: 2467)
+2026-05-21 06:23:33,949 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:23:33,955 [INFO]     ✓ Upsert 25 produse (total ok: 25)
+2026-05-21 06:23:34,049 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:23:34,055 [INFO]     ✓ Upsert 25 produse (total ok: 50)
+2026-05-21 06:23:34,148 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:23:34,153 [INFO]     ✓ Upsert 20 produse (total ok: 70)
+2026-05-21 06:23:36,210 [INFO]   Pagina 18: https://www.dedeman.ro/ro/instalatii-sanitare/c/8035?page=18
+2026-05-21 06:23:41,738 [INFO]   → 72 produse extrase de pe pagina 18
+2026-05-21 06:23:41,738 [INFO]   Pagina terminata: 72 produse noi (total: 2539)
+2026-05-21 06:23:42,448 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:23:42,452 [INFO]     ✓ Upsert 25 produse (total ok: 25)
+2026-05-21 06:23:42,566 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:23:42,570 [INFO]     ✓ Upsert 25 produse (total ok: 50)
+2026-05-21 06:23:42,698 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:23:42,702 [INFO]     ✓ Upsert 22 produse (total ok: 72)
+2026-05-21 06:23:44,738 [INFO]   Pagina 19: https://www.dedeman.ro/ro/instalatii-sanitare/c/8035?page=19
+2026-05-21 06:23:50,314 [INFO]   → 72 produse extrase de pe pagina 19
+2026-05-21 06:23:50,314 [INFO]   Pagina terminata: 72 produse noi (total: 2611)
+2026-05-21 06:23:50,508 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:23:50,512 [INFO]     ✓ Upsert 25 produse (total ok: 25)
+2026-05-21 06:23:50,611 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:23:50,615 [INFO]     ✓ Upsert 25 produse (total ok: 50)
+2026-05-21 06:23:50,714 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:23:50,719 [INFO]     ✓ Upsert 22 produse (total ok: 72)
+2026-05-21 06:23:52,768 [INFO]   Pagina 20: https://www.dedeman.ro/ro/instalatii-sanitare/c/8035?page=20
+2026-05-21 06:23:58,870 [INFO]   → 71 produse extrase de pe pagina 20
+2026-05-21 06:23:58,871 [INFO]   Pagina terminata: 71 produse noi (total: 2682)
+2026-05-21 06:23:59,146 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:23:59,152 [INFO]     ✓ Upsert 25 produse (total ok: 25)
+2026-05-21 06:23:59,442 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:23:59,448 [INFO]     ✓ Upsert 25 produse (total ok: 50)
+2026-05-21 06:23:59,551 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:23:59,557 [INFO]     ✓ Upsert 21 produse (total ok: 71)
+2026-05-21 06:24:01,603 [INFO]   Pagina 21: https://www.dedeman.ro/ro/instalatii-sanitare/c/8035?page=21
+2026-05-21 06:24:07,770 [INFO]   → 70 produse extrase de pe pagina 21
+2026-05-21 06:24:07,770 [INFO]   Pagina terminata: 70 produse noi (total: 2752)
+2026-05-21 06:24:07,944 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:24:07,950 [INFO]     ✓ Upsert 25 produse (total ok: 25)
+2026-05-21 06:24:08,056 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:24:08,060 [INFO]     ✓ Upsert 25 produse (total ok: 50)
+2026-05-21 06:24:08,162 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:24:08,168 [INFO]     ✓ Upsert 20 produse (total ok: 70)
+2026-05-21 06:24:10,219 [INFO]   Pagina 22: https://www.dedeman.ro/ro/instalatii-sanitare/c/8035?page=22
+2026-05-21 06:24:16,256 [INFO]   → 72 produse extrase de pe pagina 22
+2026-05-21 06:24:16,256 [INFO]   Pagina terminata: 72 produse noi (total: 2824)
+2026-05-21 06:24:16,467 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:24:16,471 [INFO]     ✓ Upsert 25 produse (total ok: 25)
+2026-05-21 06:24:16,632 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:24:16,639 [INFO]     ✓ Upsert 25 produse (total ok: 50)
+2026-05-21 06:24:16,765 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:24:16,770 [INFO]     ✓ Upsert 22 produse (total ok: 72)
+2026-05-21 06:24:18,818 [INFO]   Pagina 23: https://www.dedeman.ro/ro/instalatii-sanitare/c/8035?page=23
+2026-05-21 06:24:24,431 [INFO]   → 72 produse extrase de pe pagina 23
+2026-05-21 06:24:24,431 [INFO]   Pagina terminata: 72 produse noi (total: 2896)
+2026-05-21 06:24:24,685 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:24:24,693 [INFO]     ✓ Upsert 25 produse (total ok: 25)
+2026-05-21 06:24:24,813 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:24:24,820 [INFO]     ✓ Upsert 25 produse (total ok: 50)
+2026-05-21 06:24:24,913 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:24:24,920 [INFO]     ✓ Upsert 22 produse (total ok: 72)
+2026-05-21 06:24:26,978 [INFO]   Pagina 24: https://www.dedeman.ro/ro/instalatii-sanitare/c/8035?page=24
+2026-05-21 06:24:33,102 [INFO]   → 72 produse extrase de pe pagina 24
+2026-05-21 06:24:33,102 [INFO]   Pagina terminata: 72 produse noi (total: 2968)
+2026-05-21 06:24:33,281 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:24:33,286 [INFO]     ✓ Upsert 25 produse (total ok: 25)
+2026-05-21 06:24:33,393 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:24:33,397 [INFO]     ✓ Upsert 25 produse (total ok: 50)
+2026-05-21 06:24:33,497 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:24:33,500 [INFO]     ✓ Upsert 22 produse (total ok: 72)
+2026-05-21 06:24:35,542 [INFO]   Pagina 25: https://www.dedeman.ro/ro/instalatii-sanitare/c/8035?page=25
+2026-05-21 06:24:41,730 [INFO]   → 72 produse extrase de pe pagina 25
+2026-05-21 06:24:41,730 [INFO]   Pagina terminata: 72 produse noi (total: 3040)
+2026-05-21 06:24:41,973 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:24:41,978 [INFO]     ✓ Upsert 25 produse (total ok: 25)
+2026-05-21 06:24:42,065 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:24:42,072 [INFO]     ✓ Upsert 25 produse (total ok: 50)
+2026-05-21 06:24:42,159 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:24:42,163 [INFO]     ✓ Upsert 22 produse (total ok: 72)
+2026-05-21 06:24:44,208 [INFO]   Pagina 26: https://www.dedeman.ro/ro/instalatii-sanitare/c/8035?page=26
+2026-05-21 06:24:51,047 [INFO]   → 67 produse extrase de pe pagina 26
+2026-05-21 06:24:51,048 [INFO]   Pagina terminata: 67 produse noi (total: 3107)
+2026-05-21 06:24:51,350 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:24:51,358 [INFO]     ✓ Upsert 25 produse (total ok: 25)
+2026-05-21 06:24:51,471 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:24:51,476 [INFO]     ✓ Upsert 25 produse (total ok: 50)
+2026-05-21 06:24:51,583 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:24:51,588 [INFO]     ✓ Upsert 17 produse (total ok: 67)
+2026-05-21 06:24:53,737 [INFO]   Pagina 27: https://www.dedeman.ro/ro/instalatii-sanitare/c/8035?page=27
+2026-05-21 06:25:00,173 [INFO]   → 71 produse extrase de pe pagina 27
+2026-05-21 06:25:00,174 [INFO]   Pagina terminata: 71 produse noi (total: 3178)
+2026-05-21 06:25:00,344 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:25:00,350 [INFO]     ✓ Upsert 25 produse (total ok: 25)
+2026-05-21 06:25:00,447 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:25:00,455 [INFO]     ✓ Upsert 25 produse (total ok: 50)
+2026-05-21 06:25:00,549 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:25:00,553 [INFO]     ✓ Upsert 21 produse (total ok: 71)
+2026-05-21 06:25:02,608 [INFO]   Pagina 28: https://www.dedeman.ro/ro/instalatii-sanitare/c/8035?page=28
+2026-05-21 06:25:09,382 [INFO]   → 49 produse extrase de pe pagina 28
+2026-05-21 06:25:09,383 [INFO]   Pagina terminata: 49 produse noi (total: 3227)
+2026-05-21 06:25:09,894 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:25:09,900 [INFO]     ✓ Upsert 25 produse (total ok: 25)
+2026-05-21 06:25:10,278 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:25:10,283 [INFO]     ✓ Upsert 24 produse (total ok: 49)
+2026-05-21 06:25:12,346 [INFO]   Pagina 29: https://www.dedeman.ro/ro/instalatii-sanitare/c/8035?page=29
+2026-05-21 06:25:18,471 [INFO]   → 62 produse extrase de pe pagina 29
+2026-05-21 06:25:18,472 [INFO]   Pagina terminata: 62 produse noi (total: 3289)
+2026-05-21 06:25:19,041 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:25:19,046 [INFO]     ✓ Upsert 25 produse (total ok: 25)
+2026-05-21 06:25:19,535 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:25:19,540 [INFO]     ✓ Upsert 25 produse (total ok: 50)
+2026-05-21 06:25:19,820 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:25:19,823 [INFO]     ✓ Upsert 12 produse (total ok: 62)
+2026-05-21 06:25:21,875 [INFO]   Pagina 30: https://www.dedeman.ro/ro/instalatii-sanitare/c/8035?page=30
+2026-05-21 06:25:27,971 [INFO]   → 72 produse extrase de pe pagina 30
+2026-05-21 06:25:27,972 [INFO]   Pagina terminata: 72 produse noi (total: 3361)
+2026-05-21 06:25:28,345 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:25:28,352 [INFO]     ✓ Upsert 25 produse (total ok: 25)
+2026-05-21 06:25:28,549 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:25:28,558 [INFO]     ✓ Upsert 25 produse (total ok: 50)
+2026-05-21 06:25:28,785 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:25:28,793 [INFO]     ✓ Upsert 22 produse (total ok: 72)
+2026-05-21 06:25:30,854 [INFO]   Pagina 31: https://www.dedeman.ro/ro/instalatii-sanitare/c/8035?page=31
+2026-05-21 06:25:36,733 [INFO]   → 72 produse extrase de pe pagina 31
+2026-05-21 06:25:36,733 [INFO]   Pagina terminata: 72 produse noi (total: 3433)
+2026-05-21 06:25:36,939 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:25:36,945 [INFO]     ✓ Upsert 25 produse (total ok: 25)
+2026-05-21 06:25:37,189 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:25:37,196 [INFO]     ✓ Upsert 25 produse (total ok: 50)
+2026-05-21 06:25:37,293 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:25:37,298 [INFO]     ✓ Upsert 22 produse (total ok: 72)
+2026-05-21 06:25:39,370 [INFO]   Pagina 32: https://www.dedeman.ro/ro/instalatii-sanitare/c/8035?page=32
+2026-05-21 06:25:46,311 [INFO]   → 54 produse extrase de pe pagina 32
+2026-05-21 06:25:46,311 [INFO]   Pagina terminata: 54 produse noi (total: 3487)
+2026-05-21 06:25:46,472 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:25:46,476 [INFO]     ✓ Upsert 25 produse (total ok: 25)
+2026-05-21 06:25:46,570 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:25:46,576 [INFO]     ✓ Upsert 25 produse (total ok: 50)
+2026-05-21 06:25:46,661 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:25:46,663 [INFO]     ✓ Upsert 4 produse (total ok: 54)
+2026-05-21 06:25:48,727 [INFO]   Pagina 33: https://www.dedeman.ro/ro/instalatii-sanitare/c/8035?page=33
+2026-05-21 06:25:52,921 [INFO]   → 24 produse extrase de pe pagina 33
+2026-05-21 06:25:52,921 [INFO]   Pagina terminata: 24 produse noi (total: 3511)
+2026-05-21 06:25:53,103 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 201 Created"
+2026-05-21 06:25:53,106 [INFO]     ✓ Upsert 24 produse (total ok: 24)
+2026-05-21 06:25:55,158 [INFO]   Pagina 34: https://www.dedeman.ro/ro/instalatii-sanitare/c/8035?page=34
+2026-05-21 06:25:58,889 [INFO]   → Niciun produs nou pe pagina 34, stop.
+2026-05-21 06:25:59,076 [INFO] 
+→ Categorie: https://www.dedeman.ro/ro/gresie-si-faianta/c/1068
+2026-05-21 06:25:59,502 [INFO]   Pagina 1: https://www.dedeman.ro/ro/gresie-si-faianta/c/1068
+2026-05-21 06:26:04,063 [INFO]   → 19 produse extrase de pe pagina 1
+2026-05-21 06:26:04,063 [INFO]   Pagina terminata: 19 produse noi (total: 3530)
+2026-05-21 06:26:04,227 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 200 OK"
+2026-05-21 06:26:04,233 [INFO]     ✓ Upsert 19 produse (total ok: 19)
+2026-05-21 06:26:04,281 [INFO]   → Ultima pagina (1), stop.
+2026-05-21 06:26:04,326 [INFO] 
+→ Categorie: https://www.dedeman.ro/ro/parchet-mocheta-si-covoare/c/7729
+2026-05-21 06:26:04,552 [INFO]   Pagina 1: https://www.dedeman.ro/ro/parchet-mocheta-si-covoare/c/7729
+2026-05-21 06:26:09,353 [INFO]   → 19 produse extrase de pe pagina 1
+2026-05-21 06:26:09,354 [INFO]   Pagina terminata: 19 produse noi (total: 3549)
+2026-05-21 06:26:09,555 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 200 OK"
+2026-05-21 06:26:09,561 [INFO]     ✓ Upsert 19 produse (total ok: 19)
+2026-05-21 06:26:09,602 [INFO]   → Ultima pagina (1), stop.
+2026-05-21 06:26:09,708 [INFO] 
+→ Categorie: https://www.dedeman.ro/ro/usi-si-ferestre/c/7759
+2026-05-21 06:26:09,986 [INFO]   Pagina 1: https://www.dedeman.ro/ro/usi-si-ferestre/c/7759
+2026-05-21 06:26:14,765 [INFO]   → 19 produse extrase de pe pagina 1
+2026-05-21 06:26:14,766 [INFO]   Pagina terminata: 19 produse noi (total: 3568)
+2026-05-21 06:26:15,651 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 200 OK"
+2026-05-21 06:26:15,656 [INFO]     ✓ Upsert 19 produse (total ok: 19)
+2026-05-21 06:26:15,700 [INFO]   → Ultima pagina (1), stop.
+2026-05-21 06:26:15,753 [INFO] 
+→ Categorie: https://www.dedeman.ro/ro/vopsele-si-tencuieli/c/7912
+2026-05-21 06:26:15,949 [INFO]   Pagina 1: https://www.dedeman.ro/ro/vopsele-si-tencuieli/c/7912
+2026-05-21 06:26:20,696 [INFO]   → 19 produse extrase de pe pagina 1
+2026-05-21 06:26:20,697 [INFO]   Pagina terminata: 19 produse noi (total: 3587)
+2026-05-21 06:26:20,903 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 200 OK"
+2026-05-21 06:26:20,909 [INFO]     ✓ Upsert 19 produse (total ok: 19)
+2026-05-21 06:26:20,973 [INFO]   → Ultima pagina (1), stop.
+2026-05-21 06:26:21,096 [INFO] 
+→ Categorie: https://www.dedeman.ro/ro/baie/c/1528
+2026-05-21 06:26:21,236 [INFO]   Pagina 1: https://www.dedeman.ro/ro/baie/c/1528
+2026-05-21 06:26:27,212 [INFO]   → 17 produse extrase de pe pagina 1
+2026-05-21 06:26:27,212 [INFO]   Pagina terminata: 17 produse noi (total: 3604)
+2026-05-21 06:26:27,555 [INFO] HTTP Request: POST https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?on_conflict=cod_produs&columns=%22descriere_scurta%22%2C%22imagini%22%2C%22categorie%22%2C%22nume%22%2C%22discount_procent%22%2C%22cod_produs%22%2C%22pret%22%2C%22brand%22%2C%22ean%22%2C%22unitate_masura%22%2C%22pret_vechi%22%2C%22nr_review%22%2C%22rating%22%2C%22specificatii%22%2C%22moneda%22%2C%22disponibilitate%22%2C%22sync_at%22%2C%22activ%22%2C%22url%22%2C%22subcategorie%22 "HTTP/2 200 OK"
+2026-05-21 06:26:27,559 [INFO]     ✓ Upsert 17 produse (total ok: 17)
+2026-05-21 06:26:27,597 [INFO]   → Ultima pagina (1), stop.
+2026-05-21 06:26:27,866 [INFO] HTTP Request: PATCH https://vwcwsxvmkxmcwjtlikcq.supabase.co/rest/v1/dedeman_catalog?sync_at=lt.2026-05-19T03%3A26%3A27.726123 "HTTP/2 200 OK"
+2026-05-21 06:26:27,867 [INFO] Marcate inactive (>48h): 0
+2026-05-21 06:26:28,212 [INFO] Browser oprit.
+2026-05-21 06:26:28,213 [INFO] 
+╔══════════════════════════════════════════╗
+║        SYNC DEDEMAN → SUPABASE           ║
+╠══════════════════════════════════════════╣
+║ Categorii   : 7                          ║
+║ Scraped     : 3604                       ║
+║ Upserted    : 3604                       ║
+║ Erori       : 0                          ║
+║ Durata      : 487                   s    ║
+╚══════════════════════════════════════════╝
+2026-05-21 06:26:28,216 [INFO] Raport: logs/sync_report_20260521_0626.json
