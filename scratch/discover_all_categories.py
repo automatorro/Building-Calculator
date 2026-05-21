@@ -6,91 +6,71 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
 from dedeman_scraper import DedemanScraper
 
-# ALL construction-relevant categories found in the mega menu
-# These are the ACTUAL URLs found on the site (not guessed)
-CONSTRUCTION_CATEGORIES = [
-    # Already scraped (for reference)
-    # "https://www.dedeman.ro/ro/materiale-de-constructii/c/21",
-    # "https://www.dedeman.ro/ro/instalatii-sanitare/c/8035",
-    # "https://www.dedeman.ro/ro/gresie-si-faianta/c/1068",
-    # "https://www.dedeman.ro/ro/parchet-mocheta-si-covoare/c/7729",
-    # "https://www.dedeman.ro/ro/usi-si-ferestre/c/7759",
-    # "https://www.dedeman.ro/ro/vopsele-si-tencuieli/c/7912",
-    # "https://www.dedeman.ro/ro/baie/c/1528",
+# ALL construction-relevant categories discovered from mega menu (REAL URLs)
+NEW_CATEGORIES = [
+    # Constructii
+    ("https://www.dedeman.ro/ro/termoizolatii/c/58", "Termoizolatii"),
+    ("https://www.dedeman.ro/ro/gips-carton/c/55", "Gips carton"),
+    ("https://www.dedeman.ro/ro/hidroizolatii/c/57", "Hidroizolatii"),
+    ("https://www.dedeman.ro/ro/acoperisuri/c/141", "Acoperisuri"),
+    ("https://www.dedeman.ro/ro/tabla/c/49", "Tabla"),
+    ("https://www.dedeman.ro/ro/placi-si-profile-policarbonat/c/144", "Placi policarbonat"),
+    ("https://www.dedeman.ro/ro/sisteme-de-scurgere/c/142", "Sisteme de scurgere"),
+    ("https://www.dedeman.ro/ro/garduri/c/4208", "Garduri"),
+    ("https://www.dedeman.ro/ro/produse-din-lemn/c/59", "Produse din lemn"),
+    ("https://www.dedeman.ro/ro/lambriuri/c/1463", "Lambriuri"),
+    ("https://www.dedeman.ro/ro/materiale-constructii-decorative/c/60", "Materiale decorative"),
+    ("https://www.dedeman.ro/ro/scari-aluminiu/-otel/c/319", "Scari aluminiu/otel"),
+    ("https://www.dedeman.ro/ro/organe-de-asamblare-si-feronerie/c/45", "Feronerie"),
+    ("https://www.dedeman.ro/ro/echipamente-de-protectia-muncii/c/29", "Echipamente protectie"),
+    ("https://www.dedeman.ro/ro/pavaje-si-borduri/c/145", "Pavaje si borduri"),
+    ("https://www.dedeman.ro/ro/pardoseli-exterioare-si-accesorii/c/5508", "Pardoseli ext."),
+    ("https://www.dedeman.ro/ro/scari-interioare/c/25", "Scari interioare"),
+    ("https://www.dedeman.ro/ro/tevi-si-profile-metalice/c/48", "Tevi si profile metalice"),
+    ("https://www.dedeman.ro/ro/substante-chimice-si-accesorii-pentru-constructii/c/5261", "Substante chimice"),
     
-    # NEW - Wood & derivatives
-    "https://www.dedeman.ro/ro/lemn/c/45",
-    "https://www.dedeman.ro/ro/cherestea/c/162",
-    "https://www.dedeman.ro/ro/placi-osb/c/163",
-    "https://www.dedeman.ro/ro/placaj/c/164",
-    "https://www.dedeman.ro/ro/pal/c/165",
-    "https://www.dedeman.ro/ro/mdf/c/166",
+    # Electrice
+    ("https://www.dedeman.ro/ro/corpuri-si-surse-de-iluminat/c/63", "Corp. si surse iluminat"),
+    ("https://www.dedeman.ro/ro/prize-si-intrerupatoare/c/421", "Prize si intrerupatoare"),
+    ("https://www.dedeman.ro/ro/cabluri-electrice-si-conductori/c/417", "Cabluri electrice"),
+    ("https://www.dedeman.ro/ro/managementul-cablurilor/c/423", "Management cabluri"),
+    ("https://www.dedeman.ro/ro/distributie-electrica-si-comanda/c/419", "Distributie electrica"),
+    ("https://www.dedeman.ro/ro/tablouri-electrice/c/420", "Tablouri electrice"),
+    ("https://www.dedeman.ro/ro/sisteme-si-panouri-solare/c/3094", "Sisteme si panouri solare"),
     
-    # Drywall / Rigips
-    "https://www.dedeman.ro/ro/gips-carton/c/157",
-    "https://www.dedeman.ro/ro/placi-gips-carton/c/1074",
-    "https://www.dedeman.ro/ro/profile-metalice/c/158",
-    "https://www.dedeman.ro/ro/profile-metalice-pentru-gips-carton/c/1075",
+    # Termice & Instalatii
+    ("https://www.dedeman.ro/ro/centrale-termice/c/856", "Centrale termice"),
+    ("https://www.dedeman.ro/ro/calorifere/c/350", "Calorifere"),
+    ("https://www.dedeman.ro/ro/instalatii-termice/c/52", "Instalatii termice"),
+    ("https://www.dedeman.ro/ro/aparate-de-aer-conditionat/c/1386", "Aer conditionat"),
+    ("https://www.dedeman.ro/ro/instalatii-hidro/c/53", "Instalatii hidro"),
+    ("https://www.dedeman.ro/ro/boilere-si-accesorii/c/874", "Boilere"),
+    ("https://www.dedeman.ro/ro/pompe-de-caldura/c/4245", "Pompe de caldura"),
+    ("https://www.dedeman.ro/ro/seminee-si-accesorii/c/869", "Seminee"),
+    ("https://www.dedeman.ro/ro/sobe-si-accesorii/c/352", "Sobe"),
     
-    # Roofing
-    "https://www.dedeman.ro/ro/acoperis/c/24",
-    "https://www.dedeman.ro/ro/tigla-metalica/c/135",
-    "https://www.dedeman.ro/ro/tabla-cutata-si-tabla-plana/c/136",
-    "https://www.dedeman.ro/ro/foi-si-panouri-policarbonat/c/3236",
+    # Scule
+    ("https://www.dedeman.ro/ro/scule-electrice/c/39", "Scule electrice"),
+    ("https://www.dedeman.ro/ro/scule-de-mana/c/44", "Scule de mana"),
+    ("https://www.dedeman.ro/ro/accesorii-scule-electrice-si-consumabile/c/40", "Accesorii scule"),
+    ("https://www.dedeman.ro/ro/compresoare-si-scule-pneumatice/c/284", "Compresoare"),
+    ("https://www.dedeman.ro/ro/aparate-de-sudura-si-accesorii/c/42", "Aparate sudura"),
+    ("https://www.dedeman.ro/ro/aparate-de-masura-si-control/c/41", "Aparate masura"),
     
-    # Thermal insulation
-    "https://www.dedeman.ro/ro/termoizolatii/c/23",
-    "https://www.dedeman.ro/ro/polistiren/c/134",
-    "https://www.dedeman.ro/ro/vata-minerala/c/1344",
-    "https://www.dedeman.ro/ro/folii-si-bariere/c/3348",
+    # Amenajari: vopsele
+    ("https://www.dedeman.ro/ro/tencuieli-decorative/c/414", "Tencuieli decorative"),
+    ("https://www.dedeman.ro/ro/adezivi-siliconi-benzi/c/1461", "Adezivi, siliconi, benzi"),
+    ("https://www.dedeman.ro/ro/grunduri-si-amorse/c/415", "Grunduri si amorse"),
+    ("https://www.dedeman.ro/ro/spuma-poliuretanica-si-accesorii/c/411", "Spuma poliuretanica"),
     
-    # Masonry
-    "https://www.dedeman.ro/ro/zidarie-si-plansee/c/148",
-    "https://www.dedeman.ro/ro/bca/c/3233",
-    "https://www.dedeman.ro/ro/caramida/c/3232",
+    # Amenajari: usi/ferestre
+    ("https://www.dedeman.ro/ro/ferestre/c/158", "Ferestre"),
+    ("https://www.dedeman.ro/ro/accesorii-usi-si-ferestre/c/7804", "Accesorii usi/ferestre"),
     
-    # Electrical
-    "https://www.dedeman.ro/ro/electrice/c/25",
-    "https://www.dedeman.ro/ro/cabluri-electrice-si-conductori/c/175",
-    "https://www.dedeman.ro/ro/aparataj-electric/c/144",
-    "https://www.dedeman.ro/ro/corpuri-de-iluminat/c/26",
-    "https://www.dedeman.ro/ro/tablouri-electrice/c/1278",
-    "https://www.dedeman.ro/ro/panouri-solare/c/3396",
-    "https://www.dedeman.ro/ro/panouri-fotovoltaice/c/3411",
-    
-    # Heating / HVAC
-    "https://www.dedeman.ro/ro/incalzire/c/27",
-    "https://www.dedeman.ro/ro/calorifere-si-convectoare/c/3406",
-    "https://www.dedeman.ro/ro/centrale-termice/c/55",
-    "https://www.dedeman.ro/ro/ventilatie-climatizare/c/54",
-    "https://www.dedeman.ro/ro/aer-conditionat/c/53",
-    
-    # Plumbing / pipes
-    "https://www.dedeman.ro/ro/tevi-si-fitinguri/c/126",
-    "https://www.dedeman.ro/ro/robineti-si-vane/c/128",
-    
-    # Tools
-    "https://www.dedeman.ro/ro/scule-electrice/c/30",
-    "https://www.dedeman.ro/ro/scule-de-mana/c/29",
-    "https://www.dedeman.ro/ro/utilaje/c/43",
-    "https://www.dedeman.ro/ro/utilaje-pentru-constructii/c/46",
-    
-    # Hardware / Feronerie
-    "https://www.dedeman.ro/ro/feronerie/c/28",
-    
-    # Doors standalone
-    "https://www.dedeman.ro/ro/usi/c/22",
-    "https://www.dedeman.ro/ro/usi-interior/c/159",
-    "https://www.dedeman.ro/ro/usi-garaj/c/146",
-    
-    # Paint subcategories
-    "https://www.dedeman.ro/ro/vopsele-lavabile/c/956",
-    "https://www.dedeman.ro/ro/vopsele-pentru-lemn-si-metal/c/957",
-    "https://www.dedeman.ro/ro/grunduri-si-amorsa/c/955",
-    "https://www.dedeman.ro/ro/tencuieli-decorative/c/958",
-    
-    # Adhesives standalone
-    "https://www.dedeman.ro/ro/adezivi-chituri-si-silicon/c/409",
+    # Gresie subcategorii
+    ("https://www.dedeman.ro/ro/adezivi-pentru-gresie-si-faianta/c/1069", "Adezivi gresie/faianta"),
+    ("https://www.dedeman.ro/ro/chit-de-rosturi-pentru-gresie-si-faianta/c/1070", "Chit rosturi"),
+    ("https://www.dedeman.ro/ro/coltare-profile-praguri-si-distantiere/c/440", "Profile/praguri"),
 ]
 
 async def main():
@@ -105,19 +85,18 @@ async def main():
         valid = []
         total_est = 0
         
-        print(f"Checking {len(CONSTRUCTION_CATEGORIES)} candidate category URLs...\n")
+        print(f"Checking {len(NEW_CATEGORIES)} new category URLs...\n")
         
-        for cat_url in CONSTRUCTION_CATEGORIES:
+        for cat_url, label in NEW_CATEGORIES:
             try:
                 await page.goto(cat_url, wait_until="domcontentloaded", timeout=15000)
                 await asyncio.sleep(1)
                 
                 title = await page.title()
-                is_404 = "404" in title
+                is_404 = "404" in title or "nu a fost" in title.lower()
                 
                 if is_404:
-                    name = cat_url.split('/ro/')[-1].split('/c/')[0]
-                    print(f"  [404] {name:45}")
+                    print(f"  [404] {label:40}")
                     continue
                 
                 body = await page.text_content("body") or ""
@@ -128,29 +107,27 @@ async def main():
                 page_nums = [int(re.search(r'page=(\d+)', p).group(1)) for p in page_links if re.search(r'page=(\d+)', p)]
                 max_page = max(page_nums) if page_nums else 1
                 
-                name = cat_url.split('/ro/')[-1].split('/c/')[0]
                 count_int = int(prod_count) if prod_count.isdigit() else 0
                 
-                print(f"  [ OK] {name:45} | products: {prod_count:>6} | pages: {max_page:>3}")
+                print(f"  [ OK] {label:40} | products: {count_int:>6} | pages: {max_page:>3}")
                 
                 if count_int > 0:
-                    valid.append((cat_url, name, count_int, max_page))
+                    valid.append((cat_url, label, count_int, max_page))
                     total_est += count_int
                     
             except Exception as e:
-                name = cat_url.split('/ro/')[-1].split('/c/')[0]
-                print(f"  [ERR] {name:45} | {str(e)[:50]}")
+                print(f"  [ERR] {label:40} | {str(e)[:50]}")
         
         print(f"\n{'='*70}")
-        print(f"  VALID CATEGORIES: {len(valid)} | TOTAL ESTIMATED PRODUCTS: {total_est}")
+        print(f"  NEW VALID CATEGORIES: {len(valid)}")
+        print(f"  TOTAL NEW PRODUCTS: ~{total_est}")
         print(f"{'='*70}\n")
         
-        print("Python list for sync_dedeman_supabase.py:\n")
-        print("DEFAULT_CATEGORIES = [")
-        for url, name, count, pages in sorted(valid, key=lambda x: -x[2]):
-            print(f'    # {name} - {count} produse, {pages} pagini')
+        # Print formatted for copy-paste into sync script
+        print("# New categories to ADD to DEFAULT_CATEGORIES:")
+        for url, label, count, pages in sorted(valid, key=lambda x: -x[2]):
+            print(f'    # {label} - {count} produse, {pages} pagini')
             print(f'    "{url}",')
-        print("]")
         
         await page.close()
         await context.close()

@@ -52,9 +52,10 @@ MAX_PAGES     = 100   # pagini per categorie (sync complet)
 MAX_PRODUCTS  = 15000 # produse per categorie
 
 DEFAULT_CATEGORIES = [
-    # Constructii - 1249 produse, 18 pagini
+    # ═══ DEJA SINCRONIZATE (lot 1) ═══════════════════════════════
+    # Materiale de constructii - 1249 produse
     "https://www.dedeman.ro/ro/materiale-de-constructii/c/21",
-    # Instalatii sanitare - 2329 produse, 33 pagini
+    # Instalatii sanitare - 2329 produse
     "https://www.dedeman.ro/ro/instalatii-sanitare/c/8035",
     # Gresie si faianta - 4082 produse
     "https://www.dedeman.ro/ro/gresie-si-faianta/c/1068",
@@ -66,6 +67,122 @@ DEFAULT_CATEGORIES = [
     "https://www.dedeman.ro/ro/vopsele-si-tencuieli/c/7912",
     # Baie - 12312 produse
     "https://www.dedeman.ro/ro/baie/c/1528",
+
+    # ═══ CONSTRUCTII (lot 2) ═════════════════════════════════════
+    # Garduri - 7524 produse
+    "https://www.dedeman.ro/ro/garduri/c/4208",
+    # Feronerie - 4908 produse
+    "https://www.dedeman.ro/ro/organe-de-asamblare-si-feronerie/c/45",
+    # Echipamente protectie - 2713 produse
+    "https://www.dedeman.ro/ro/echipamente-de-protectia-muncii/c/29",
+    # Acoperisuri - 2137 produse
+    "https://www.dedeman.ro/ro/acoperisuri/c/141",
+    # Pavaje si borduri - 715 produse
+    "https://www.dedeman.ro/ro/pavaje-si-borduri/c/145",
+    # Pardoseli exterioare - 577 produse
+    "https://www.dedeman.ro/ro/pardoseli-exterioare-si-accesorii/c/5508",
+    # Sisteme de scurgere - 577 produse
+    "https://www.dedeman.ro/ro/sisteme-de-scurgere/c/142",
+    # Materiale decorative constructii - 458 produse
+    "https://www.dedeman.ro/ro/materiale-constructii-decorative/c/60",
+    # Termoizolatii - 454 produse
+    "https://www.dedeman.ro/ro/termoizolatii/c/58",
+    # Produse din lemn - 437 produse
+    "https://www.dedeman.ro/ro/produse-din-lemn/c/59",
+    # Gips carton (rigips) - 359 produse
+    "https://www.dedeman.ro/ro/gips-carton/c/55",
+    # Zidarie si plansee - 328 produse
+    "https://www.dedeman.ro/ro/zidarie-si-plansee/c/148",
+    # Scari interioare - 322 produse
+    "https://www.dedeman.ro/ro/scari-interioare/c/25",
+    # Substante chimice constructii - 265 produse
+    "https://www.dedeman.ro/ro/substante-chimice-si-accesorii-pentru-constructii/c/5261",
+    # Hidroizolatii - 257 produse
+    "https://www.dedeman.ro/ro/hidroizolatii/c/57",
+    # Placi si profile policarbonat - 240 produse
+    "https://www.dedeman.ro/ro/placi-si-profile-policarbonat/c/144",
+    # Tevi si profile metalice - 228 produse
+    "https://www.dedeman.ro/ro/tevi-si-profile-metalice/c/48",
+    # Lambriuri - 225 produse
+    "https://www.dedeman.ro/ro/lambriuri/c/1463",
+    # Scari aluminiu/otel - 200 produse
+    "https://www.dedeman.ro/ro/scari-aluminiu/-otel/c/319",
+    # Tabla - 148 produse
+    "https://www.dedeman.ro/ro/tabla/c/49",
+
+    # ═══ ELECTRICE & FOTOVOLTAICE ════════════════════════════════
+    # Corpuri si surse iluminat - 6271 produse
+    "https://www.dedeman.ro/ro/corpuri-si-surse-de-iluminat/c/63",
+    # Prize si intrerupatoare - 2115 produse
+    "https://www.dedeman.ro/ro/prize-si-intrerupatoare/c/421",
+    # Distributie electrica - 873 produse
+    "https://www.dedeman.ro/ro/distributie-electrica-si-comanda/c/419",
+    # Management cabluri - 721 produse
+    "https://www.dedeman.ro/ro/managementul-cablurilor/c/423",
+    # Cabluri electrice - 379 produse
+    "https://www.dedeman.ro/ro/cabluri-electrice-si-conductori/c/417",
+    # Tablouri electrice - 178 produse
+    "https://www.dedeman.ro/ro/tablouri-electrice/c/420",
+    # Sisteme si panouri solare/fotovoltaice - 119 produse
+    "https://www.dedeman.ro/ro/sisteme-si-panouri-solare/c/3094",
+
+    # ═══ TERMICE, CLIMATIZARE, INSTALATII ════════════════════════
+    # Instalatii hidro - 2193 produse
+    "https://www.dedeman.ro/ro/instalatii-hidro/c/53",
+    # Seminee si accesorii - 1961 produse
+    "https://www.dedeman.ro/ro/seminee-si-accesorii/c/869",
+    # Sobe si accesorii - 1955 produse
+    "https://www.dedeman.ro/ro/sobe-si-accesorii/c/352",
+    # Instalatii termice - 1619 produse
+    "https://www.dedeman.ro/ro/instalatii-termice/c/52",
+    # Calorifere - 1035 produse
+    "https://www.dedeman.ro/ro/calorifere/c/350",
+    # Ventilatie climatizare - 1095 produse
+    "https://www.dedeman.ro/ro/ventilatie-climatizare/c/54",
+    # Boilere - 246 produse
+    "https://www.dedeman.ro/ro/boilere-si-accesorii/c/874",
+    # Aer conditionat - 204 produse
+    "https://www.dedeman.ro/ro/aparate-de-aer-conditionat/c/1386",
+    # Centrale termice - 82 produse
+    "https://www.dedeman.ro/ro/centrale-termice/c/856",
+    # Pompe de caldura - 56 produse
+    "https://www.dedeman.ro/ro/pompe-de-caldura/c/4245",
+
+    # ═══ SCULE ═══════════════════════════════════════════════════
+    # Scule de mana - 3109 produse
+    "https://www.dedeman.ro/ro/scule-de-mana/c/44",
+    # Accesorii scule electrice - 2935 produse
+    "https://www.dedeman.ro/ro/accesorii-scule-electrice-si-consumabile/c/40",
+    # Scule electrice - 882 produse
+    "https://www.dedeman.ro/ro/scule-electrice/c/39",
+    # Utilaje - 454 produse
+    "https://www.dedeman.ro/ro/utilaje/c/43",
+    # Aparate sudura - 321 produse
+    "https://www.dedeman.ro/ro/aparate-de-sudura-si-accesorii/c/42",
+    # Compresoare - 196 produse
+    "https://www.dedeman.ro/ro/compresoare-si-scule-pneumatice/c/284",
+    # Aparate masura - 122 produse
+    "https://www.dedeman.ro/ro/aparate-de-masura-si-control/c/41",
+
+    # ═══ AMENAJARI INTERIOARE (subcategorii) ═════════════════════
+    # Ferestre - 1167 produse
+    "https://www.dedeman.ro/ro/ferestre/c/158",
+    # Accesorii usi/ferestre - 1674 produse
+    "https://www.dedeman.ro/ro/accesorii-usi-si-ferestre/c/7804",
+    # Adezivi, siliconi, benzi - 630 produse
+    "https://www.dedeman.ro/ro/adezivi-siliconi-benzi/c/1461",
+    # Profile, praguri, distantiere - 478 produse
+    "https://www.dedeman.ro/ro/coltare-profile-praguri-si-distantiere/c/440",
+    # Chit rosturi gresie/faianta - 279 produse
+    "https://www.dedeman.ro/ro/chit-de-rosturi-pentru-gresie-si-faianta/c/1070",
+    # Grunduri si amorse - 187 produse
+    "https://www.dedeman.ro/ro/grunduri-si-amorse/c/415",
+    # Tencuieli decorative - 170 produse
+    "https://www.dedeman.ro/ro/tencuieli-decorative/c/414",
+    # Spuma poliuretanica - 80 produse
+    "https://www.dedeman.ro/ro/spuma-poliuretanica-si-accesorii/c/411",
+    # Adezivi gresie/faianta - 66 produse
+    "https://www.dedeman.ro/ro/adezivi-pentru-gresie-si-faianta/c/1069",
 ]
 
 Path("logs").mkdir(exist_ok=True)
