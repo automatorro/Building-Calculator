@@ -6,16 +6,48 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/utils/supabase/client'
 import Link from 'next/link'
-import { ArrowLeft, ArrowRight, Check } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Check, Building2, Factory, Home, Store, Wrench, LayoutTemplate } from 'lucide-react'
 
 const sans  = 'var(--font-dm-sans,"DM Sans",system-ui,sans-serif)'
 const serif = 'var(--font-dm-serif,"DM Serif Display",Georgia,serif)'
 
 const PROJECT_TYPES = [
-  { key: 'casa',      label: 'Casă nouă',        icon: '🏠', stages: ['Organizare Șantier','Fundație','Structură','Zidărie','Instalații','Finisaje Interioare','Finisaje Exterioare'] },
-  { key: 'renovare',  label: 'Renovare',          icon: '🔨', stages: ['Demolări','Zidărie','Instalații','Finisaje Interioare','Finisaje Exterioare'] },
-  { key: 'comercial', label: 'Spațiu comercial',  icon: '🏢', stages: ['Organizare Șantier','Fundație','Structură','Instalații','Finisaje Interioare','Finisaje Exterioare'] },
-  { key: 'altceva',   label: 'Altceva',           icon: '📋', stages: ['Organizare Șantier','Fundație','Structură','Zidărie','Instalații','Finisaje Interioare','Finisaje Exterioare'] },
+  { 
+    key: 'bloc', 
+    label: 'Bloc de Apartamente', 
+    icon: <Building2 size={28} strokeWidth={1.5} />, 
+    stages: ['00. Organizare Șantier', '01. Infrastructură', '02. Suprastructură', '03. Arhitectură - Închideri', '04. Arhitectură - Finisaje', '05. Instalații Electrice', '06. Instalații Sanitare/Termice', '07. Fațade', '08. Sistematizare exterioară'] 
+  },
+  { 
+    key: 'hala', 
+    label: 'Hală Industrială', 
+    icon: <Factory size={28} strokeWidth={1.5} />, 
+    stages: ['00. Organizare Șantier', '01. Infrastructură / Fundații', '02. Structură Metalică', '03. Închideri Perimetrale', '04. Pardoseli Industriale', '05. Instalații', '06. Platforme exterioare'] 
+  },
+  { 
+    key: 'casa', 
+    label: 'Casă Individuală', 
+    icon: <Home size={28} strokeWidth={1.5} />, 
+    stages: ['Organizare Șantier', 'Infrastructură', 'Suprastructură', 'Arhitectură / Compartimentări', 'Finisaje Interioare', 'Instalații', 'Fațade / Acoperiș'] 
+  },
+  { 
+    key: 'comercial', 
+    label: 'Fit-out / Comercial', 
+    icon: <Store size={28} strokeWidth={1.5} />, 
+    stages: ['Desfaceri / Demolări', 'Compartimentări ușoare', 'Tavane false', 'Finisaje Premium', 'Instalații HVAC', 'Curenți slabi'] 
+  },
+  { 
+    key: 'renovare', 
+    label: 'Renovare', 
+    icon: <Wrench size={28} strokeWidth={1.5} />, 
+    stages: ['Demolări', 'Consolidări', 'Zidărie', 'Instalații', 'Finisaje Interioare', 'Finisaje Exterioare'] 
+  },
+  { 
+    key: 'blank', 
+    label: 'Personalizat / La liber', 
+    icon: <LayoutTemplate size={28} strokeWidth={1.5} />, 
+    stages: ['Deviz General'] 
+  },
 ]
 
 export default function NewProjectPage() {
@@ -151,10 +183,10 @@ export default function NewProjectPage() {
               color: '#E8500A', marginBottom: 10 }}>Pasul 1 din 3</p>
             <h1 style={{ fontFamily: serif, fontSize: 32, color: '#1E2329', lineHeight: 1.1,
               letterSpacing: '-.02em', marginBottom: 8 }}>
-              Ce construiești?
+              Selectați tipologia proiectului
             </h1>
             <p style={{ fontSize: 15, color: '#6B6860', marginBottom: 32, lineHeight: 1.5 }}>
-              Selectează tipul lucrării — etapele se configurează automat.
+              Etapele (WBS) se configurează automat conform practicilor din industrie.
             </p>
 
             <div className="wiz-types" style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 12, marginBottom: 28 }}>
@@ -174,7 +206,7 @@ export default function NewProjectPage() {
                       <Check size={11} color="white" />
                     </div>
                   )}
-                  <div style={{ fontSize: 28, marginBottom: 10 }}>{t.icon}</div>
+                  <div style={{ color: projectType === t.key ? '#E8500A' : '#6B6860', marginBottom: 12 }}>{t.icon}</div>
                   <div style={{ fontSize: 15, fontWeight: 600, color: '#1E2329' }}>{t.label}</div>
                   <div style={{ fontSize: 12, color: '#A8A59E', marginTop: 4 }}>
                     {t.stages.length} etape
@@ -314,7 +346,7 @@ export default function NewProjectPage() {
               padding: '24px 24px', marginBottom: 24 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 20,
                 paddingBottom: 20, borderBottom: '1px solid #F3F2EF' }}>
-                <div style={{ fontSize: 32 }}>{selectedType.icon}</div>
+                <div style={{ color: '#E8500A' }}>{selectedType.icon}</div>
                 <div>
                   <div style={{ fontSize: 18, fontWeight: 600, color: '#1E2329' }}>
                     {name.trim() || `${selectedType.label} nou`}

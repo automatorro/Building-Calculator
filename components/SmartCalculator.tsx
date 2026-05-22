@@ -21,7 +21,7 @@ interface SmartCalculatorProps {
   onClose: () => void
 }
 
-type ProjectType = 'house' | 'apartment' | 'foundation' | 'roof' | 'bathroom' | 'fence'
+type ProjectType = 'apartment_block' | 'industrial_hall' | 'house' | 'apartment' | 'foundation' | 'roof' | 'bathroom' | 'fence'
 
 interface GeneratedLine {
   name: string
@@ -40,6 +40,77 @@ function generateLines(type: ProjectType, params: Record<string, number>): Gener
   const desfasurata = suprafata * niveluri
 
   switch (type) {
+    case 'apartment_block': {
+      const etajeSupraterane = niveluri || 1;
+      const subsoluri = params.subsoluri || 0;
+      const aptCount = params.apartamente || 10;
+      const wallAreaGross = perim * inaltime * etajeSupraterane;
+      const openingsPercent = goluri_percent || 20;
+      const wallAreaNet = wallAreaGross * (1 - (openingsPercent / 100));
+      const slabThickness = slab_thickness || 0.20;
+      
+      const res: GeneratedLine[] = [];
+      
+      // Infrastructură
+      res.push({ name: 'Săpătură generală mecanizată', unit: 'mc', quantity: +(suprafata * (subsoluri > 0 ? (3 * subsoluri) : 1.5)).toFixed(1), stage: '01. Infrastructură', symbol: 'TsA02A1', include: true, calc: `Suprafata * adancime estimata` });
+      res.push({ name: 'Beton armat radier general / fundații C25/30', unit: 'mc', quantity: +(suprafata * 0.6).toFixed(1), stage: '01. Infrastructură', symbol: 'BcA02A1', include: true, calc: `Suprafata * 0.6mc/mp` });
+      res.push({ name: 'Armătură radier/fundații (BST500)', unit: 'kg', quantity: +(suprafata * 0.6 * 90).toFixed(0), stage: '01. Infrastructură', symbol: 'BcC01A1', include: true, calc: `120kg/mc beton` });
+      if (subsoluri > 0) {
+        res.push({ name: 'Beton armat pereți subsol C25/30', unit: 'mc', quantity: +(perim * 3 * subsoluri * 0.3).toFixed(1), stage: '01. Infrastructură', symbol: 'BcA03A1', include: true, calc: `Perimetru * 3m * Nr.Subsoluri * 0.3m grosime` });
+      }
+
+      // Suprastructură (Generare dinamică per nivel)
+      for (let i = 0; i < etajeSupraterane; i++) {
+        const stageName = i === 0 ? '02. Suprastructură - Parter' : `02. Suprastructură - Etaj ${i}`;
+        res.push({ name: `Beton armat stâlpi și diafragme C30/37`, unit: 'mc', quantity: +(suprafata * 0.12).toFixed(1), stage: stageName, symbol: 'BcA03A1', include: true, calc: `Suprafata * 0.12mc/mp` });
+        res.push({ name: `Beton armat planșeu C30/37`, unit: 'mc', quantity: +(suprafata * slabThickness).toFixed(1), stage: stageName, symbol: 'BcA05A1', include: true, calc: `Suprafata * ${slabThickness}m grosime` });
+        res.push({ name: `Armătură suprastructură (BST500)`, unit: 'kg', quantity: +(suprafata * (0.12 + slabThickness) * 110).toFixed(0), stage: stageName, symbol: 'BcC01A1', include: true, calc: `Volum beton * 110kg/mc` });
+      }
+
+      // Arhitectură - Închideri
+      res.push({ name: `Zidărie exterioară BCA / Cărămidă`, unit: 'mc', quantity: +(wallAreaNet * 0.25).toFixed(1), stage: '03. Arhitectură - Închideri', symbol: 'ZdA02A1', include: true, calc: `Suprafata fatada neta * 0.25m` });
+      res.push({ name: `Compartimentări interioare (Zidărie/Gips-carton)`, unit: 'mp', quantity: +(suprafata * etajeSupraterane * 1.5).toFixed(1), stage: '03. Arhitectură - Închideri', symbol: 'ZdA05A1', include: true, calc: `Arie desfasurata * 1.5` });
+
+      // Finisaje
+      res.push({ name: 'Tencuieli interioare mecanizate', unit: 'mp', quantity: +(suprafata * etajeSupraterane * 3).toFixed(1), stage: '04. Arhitectură - Finisaje', symbol: 'TcA01A1', include: true, calc: `Arie desfasurata * 3` });
+      res.push({ name: 'Șapă elicopterizată apartamente', unit: 'mp', quantity: +(suprafata * etajeSupraterane * 0.8).toFixed(1), stage: '04. Arhitectură - Finisaje', symbol: 'TcB06A1', include: true, calc: `Arie utila estimata` });
+
+      // Instalații
+      res.push({ name: 'Instalații electrice apartamente (tablouri, cablaj)', unit: 'apt', quantity: aptCount, stage: '05. Instalații Electrice', include: true, calc: `${aptCount} apartamente` });
+      res.push({ name: 'Instalații sanitare (băi, bucătării)', unit: 'apt', quantity: aptCount, stage: '06. Instalații Sanitare/Termice', include: true, calc: `${aptCount} apartamente` });
+      res.push({ name: 'Coloane principale apă/canal', unit: 'ml', quantity: +(etajeSupraterane * 3 * 4).toFixed(0), stage: '06. Instalații Sanitare/Termice', include: true, calc: `Regim inaltime * 4 coloane` });
+
+      // Fațade
+      res.push({ name: 'Termosistem fațadă (Vată bazaltică 15cm)', unit: 'mp', quantity: +(wallAreaGross * 0.9).toFixed(1), stage: '07. Fațade', symbol: 'IzA01A1', include: true, calc: `Arie fatada (cu unele goluri acoperite)` });
+      res.push({ name: 'Tâmplărie exterioară (Ferestre, uși balcon)', unit: 'mp', quantity: +(wallAreaGross * (openingsPercent / 100)).toFixed(1), stage: '07. Fațade', symbol: 'TmA01B1', include: true, calc: `Arie fatada * ${openingsPercent}% goluri` });
+
+      return res;
+    }
+
+    case 'industrial_hall': {
+      const deschidere = params.deschidere || 20;
+      const inaltimeCornisa = params.inaltime_cornisa || 6;
+      const lungime = suprafata / deschidere;
+      const perimHala = 2 * (lungime + deschidere);
+      
+      const res: GeneratedLine[] = [];
+      
+      res.push({ name: 'Săpături fundații pahar / izolate', unit: 'mc', quantity: +((perimHala / 5) * 2 * 2 * 1.5).toFixed(1), stage: '01. Infrastructură / Fundații', symbol: 'TsA02A1', include: true, calc: `Numar stalpi estimat * Volum sapura pahar` });
+      res.push({ name: 'Beton armat fundații pahar C20/25', unit: 'mc', quantity: +((perimHala / 5) * 1.5).toFixed(1), stage: '01. Infrastructură / Fundații', symbol: 'BcA02A1', include: true, calc: `Numar stalpi estimat * 1.5mc` });
+      res.push({ name: 'Armătură fundații', unit: 'kg', quantity: +((perimHala / 5) * 1.5 * 80).toFixed(0), stage: '01. Infrastructură / Fundații', symbol: 'BcC01A1', include: true, calc: `Volum beton * 80kg/mc` });
+      
+      res.push({ name: 'Structură metalică principală (Europrofile)', unit: 'to', quantity: +(suprafata * 0.035).toFixed(1), stage: '02. Structură Metalică', include: true, calc: `35 kg/mp (estimare pentru deschidere de ${deschidere}m)` });
+      res.push({ name: 'Structură metalică secundară (Pane Z/C)', unit: 'to', quantity: +(suprafata * 0.008).toFixed(1), stage: '02. Structură Metalică', include: true, calc: `8 kg/mp` });
+
+      res.push({ name: 'Panouri sandwich pereți', unit: 'mp', quantity: +(perimHala * inaltimeCornisa).toFixed(1), stage: '03. Închideri Perimetrale', include: true, calc: `Perimetru * Inaltime cornisa` });
+      res.push({ name: 'Panouri sandwich acoperiș', unit: 'mp', quantity: +(suprafata * 1.05).toFixed(1), stage: '03. Închideri Perimetrale', include: true, calc: `Suprafata + pante` });
+
+      res.push({ name: 'Pardoseală industrială elicopterizată cu cuarț (15cm)', unit: 'mp', quantity: suprafata, stage: '04. Pardoseli Industriale', symbol: 'TcB06A1', include: true, calc: `Suprafata integrala` });
+      res.push({ name: 'Plasă sudată pardoseală', unit: 'kg', quantity: +(suprafata * 4).toFixed(0), stage: '04. Pardoseli Industriale', symbol: 'BcC02A1', include: true, calc: `4 kg/mp` });
+
+      return res;
+    }
+
     case 'house': {
       const wallAreaGross = perim * inaltime * niveluri
       const openingsPercent = goluri_percent || 0
@@ -253,9 +324,11 @@ export default function SmartCalculator({
     sans: 'var(--font-dm-sans,"DM Sans",system-ui,sans-serif)',
   }
 
-  const TYPES: { id: ProjectType; label: string; desc: string; icon: string }[] = [
+  const TYPES: { id: ProjectType; label: string; desc: string; icon: string | React.ReactNode }[] = [
+    { id: 'apartment_block', label: 'Bloc de Apartamente', desc: 'Sisteme complexe S+P+E, apartamente', icon: '🏢' },
+    { id: 'industrial_hall', label: 'Hală Industrială', desc: 'Structuri metalice, panouri sandwich', icon: '🏭' },
     { id: 'house', label: 'Casă individuală', desc: 'P, P+E, P+M — de la fundație la cheie', icon: '🏠' },
-    { id: 'apartment', label: 'Renovare apartament', desc: 'Reabilitare completă interior', icon: '🏢' },
+    { id: 'apartment', label: 'Renovare apartament', desc: 'Reabilitare completă interior', icon: '🚪' },
     { id: 'foundation', label: 'Fundație', desc: 'Fundații izolate, continue sau radier', icon: '⛏️' },
     { id: 'roof', label: 'Acoperiș', desc: 'Șarpantă nouă sau înlocuire învelitoare', icon: '🏗️' },
     { id: 'bathroom', label: 'Baie', desc: 'Renovare completă baie cu sanitare', icon: '🚿' },
@@ -263,6 +336,19 @@ export default function SmartCalculator({
   ]
 
   const PARAMS_CONFIG: Record<ProjectType, { key: string; label: string; unit: string; min: number; step: number }[]> = {
+    apartment_block: [
+      { key: 'suprafata', label: 'Amprentă la sol (mp)', unit: 'mp', min: 200, step: 50 },
+      { key: 'subsoluri', label: 'Număr subsoluri', unit: '', min: 0, step: 1 },
+      { key: 'niveluri', label: 'Nr. etaje supraterane', unit: '', min: 1, step: 1 },
+      { key: 'apartamente', label: 'Număr total apartamente', unit: '', min: 4, step: 1 },
+      { key: 'inaltime', label: 'Înălțime etaj (m)', unit: 'm', min: 2.8, step: 0.1 },
+      { key: 'goluri_percent', label: 'Goluri fațadă (%)', unit: '%', min: 10, step: 5 },
+    ],
+    industrial_hall: [
+      { key: 'suprafata', label: 'Suprafață pardoseală (mp)', unit: 'mp', min: 500, step: 100 },
+      { key: 'deschidere', label: 'Deschidere liberă (m)', unit: 'm', min: 10, step: 2 },
+      { key: 'inaltime_cornisa', label: 'Înălțime la cornișă (m)', unit: 'm', min: 4, step: 0.5 },
+    ],
     house: [
       { key: 'suprafata', label: 'Suprafață parter (mp)', unit: 'mp', min: 20, step: 5 },
       { key: 'niveluri', label: 'Nr. niveluri (P=1, P+E=2)', unit: '', min: 1, step: 1 },
@@ -643,7 +729,7 @@ export default function SmartCalculator({
                 </div>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                {[...new Set(lines.map(l => l.stage))].map(stage => (
+                {[...new Set(lines.map(l => l.stage))].sort().map(stage => (
                   <div key={stage}>
                     <div style={{ fontSize: 11, fontWeight: 700, color: S.gray400,
                       textTransform: 'uppercase', letterSpacing: '.06em',
