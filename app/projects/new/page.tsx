@@ -121,7 +121,7 @@ export default function NewProjectPage() {
     }
 
     if (project) {
-      router.push(`/projects/${project.id}?tab=planning`)
+      router.push(`/projects/${project.id}?tab=planning&new=1`)
       router.refresh()
     }
   }
@@ -208,9 +208,6 @@ export default function NewProjectPage() {
                   )}
                   <div style={{ color: projectType === t.key ? '#E8500A' : '#6B6860', marginBottom: 12 }}>{t.icon}</div>
                   <div style={{ fontSize: 15, fontWeight: 600, color: '#1E2329' }}>{t.label}</div>
-                  <div style={{ fontSize: 12, color: '#A8A59E', marginTop: 4 }}>
-                    {t.stages.length} etape
-                  </div>
                 </button>
               ))}
             </div>

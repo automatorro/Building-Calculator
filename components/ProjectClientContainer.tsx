@@ -26,6 +26,7 @@ import { fmtRon } from '@/utils/format'
 import { processPurchaseDocument, PurchaseOcrResult } from '@/utils/purchase-ocr'
 import { Camera, Scan, Loader2, Info } from 'lucide-react'
 import DedemanCatalogDrawer, { type DedemanOrderItem } from './achizitii/DedemanCatalogDrawer'
+import ProjectOnboardingModal from './ProjectOnboardingModal'
 
 interface ProjectClientContainerProps {
   projectId: string
@@ -156,10 +157,21 @@ export default function ProjectClientContainer({
       setView(tabParam)
     }
   }, [tabParam])
+
+  // Detectează proiect nou și afișează onboarding
+  useEffect(() => {
+    const isNew = searchParams.get('new') === '1'
+    const key = `onboarding_shown_${projectId}`
+    if ((isNew || initialLines.length === 0) && !localStorage.getItem(key)) {
+      setShowOnboarding(true)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
   const [lines, setLines] = useState<EstimateLine[]>(initialLines)
   const [settings, setSettings] = useState<ProjectSettings>(initialSettings)
   const [purchases, setPurchases] = useState<Purchase[]>(initialPurchases)
   const [revenue, setRevenue] = useState(initialRevenue)
+  const [showOnboarding, setShowOnboarding] = useState(false)
   const [showPurchaseForm, setShowPurchaseForm] = useState(false)
   const [showDedemanDrawer, setShowDedemanDrawer] = useState(false)
   const [editingPurchase, setEditingPurchase] = useState<Purchase | null>(null)
@@ -556,6 +568,30 @@ export default function ProjectClientContainer({
 
   return (
     <div className="space-y-8">
+
+      {/* ── Onboarding modal (prima deschidere) ── */}
+      {showOnboarding && (
+        <ProjectOnboardingModal
+          projectId={projectId}
+          onChooseAI={() => {
+            setShowOnboarding(false)
+            setView('copilot')
+          }}
+          onChooseImport={() => {
+            setShowOnboarding(false)
+            setView('planning')
+          }}
+          onChooseOCR={() => {
+            setShowOnboarding(false)
+            setView('plans')
+          }}
+          onChooseManual={() => {
+            setShowOnboarding(false)
+            setView('planning')
+          }}
+          onDismiss={() => setShowOnboarding(false)}
+        />
+      )}
 
       {/* ── Project Stepper & Assistant ── */}
       <div className="flex flex-col gap-2">
