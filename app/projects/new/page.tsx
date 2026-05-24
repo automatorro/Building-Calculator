@@ -54,17 +54,18 @@ export default function NewProjectPage() {
   const router = useRouter()
   const supabase = createClient()
 
-  const [step, setStep]       = useState(1)
-  const [loading, setLoading] = useState(false)
-  const [error, setError]     = useState<string | null>(null)
+  const [step, setStep]           = useState(1)
+  const [loading, setLoading]     = useState(false)
+  const [error, setError]         = useState<string | null>(null)
 
   const [projectType, setProjectType] = useState<string | null>(null)
   const [name,        setName]        = useState('')
   const [location,    setLocation]    = useState('')
 
-  const [regie,  setRegie]  = useState(15)
-  const [profit, setProfit] = useState(10)
-  const [tva,    setTva]    = useState(21)
+  // Coeficienți cu valori implicite — editabili oricând din setările proiectului
+  const regie  = 15
+  const profit = 10
+  const tva    = 21
 
   const selectedType = PROJECT_TYPES.find(t => t.key === projectType) ?? PROJECT_TYPES[3]
 
@@ -102,8 +103,9 @@ export default function NewProjectPage() {
       .from('projects')
       .insert([{
         name: finalName,
+        user_id: user?.id,
         location: location.trim(),
-        settings: { profit, regie, tva, taxe_manopera: 2.25 },
+        settings: { profit, regie, tva, taxe_manopera: 2.25, project_type: selectedType.key },
         stages: selectedType.stages,
         total_estimated_revenue: 0,
       }])
@@ -153,7 +155,7 @@ export default function NewProjectPage() {
             <ArrowLeft size={16} /> Proiecte
           </Link>
           <div style={{ flex: 1, display: 'flex', justifyContent: 'center', gap: 8 }}>
-            {[1, 2, 3].map(s => (
+            {[1, 2].map(s => (
               <div key={s} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                 <div style={{
                   width: 28, height: 28, borderRadius: '50%',
@@ -164,7 +166,7 @@ export default function NewProjectPage() {
                 }}>
                   {step > s ? <Check size={13} /> : s}
                 </div>
-                {s < 3 && <div style={{ width: 32, height: 1, background: step > s ? '#2A7D4F' : '#E5E3DE' }} />}
+                {s < 2 && <div style={{ width: 32, height: 1, background: step > s ? '#2A7D4F' : '#E5E3DE' }} />}
               </div>
             ))}
           </div>
@@ -248,88 +250,12 @@ export default function NewProjectPage() {
           </div>
         )}
 
-        {/* ── Step 2 ── */}
+
+        {/* ── Step 2 — Sumar și creare ── */}
         {step === 2 && (
           <div>
             <p style={{ fontSize: 12, fontWeight: 700, letterSpacing: '.08em', textTransform: 'uppercase',
-              color: '#E8500A', marginBottom: 10 }}>Pasul 2 din 3</p>
-            <h1 style={{ fontFamily: serif, fontSize: 32, color: '#1E2329', lineHeight: 1.1,
-              letterSpacing: '-.02em', marginBottom: 8 }}>
-              Coeficienții tăi
-            </h1>
-            <p style={{ fontSize: 15, color: '#6B6860', marginBottom: 32, lineHeight: 1.5 }}>
-              Poți schimba oricând din setările proiectului.
-            </p>
-
-            <div className="wiz-coef" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 12, marginBottom: 32 }}>
-              {([
-                { label: 'Regie', key: 'regie', val: regie, set: setRegie, hint: 'Cheltuieli indirecte: birou, utilaje, deplasări' },
-                { label: 'Profit', key: 'profit', val: profit, set: setProfit, hint: 'Marja ta de câștig peste costul direct' },
-                { label: 'TVA', key: 'tva', val: tva, set: setTva, hint: 'Cota standard 21% din aug. 2025' },
-              ] as const).map(f => (
-                <div key={f.label} style={{ background: '#FFFFFF', border: '1px solid #E5E3DE',
-                  borderRadius: 12, padding: '16px 14px', textAlign: 'center' }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: '#A8A59E', textTransform: 'uppercase',
-                    letterSpacing: '.06em', marginBottom: 10 }}>{f.label}</div>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
-                    <input type="number" min={0} max={100} step={0.5}
-                      value={f.val}
-                      onChange={e => f.set(parseFloat(e.target.value) || 0)}
-                      style={{ width: 56, textAlign: 'center', fontFamily: serif,
-                        fontSize: 28, color: '#1E2329', fontWeight: 400,
-                        border: 'none', background: 'transparent', outline: 'none' }} />
-                    <span style={{ fontFamily: serif, fontSize: 20, color: '#A8A59E' }}>%</span>
-                  </div>
-                  <div style={{ fontSize: 11, color: '#A8A59E', lineHeight: 1.4, marginTop: 8 }}>{f.hint}</div>
-                </div>
-              ))}
-            </div>
-
-            {/* Quick presets */}
-            <div style={{ marginBottom: 32 }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: '#6B6860', marginBottom: 10 }}>
-                Preseturi rapide:
-              </div>
-              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                {[
-                  { label: 'Constructor mic (standard)', r: 15, p: 10, t: 21 },
-                  { label: 'Marjă mai mare', r: 15, p: 15, t: 21 },
-                  { label: 'Fără profit (cost)', r: 10, p: 0, t: 21 },
-                ].map(preset => (
-                  <button key={preset.label} type="button"
-                    onClick={() => { setRegie(preset.r); setProfit(preset.p); setTva(preset.t) }}
-                    style={{ padding: '6px 14px', borderRadius: 100, border: '1px solid #E5E3DE',
-                      background: '#FAFAF8', fontSize: 13, color: '#6B6860',
-                      cursor: 'pointer', fontFamily: sans, transition: 'all .15s' }}>
-                    {preset.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div style={{ display: 'flex', gap: 10 }}>
-              <button type="button" onClick={() => setStep(1)}
-                style={{ padding: '14px 20px', borderRadius: 8, border: '1px solid #E5E3DE',
-                  background: '#FFFFFF', color: '#6B6860', fontSize: 15,
-                  fontFamily: sans, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
-                <ArrowLeft size={16} /> Înapoi
-              </button>
-              <button type="button" onClick={() => setStep(3)}
-                style={{ flex: 1, padding: '14px', borderRadius: 8, background: '#E8500A',
-                  color: '#FFFFFF', border: 'none', fontSize: 15, fontWeight: 600,
-                  fontFamily: sans, cursor: 'pointer', display: 'flex', alignItems: 'center',
-                  justifyContent: 'center', gap: 8 }}>
-                Continuă <ArrowRight size={16} />
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* ── Step 3 ── */}
-        {step === 3 && (
-          <div>
-            <p style={{ fontSize: 12, fontWeight: 700, letterSpacing: '.08em', textTransform: 'uppercase',
-              color: '#E8500A', marginBottom: 10 }}>Pasul 3 din 3</p>
+              color: '#E8500A', marginBottom: 10 }}>Pasul 2 din 2</p>
             <h1 style={{ fontFamily: serif, fontSize: 32, color: '#1E2329', lineHeight: 1.1,
               letterSpacing: '-.02em', marginBottom: 8 }}>
               Totul e pregătit.
@@ -351,21 +277,6 @@ export default function NewProjectPage() {
                   {location && <div style={{ fontSize: 13, color: '#6B6860', marginTop: 3 }}>{location}</div>}
                   <div style={{ fontSize: 12, color: '#A8A59E', marginTop: 3 }}>{selectedType.label}</div>
                 </div>
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 12, marginBottom: 20 }}>
-                {[
-                  { label: 'Regie', val: `${regie}%` },
-                  { label: 'Profit', val: `${profit}%` },
-                  { label: 'TVA', val: `${tva}%` },
-                ].map(f => (
-                  <div key={f.label} style={{ textAlign: 'center', background: '#F3F2EF',
-                    borderRadius: 8, padding: '10px 8px' }}>
-                    <div style={{ fontSize: 11, color: '#A8A59E', textTransform: 'uppercase',
-                      letterSpacing: '.06em', marginBottom: 4 }}>{f.label}</div>
-                    <div style={{ fontFamily: serif, fontSize: 22, color: '#1E2329' }}>{f.val}</div>
-                  </div>
-                ))}
               </div>
 
               <div>
@@ -399,15 +310,17 @@ export default function NewProjectPage() {
               {loading ? 'Se creează proiectul...' : <>Deschide proiectul <ArrowRight size={16} /></>}
             </button>
 
-            <button type="button" onClick={() => setStep(2)}
+            <button type="button" onClick={() => setStep(1)}
               style={{ width: '100%', padding: '12px', borderRadius: 8,
                 border: '1px solid #E5E3DE', background: 'transparent', color: '#6B6860',
                 fontSize: 14, fontFamily: sans, cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
-              <ArrowLeft size={14} /> Modifică coeficienții
+              <ArrowLeft size={14} /> Înapoi
             </button>
           </div>
         )}
+
+
 
       </div>
     </div>

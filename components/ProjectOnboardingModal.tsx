@@ -2,26 +2,26 @@
 
 import { useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Bot, FileSpreadsheet, PenLine, ScanLine, X } from 'lucide-react'
+import { LayoutTemplate, FileSpreadsheet, PenLine, ScanLine, X } from 'lucide-react'
 
 const sans  = 'var(--font-dm-sans,"DM Sans",system-ui,sans-serif)'
 const serif = 'var(--font-dm-serif,"DM Serif Display",Georgia,serif)'
 
 interface Props {
   projectId: string
-  onChooseAI:     () => void
-  onChooseImport: () => void
-  onChooseOCR:    () => void
-  onChooseManual: () => void
-  onDismiss:      () => void
+  onChooseTemplate: () => void
+  onChooseImport:   () => void
+  onChooseOCR:      () => void
+  onChooseManual:   () => void
+  onDismiss:        () => void
 }
 
 const OPTIONS = [
   {
-    key: 'ai',
-    icon: <Bot size={28} strokeWidth={1.5} />,
-    title: 'Generează cu AI',
-    desc: 'Descrie lucrarea și SmartCalc completează automat articolele, cantitățile și prețurile.',
+    key: 'template',
+    icon: <LayoutTemplate size={28} strokeWidth={1.5} />,
+    title: 'Pornește de la un Șablon',
+    desc: 'Devizul vine pre-completat cu etapele și articolele tipice pentru tipologia aleasă.',
     accent: '#E8500A',
     bg: '#FFF0E8',
     border: '#E8500A33',
@@ -57,7 +57,7 @@ const OPTIONS = [
 
 export default function ProjectOnboardingModal({
   projectId,
-  onChooseAI,
+  onChooseTemplate,
   onChooseImport,
   onChooseOCR,
   onChooseManual,
@@ -79,10 +79,10 @@ export default function ProjectOnboardingModal({
 
   const handle = (key: string) => {
     localStorage.setItem(STORAGE_KEY, '1')
-    if (key === 'ai')     onChooseAI()
-    if (key === 'import') onChooseImport()
-    if (key === 'ocr')    onChooseOCR()
-    if (key === 'manual') onChooseManual()
+    if (key === 'template') onChooseTemplate()
+    if (key === 'import')   onChooseImport()
+    if (key === 'ocr')      onChooseOCR()
+    if (key === 'manual')   onChooseManual()
   }
 
   return (
@@ -148,7 +148,7 @@ export default function ProjectOnboardingModal({
               Cum vrei să începi?
             </h2>
             <p style={{ fontSize: 14, color: '#6B6860', lineHeight: 1.5 }}>
-              Proiectul este gol. Alege modalitatea cu care ești cel mai confortabil —
+              Alege modalitatea cu care vrei să continui —
               poți combina oricând toate variantele mai târziu.
             </p>
           </div>

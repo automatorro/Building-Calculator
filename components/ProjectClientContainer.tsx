@@ -27,6 +27,7 @@ import { processPurchaseDocument, PurchaseOcrResult } from '@/utils/purchase-ocr
 import { Camera, Scan, Loader2, Info } from 'lucide-react'
 import DedemanCatalogDrawer, { type DedemanOrderItem } from './achizitii/DedemanCatalogDrawer'
 import ProjectOnboardingModal from './ProjectOnboardingModal'
+import { applyTemplate } from '@/lib/project-templates'
 
 interface ProjectClientContainerProps {
   projectId: string
@@ -478,6 +479,7 @@ export default function ProjectClientContainer({
           .upsert({
             id: line.id.includes('-') ? line.id : undefined,
             project_id: projectId,
+            user_id: userId,
             quantity: line.quantity,
             custom_prices: line.custom_prices,
             excluded_resources: line.excluded_resources,
@@ -573,9 +575,22 @@ export default function ProjectClientContainer({
       {showOnboarding && (
         <ProjectOnboardingModal
           projectId={projectId}
-          onChooseAI={() => {
+          onChooseTemplate={async () => {
             setShowOnboarding(false)
-            setView('copilot')
+            // Aplică șablonul pentru tipologia proiectului (stocată în settings.project_type)
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const projectType = (settings as any)?.project_type as string | undefined
+            if (projectType && projectType !== 'blank') {
+              const supabase = createClient()
+              const { data: { user } } = await supabase.auth.getUser()
+              if (user) {
+                await applyTemplate(projectId, projectType, user.id, supabase)
+                // Forțăm reîncărcarea completă pentru ca UI-ul să preia liniile noi din baza de date
+                window.location.href = `/projects/${projectId}?tab=planning`
+                return
+              }
+            }
+            setView('planning')
           }}
           onChooseImport={() => {
             setShowOnboarding(false)
