@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import type { Metadata } from 'next'
-import HeroVideoPlaceholder from '@/components/HeroVideoPlaceholder'
+import HeroInteractiveDemo from '@/components/HeroInteractiveDemo'
 import FaqSection from '@/components/FaqSection'
 import PricingCheckoutButton from '@/components/PricingCheckoutButton'
 import RevealObserver from '@/components/RevealObserver'
@@ -198,35 +198,32 @@ export default function HomePage() {
             }}>
               <div style={{ width:6, height:6, borderRadius:'50%', background:'#E8500A',
                 animation:'pulse 2s infinite' }} />
-              Program de devize pentru constructori din România
+              Software de management pentru proiecte de construcții
             </div>
 
             <h1 className="hero-h1" style={{
-              fontFamily: serif, fontSize:64, lineHeight:1.05,
+              fontFamily: serif, fontSize:58, lineHeight:1.08,
               color:'#1E2329', marginBottom:24, letterSpacing:'-.02em',
             }}>
-              Devize, cheltuieli și{' '}
-              <em style={{ fontStyle:'italic', color:'#E8500A' }}>jurnal de șantier</em>{' '}
-              — din telefon, pe loc.
+              Știi exact cât câștigezi{' '}
+              <em style={{ fontStyle:'italic', color:'#E8500A' }}>pe fiecare lucrare.</em>{' '}
+              Înainte să fie prea târziu.
             </h1>
 
             <p style={{
-              fontSize:20, lineHeight:1.7, color:'#4A4744',
-              marginBottom:20, maxWidth:460, fontWeight:400,
+              fontSize:18, lineHeight:1.7, color:'#4A4744',
+              marginBottom:12, maxWidth:480, fontWeight:400,
             }}>
-              Calculezi cantitățile direct din planuri. Urmărești cheltuielile reale față de deviz.
-              Știi în orice moment dacă lucrarea e profitabilă.
+              Șantier.app ține evidența devizelor, cheltuielilor reale și profitului
+              pe fiecare proiect — de la planul de execuție până la ultima factură.
             </p>
 
             <p style={{
               fontSize:14, lineHeight:1.55, color:'#6B6860',
-              marginBottom:36, maxWidth:420,
+              marginBottom:36, maxWidth:440,
             }}>
-              Manager sau contabil?{' '}
-              <a href="#pricing" style={{ color:'#E8500A', textDecoration:'underline' }}>
-                Planul Echipă
-              </a>{' '}
-              include rapoarte, coordonare maiștri și ofertă PDF pentru beneficiar.
+              Folosit de constructori, ingineri și manageri de proiect. Funcționează
+              la birou și pe teren, pe orice dispozitiv, fără instalare.
             </p>
 
             <div style={{ display:'flex', gap:14, flexWrap:'wrap' }}>
@@ -250,7 +247,7 @@ export default function HomePage() {
             </div>
 
             <div style={{ marginTop:40, display:'flex', alignItems:'center', gap:20, flexWrap:'wrap' }}>
-              {['Demo fără cont, imediat','Cont gratuit când vrei să salvezi'].map(t => (
+              {['Primul proiect complet gratuit','Fără instalare · Fără configurare'].map(t => (
                 <div key={t} style={{ display:'flex', alignItems:'center', gap:7,
                   fontSize:14, color:'#6B6860' }}>
                   <div style={{ width:6, height:6, borderRadius:'50%', background:'#2A7D4F' }} />
@@ -260,8 +257,8 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Right — video demo */}
-          <HeroVideoPlaceholder />
+          {/* Right — demo interactiv */}
+          <HeroInteractiveDemo />
         </div>
       </section>
 
