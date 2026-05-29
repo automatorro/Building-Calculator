@@ -205,17 +205,16 @@ export default function HomePage() {
               fontFamily: serif, fontSize:58, lineHeight:1.08,
               color:'#1E2329', marginBottom:24, letterSpacing:'-.02em',
             }}>
-              Știi exact cât câștigezi{' '}
-              <em style={{ fontStyle:'italic', color:'#E8500A' }}>pe fiecare lucrare.</em>{' '}
-              Înainte să fie prea târziu.
+              Management complet pentru construcții: bugete, echipe și{' '}
+              <em style={{ fontStyle:'italic', color:'#E8500A' }}>jurnale de șantier,</em>{' '}
+              fără haos.
             </h1>
 
             <p style={{
               fontSize:18, lineHeight:1.7, color:'#4A4744',
-              marginBottom:12, maxWidth:480, fontWeight:400,
+              marginBottom:12, maxWidth:520, fontWeight:400,
             }}>
-              Șantier.app ține evidența devizelor, cheltuielilor reale și profitului
-              pe fiecare proiect — de la planul de execuție până la ultima factură.
+              Aplicația care automatizează calculul materialelor din planuri, centralizează achizițiile de pe teren și îți oferă vizibilitate în timp real asupra profitabilității, pe oricâte șantiere gestionezi.
             </p>
 
             <p style={{
