@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react'
 import { createPortal } from 'react-dom'
-import { Plus, Trash2, Save, Info, ChevronDown, ChevronUp, Settings2, CheckCircle2, Lightbulb, Store, Link as LinkIcon, BookPlus, MoreVertical, Copy, Search, AlertCircle, Sparkles } from 'lucide-react'
+import { Plus, Trash2, Save, Info, ChevronDown, ChevronUp, Settings2, CheckCircle2, Lightbulb, Store, Link as LinkIcon, BookPlus, MoreVertical, Copy, Search, AlertCircle, Sparkles, ClipboardList } from 'lucide-react'
 import { toast } from 'sonner'
 import { createClient } from '@/utils/supabase/client'
 import { calculateLineCosts, EstimateLine, ProjectSettings, calculateProjectTotals, analyzeEstimateLine } from '@/utils/calculators/estimate'
@@ -26,6 +26,9 @@ interface EstimateEditorProps {
   onUpdateSettings: (settings: ProjectSettings) => void
   isSaving: boolean
   isSaved: boolean
+  importHint?: boolean
+  onDismissImportHint?: () => void
+  hasNoLines?: boolean
 }
 
 function detectLineIssues(line: EstimateLine, isManual: boolean): { code: string; message: string }[] {
@@ -83,7 +86,10 @@ export default function EstimateEditor({
   onImport,
   onUpdateSettings,
   isSaving,
-  isSaved
+  isSaved,
+  importHint = false,
+  onDismissImportHint,
+  hasNoLines = false,
 }: EstimateEditorProps) {
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const [activeOfferPicker, setActiveOfferPicker] = useState<{ resourceId: string, resourceName: string, lineId: string } | null>(null)
@@ -426,6 +432,29 @@ export default function EstimateEditor({
             </div>
           </div>
 
+          {/* Banner hint Import Excel */}
+          {importHint && (
+            <div style={{
+              background: '#F0FAF4', borderBottom: '1px solid #2A7D4F33',
+              padding: '12px 24px', display: 'flex', alignItems: 'center', gap: 12,
+            }}>
+              <FileSpreadsheet size={18} style={{ color: '#2A7D4F', flexShrink: 0 }} />
+              <p style={{ fontSize: 13, color: '#1D6040', fontWeight: 500, flex: 1 }}>
+                Folosește butonul <strong>Importă din Excel</strong> din dreapta sus pentru a importa devizul tău.
+                Acceptăm fișiere <strong>.xlsx</strong> și <strong>.csv</strong>.
+              </p>
+              <button
+                onClick={onDismissImportHint}
+                style={{
+                  background: 'none', border: 'none', cursor: 'pointer',
+                  color: '#2A7D4F', fontSize: 18, padding: '0 4px', lineHeight: 1,
+                  flexShrink: 0,
+                }}
+                aria-label="Închide"
+              >×</button>
+            </div>
+          )}
+
           <div className="p-4 border-b border-border/50">
             {(() => {
               const invalidCount = lines.filter(l => !analyzeEstimateLine(l).isCalculable).length;
@@ -484,7 +513,54 @@ export default function EstimateEditor({
           </div>
 
           <div className="divide-y divide-border/50 font-sans">
-            {Array.from(new Set(lines.map(l => l.stage_name || 'Lucrări Generale'))).map(stage => {
+            {hasNoLines && lines.length === 0 ? (
+              /* ── Empty state — deviz gol ── */
+              <div style={{
+                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                padding: '56px 32px', gap: 16, textAlign: 'center',
+              }}>
+                <div style={{
+                  width: 64, height: 64, borderRadius: 20,
+                  background: '#FFF0E8', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  marginBottom: 4,
+                }}>
+                  <ClipboardList size={28} style={{ color: '#E8500A' }} />
+                </div>
+                <h3 style={{ fontSize: 20, fontWeight: 700, color: '#1E2329', margin: 0 }}>
+                  Devizul tău este gol
+                </h3>
+                <p style={{ fontSize: 14, color: '#6B6860', maxWidth: 380, lineHeight: 1.6, margin: 0 }}>
+                  Adaugă prima normă căutând în <strong>Catalog</strong>, sau creează manual
+                  un rând propriu. Poți importa oricând un Excel existent.
+                </p>
+                <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'center', marginTop: 8 }}>
+                  <button
+                    onClick={() => setShowImporter(true)}
+                    style={{
+                      display: 'inline-flex', alignItems: 'center', gap: 8,
+                      background: '#F0FAF4', color: '#2A7D4F',
+                      border: '1.5px solid #2A7D4F33', borderRadius: 10,
+                      padding: '11px 20px', fontSize: 13, fontWeight: 700, cursor: 'pointer',
+                    }}
+                  >
+                    <FileSpreadsheet size={16} /> Importă din Excel
+                  </button>
+                  <button
+                    onClick={() => handleAddManualLine()}
+                    style={{
+                      display: 'inline-flex', alignItems: 'center', gap: 8,
+                      background: '#E8500A', color: '#FFFFFF',
+                      border: 'none', borderRadius: 10,
+                      padding: '11px 20px', fontSize: 13, fontWeight: 700, cursor: 'pointer',
+                      boxShadow: '0 4px 14px rgba(232,80,10,0.25)',
+                    }}
+                  >
+                    <Plus size={16} /> Adaugă prima linie
+                  </button>
+                </div>
+              </div>
+            ) : (
+            Array.from(new Set(lines.map(l => l.stage_name || 'Lucrări Generale'))).map(stage => {
               const stageLines = lines.filter(l => (l.stage_name || 'Lucrări Generale') === stage)
               const filteredStageLines = stageLines.filter(line => {
                 if (!searchQuery.trim()) return true
@@ -924,6 +1000,7 @@ export default function EstimateEditor({
                 </div>
               )
             })}
+            )}
           </div>
         </div>
       </div>

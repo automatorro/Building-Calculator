@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { LayoutTemplate, FileSpreadsheet, PenLine, ScanLine, X } from 'lucide-react'
+import { LayoutTemplate, FileSpreadsheet, PenLine, ScanLine, X, Loader2 } from 'lucide-react'
 
 const sans  = 'var(--font-dm-sans,"DM Sans",system-ui,sans-serif)'
 const serif = 'var(--font-dm-serif,"DM Serif Display",Georgia,serif)'
@@ -14,6 +14,7 @@ interface Props {
   onChooseOCR:      () => void
   onChooseManual:   () => void
   onDismiss:        () => void
+  onStartLoading?:  () => void
 }
 
 const OPTIONS = [
@@ -62,7 +63,10 @@ export default function ProjectOnboardingModal({
   onChooseOCR,
   onChooseManual,
   onDismiss,
+  onStartLoading,
 }: Props) {
+
+  const [isApplying, setIsApplying] = useState(false)
 
   // Blochează scroll-ul body cât e vizibil modalul
   useEffect(() => {
@@ -79,7 +83,11 @@ export default function ProjectOnboardingModal({
 
   const handle = (key: string) => {
     localStorage.setItem(STORAGE_KEY, '1')
-    if (key === 'template') onChooseTemplate()
+    if (key === 'template') {
+      setIsApplying(true)
+      onStartLoading?.()
+      onChooseTemplate()
+    }
     if (key === 'import')   onChooseImport()
     if (key === 'ocr')      onChooseOCR()
     if (key === 'manual')   onChooseManual()
@@ -99,7 +107,7 @@ export default function ProjectOnboardingModal({
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           padding: '24px 16px',
         }}
-        onClick={dismiss}
+        onClick={isApplying ? undefined : dismiss}
       >
         <motion.div
           key="onboarding-panel"
@@ -117,8 +125,30 @@ export default function ProjectOnboardingModal({
             boxShadow: '0 24px 80px rgba(0,0,0,0.18)',
             fontFamily: sans,
             position: 'relative',
+            overflow: 'hidden',
           }}
         >
+          {/* Loading overlay la aplicare șablon */}
+          {isApplying && (
+            <div style={{
+              position: 'absolute', inset: 0, zIndex: 10,
+              background: 'rgba(255,255,255,0.92)',
+              borderRadius: 20,
+              display: 'flex', flexDirection: 'column',
+              alignItems: 'center', justifyContent: 'center',
+              gap: 14,
+            }}>
+              <Loader2 size={32} style={{ color: '#E8500A', animation: 'spin 1s linear infinite' }} />
+              <p style={{ fontSize: 15, fontWeight: 600, color: '#1E2329', fontFamily: sans }}>
+                Se aplică șablonul...
+              </p>
+              <p style={{ fontSize: 13, color: '#6B6860', fontFamily: sans }}>
+                Te ducem în editor în câteva secunde.
+              </p>
+              <style>{`@keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }`}</style>
+            </div>
+          )}
+
           {/* Buton închidere */}
           <button
             onClick={dismiss}
@@ -164,15 +194,17 @@ export default function ProjectOnboardingModal({
               <button
                 key={opt.key}
                 onClick={() => handle(opt.key)}
+                disabled={isApplying}
                 style={{
                   background: opt.bg,
                   border: `1.5px solid ${opt.border}`,
                   borderRadius: 14,
                   padding: '18px 16px',
                   textAlign: 'left',
-                  cursor: 'pointer',
+                  cursor: isApplying ? 'not-allowed' : 'pointer',
                   fontFamily: sans,
                   transition: 'transform .12s, box-shadow .12s',
+                  opacity: isApplying ? 0.5 : 1,
                 }}
                 onMouseEnter={e => {
                   (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-2px)'

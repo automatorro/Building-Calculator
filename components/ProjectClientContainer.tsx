@@ -12,7 +12,7 @@ import type { OptimizationSuggestion } from '@/lib/ai-types'
 import { Purchase, calculateFinancials } from '@/utils/calculators/financials'
 import {
   LayoutDashboard, ClipboardList, Wallet,
-  Settings as SettingsIcon, Plus, CalendarDays, ListTree, CheckCircle2, MessageSquare, Users, Sparkles, BookOpen, ScanLine, Sunrise, AlertTriangle, Pencil, Trash2
+  Settings as SettingsIcon, Plus, CalendarDays, ListTree, CheckCircle2, MessageSquare, Users, Sparkles, BookOpen, ScanLine, Sunrise, AlertTriangle, Pencil, Trash2, FileSpreadsheet
 } from 'lucide-react'
 import ProjectAssistantAI from './ProjectAssistantAI'
 import ProjectTeamSettings from './ProjectTeamSettings'
@@ -172,7 +172,8 @@ export default function ProjectClientContainer({
   const [settings, setSettings] = useState<ProjectSettings>(initialSettings)
   const [purchases, setPurchases] = useState<Purchase[]>(initialPurchases)
   const [revenue, setRevenue] = useState(initialRevenue)
-  const [showOnboarding, setShowOnboarding] = useState(false)
+  const [showOnboarding, setShowOnboarding] = useState<boolean | null>(null)
+  const [importHint, setImportHint] = useState(false)
   const [showPurchaseForm, setShowPurchaseForm] = useState(false)
   const [showDedemanDrawer, setShowDedemanDrawer] = useState(false)
   const [editingPurchase, setEditingPurchase] = useState<Purchase | null>(null)
@@ -572,7 +573,7 @@ export default function ProjectClientContainer({
     <div className="space-y-8">
 
       {/* ── Onboarding modal (prima deschidere) ── */}
-      {showOnboarding && (
+      {showOnboarding === true && (
         <ProjectOnboardingModal
           projectId={projectId}
           onChooseTemplate={async () => {
@@ -594,6 +595,7 @@ export default function ProjectClientContainer({
           }}
           onChooseImport={() => {
             setShowOnboarding(false)
+            setImportHint(true)
             setView('planning')
           }}
           onChooseOCR={() => {
@@ -967,7 +969,7 @@ export default function ProjectClientContainer({
         {view === 'planning' && (
           <motion.div key="planning"
             initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
-            <EstimateEditor
+          <EstimateEditor
               projectId={projectId}
               lines={lines}
               settings={settings}
@@ -980,6 +982,9 @@ export default function ProjectClientContainer({
               onImport={handleImportLines}
               isSaving={loading}
               isSaved={isSaved}
+              importHint={importHint}
+              onDismissImportHint={() => setImportHint(false)}
+              hasNoLines={lines.length === 0}
             />
             <EditorAIAssistant
               lines={lines}

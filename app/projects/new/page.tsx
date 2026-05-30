@@ -2,11 +2,11 @@
 
 export const dynamic = 'force-dynamic'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/utils/supabase/client'
 import Link from 'next/link'
-import { ArrowLeft, ArrowRight, Check, Building2, Factory, Home, Store, Wrench, LayoutTemplate } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Check, Building2, Factory, Home, Store, Wrench, LayoutTemplate, ExternalLink } from 'lucide-react'
 
 const sans  = 'var(--font-dm-sans,"DM Sans",system-ui,sans-serif)'
 const serif = 'var(--font-dm-serif,"DM Serif Display",Georgia,serif)'
@@ -57,6 +57,15 @@ export default function NewProjectPage() {
   const [step, setStep]           = useState(1)
   const [loading, setLoading]     = useState(false)
   const [error, setError]         = useState<string | null>(null)
+  const [recentProject, setRecentProject] = useState<{ id: string; name: string } | null>(null)
+
+  // Detectează dacă utilizatorul a revenit pe această pagină după ce a creat deja un proiect
+  useEffect(() => {
+    const stored = sessionStorage.getItem('bc_recent_project')
+    if (stored) {
+      try { setRecentProject(JSON.parse(stored)) } catch { /* ignoră */ }
+    }
+  }, [])
 
   const [projectType, setProjectType] = useState<string | null>(null)
   const [name,        setName]        = useState('')
@@ -123,6 +132,8 @@ export default function NewProjectPage() {
     }
 
     if (project) {
+      // Stochează proiectul creat recent — protecție la apăsarea Back
+      sessionStorage.setItem('bc_recent_project', JSON.stringify({ id: project.id, name: project.name }))
       router.push(`/projects/${project.id}?tab=planning&new=1`)
       router.refresh()
     }
@@ -146,6 +157,53 @@ export default function NewProjectPage() {
           .wiz-coef  { grid-template-columns: 1fr !important; }
         }
       `}</style>
+
+      {/* Banner proiect creat recent (protecție la Back) */}
+      {recentProject && (
+        <div style={{
+          background: '#FFF8F0', borderBottom: '1px solid #E8500A33',
+          padding: '12px 24px', display: 'flex', alignItems: 'center',
+          gap: 12, flexWrap: 'wrap',
+        }}>
+          <div style={{
+            width: 32, height: 32, borderRadius: '50%', background: '#FFF0E8',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+          }}>
+            <Check size={16} style={{ color: '#E8500A' }} />
+          </div>
+          <p style={{ fontSize: 13, color: '#C43F06', fontWeight: 500, flex: 1 }}>
+            Ai deja un proiect creat recent:{' '}
+            <strong>{recentProject.name}</strong>.
+            Vrei să-l deschizi?
+          </p>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            <Link
+              href={`/projects/${recentProject.id}?tab=planning`}
+              onClick={() => sessionStorage.removeItem('bc_recent_project')}
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 6,
+                background: '#E8500A', color: '#FFFFFF', borderRadius: 8,
+                padding: '8px 16px', fontSize: 13, fontWeight: 700, textDecoration: 'none',
+              }}
+            >
+              <ExternalLink size={14} /> Deschide proiectul
+            </Link>
+            <button
+              onClick={() => {
+                sessionStorage.removeItem('bc_recent_project')
+                setRecentProject(null)
+              }}
+              style={{
+                background: 'none', border: '1px solid #E8500A44', borderRadius: 8,
+                padding: '8px 16px', fontSize: 13, color: '#C43F06', cursor: 'pointer',
+                fontFamily: sans, fontWeight: 500,
+              }}
+            >
+              Continuă cu un proiect nou
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Header */}
       <div style={{ background: '#FFFFFF', borderBottom: '1px solid #E5E3DE', padding: '16px 24px' }}>
@@ -307,7 +365,7 @@ export default function NewProjectPage() {
                 fontFamily: sans, cursor: loading ? 'not-allowed' : 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                 marginBottom: 12 }}>
-              {loading ? 'Se creează proiectul...' : <>Deschide proiectul <ArrowRight size={16} /></>}
+              {loading ? 'Se creează proiectul...' : <>Creează și deschide proiectul <ArrowRight size={16} /></>}
             </button>
 
             <button type="button" onClick={() => setStep(1)}
