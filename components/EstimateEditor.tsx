@@ -999,7 +999,7 @@ export default function EstimateEditor({
                   })}
                 </div>
               )
-            })}
+            })
             )}
           </div>
         </div>
