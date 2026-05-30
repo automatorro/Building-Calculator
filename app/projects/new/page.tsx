@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/utils/supabase/client'
 import Link from 'next/link'
-import { ArrowLeft, ArrowRight, Check, Building2, Factory, Home, Store, Wrench, LayoutTemplate, ExternalLink } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Check, Building2, Factory, Home, Store, Wrench, LayoutTemplate, ExternalLink, Loader2 } from 'lucide-react'
 
 const sans  = 'var(--font-dm-sans,"DM Sans",system-ui,sans-serif)'
 const serif = 'var(--font-dm-serif,"DM Serif Display",Georgia,serif)'
@@ -152,11 +152,52 @@ export default function NewProjectPage() {
       <style>{`
         .wiz-type-btn:hover { border-color: #E8500A !important; background: #FFF8F5 !important; }
         .wiz-input:focus { border-color: #E8500A !important; }
+        @keyframes spin { from { transform: rotate(0deg) } to { transform: rotate(360deg) } }
+        @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(16px) } to { opacity: 1; transform: translateY(0) } }
         @media (max-width: 600px) {
           .wiz-types { grid-template-columns: 1fr 1fr !important; }
           .wiz-coef  { grid-template-columns: 1fr !important; }
         }
       `}</style>
+
+      {/* ── Overlay loading creare proiect ── */}
+      {loading && (
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 9999,
+          background: 'rgba(243,242,239,0.85)',
+          backdropFilter: 'blur(6px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          animation: 'fadeIn 0.2s ease',
+        }}>
+          <div style={{
+            background: '#FFFFFF', borderRadius: 20,
+            padding: '40px 48px', textAlign: 'center',
+            boxShadow: '0 24px 80px rgba(0,0,0,0.12)',
+            animation: 'slideUp 0.25s ease',
+            maxWidth: 340, width: '90%',
+          }}>
+            <div style={{
+              width: 56, height: 56, borderRadius: '50%',
+              background: '#FFF0E8',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              margin: '0 auto 20px',
+            }}>
+              <Loader2 size={26} style={{ color: '#E8500A', animation: 'spin 0.8s linear infinite' }} />
+            </div>
+            <p style={{
+              fontFamily: serif, fontSize: 22, color: '#1E2329',
+              letterSpacing: '-.02em', marginBottom: 8,
+            }}>
+              Se creează proiectul...
+            </p>
+            <p style={{ fontSize: 13, color: '#A8A59E', fontFamily: sans, lineHeight: 1.5 }}>
+              Configurăm etapele și structura proiectului.<br />
+              Te ducem imediat în editor.
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Banner proiect creat recent (protecție la Back) */}
       {recentProject && (
@@ -358,14 +399,25 @@ export default function NewProjectPage() {
             )}
 
             <button type="button" disabled={loading} onClick={handleCreate}
-              style={{ width: '100%', padding: '15px', borderRadius: 8,
-                background: loading ? '#E5E3DE' : '#E8500A',
-                color: loading ? '#A8A59E' : '#FFFFFF',
+              style={{
+                width: '100%', padding: '15px', borderRadius: 8,
+                background: loading ? '#C43F06' : '#E8500A',
+                color: '#FFFFFF',
                 border: 'none', fontSize: 16, fontWeight: 700,
                 fontFamily: sans, cursor: loading ? 'not-allowed' : 'pointer',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                marginBottom: 12 }}>
-              {loading ? 'Se creează proiectul...' : <>Creează și deschide proiectul <ArrowRight size={16} /></>}
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+                marginBottom: 12,
+                transition: 'background .2s',
+                boxShadow: loading ? 'none' : '0 4px 16px rgba(232,80,10,0.3)',
+              }}>
+              {loading ? (
+                <>
+                  <Loader2 size={18} style={{ animation: 'spin 0.8s linear infinite' }} />
+                  Se crează proiectul...
+                </>
+              ) : (
+                <>Creează și deschide proiectul <ArrowRight size={16} /></>
+              )}
             </button>
 
             <button type="button" onClick={() => setStep(1)}
