@@ -253,7 +253,28 @@ const MenuBar = ({ editor }: { editor: any }) => {
               <button
                 onClick={() => {
                   if (htmlInput.trim()) {
-                    editor.commands.setContent(htmlInput, true)
+                    // Extrage inteligent: scoate <head>, <style>, <script>
+                    // și ia <article> sau <body> dacă e un document complet
+                    let html = htmlInput.trim()
+                    try {
+                      const parser = new DOMParser()
+                      const doc = parser.parseFromString(html, 'text/html')
+                      // Elimină elementele de infrastructură
+                      doc.querySelectorAll('style, script, link, meta').forEach(el => el.remove())
+                      // Încearcă să ia <article> mai întâi
+                      const article = doc.querySelector('article')
+                      if (article) {
+                        html = article.innerHTML
+                      } else {
+                        // Altfel ia tot body-ul, mai puțin header/footer/nav
+                        const body = doc.body
+                        body.querySelectorAll('header, footer, nav').forEach(el => el.remove())
+                        html = body.innerHTML
+                      }
+                    } catch {
+                      // fallback: folosește HTML-ul brut dacă parserul eșuează
+                    }
+                    editor.commands.setContent(html, true)
                     editor.commands.focus()
                   }
                   setHtmlModalOpen(false)
