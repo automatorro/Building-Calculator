@@ -12,16 +12,47 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1,
     },
     {
-      url: `${baseUrl}/cum-functioneaza`,
+      url: `${baseUrl}/despre`,
       lastModified: now,
       changeFrequency: 'monthly',
       priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/cum-functioneaza`,
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: 0.9,
     },
     {
       url: `${baseUrl}/blog`,
       lastModified: now,
       changeFrequency: 'weekly',
       priority: 0.9,
+    },
+    // Funcționalități detaliate — SEO + AI Discoverability
+    {
+      url: `${baseUrl}/functionalitati/devize-constructii`,
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: 0.85,
+    },
+    {
+      url: `${baseUrl}/functionalitati/urmarire-cheltuieli`,
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: 0.85,
+    },
+    {
+      url: `${baseUrl}/functionalitati/jurnal-santier`,
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/functionalitati/export-pdf`,
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: 0.8,
     },
     // Calculatoare rapide — SEO gold pentru long-tail
     {
@@ -93,3 +124,4 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
   ]
 }
+

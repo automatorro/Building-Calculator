@@ -58,6 +58,7 @@ export default function HomePage() {
       <RevealObserver />
 
       <script
+        id="schema-faq"
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
@@ -69,7 +70,7 @@ export default function HomePage() {
                 name: 'Ce este Șantier.app?',
                 acceptedAnswer: {
                   '@type': 'Answer',
-                  text: 'Șantier.app este un program online gratuit de devize construcții pentru constructori mici și mijlocii din România. Permite crearea de devize profesionale în 5 minute, urmărirea cheltuielilor reale pe șantier și exportul PDF profesional.',
+                  text: 'Șantier.app este o aplicație de management complet al șantierelor pentru firme mici și mijlocii de construcții din România. Permite crearea de devize profesionale în 10 minute, urmărirea cheltuielilor reale față de bugetul planificat, primirea de alerte la depășirea bugetului și exportul în PDF sau Excel. Funcționează pe orice dispozitiv, fără instalare, cu un catalog de peste 1.100 norme românești de deviz.',
                 },
               },
               {
@@ -77,15 +78,15 @@ export default function HomePage() {
                 name: 'Pot folosi aplicația fără să mă înregistrez?',
                 acceptedAnswer: {
                   '@type': 'Answer',
-                  text: 'Da. Calculatorul de estimare din pagina principală funcționează fără cont. Pentru a salva devize, urmări cheltuieli și genera PDF-uri ai nevoie de un cont gratuit — care se creează în 30 de secunde, fără card.',
+                  text: 'Da. Demo-ul interactiv este accesibil fără cont la santier.app/demo. Calculatorul de estimare din pagina principală funcționează fără cont. Pentru a salva devize, urmări cheltuieli și genera PDF-uri ai nevoie de un cont gratuit — care se creează în 30 de secunde, fără card.',
                 },
               },
               {
                 '@type': 'Question',
-                name: 'Cât costă programul de devize Șantier.app?',
+                name: 'Care este prețul Șantier.app?',
                 acceptedAnswer: {
                   '@type': 'Answer',
-                  text: 'Șantier.app are un plan gratuit permanent pentru 1 proiect activ complet. Planul Constructor costă 89 lei/lună cu proiecte nelimitate, catalog complet de 1100+ articole și toate funcționalitățile. Există și un plan Echipă la 169 lei/lună pentru 5 utilizatori.',
+                  text: 'Șantier.app are trei planuri: Gratuit (0 lei, 1 proiect complet), Constructor (89 lei/lună, proiecte nelimitate, catalog complet, AI) și Echipă (169 lei/lună, manager + 4 maiștri, jurnal partajat). Toate prețurile includ TVA. Primele 14 zile pe planul Constructor sunt gratuite, fără card de credit.',
                 },
               },
               {
@@ -98,10 +99,26 @@ export default function HomePage() {
               },
               {
                 '@type': 'Question',
+                name: 'Cât de exacte sunt prețurile din catalog?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'Catalogul conține peste 1.100 norme românești de deviz calibrate la piața din 2026. Prețurile de referință sunt actualizate periodic. Poți ajusta oricând prețurile cu valorile tale reale de la furnizori — aplicația recalculează automat devizul.',
+                },
+              },
+              {
+                '@type': 'Question',
                 name: 'Cum se face un deviz de construcții?',
                 acceptedAnswer: {
                   '@type': 'Answer',
-                  text: 'Cu Șantier.app, faci un deviz de construcții în 3 pași: 1) Creezi proiectul cu coeficienții tăi (profit, regie, TVA). 2) Selectezi articolele din catalogul de 1100+ norme românești sau adaugi manual. 3) Aplici prețurile tale reale și generezi PDF-ul profesional.',
+                  text: 'Cu Șantier.app, faci un deviz de construcții în 3 pași: 1) Creezi proiectul cu coeficienții tăi (profit, regie, TVA). 2) Selectezi articolele din catalogul de 1.100+ norme românești sau adaugi manual. 3) Aplici prețurile tale reale și generezi PDF-ul profesional.',
+                },
+              },
+              {
+                '@type': 'Question',
+                name: 'Ce se întâmplă dacă anulez abonamentul?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'Poți anula oricând, fără penalități sau contracte pe termen lung. La anulare, contul revine la planul Gratuit (1 proiect activ). Datele și devizele create rămân salvate în cont. Nu există blocare bruscă — primești notificare în aplicație la atingerea oricărei limite.',
                 },
               },
             ],
