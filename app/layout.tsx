@@ -147,7 +147,11 @@ const organizationJsonLd = {
     '@type': 'ContactPoint',
     contactType: 'customer support',
     url: 'https://santier.app/contact',
-    availableLanguage: 'Romanian',
+    availableLanguage: {
+      '@type': 'Language',
+      name: 'Romanian',
+      alternateName: 'ro',
+    },
   },
 }
 
