@@ -9,7 +9,7 @@ import Placeholder from '@tiptap/extension-placeholder'
 import {
   Bold, Italic, List, ListOrdered, Quote, Heading1, Heading2,
   Link as LinkIcon, Image as ImageIcon, Undo, Redo, Code, Loader2,
-  Trash2, RefreshCw
+  Trash2, RefreshCw, FileCode2
 } from 'lucide-react'
 import { createClient } from '@/utils/supabase/client'
 import { toast } from 'sonner'
@@ -99,6 +99,8 @@ const CustomImage = Image.extend({
 const MenuBar = ({ editor }: { editor: any }) => {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [uploading, setUploading] = useState(false)
+  const [htmlModalOpen, setHtmlModalOpen] = useState(false)
+  const [htmlInput, setHtmlInput] = useState('')
   const supabase = createClient()
 
   if (!editor) return null
@@ -200,6 +202,71 @@ const MenuBar = ({ editor }: { editor: any }) => {
       >
         <Redo size={18} />
       </button>
+      <div className="mx-2 h-6 w-px bg-[#E5E3DE]" />
+      {/* Import HTML */}
+      <button
+        onClick={(e) => { e.preventDefault(); setHtmlModalOpen(true); }}
+        title="Importă HTML brut"
+        className="p-2 text-[#6B6860] hover:bg-[#E5E3DE] rounded-md flex items-center gap-1.5 text-xs font-medium"
+      >
+        <FileCode2 size={18} />
+        <span className="hidden sm:inline">Import HTML</span>
+      </button>
+
+      {/* Modal import HTML */}
+      {htmlModalOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+          onClick={(e) => { if (e.target === e.currentTarget) setHtmlModalOpen(false) }}
+        >
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl mx-4 overflow-hidden">
+            <div className="px-6 py-4 border-b border-[#E5E3DE] flex items-center justify-between">
+              <div>
+                <h3 className="text-base font-semibold text-[#1E2329]">Importă HTML</h3>
+                <p className="text-xs text-[#6B6860] mt-0.5">
+                  Lipește HTML-ul complet al articolului. Conținutul curent va fi înlocuit.
+                </p>
+              </div>
+              <button
+                onClick={() => setHtmlModalOpen(false)}
+                className="p-2 text-[#A8A59E] hover:text-[#1E2329] hover:bg-[#F3F2EF] rounded-lg transition-colors"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="p-6">
+              <textarea
+                autoFocus
+                value={htmlInput}
+                onChange={(e) => setHtmlInput(e.target.value)}
+                placeholder="<h1>Titlul articolului</h1>\n<p>Paragraful tău...</p>"
+                className="w-full h-64 font-mono text-sm border border-[#E5E3DE] rounded-xl p-4 resize-none focus:outline-none focus:border-[#E8500A] bg-[#F9F9F8] text-[#1E2329]"
+              />
+            </div>
+            <div className="px-6 pb-5 flex justify-end gap-3">
+              <button
+                onClick={() => { setHtmlModalOpen(false); setHtmlInput('') }}
+                className="px-4 py-2 text-sm font-medium text-[#6B6860] hover:bg-[#F3F2EF] rounded-lg transition-colors"
+              >
+                Anulează
+              </button>
+              <button
+                onClick={() => {
+                  if (htmlInput.trim()) {
+                    editor.commands.setContent(htmlInput, true)
+                    editor.commands.focus()
+                  }
+                  setHtmlModalOpen(false)
+                  setHtmlInput('')
+                }}
+                className="px-5 py-2 text-sm font-semibold bg-[#E8500A] text-white rounded-lg hover:bg-[#C43F06] transition-colors"
+              >
+                Aplică în editor
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
