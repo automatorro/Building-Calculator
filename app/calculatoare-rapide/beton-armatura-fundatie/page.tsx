@@ -569,48 +569,28 @@ export default function Page() {
            </div>
          ))}
  
-         <div className="summary">
-           <div className="metric">
-             <div className="lbl">Obligatoriu / m</div>
-             <div className="val">{lengthM > 0 ? n2(totalReq / lengthM) : n2(0)} lei</div>
-             <div className="sub">fără opționale</div>
-           </div>
-           <div className="metric">
-             <div className="lbl">Obligatoriu / total</div>
-             <div className="val">{n2(totalReq)} lei</div>
-             <div className="sub">{n2(lengthM)} m</div>
-           </div>
-           <div className="metric vat-total">
-             <div className="lbl">Obligatoriu cu TVA (21%) / total</div>
-             <div className="val">{n2(totalReqVat)} lei</div>
-             <div className="sub">{n2(lengthM)} m</div>
-           </div>
-           <div className="metric">
-             <div className="lbl">Cu opționale / m</div>
-             <div className="val">{lengthM > 0 ? n2(grand / lengthM) : n2(0)} lei</div>
-             <div className="sub">toate materialele</div>
-           </div>
-           <div className="metric">
-             <div className="lbl">Cu opționale / total</div>
-             <div className="val">{n2(grand)} lei</div>
-             <div className="sub">{n2(lengthM)} m</div>
-           </div>
-           <div className="metric">
-             <div className="lbl">Total cu TVA (21%) / m</div>
-             <div className="val">{lengthM > 0 ? n2(grandVat / lengthM) : n2(0)} lei</div>
-             <div className="sub">incl. TVA 21%</div>
-           </div>
-           <div className="metric vat-total">
-             <div className="lbl">Total cu TVA (21%) / total</div>
-             <div className="val">{n2(grandVat)} lei</div>
-             <div className="sub">{n2(lengthM)} m</div>
-           </div>
-           <div className="metric">
-             <div className="lbl">Cantități cheie</div>
-             <div className="val">{n2(volumeTalpaM3 + volumeElevM3)} m³</div>
-             <div className="sub">{n2(steelKgTotal)} kg oțel</div>
-           </div>
-         </div>
+          <div className="summary" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+            <div className="metric">
+              <div className="lbl">Materiale / m liniar</div>
+              <div className="val">{typeof grand !== 'undefined' && typeof lengthM !== 'undefined' && lengthM > 0 ? n2(grand / lengthM) : 0} lei</div>
+              <div className="sub">fără TVA</div>
+            </div>
+            <div className="metric">
+              <div className="lbl">Total Materiale</div>
+              <div className="val">{typeof grand !== 'undefined' ? n2(grand) : 0} lei</div>
+              <div className="sub">fără TVA</div>
+            </div>
+            <div className="metric">
+              <div className="lbl">Total / m liniar (cu TVA 21%)</div>
+              <div className="val">{typeof grandVat !== 'undefined' && typeof lengthM !== 'undefined' && lengthM > 0 ? n2(grandVat / lengthM) : 0} lei</div>
+              <div className="sub">TVA inclus</div>
+            </div>
+            <div className="metric vat-total">
+              <div className="lbl">Total General (cu TVA 21%)</div>
+              <div className="val">{typeof grandVat !== 'undefined' ? n2(grandVat) : 0} lei</div>
+              <div className="sub">suma finală estimată</div>
+            </div>
+          </div>
  
          <div className="legend">
            <span><span className="req-dot" /> obligatoriu</span>

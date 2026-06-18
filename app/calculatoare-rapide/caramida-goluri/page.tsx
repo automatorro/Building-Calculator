@@ -575,45 +575,6 @@ export default function Page() {
           </div>
         ))}
 
-        <div className="summary">
-          <div className="metric">
-            <div className="lbl">Obligatoriu / m²</div>
-            <div className="val">{n2(totalReq / area)} lei</div>
-            <div className="sub">fără opționale</div>
-          </div>
-          <div className="metric">
-            <div className="lbl">Obligatoriu / total</div>
-            <div className="val">{n2(totalReq)} lei</div>
-            <div className="sub">{n0(area)} m²</div>
-          </div>
-          <div className="metric vat-total">
-            <div className="lbl">Obligatoriu cu TVA (21%) / total</div>
-            <div className="val">{n2(totalReqVat)} lei</div>
-            <div className="sub">{n0(area)} m²</div>
-          </div>
-          <div className="metric">
-            <div className="lbl">Cu opționale / m²</div>
-            <div className="val">{n2(grand / area)} lei</div>
-            <div className="sub">toate materialele</div>
-          </div>
-          <div className="metric">
-            <div className="lbl">Cu opționale / total</div>
-            <div className="val">{n2(grand)} lei</div>
-            <div className="sub">{n0(area)} m²</div>
-          </div>
-          <div className="metric">
-            <div className="lbl">Total cu TVA (21%) / m²</div>
-            <div className="val">{n2(grandVat / area)} lei</div>
-            <div className="sub">incl. TVA 21%</div>
-          </div>
-          <div className="metric vat-total">
-            <div className="lbl">Total cu TVA (21%) / total</div>
-            <div className="val">{n2(grandVat)} lei</div>
-            <div className="sub">{n0(area)} m²</div>
-          </div>
-          <div className="metric">
-            <div className="lbl">Grosime zid</div>
-            <div className="val">{thicknessCm} cm</div>
             <div className="sub">{fmt(format, thicknessCm)}</div>
           </div>
         </div>

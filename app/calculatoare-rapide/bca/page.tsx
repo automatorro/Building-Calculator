@@ -496,41 +496,26 @@ export default function Page() {
           </div>
         ))}
 
-        <div className="summary">
+        <div className="summary" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
           <div className="metric">
-            <div className="lbl">Obligatoriu / m²</div>
-            <div className="val">{n2(totalReq / area)} lei</div>
-            <div className="sub">fără opționale</div>
+            <div className="lbl">Materiale / m²</div>
+            <div className="val">{typeof grand !== 'undefined' && typeof area !== 'undefined' && area > 0 ? (grand / area).toFixed(2) : 0} lei</div>
+            <div className="sub">fără TVA</div>
           </div>
           <div className="metric">
-            <div className="lbl">Obligatoriu / total</div>
-            <div className="val">{n2(totalReq)} lei</div>
-            <div className="sub">{n0(area)} m²</div>
+            <div className="lbl">Total Materiale</div>
+            <div className="val">{typeof grand !== 'undefined' ? grand.toFixed(2) : 0} lei</div>
+            <div className="sub">fără TVA</div>
+          </div>
+          <div className="metric">
+            <div className="lbl">Total / m² (cu TVA 21%)</div>
+            <div className="val">{typeof grandVat !== 'undefined' && typeof area !== 'undefined' && area > 0 ? (grandVat / area).toFixed(2) : 0} lei</div>
+            <div className="sub">TVA inclus</div>
           </div>
           <div className="metric vat-total">
-            <div className="lbl">Obligatoriu cu TVA (21%) / total</div>
-            <div className="val">{n2(totalReqVat)} lei</div>
-            <div className="sub">{n0(area)} m²</div>
-          </div>
-          <div className="metric">
-            <div className="lbl">Cu opționale / m²</div>
-            <div className="val">{n2(grand / area)} lei</div>
-            <div className="sub">toate materialele</div>
-          </div>
-          <div className="metric">
-            <div className="lbl">Cu opționale / total</div>
-            <div className="val">{n2(grand)} lei</div>
-            <div className="sub">{n0(area)} m²</div>
-          </div>
-          <div className="metric">
-            <div className="lbl">Total cu TVA (21%) / m²</div>
-            <div className="val">{n2(grandVat / area)} lei</div>
-            <div className="sub">incl. TVA 21%</div>
-          </div>
-          <div className="metric vat-total">
-            <div className="lbl">Total cu TVA (21%) / total</div>
-            <div className="val">{n2(grandVat)} lei</div>
-            <div className="sub">{n0(area)} m²</div>
+            <div className="lbl">Total General (cu TVA 21%)</div>
+            <div className="val">{typeof grandVat !== 'undefined' ? grandVat.toFixed(2) : 0} lei</div>
+            <div className="sub">suma finală estimată</div>
           </div>
           <div className="metric">
             <div className="lbl">Grosime zid</div>
