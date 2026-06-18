@@ -173,7 +173,7 @@ export default function Page() {
     }))
   }, [plasterType])
 
-  const { rowsComputed, totalReq, totalOpt, grand, grandVat, totalReqVat } = useMemo(() => {
+  const { rowsComputed, grand, grandVat } = useMemo(() => {
     const vatRate = 0.21
     let req = 0
     let opt = 0

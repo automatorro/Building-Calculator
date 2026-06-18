@@ -172,7 +172,7 @@ export default function Page() {
 
    const lapFactor = useMemo(() => 1 + Math.max(0, Number(lapPct) || 0) / 100, [lapPct])
  
-   const { rowsComputed, totalReq, totalOpt, grand, grandVat, totalReqVat, volumeTalpaM3, volumeElevM3, steelKgTotal } = useMemo(() => {
+   const { rowsComputed, grand, grandVat, volumeTalpaM3, volumeElevM3, steelKgTotal } = useMemo(() => {
      const vatRate = 0.21
  
      const L = Math.max(0, Number(lengthM) || 0)

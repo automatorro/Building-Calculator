@@ -207,7 +207,7 @@ export default function Page() {
     setTimeout(() => setCopied(false), 2000)
   }
 
-  const { volumeM3, piecesRaw, piecesCeil, faceAreaM2, rowsComputed, totalReq, totalOpt, grand, grandVat, totalReqVat } = useMemo(() => {
+  const { volumeM3, piecesRaw, piecesCeil, faceAreaM2, rowsComputed, grand, grandVat } = useMemo(() => {
     const vatRate = 0.21
     const thicknessM = thicknessCm / 100
     const vM3 = area * thicknessM
@@ -575,7 +575,26 @@ export default function Page() {
           </div>
         ))}
 
-            <div className="sub">{fmt(format, thicknessCm)}</div>
+        <div className="summary" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+          <div className="metric">
+            <div className="lbl">Materiale / m²</div>
+            <div className="val">{typeof grand !== 'undefined' && typeof area !== 'undefined' && area > 0 ? n2(grand / area) : 0} lei</div>
+            <div className="sub">fără TVA</div>
+          </div>
+          <div className="metric">
+            <div className="lbl">Total Materiale</div>
+            <div className="val">{typeof grand !== 'undefined' ? n2(grand) : 0} lei</div>
+            <div className="sub">fără TVA</div>
+          </div>
+          <div className="metric">
+            <div className="lbl">Total / m² (cu TVA 21%)</div>
+            <div className="val">{typeof grandVat !== 'undefined' && typeof area !== 'undefined' && area > 0 ? n2(grandVat / area) : 0} lei</div>
+            <div className="sub">TVA inclus</div>
+          </div>
+          <div className="metric vat-total">
+            <div className="lbl">Total General (cu TVA 21%)</div>
+            <div className="val">{typeof grandVat !== 'undefined' ? n2(grandVat) : 0} lei</div>
+            <div className="sub">suma finală estimată</div>
           </div>
         </div>
 

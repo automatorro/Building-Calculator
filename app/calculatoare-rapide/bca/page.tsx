@@ -174,7 +174,7 @@ export default function Page() {
     setTimeout(() => setCopied(false), 2000)
   }
 
-  const { volumeM3, pieces, rowsComputed, totalReq, totalOpt, grand, grandVat, totalReqVat } = useMemo(() => {
+  const { volumeM3, pieces, rowsComputed, grand, grandVat } = useMemo(() => {
     const vatRate = 0.21
     const thicknessM = thicknessCm / 100
     const vM3 = area * thicknessM
