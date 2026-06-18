@@ -8,9 +8,11 @@ import NextSteps from '../NextSteps'
 
 type Row = {
   name: string
-  unit: string
+  qtyUnit: string
   consMin: number
   consMax: number
+  consUnit?: string
+  consBasis?: 'per_m2' | 'per_m2_cm' | 'per_m2_mm' | 'per_ml'
   optional: boolean
   note?: string
 }
@@ -22,65 +24,84 @@ type Section = {
 
 const sections: Section[] = [
   {
-    title: 'Pregătire suprafață',
+    title: 'Pregătire suport',
     rows: [
-      { name: 'Amorsa de contact', unit: 'kg', consMin: 0.15, consMax: 0.3, optional: false },
-      { name: 'Mortar de reprofilare', unit: 'kg/cm', consMin: 1.5, consMax: 2.0, optional: true },
+      {
+        name: 'Amorsă acrilică (suport absorbant)',
+        qtyUnit: 'l',
+        consMin: 0.15,
+        consMax: 0.25,
+        consUnit: 'l/m²',
+        consBasis: 'per_m2',
+        optional: false,
+      },
+      {
+        name: 'Bandă perimetrală dilatare',
+        qtyUnit: 'ml',
+        consMin: 1,
+        consMax: 1,
+        consUnit: 'ml/ml',
+        consBasis: 'per_ml',
+        optional: false,
+        note: 'necesită completare perimetru',
+      },
     ],
   },
   {
-    title: 'Lipire și fixare polistiren',
+    title: 'Șapă de egalizare (strat de bază)',
     rows: [
-      { name: 'Adeziv pentru EPS', unit: 'kg', consMin: 4, consMax: 6, optional: false },
-      { name: 'Polistiren EPS (grosime la alegere)', unit: 'm²', consMin: 1.05, consMax: 1.05, optional: false },
-      { name: 'Dibluri cu șaibă termică', unit: 'buc', consMin: 6, consMax: 8, optional: false },
+      {
+        name: 'Șapă predozată (la sac)',
+        qtyUnit: 'kg',
+        consMin: 20,
+        consMax: 20,
+        consUnit: 'kg/m²/cm',
+        consBasis: 'per_m2_cm',
+        optional: true,
+      },
+      {
+        name: 'Fibre polipropilenă (armare dispersă)',
+        qtyUnit: 'pungi (600g)',
+        consMin: 0.05,
+        consMax: 0.05,
+        consUnit: 'pungi/m²/cm',
+        consBasis: 'per_m2_cm',
+        optional: true,
+      },
     ],
   },
   {
-    title: 'Armare (tencuială de bază)',
+    title: 'Șapă autonivelantă (finisaj subțire)',
     rows: [
-      { name: 'Mortar de armare (masă șpaclu)', unit: 'kg', consMin: 4, consMax: 6, optional: false },
-      { name: 'Plasă fibră de sticlă 160 g/mp', unit: 'm²', consMin: 1.1, consMax: 1.2, optional: false },
-      { name: 'Profil de colț PVC cu plasă', unit: 'ml', consMin: 0, consMax: 0, optional: true, note: 'per ml colț' },
-      { name: 'Profil de soclu (start)', unit: 'ml', consMin: 0, consMax: 0, optional: true, note: 'per ml soclu' },
-      { name: 'Profil fereastră cu picurător', unit: 'ml', consMin: 0, consMax: 0, optional: true, note: 'per ml gol' },
-      { name: 'Bandă etanșare expandabilă', unit: 'ml', consMin: 0, consMax: 0, optional: true, note: 'per ml rost' },
-    ],
-  },
-  {
-    title: 'Finisaj exterior',
-    rows: [
-      { name: 'Grund pentru tencuială decorativă', unit: 'kg', consMin: 0.2, consMax: 0.3, optional: false },
-      { name: 'Tencuială decorativă (2mm)', unit: 'kg', consMin: 2.0, consMax: 3.5, optional: false },
-    ],
-  },
-  {
-    title: 'Soclu (diferit față de perete curent)',
-    rows: [
-      { name: 'XPS în loc de EPS la soclu', unit: 'm²', consMin: 1.05, consMax: 1.05, optional: true },
-      { name: 'Plasă dublă la soclu', unit: 'm²', consMin: 2.2, consMax: 2.4, optional: true },
-      { name: 'Tencuială dură soclu / mozaic', unit: 'kg', consMin: 3.0, consMax: 5.0, optional: true },
+      {
+        name: 'Amorsă specială autonivelantă',
+        qtyUnit: 'l',
+        consMin: 0.1,
+        consMax: 0.15,
+        consUnit: 'l/m²',
+        consBasis: 'per_m2',
+        optional: true,
+      },
+      {
+        name: 'Șapă autonivelantă',
+        qtyUnit: 'kg',
+        consMin: 1.5,
+        consMax: 1.7,
+        consUnit: 'kg/m²/mm',
+        consBasis: 'per_m2_mm',
+        optional: true,
+      },
     ],
   },
 ]
 
 const defaultPrices: Record<string, number> = {
-  'Amorsa de contact': 8,
-  'Mortar de reprofilare': 4,
-  'Adeziv pentru EPS': 3.5,
-  'Polistiren EPS (grosime la alegere)': 35,
-  'Dibluri cu șaibă termică': 1.2,
-  'Mortar de armare (masă șpaclu)': 4,
-  'Plasă fibră de sticlă 160 g/mp': 6,
-  'Profil de colț PVC cu plasă': 4,
-  'Profil de soclu (start)': 6,
-  'Profil fereastră cu picurător': 5,
-  'Bandă etanșare expandabilă': 8,
-  'Grund pentru tencuială decorativă': 12,
-  'Tencuială decorativă (2mm)': 9,
-  'XPS în loc de EPS la soclu': 55,
-  'Plasă dublă la soclu': 6,
-  'Tencuială dură soclu / mozaic': 7,
+  'Amorsă acrilică (suport absorbant)': 10,
+  'Bandă perimetrală dilatare': 1.5,
+  'Șapă predozată (la sac)': 0.8,
+  'Fibre polipropilenă (armare dispersă)': 25,
+  'Amorsă specială autonivelantă': 15,
+  'Șapă autonivelantă': 2.5,
 }
 
 function midCons(r: Row) {
@@ -95,7 +116,11 @@ function consStr(r: Row) {
 }
 
 export default function Page() {
-  const [area, setArea] = useState<number>(1)
+  const [area, setArea] = useState<number>(10)
+  const [perimeter, setPerimeter] = useState<number>(13)
+  const [thicknessBazaCm, setThicknessBazaCm] = useState<number>(5)
+  const [thicknessAutoMm, setThicknessAutoMm] = useState<number>(0)
+  
   const [prices, setPrices] = useState<Record<string, number>>({ ...defaultPrices })
   const [included, setIncluded] = useState<Record<string, boolean>>(() => {
     const init: Record<string, boolean> = {}
@@ -106,29 +131,26 @@ export default function Page() {
     })
     return init
   })
-  const [manualQty, setManualQty] = useState<Record<string, number>>(() => {
-    const init: Record<string, number> = {}
-    sections.forEach(sec => {
-      sec.rows.forEach(r => {
-        if (r.note) init[r.name] = 0
-      })
-    })
-    return init
-  })
-
+  
   const [copied, setCopied] = useState(false)
 
   useEffect(() => {
     const url = new URL(window.location.href)
     const params = url.searchParams
     if (params.has('area')) setArea(Number(params.get('area')))
+    if (params.has('perimeter')) setPerimeter(Number(params.get('perimeter')))
+    if (params.has('thicknessBazaCm')) setThicknessBazaCm(Number(params.get('thicknessBazaCm')))
+    if (params.has('thicknessAutoMm')) setThicknessAutoMm(Number(params.get('thicknessAutoMm')))
   }, [])
 
   useEffect(() => {
     const url = new URL(window.location.href)
     url.searchParams.set('area', area.toString())
+    url.searchParams.set('perimeter', perimeter.toString())
+    url.searchParams.set('thicknessBazaCm', thicknessBazaCm.toString())
+    url.searchParams.set('thicknessAutoMm', thicknessAutoMm.toString())
     window.history.replaceState({}, '', url.toString())
-  }, [area])
+  }, [area, perimeter, thicknessBazaCm, thicknessAutoMm])
 
   const copyLink = () => {
     navigator.clipboard.writeText(window.location.href)
@@ -140,49 +162,60 @@ export default function Page() {
     const vatRate = 0.21
     let req = 0
     let opt = 0
+
     const computed = sections.flatMap(sec =>
       sec.rows.map(r => {
         const isIncluded = !r.optional || included[r.name] !== false
         const cons = midCons(r)
-        const qty = cons === 0 ? (manualQty[r.name] ?? 0) : cons * area
+
+        let qty = 0
+        if (r.consBasis === 'per_m2') qty = cons * area
+        else if (r.consBasis === 'per_m2_cm') qty = cons * area * thicknessBazaCm
+        else if (r.consBasis === 'per_m2_mm') qty = cons * area * thicknessAutoMm
+        else if (r.consBasis === 'per_ml') qty = cons * perimeter
+
         const p = prices[r.name] ?? 0
         const tot = qty * p
+
         if (qty !== 0 && isIncluded) {
           if (r.optional) opt += tot
           else req += tot
         }
+
         return { sectionTitle: sec.title, row: r, cons, qty, price: p, tot, isIncluded }
       }),
     )
 
     const g = req + opt
     return { rowsComputed: computed, totalReq: req, totalOpt: opt, grand: g, grandVat: g * (1 + vatRate), totalReqVat: req * (1 + vatRate) }
-  }, [area, prices, included, manualQty])
+  }, [area, perimeter, thicknessBazaCm, thicknessAutoMm, included, prices])
 
   const downloadPdf = () => {
     const doc = new jsPDF()
     doc.setFontSize(18)
-    doc.text('Deviz Estimativ - Termosistem EPS', 14, 20)
+    doc.text('Deviz Estimativ - Sapa', 14, 20)
     
     doc.setFontSize(12)
     doc.setTextColor(100)
     doc.text(`Generat de Santier.app`, 14, 28)
     
     doc.setTextColor(20)
-    doc.text(`Suprafata totala: ${area} m²`, 14, 40)
+    doc.text(`Suprafata: ${area} m², Perimetru: ${perimeter} ml`, 14, 40)
+    doc.text(`Grosime Sapa Egalizare: ${thicknessBazaCm} cm`, 14, 48)
+    doc.text(`Grosime Sapa Autonivelanta: ${thicknessAutoMm} mm`, 14, 56)
 
     const tableData = rowsComputed
       .filter(r => r.isIncluded && r.qty > 0)
       .map(r => [
         r.row.name,
-        `${r.cons === 0 ? '-' : r.cons.toFixed(2)} ${r.row.unit}`,
-        `${r.qty.toFixed(2)} ${r.row.unit}`,
+        `${r.cons === 0 ? '-' : r.cons.toFixed(2)}${r.row.consUnit ? ' ' + r.row.consUnit : ''}`,
+        `${r.qty.toFixed(2)} ${r.row.qtyUnit}`,
         `${r.price.toFixed(2)} lei`,
         `${r.tot.toFixed(2)} lei`
       ])
 
     autoTable(doc, {
-      startY: 50,
+      startY: 65,
       head: [['Material', 'Consum', 'Cantitate', 'Pret unitar', 'Total']],
       body: tableData,
       theme: 'grid',
@@ -190,26 +223,29 @@ export default function Page() {
       styles: { fontSize: 10, cellPadding: 4 },
     })
 
-    const finalY = (doc as any).lastAutoTable.finalY || 50
+    const finalY = (doc as any).lastAutoTable.finalY || 65
     doc.setFontSize(12)
     doc.text(`Total materiale (fara TVA): ${grand.toFixed(2)} lei`, 14, finalY + 15)
     doc.setFontSize(14)
     doc.text(`Total materiale (TVA 21% inclus): ${grandVat.toFixed(2)} lei`, 14, finalY + 25)
 
-    doc.save('deviz-termosistem-eps.pdf')
+    doc.save('deviz-sapa.pdf')
   }
 
   return (
     <main style={{ padding: '16px', maxWidth: 1100, margin: '0 auto', width: '100%', boxSizing: 'border-box' }}>
       <style>{`
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        h1 { font-size: 18px; font-weight: 500; margin-bottom: 1.5rem; color: #1a1a18; }
-        .area-row { display: flex; align-items: center; gap: 12px; margin-bottom: 1.5rem; padding: 12px 16px; background: #fff; border-radius: 12px; border: 0.5px solid #d3d1c7; }
-        .area-row label { font-size: 14px; color: #5f5e5a; white-space: nowrap; }
-        .area-row input[type=number] { width: 90px; font-size: 15px; font-weight: 500; border: 0.5px solid #d3d1c7; border-radius: 6px; padding: 4px 8px; }
-        .area-row span { font-size: 14px; color: #5f5e5a; }
-        .area-note { margin-left: auto; font-size: 12px; color: #888780; }
-        .section-title { font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: #888780; margin: 1.5rem 0 0.5rem; padding: 0 4px; }
+        h1 { font-size: 18px; font-weight: 500; margin-bottom: 1.0rem; color: #1a1a18; }
+        .controls { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 10px; margin-bottom: 1.25rem; padding: 12px 16px; background: #fff; border-radius: 12px; border: 0.5px solid #d3d1c7; }
+        .control { grid-column: span 3; display: flex; align-items: center; gap: 10px; }
+        .control label { font-size: 13px; color: #5f5e5a; white-space: nowrap; }
+        .control input[type=number] { width: 100%; font-size: 14px; font-weight: 500; border: 0.5px solid #d3d1c7; border-radius: 6px; padding: 6px 8px; background: #fff; }
+        .control .unit { font-size: 12px; color: #5f5e5a; white-space: nowrap; }
+        .control.wide { grid-column: span 6; justify-content: space-between; }
+        .control .inline { display: flex; align-items: center; gap: 10px; }
+        .note { margin-left: auto; font-size: 12px; color: #888780; }
+        .section-title { font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: #888780; margin: 1.25rem 0 0.5rem; padding: 0 4px; }
         table { width: 100%; border-collapse: collapse; font-size: 13px; background: #fff; border-radius: 12px; overflow: hidden; border: 0.5px solid #d3d1c7; margin-bottom: 0.5rem; }
         thead th { font-size: 11px; font-weight: 500; color: #888780; text-align: left; padding: 8px 10px; border-bottom: 0.5px solid #d3d1c7; letter-spacing: 0.04em; background: #f9f8f5; }
         thead th.num { text-align: right; }
@@ -218,7 +254,7 @@ export default function Page() {
         tbody tr.opt td { color: #888780; }
         tbody tr.excluded td { opacity: 0.45; }
         td { padding: 7px 10px; vertical-align: middle; }
-        td.mat { font-size: 13px; color: #1a1a18; max-width: 200px; }
+        td.mat { font-size: 13px; color: #1a1a18; max-width: 260px; }
         tbody tr.opt td.mat { color: #5f5e5a; }
         td.cons { text-align: right; font-size: 12px; color: #5f5e5a; white-space: nowrap; }
         td.qty { text-align: right; font-size: 12px; font-weight: 500; white-space: nowrap; }
@@ -239,10 +275,10 @@ export default function Page() {
         .metric.vat-total .sub { color: #2f6d3a; }
         .legend { display: flex; gap: 16px; margin-top: 1rem; font-size: 11px; color: #888780; }
         .legend span { display: flex; align-items: center; gap: 5px; }
-        @media (max-width: 600px) {
+        @media (max-width: 900px) {
+          .control { grid-column: span 6; }
+          .control.wide { grid-column: span 12; }
           .summary { grid-template-columns: 1fr 1fr; }
-          table { font-size: 12px; }
-          td { padding: 6px 6px; }
         }
       `}</style>
 
@@ -263,7 +299,10 @@ export default function Page() {
 
       <div style={{ fontFamily: 'system-ui, sans-serif', background: '#f5f5f2', borderRadius: 16, padding: '20px 16px', border: '1px solid var(--gray-200)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
-          <h1 style={{ marginBottom: 0 }}>Calculator materiale — termosistem EPS</h1>
+          <div>
+            <h1 style={{ marginBottom: '0.25rem' }}>Calculator materiale — șapă (estimare)</h1>
+            <div style={{ color: '#6B6860', fontSize: 13 }}>Toate prețurile sunt fără TVA.</div>
+          </div>
           <div style={{ display: 'flex', gap: '8px' }}>
             <button onClick={copyLink} style={{ padding: '8px 16px', background: '#fff', border: '1px solid #d3d1c7', borderRadius: '8px', cursor: 'pointer', fontSize: '14px', fontWeight: 500, color: '#1a1a18' }}>
               {copied ? '✓ Link copiat' : '🔗 Distribuie (Share)'}
@@ -273,18 +312,63 @@ export default function Page() {
             </button>
           </div>
         </div>
+        
+        <div className="controls">
+          <div className="control">
+            <label>Suprafață</label>
+            <div className="inline" style={{ width: '100%' }}>
+              <input
+                type="number"
+                value={area}
+                min={1}
+                step={1}
+                onChange={e => setArea(Math.max(1, Math.floor(Number(e.target.value) || 1)))}
+              />
+              <span className="unit">m²</span>
+            </div>
+          </div>
 
-        <div className="area-row">
-          <label>Suprafață totală</label>
-          <input
-            type="number"
-            value={area}
-            min={1}
-            step={1}
-            onChange={e => setArea(Math.max(1, Math.floor(Number(e.target.value) || 1)))}
-          />
-          <span>m²</span>
-          <span className="area-note">Prețuri în RON (fără TVA)</span>
+          <div className="control">
+            <label>Perimetru</label>
+            <div className="inline" style={{ width: '100%' }}>
+              <input
+                type="number"
+                value={perimeter}
+                min={1}
+                step={1}
+                onChange={e => setPerimeter(Math.max(1, Math.floor(Number(e.target.value) || 1)))}
+              />
+              <span className="unit">ml</span>
+            </div>
+          </div>
+
+          <div className="control">
+            <label>Grosime (Bază)</label>
+            <div className="inline" style={{ width: '100%' }}>
+              <input
+                type="number"
+                min={0}
+                step={1}
+                value={Number.isFinite(thicknessBazaCm) ? thicknessBazaCm : 0}
+                onChange={e => setThicknessBazaCm(Math.max(0, Math.floor(Number(e.target.value) || 0)))}
+              />
+              <span className="unit">cm</span>
+            </div>
+          </div>
+
+          <div className="control">
+            <label>Grosime (Autonivelantă)</label>
+            <div className="inline" style={{ width: '100%' }}>
+              <input
+                type="number"
+                min={0}
+                step={1}
+                value={Number.isFinite(thicknessAutoMm) ? thicknessAutoMm : 0}
+                onChange={e => setThicknessAutoMm(Math.max(0, Math.floor(Number(e.target.value) || 0)))}
+              />
+              <span className="unit">mm</span>
+            </div>
+          </div>
         </div>
 
         {sections.map(sec => (
@@ -296,8 +380,8 @@ export default function Page() {
                 <tr>
                   <th style={{ width: 10 }} />
                   <th>Material</th>
-                  <th className="num">Consum/m²</th>
-                  <th className="num">Cantitate ({area} m²)</th>
+                  <th className="num">Consum</th>
+                  <th className="num">Cantitate</th>
                   <th className="num" style={{ width: 100 }}>Preț/unitate</th>
                   <th className="num">Total</th>
                 </tr>
@@ -310,10 +394,11 @@ export default function Page() {
                   const p = item?.price ?? 0
                   const tot = item?.tot ?? 0
                   const isIncluded = item?.isIncluded ?? true
-                  const isManual = cons === 0 && !!r.note
                   const hasQty = qty !== 0
-                  const qtyStr = isManual ? '' : (cons === 0 ? '—' : qty.toFixed(2))
+
+                  const consUnit = r.consUnit ? ` ${r.consUnit}` : ''
                   const totStr = cons === 0 ? (hasQty ? `${tot.toFixed(2)} lei` : '—') : `${tot.toFixed(2)} lei`
+
                   return (
                     <tr key={r.name} className={`${r.optional ? 'opt' : ''}${r.optional && !isIncluded ? ' excluded' : ''}`}>
                       <td className="opt-badge">
@@ -329,42 +414,15 @@ export default function Page() {
                         )}
                       </td>
                       <td className="mat">{r.name}</td>
-                      <td className="cons">{consStr(r)} {r.unit}</td>
+                      <td className="cons">{consStr(r)}{r.note ? '' : consUnit}</td>
                       <td className="qty">
-                        {isManual ? (
-                          <>
-                            <input
-                              type="number"
-                              min={0}
-                              step={0.1}
-                              value={Number.isFinite(qty) ? qty : 0}
-                              onChange={e => {
-                                const next = Number(e.target.value) || 0
-                                setManualQty(prev => ({ ...prev, [r.name]: next }))
-                              }}
-                              style={{
-                                width: 82,
-                                textAlign: 'right',
-                                fontSize: 13,
-                                border: '0.5px solid #d3d1c7',
-                                borderRadius: 5,
-                                padding: '3px 6px',
-                                background: '#fff',
-                              }}
-                            />
-                            <span style={{ marginLeft: 6, fontWeight: 400, color: '#5f5e5a' }}>{r.unit}</span>
-                          </>
-                        ) : (
-                          <>
-                            {qtyStr}{cons === 0 ? '' : ` ${r.unit}`}
-                          </>
-                        )}
+                        {qty.toFixed(2)} {r.qtyUnit}
                       </td>
                       <td className="price-cell">
                         <input
                           type="number"
                           min={0}
-                          step={0.1}
+                          step={0.01}
                           value={Number.isFinite(p) ? p : 0}
                           onChange={e => {
                             const next = Number(e.target.value) || 0
@@ -418,11 +476,6 @@ export default function Page() {
             <div className="val">{grandVat.toFixed(2)} lei</div>
             <div className="sub">{area} m²</div>
           </div>
-          <div className="metric">
-            <div className="lbl">Suprafață</div>
-            <div className="val">{area} m²</div>
-            <div className="sub">modifică sus</div>
-          </div>
         </div>
 
         <div className="legend">
@@ -431,7 +484,7 @@ export default function Page() {
         </div>
       </div>
 
-      <NextSteps currentId="eps" />
+      <NextSteps currentId="sapa" />
     </main>
   )
 }

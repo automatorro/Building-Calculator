@@ -1,8 +1,10 @@
  'use client'
  
 import Link from 'next/link'
- import { useMemo, useState } from 'react'
- 
+import { useMemo, useState, useEffect } from 'react'
+import jsPDF from 'jspdf'
+import autoTable from 'jspdf-autotable'
+import NextSteps from '../NextSteps'
  type DiaMm = 6 | 8 | 10 | 12 | 14 | 16 | 18 | 20 | 22 | 25
  
  type RowKind =
@@ -128,6 +130,46 @@ export default function Page() {
      return init
    })
  
+   const [copied, setCopied] = useState(false)
+
+  useEffect(() => {
+    const url = new URL(window.location.href)
+    const params = url.searchParams
+    if (params.has('lengthM')) setLengthM(Number(params.get('lengthM')))
+    if (params.has('talpaWidthCm')) setTalpaWidthCm(Number(params.get('talpaWidthCm')))
+    if (params.has('talpaHeightCm')) setTalpaHeightCm(Number(params.get('talpaHeightCm')))
+    if (params.has('elevWidthCm')) setElevWidthCm(Number(params.get('elevWidthCm')))
+    if (params.has('elevHeightCm')) setElevHeightCm(Number(params.get('elevHeightCm')))
+    if (params.has('coverCm')) setCoverCm(Number(params.get('coverCm')))
+    if (params.has('lapPct')) setLapPct(Number(params.get('lapPct')))
+    if (params.has('diaLongTalpa')) setDiaLongTalpa(Number(params.get('diaLongTalpa')) as DiaMm)
+    if (params.has('diaLongElev')) setDiaLongElev(Number(params.get('diaLongElev')) as DiaMm)
+    if (params.has('diaStirr')) setDiaStirr(Number(params.get('diaStirr')) as DiaMm)
+    if (params.has('stirrSpacingCm')) setStirrSpacingCm(Number(params.get('stirrSpacingCm')))
+  }, [])
+
+  useEffect(() => {
+    const url = new URL(window.location.href)
+    url.searchParams.set('lengthM', lengthM.toString())
+    url.searchParams.set('talpaWidthCm', talpaWidthCm.toString())
+    url.searchParams.set('talpaHeightCm', talpaHeightCm.toString())
+    url.searchParams.set('elevWidthCm', elevWidthCm.toString())
+    url.searchParams.set('elevHeightCm', elevHeightCm.toString())
+    url.searchParams.set('coverCm', coverCm.toString())
+    url.searchParams.set('lapPct', lapPct.toString())
+    url.searchParams.set('diaLongTalpa', diaLongTalpa.toString())
+    url.searchParams.set('diaLongElev', diaLongElev.toString())
+    url.searchParams.set('diaStirr', diaStirr.toString())
+    url.searchParams.set('stirrSpacingCm', stirrSpacingCm.toString())
+    window.history.replaceState({}, '', url.toString())
+  }, [lengthM, talpaWidthCm, talpaHeightCm, elevWidthCm, elevHeightCm, coverCm, lapPct, diaLongTalpa, diaLongElev, diaStirr, stirrSpacingCm])
+
+  const copyLink = () => {
+    navigator.clipboard.writeText(window.location.href)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
    const lapFactor = useMemo(() => 1 + Math.max(0, Number(lapPct) || 0) / 100, [lapPct])
  
    const { rowsComputed, totalReq, totalOpt, grand, grandVat, totalReqVat, volumeTalpaM3, volumeElevM3, steelKgTotal } = useMemo(() => {
@@ -220,6 +262,47 @@ export default function Page() {
      talpaWidthCm,
    ])
  
+  const downloadPdf = () => {
+    const doc = new jsPDF()
+    doc.setFontSize(18)
+    doc.text('Deviz Estimativ - Beton si armatura fundatie', 14, 20)
+    
+    doc.setFontSize(12)
+    doc.setTextColor(100)
+    doc.text(`Generat de Santier.app`, 14, 28)
+    
+    doc.setTextColor(20)
+    doc.text(`Lungime fundatie: ${lengthM} m`, 14, 40)
+    doc.text(`Volum beton: ${n2(volumeTalpaM3 + volumeElevM3)} m³`, 14, 48)
+    doc.text(`Cantitate otel beton: ${n2(steelKgTotal)} kg`, 14, 56)
+
+    const tableData = rowsComputed
+      .filter(r => r.isIncluded && r.qty > 0)
+      .map(r => [
+        r.row.name,
+        `${n2(r.qty)} ${r.row.qtyUnit}`,
+        `${n2(r.price)} lei`,
+        `${n2(r.tot)} lei`
+      ])
+
+    autoTable(doc, {
+      startY: 65,
+      head: [['Material', 'Cantitate', 'Pret unitar', 'Total']],
+      body: tableData,
+      theme: 'grid',
+      headStyles: { fillColor: [240, 240, 240], textColor: [20, 20, 20], fontStyle: 'bold' },
+      styles: { fontSize: 10, cellPadding: 4 },
+    })
+
+    const finalY = (doc as any).lastAutoTable.finalY || 65
+    doc.setFontSize(12)
+    doc.text(`Total materiale (fara TVA): ${n2(grand)} lei`, 14, finalY + 15)
+    doc.setFontSize(14)
+    doc.text(`Total materiale (TVA 21% inclus): ${n2(grandVat)} lei`, 14, finalY + 25)
+
+    doc.save('deviz-fundatie.pdf')
+  }
+
   return (
      <main style={{ padding: '16px', maxWidth: 1100, margin: '0 auto', width: '100%', boxSizing: 'border-box' }}>
        <style>{`
@@ -287,10 +370,20 @@ export default function Page() {
        </Link>
  
        <div style={{ fontFamily: 'system-ui, sans-serif', background: '#f5f5f2', borderRadius: 16, padding: '20px 16px', border: '1px solid var(--gray-200)' }}>
-         <h1>Calculator materiale — beton și armătură fundație (estimare)</h1>
-         <div style={{ color: '#6B6860', fontSize: 13, marginBottom: 12 }}>
-           Toate prețurile sunt fără TVA.
-         </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+          <div>
+            <h1 style={{ marginBottom: '0.25rem' }}>Calculator materiale — beton și armătură fundație (estimare)</h1>
+            <div style={{ color: '#6B6860', fontSize: 13 }}>Toate prețurile sunt fără TVA.</div>
+          </div>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button onClick={copyLink} style={{ padding: '8px 16px', background: '#fff', border: '1px solid #d3d1c7', borderRadius: '8px', cursor: 'pointer', fontSize: '14px', fontWeight: 500, color: '#1a1a18' }}>
+              {copied ? '✓ Link copiat' : '🔗 Distribuie (Share)'}
+            </button>
+            <button onClick={downloadPdf} style={{ padding: '8px 16px', background: '#1a1a18', border: '1px solid #1a1a18', borderRadius: '8px', cursor: 'pointer', fontSize: '14px', fontWeight: 500, color: '#fff' }}>
+              📄 Descarcă PDF
+            </button>
+          </div>
+        </div>
  
          <div className="controls">
            <div className="control">
@@ -524,6 +617,8 @@ export default function Page() {
            <span><span className="opt-dot" /> opțional / situațional</span>
          </div>
        </div>
+ 
+       <NextSteps currentId="fundatie" />
      </main>
   )
 }

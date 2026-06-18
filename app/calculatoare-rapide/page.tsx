@@ -8,6 +8,9 @@ export default function Page() {
     { title: 'Calculator necesar BCA', href: '/calculatoare-rapide/bca', subtitle: 'Zidărie BCA — materiale și cost estimativ' },
     { title: 'Calculator necesar cărămidă cu goluri', href: '/calculatoare-rapide/caramida-goluri', subtitle: 'Zidărie cărămidă — materiale și cost estimativ' },
     { title: 'Calculator tencuială', href: '/calculatoare-rapide/tencuiala', subtitle: 'Tencuieli — materiale și cost estimativ' },
+    { title: 'Calculator șapă', href: '/calculatoare-rapide/sapa', subtitle: 'Șapă de egalizare și autonivelantă — materiale și cost estimativ' },
+    { title: 'Calculator finisaje interioare', href: '/calculatoare-rapide/finisaje-interioare', subtitle: 'Glet și vopsea lavabilă — materiale și cost estimativ' },
+    { title: 'Calculator acoperiș', href: '/calculatoare-rapide/acoperis', subtitle: 'Structură lemn și învelitoare — materiale și cost estimativ' },
     { title: 'Calculator beton și armătură fundație', href: '/calculatoare-rapide/beton-armatura-fundatie', subtitle: 'Fundații — materiale și cost estimativ' },
   ]
 

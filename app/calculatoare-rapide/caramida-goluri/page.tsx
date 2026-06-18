@@ -1,7 +1,10 @@
 'use client'
 
 import Link from 'next/link'
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useEffect } from 'react'
+import jsPDF from 'jspdf'
+import autoTable from 'jspdf-autotable'
+import NextSteps from '../NextSteps'
 
 type RowBase = 'm2' | 'm3'
 
@@ -178,6 +181,32 @@ export default function Page() {
     return init
   })
 
+  const [copied, setCopied] = useState(false)
+
+  useEffect(() => {
+    const url = new URL(window.location.href)
+    const params = url.searchParams
+    if (params.has('area')) setArea(Number(params.get('area')))
+    if (params.has('formatId')) setFormatId(params.get('formatId')!)
+    if (params.has('thicknessCm')) setThicknessCm(Number(params.get('thicknessCm')))
+    if (params.has('layingType')) setLayingType(params.get('layingType') as LayingType)
+  }, [])
+
+  useEffect(() => {
+    const url = new URL(window.location.href)
+    url.searchParams.set('area', area.toString())
+    url.searchParams.set('formatId', formatId)
+    url.searchParams.set('thicknessCm', thicknessCm.toString())
+    url.searchParams.set('layingType', layingType)
+    window.history.replaceState({}, '', url.toString())
+  }, [area, formatId, thicknessCm, layingType])
+
+  const copyLink = () => {
+    navigator.clipboard.writeText(window.location.href)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
   const { volumeM3, piecesRaw, piecesCeil, faceAreaM2, rowsComputed, totalReq, totalOpt, grand, grandVat, totalReqVat } = useMemo(() => {
     const vatRate = 0.21
     const thicknessM = thicknessCm / 100
@@ -216,6 +245,49 @@ export default function Page() {
     const g = req + opt
     return { volumeM3: vM3, piecesRaw: raw, piecesCeil: ceil, faceAreaM2: faceM2, rowsComputed: computed, totalReq: req, totalOpt: opt, grand: g, grandVat: g * (1 + vatRate), totalReqVat: req * (1 + vatRate) }
   }, [area, thicknessCm, format.heightMm, format.lengthMm, layingType, prices, included, manualQty])
+
+  const downloadPdf = () => {
+    const doc = new jsPDF()
+    doc.setFontSize(18)
+    doc.text('Deviz Estimativ - Caramida cu goluri', 14, 20)
+    
+    doc.setFontSize(12)
+    doc.setTextColor(100)
+    doc.text(`Generat de Santier.app`, 14, 28)
+    
+    doc.setTextColor(20)
+    doc.text(`Suprafata totala: ${area} m²`, 14, 40)
+    doc.text(`Format caramida: ${fmt(format, thicknessCm)}`, 14, 48)
+    doc.text(`Volum zidarie: ${n2(volumeM3)} m³`, 14, 56)
+    doc.text(`Caramizi necesare (estimativ): ${n0(piecesCeil)} buc`, 14, 64)
+
+    const tableData = rowsComputed
+      .filter(r => r.isIncluded && r.qty > 0)
+      .map(r => [
+        r.row.name,
+        r.qty > 0 && r.cons > 0 ? `${n2(r.cons)} ${r.row.unit}` : '-',
+        `${n2(r.qty)} ${r.row.unit}`,
+        `${n2(r.price)} lei`,
+        `${n2(r.tot)} lei`
+      ])
+
+    autoTable(doc, {
+      startY: 75,
+      head: [['Material', 'Consum', 'Cantitate', 'Pret unitar', 'Total']],
+      body: tableData,
+      theme: 'grid',
+      headStyles: { fillColor: [240, 240, 240], textColor: [20, 20, 20], fontStyle: 'bold' },
+      styles: { fontSize: 10, cellPadding: 4 },
+    })
+
+    const finalY = (doc as any).lastAutoTable.finalY || 75
+    doc.setFontSize(12)
+    doc.text(`Total materiale (fara TVA): ${n2(grand)} lei`, 14, finalY + 15)
+    doc.setFontSize(14)
+    doc.text(`Total materiale (TVA 21% inclus): ${n2(grandVat)} lei`, 14, finalY + 25)
+
+    doc.save('deviz-caramida-santier-app.pdf')
+  }
 
   return (
     <main style={{ padding: '16px', maxWidth: 1100, margin: '0 auto', width: '100%', boxSizing: 'border-box' }}>
@@ -286,7 +358,17 @@ export default function Page() {
       </Link>
 
       <div style={{ fontFamily: 'system-ui, sans-serif', background: '#f5f5f2', borderRadius: 16, padding: '20px 16px', border: '1px solid var(--gray-200)' }}>
-        <h1>Calculator necesar — Cărămidă cu goluri</h1>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+          <h1 style={{ marginBottom: 0 }}>Calculator necesar — Cărămidă cu goluri</h1>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button onClick={copyLink} style={{ padding: '8px 16px', background: '#fff', border: '1px solid #d3d1c7', borderRadius: '8px', cursor: 'pointer', fontSize: '14px', fontWeight: 500, color: '#1a1a18' }}>
+              {copied ? '✓ Link copiat' : '🔗 Distribuie (Share)'}
+            </button>
+            <button onClick={downloadPdf} style={{ padding: '8px 16px', background: '#1a1a18', border: '1px solid #1a1a18', borderRadius: '8px', cursor: 'pointer', fontSize: '14px', fontWeight: 500, color: '#fff' }}>
+              📄 Descarcă PDF
+            </button>
+          </div>
+        </div>
 
         <div className="controls">
           <div className="control">
@@ -541,6 +623,8 @@ export default function Page() {
           <span><span className="opt-dot" /> opțional / situațional</span>
         </div>
       </div>
+
+      <NextSteps currentId="caramida" />
     </main>
   )
 }

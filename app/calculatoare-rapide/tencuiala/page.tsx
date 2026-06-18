@@ -1,7 +1,10 @@
 'use client'
 
 import Link from 'next/link'
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useEffect } from 'react'
+import jsPDF from 'jspdf'
+import autoTable from 'jspdf-autotable'
+import NextSteps from '../NextSteps'
 
 type PlasterType = 'ipsos' | 'var-ciment'
 type ConsBasis = 'per_m2' | 'per_m2_cm'
@@ -132,6 +135,34 @@ export default function Page() {
     return init
   })
 
+  const [copied, setCopied] = useState(false)
+
+  useEffect(() => {
+    const url = new URL(window.location.href)
+    const params = url.searchParams
+    if (params.has('area')) setArea(Number(params.get('area')))
+    if (params.has('plasterType')) setPlasterType(params.get('plasterType') as PlasterType)
+    if (params.has('thicknessMm')) setThicknessMm(Number(params.get('thicknessMm')))
+    if (params.has('includeLosses')) setIncludeLosses(params.get('includeLosses') === 'true')
+    if (params.has('lossesPct')) setLossesPct(Number(params.get('lossesPct')))
+  }, [])
+
+  useEffect(() => {
+    const url = new URL(window.location.href)
+    url.searchParams.set('area', area.toString())
+    url.searchParams.set('plasterType', plasterType)
+    url.searchParams.set('thicknessMm', thicknessMm.toString())
+    url.searchParams.set('includeLosses', includeLosses.toString())
+    url.searchParams.set('lossesPct', lossesPct.toString())
+    window.history.replaceState({}, '', url.toString())
+  }, [area, plasterType, thicknessMm, includeLosses, lossesPct])
+
+  const copyLink = () => {
+    navigator.clipboard.writeText(window.location.href)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
   const thicknessCm = useMemo(() => Math.max(0, (Number(thicknessMm) || 0) / 10), [thicknessMm])
   const lossesFactor = useMemo(() => (includeLosses ? 1 + Math.max(0, Number(lossesPct) || 0) / 100 : 1), [includeLosses, lossesPct])
 
@@ -174,6 +205,51 @@ export default function Page() {
     const g = req + opt
     return { rowsComputed: computed, totalReq: req, totalOpt: opt, grand: g, grandVat: g * (1 + vatRate), totalReqVat: req * (1 + vatRate) }
   }, [activeSections, area, included, lossesFactor, manualQty, prices, thicknessCm])
+
+  const downloadPdf = () => {
+    const doc = new jsPDF()
+    doc.setFontSize(18)
+    doc.text('Deviz Estimativ - Tencuiala', 14, 20)
+    
+    doc.setFontSize(12)
+    doc.setTextColor(100)
+    doc.text(`Generat de Santier.app`, 14, 28)
+    
+    doc.setTextColor(20)
+    doc.text(`Suprafata totala: ${area} m²`, 14, 40)
+    doc.text(`Tip tencuiala: ${plasterType === 'ipsos' ? 'Pe baza de ipsos' : 'Var-ciment'}`, 14, 48)
+    doc.text(`Grosime strat: ${thicknessMm} mm (${thicknessCm.toFixed(2)} cm)`, 14, 56)
+    if (includeLosses) {
+      doc.text(`Pierderi incluse: ${lossesPct}%`, 14, 64)
+    }
+
+    const tableData = rowsComputed
+      .filter(r => r.isIncluded && r.qty > 0)
+      .map(r => [
+        r.row.name,
+        `${r.cons === 0 ? '-' : r.cons.toFixed(2)}${r.row.consUnit ? ' ' + r.row.consUnit : ''}`,
+        `${r.qty.toFixed(2)} ${r.row.qtyUnit}`,
+        `${r.price.toFixed(2)} lei`,
+        `${r.tot.toFixed(2)} lei`
+      ])
+
+    autoTable(doc, {
+      startY: includeLosses ? 75 : 65,
+      head: [['Material', 'Consum', 'Cantitate', 'Pret unitar', 'Total']],
+      body: tableData,
+      theme: 'grid',
+      headStyles: { fillColor: [240, 240, 240], textColor: [20, 20, 20], fontStyle: 'bold' },
+      styles: { fontSize: 10, cellPadding: 4 },
+    })
+
+    const finalY = (doc as any).lastAutoTable.finalY || 75
+    doc.setFontSize(12)
+    doc.text(`Total materiale (fara TVA): ${grand.toFixed(2)} lei`, 14, finalY + 15)
+    doc.setFontSize(14)
+    doc.text(`Total materiale (TVA 21% inclus): ${grandVat.toFixed(2)} lei`, 14, finalY + 25)
+
+    doc.save('deviz-tencuiala.pdf')
+  }
 
   return (
     <main style={{ padding: '16px', maxWidth: 1100, margin: '0 auto', width: '100%', boxSizing: 'border-box' }}>
@@ -247,11 +323,21 @@ export default function Page() {
       </Link>
 
       <div style={{ fontFamily: 'system-ui, sans-serif', background: '#f5f5f2', borderRadius: 16, padding: '20px 16px', border: '1px solid var(--gray-200)' }}>
-        <h1>Calculator materiale — tencuială (estimare)</h1>
-        <div style={{ color: '#6B6860', fontSize: 13, marginBottom: 12 }}>
-          Toate prețurile sunt fără TVA.
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+          <div>
+            <h1 style={{ marginBottom: '0.25rem' }}>Calculator materiale — tencuială (estimare)</h1>
+            <div style={{ color: '#6B6860', fontSize: 13 }}>Toate prețurile sunt fără TVA.</div>
+          </div>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button onClick={copyLink} style={{ padding: '8px 16px', background: '#fff', border: '1px solid #d3d1c7', borderRadius: '8px', cursor: 'pointer', fontSize: '14px', fontWeight: 500, color: '#1a1a18' }}>
+              {copied ? '✓ Link copiat' : '🔗 Distribuie (Share)'}
+            </button>
+            <button onClick={downloadPdf} style={{ padding: '8px 16px', background: '#1a1a18', border: '1px solid #1a1a18', borderRadius: '8px', cursor: 'pointer', fontSize: '14px', fontWeight: 500, color: '#fff' }}>
+              📄 Descarcă PDF
+            </button>
+          </div>
         </div>
-
+        
         <div className="controls">
           <div className="control">
             <label>Suprafață</label>
@@ -473,6 +559,8 @@ export default function Page() {
           </div>
         )}
       </div>
+
+      <NextSteps currentId="tencuiala" />
     </main>
   )
 }
