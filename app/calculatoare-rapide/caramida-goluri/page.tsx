@@ -218,7 +218,7 @@ export default function Page() {
   }, [area, thicknessCm, format.heightMm, format.lengthMm, layingType, prices, included, manualQty])
 
   return (
-    <main style={{ padding: '24px', maxWidth: 1100, margin: '0 auto' }}>
+    <main style={{ padding: '16px', maxWidth: 1100, margin: '0 auto', width: '100%', boxSizing: 'border-box' }}>
       <style>{`
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         h1 { font-size: 18px; font-weight: 500; margin-bottom: 1.5rem; color: #1a1a18; }
@@ -375,7 +375,8 @@ export default function Page() {
         {sections.map(sec => (
           <div key={sec.title}>
             <div className="section-title">{sec.title}</div>
-            <table>
+            <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch', width: '100%' }}>
+              <table>
               <thead>
                 <tr>
                   <th style={{ width: 10 }} />
@@ -488,6 +489,7 @@ export default function Page() {
                 })}
               </tbody>
             </table>
+            </div>
           </div>
         ))}
 
