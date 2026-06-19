@@ -91,11 +91,11 @@ export default function RegisterPage() {
 
   const inputStyle: React.CSSProperties = {
     width:'100%', padding:'12px 16px', background:C.gray100,
-    border:`1px solid ${C.gray200}`, borderRadius:8,
-    fontSize:14, color:C.gray800, fontFamily:C.sans, outline:'none',
+    border:`1px solid ${C.gray200}`, borderRadius:10,
+    fontSize:15, color:C.gray800, fontFamily:C.sans, outline:'none',
     transition:'border-color .15s', boxSizing:'border-box',
   }
-  const labelStyle: React.CSSProperties = { fontSize:13, fontWeight:500, color:C.gray800 }
+  const labelStyle: React.CSSProperties = { fontSize:14, fontWeight:600, color:C.gray800 }
 
   /* ── Ecran succes ── */
   if (success) {
@@ -174,22 +174,22 @@ export default function RegisterPage() {
       {/* ── Dreapta: formular ─────────────────────────────────────────────── */}
       <div style={{ background:C.white, display:'flex', alignItems:'center',
         justifyContent:'center', padding:'48px 56px', overflowY:'auto' }} className="auth-form-panel">
-        <div style={{ width:'100%', maxWidth:380, minWidth:0 }}>
+        <div style={{ width:'100%', maxWidth:440, minWidth:0 }} className="auth-form-inner">
 
           {/* Logo (vizibil pe mobile când panoul stânga e ascuns) */}
           <Link href="/" className="auth-mobile-logo"
-            style={{ display:'none', alignItems:'center', gap:10, textDecoration:'none', marginBottom:36 }}>
+            style={{ display:'none', alignItems:'center', gap:10, textDecoration:'none', marginBottom:24 }}>
             <LogoMark />
             <span style={{ fontFamily:C.sans, fontWeight:600, fontSize:15, color:C.black, letterSpacing:'-0.02em' }}>
               Șantier
             </span>
           </Link>
 
-          <h1 style={{ fontFamily:C.serif, fontSize:28, fontWeight:400, color:C.black,
-            lineHeight:1.1, letterSpacing:'-0.02em', marginBottom:8 }}>
+          <h1 style={{ fontFamily:C.serif, fontSize:32, fontWeight:400, color:C.black,
+            lineHeight:1.1, letterSpacing:'-0.02em', marginBottom:10 }}>
             Creează cont gratuit
           </h1>
-          <p style={{ fontSize:14, color:C.gray600, marginBottom:28, lineHeight:1.5 }}>
+          <p style={{ fontSize:15, color:C.gray600, marginBottom:28, lineHeight:1.5 }}>
             Primul proiect complet gratuit, fără card.
           </p>
 
@@ -233,8 +233,8 @@ export default function RegisterPage() {
 
             {/* Submit */}
             <button type="submit" disabled={loading}
-              style={{ width:'100%', padding:'13px', background:loading ? C.gray400 : C.orange,
-                color:'white', border:'none', borderRadius:8, fontSize:15, fontWeight:500,
+              style={{ width:'100%', padding:'14px 16px', background:loading ? C.gray400 : C.orange,
+                color:'white', border:'none', borderRadius:10, fontSize:15, fontWeight:600,
                 fontFamily:C.sans, cursor:loading ? 'not-allowed' : 'pointer',
                 transition:'background .15s', marginTop:6 }}
               onMouseEnter={e=>{ if(!loading) e.currentTarget.style.background=C.orangeDark }}
@@ -242,7 +242,7 @@ export default function RegisterPage() {
               {loading ? 'Se creează contul...' : 'Creează cont gratuit'}
             </button>
 
-            <p style={{ fontSize:11, color:C.gray400, textAlign:'center', lineHeight:1.5 }}>
+            <p style={{ fontSize:12, color:C.gray400, textAlign:'center', lineHeight:1.5 }}>
               Prin înregistrare ești de acord cu{' '}
               <Link href="/termeni" style={{ color:C.gray600, textDecoration:'underline' }}>Termenii</Link>
               {' '}și{' '}
@@ -250,7 +250,7 @@ export default function RegisterPage() {
             </p>
           </form>
 
-          <p style={{ textAlign:'center', marginTop:24, fontSize:14, color:C.gray600 }}>
+          <p style={{ textAlign:'center', marginTop:22, fontSize:14, color:C.gray600 }}>
             Ai deja cont?{' '}
             <Link href="/auth/login" style={{ color:C.orange, fontWeight:500, textDecoration:'none' }}>
               Intră în cont
@@ -269,12 +269,18 @@ export default function RegisterPage() {
             display: none !important;
           }
           .auth-form-panel {
-            padding: 32px 16px !important;
+            padding: 18px 14px !important;
             width: 100%;
             min-height: 100vh;
+            align-items: flex-start;
+          }
+          .auth-form-inner {
+            max-width: 100% !important;
+            width: 100%;
           }
           .auth-mobile-logo {
             display: flex !important;
+            margin-bottom: 18px !important;
           }
         }
       `}</style>
