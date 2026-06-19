@@ -173,8 +173,8 @@ export default function RegisterPage() {
 
       {/* ── Dreapta: formular ─────────────────────────────────────────────── */}
       <div style={{ background:C.white, display:'flex', alignItems:'center',
-        justifyContent:'center', padding:'48px 56px', overflowY:'auto' }}>
-        <div style={{ width:'100%', maxWidth:380 }}>
+        justifyContent:'center', padding:'48px 56px', overflowY:'auto' }} className="auth-form-panel">
+        <div style={{ width:'100%', maxWidth:380, minWidth:0 }}>
 
           {/* Logo (vizibil pe mobile când panoul stânga e ascuns) */}
           <Link href="/" className="auth-mobile-logo"
@@ -262,6 +262,7 @@ export default function RegisterPage() {
       <style>{`
         @media (max-width: 768px) {
           .auth-left-panel { display: none !important; }
+          .auth-form-panel { padding: 32px 16px !important; }
           div[style*="grid-template-columns: 1fr 1fr"] { grid-template-columns: 1fr !important; }
           .auth-mobile-logo { display: flex !important; }
         }

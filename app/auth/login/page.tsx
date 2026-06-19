@@ -98,15 +98,6 @@ function LoginForm() {
 
   return (
     <div style={{ display:'flex', flexDirection:'column', width:'100%', maxWidth:380 }}>
-
-      {/* Logo + titlu */}
-      <Link href="/" style={{ display:'flex', alignItems:'center', gap:10, textDecoration:'none', marginBottom:36 }}>
-        <LogoMark />
-        <span style={{ fontFamily:C.sans, fontWeight:600, fontSize:15, color:C.black, letterSpacing:'-0.02em' }}>
-          Santier
-        </span>
-      </Link>
-
       <h1 style={{ fontFamily:C.serif, fontSize:30, fontWeight:400, color:C.black,
         lineHeight:1.1, letterSpacing:'-0.02em', marginBottom:8 }}>
         Bine ai revenit
@@ -257,19 +248,31 @@ export default function LoginPage() {
         alignItems: 'center',
         justifyContent: 'center',
         padding: '48px 56px',
-      }}>
-        <Suspense fallback={<div style={{ height: 400 }} />}>
-          <LoginForm />
-        </Suspense>
+      }} className="auth-form-panel">
+        <div style={{ width:'100%', maxWidth:380, minWidth:0 }}>
+          <Link href="/" className="auth-mobile-logo"
+            style={{ display:'none', alignItems:'center', gap:10, textDecoration:'none', marginBottom:36 }}>
+            <LogoMark />
+            <span style={{ fontFamily:C.sans, fontWeight:600, fontSize:15, color:C.black, letterSpacing:'-0.02em' }}>
+              Santier
+            </span>
+          </Link>
+
+          <Suspense fallback={<div style={{ height: 400 }} />}>
+            <LoginForm />
+          </Suspense>
+        </div>
       </div>
 
       {/* ── Mobile: ascunde panoul stânga ─────────────────────────────────── */}
       <style>{`
         @media (max-width: 768px) {
           .auth-left-panel { display: none !important; }
+          .auth-form-panel { padding: 32px 16px !important; }
           div[style*="grid-template-columns: 1fr 1fr"] {
             grid-template-columns: 1fr !important;
           }
+          .auth-mobile-logo { display: flex !important; }
         }
       `}</style>
     </div>
