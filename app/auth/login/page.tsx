@@ -177,7 +177,7 @@ function LoginForm() {
 /* ─── Page export ─────────────────────────────────────────────────────────── */
 export default function LoginPage() {
   return (
-    <div style={{
+    <div className="auth-page auth-page-login" style={{
       minHeight: '100vh',
       display: 'grid',
       gridTemplateColumns: '1fr 1fr',
@@ -267,12 +267,21 @@ export default function LoginPage() {
       {/* ── Mobile: ascunde panoul stânga ─────────────────────────────────── */}
       <style>{`
         @media (max-width: 768px) {
-          .auth-left-panel { display: none !important; }
-          .auth-form-panel { padding: 32px 16px !important; }
-          div[style*="grid-template-columns: 1fr 1fr"] {
+          .auth-page-login {
             grid-template-columns: 1fr !important;
+            min-height: 100vh;
           }
-          .auth-mobile-logo { display: flex !important; }
+          .auth-left-panel {
+            display: none !important;
+          }
+          .auth-form-panel {
+            padding: 32px 16px !important;
+            width: 100%;
+            min-height: 100vh;
+          }
+          .auth-mobile-logo {
+            display: flex !important;
+          }
         }
       `}</style>
     </div>

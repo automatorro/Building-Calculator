@@ -124,7 +124,7 @@ export default function RegisterPage() {
   }
 
   return (
-    <div style={{
+    <div className="auth-page auth-page-register" style={{
       minHeight:'100vh', display:'grid', gridTemplateColumns:'1fr 1fr',
       fontFamily: C.sans,
     }}>
@@ -261,10 +261,21 @@ export default function RegisterPage() {
 
       <style>{`
         @media (max-width: 768px) {
-          .auth-left-panel { display: none !important; }
-          .auth-form-panel { padding: 32px 16px !important; }
-          div[style*="grid-template-columns: 1fr 1fr"] { grid-template-columns: 1fr !important; }
-          .auth-mobile-logo { display: flex !important; }
+          .auth-page-register {
+            grid-template-columns: 1fr !important;
+            min-height: 100vh;
+          }
+          .auth-left-panel {
+            display: none !important;
+          }
+          .auth-form-panel {
+            padding: 32px 16px !important;
+            width: 100%;
+            min-height: 100vh;
+          }
+          .auth-mobile-logo {
+            display: flex !important;
+          }
         }
       `}</style>
     </div>
