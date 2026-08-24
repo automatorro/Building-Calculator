@@ -267,7 +267,7 @@ export default function Page() {
         .kpi .lbl { font-size: 11px; color: #888780; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.06em; }
         .kpi .val { font-size: 18px; font-weight: 500; color: #1a1a18; }
         .section-title { font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: #888780; margin: 1.25rem 0 0.5rem; padding: 0 4px; }
-        table { width: 100%; border-collapse: collapse; font-size: 13px; background: #fff; border-radius: 12px; overflow: hidden; border: 0.5px solid #d3d1c7; margin-bottom: 0.5rem; }
+        table { width: 100%; min-width: 580px; border-collapse: collapse; font-size: 13px; background: #fff; border-radius: 12px; overflow: hidden; border: 0.5px solid #d3d1c7; margin-bottom: 0.5rem; }
         thead th { font-size: 11px; font-weight: 500; color: #888780; text-align: left; padding: 8px 10px; border-bottom: 0.5px solid #d3d1c7; letter-spacing: 0.04em; background: #f9f8f5; }
         thead th.num { text-align: right; }
         tbody tr { border-bottom: 0.5px solid #e8e7e2; }
@@ -294,13 +294,19 @@ export default function Page() {
         .metric.vat-total .lbl { color: #2f6d3a; font-weight: 700; }
         .metric.vat-total .val { font-weight: 700; }
         .metric.vat-total .sub { color: #2f6d3a; }
-        .legend { display: flex; gap: 16px; margin-top: 1rem; font-size: 11px; color: #888780; }
+        .legend { display: flex; gap: 16px; margin-top: 1rem; font-size: 11px; color: #888780; flex-wrap: wrap; }
         .legend span { display: flex; align-items: center; gap: 5px; }
         @media (max-width: 700px) {
           .kpis { grid-template-columns: 1fr; }
           .summary { grid-template-columns: 1fr 1fr; }
+          .control select { max-width: 100%; }
+          .hint { margin-left: 0; width: 100%; }
           td { padding: 6px 6px; }
           td.mat { max-width: 180px; }
+        }
+        @media (max-width: 480px) {
+          .summary { grid-template-columns: 1fr; }
+          .control { width: 100%; flex-wrap: wrap; }
         }
       `}</style>
 

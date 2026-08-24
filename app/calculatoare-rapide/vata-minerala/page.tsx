@@ -211,13 +211,13 @@ export default function Page() {
       <style>{`
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         h1 { font-size: 18px; font-weight: 500; margin-bottom: 1.5rem; color: #1a1a18; }
-        .area-row { display: flex; align-items: center; gap: 12px; margin-bottom: 1.5rem; padding: 12px 16px; background: #fff; border-radius: 12px; border: 0.5px solid #d3d1c7; }
+        .area-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 1.5rem; padding: 12px 16px; background: #fff; border-radius: 12px; border: 0.5px solid #d3d1c7; }
         .area-row label { font-size: 14px; color: #5f5e5a; white-space: nowrap; }
         .area-row input[type=number] { width: 90px; font-size: 15px; font-weight: 500; border: 0.5px solid #d3d1c7; border-radius: 6px; padding: 4px 8px; }
         .area-row span { font-size: 14px; color: #5f5e5a; }
         .area-note { margin-left: auto; font-size: 12px; color: #888780; }
         .section-title { font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: #888780; margin: 1.5rem 0 0.5rem; padding: 0 4px; }
-        table { width: 100%; border-collapse: collapse; font-size: 13px; background: #fff; border-radius: 12px; overflow: hidden; border: 0.5px solid #d3d1c7; margin-bottom: 0.5rem; }
+        table { width: 100%; min-width: 580px; border-collapse: collapse; font-size: 13px; background: #fff; border-radius: 12px; overflow: hidden; border: 0.5px solid #d3d1c7; margin-bottom: 0.5rem; }
         thead th { font-size: 11px; font-weight: 500; color: #888780; text-align: left; padding: 8px 10px; border-bottom: 0.5px solid #d3d1c7; letter-spacing: 0.04em; background: #f9f8f5; }
         thead th.num { text-align: right; }
         tbody tr { border-bottom: 0.5px solid #e8e7e2; }
@@ -245,12 +245,16 @@ export default function Page() {
         .metric.vat-total .lbl { color: #2f6d3a; font-weight: 700; }
         .metric.vat-total .val { font-weight: 700; }
         .metric.vat-total .sub { color: #2f6d3a; }
-        .legend { display: flex; gap: 16px; margin-top: 1rem; font-size: 11px; color: #888780; }
+        .legend { display: flex; gap: 16px; margin-top: 1rem; font-size: 11px; color: #888780; flex-wrap: wrap; }
         .legend span { display: flex; align-items: center; gap: 5px; }
         @media (max-width: 600px) {
           .summary { grid-template-columns: 1fr 1fr; }
           table { font-size: 12px; }
           td { padding: 6px 6px; }
+        }
+        @media (max-width: 480px) {
+          .summary { grid-template-columns: 1fr; }
+          .area-note { margin-left: 0; width: 100%; }
         }
       `}</style>
 
